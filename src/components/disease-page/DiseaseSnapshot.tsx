@@ -46,6 +46,8 @@ interface DiseaseSnapshotProps {
   isFavorited: boolean;
   illustration: MedicalIllustrationBlock;
   canEdit?: boolean;
+  isAdmin?: boolean;
+  blockCount?: number;
 }
 
 export function DiseaseSnapshot({
@@ -62,6 +64,8 @@ export function DiseaseSnapshot({
   isFavorited,
   illustration,
   canEdit,
+  isAdmin,
+  blockCount,
 }: DiseaseSnapshotProps) {
   const category = categoryForRegions(regions);
 
@@ -80,6 +84,8 @@ export function DiseaseSnapshot({
         isSignedIn={isSignedIn}
         isFavorited={isFavorited}
         canEdit={canEdit}
+        isAdmin={isAdmin}
+        blockCount={blockCount}
       />
 
       <MedicalIllustrationBlockView block={illustration} diseaseId={diseaseId} diseaseSlug={diseaseSlug} />

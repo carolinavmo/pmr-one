@@ -3,6 +3,7 @@
 import { useState, useTransition } from "react";
 import { Trash2, TriangleAlert } from "lucide-react";
 import { deleteDiseaseAction } from "@/app/[locale]/admin/actions";
+import { useRouter } from "@/i18n/navigation";
 
 // A confirmation modal, not a single click — this is the exact
 // operation that once destroyed a disease's content via a one-off
@@ -17,17 +18,25 @@ export function DeleteDiseaseButton({
   slug,
   status,
   blockCount,
+  // Set when this button lives on the disease page itself, not the
+  // /admin review queue — deleting the page you're currently viewing
+  // leaves you on a route that no longer exists, so success navigates
+  // away instead of just closing the dialog (the queue doesn't need
+  // this: it's a list page that already re-renders itself).
+  redirectTo,
 }: {
   diseaseId: string;
   canonicalName: string;
   slug: string;
   status: string;
   blockCount: number;
+  redirectTo?: string;
 }) {
   const [open, setOpen] = useState(false);
   const [confirmText, setConfirmText] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
+  const router = useRouter();
 
   function close() {
     setOpen(false);
@@ -40,7 +49,11 @@ export function DeleteDiseaseButton({
     startTransition(async () => {
       const result = await deleteDiseaseAction(diseaseId, confirmText);
       if (result.ok) {
-        close();
+        if (redirectTo) {
+          router.push(redirectTo);
+        } else {
+          close();
+        }
       } else {
         setError(result.error);
       }

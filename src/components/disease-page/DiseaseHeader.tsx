@@ -6,6 +6,7 @@ import { Eyebrow } from "@/components/ui/Eyebrow";
 import { ClinicalBadge } from "@/components/ui/ClinicalBadge";
 import { EditableText } from "@/components/ui/EditableText";
 import { useEditMode, SectionEditToggle } from "@/components/disease-page/EditMode";
+import { DeleteDiseaseButton } from "@/components/admin/DeleteDiseaseButton";
 import {
   updateDiseaseNameAction,
   toggleEvidenceBasedAction,
@@ -30,6 +31,11 @@ interface DiseaseHeaderProps {
   // its own toggle too, treated as its own small edit boundary rather
   // than tying header edits to any one body section).
   canEdit?: boolean;
+  // Admin-only, same gate as the /admin review queue's own delete
+  // button — an editor can rewrite every word of a page but still
+  // can't remove it outright, that's a stricter permission.
+  isAdmin?: boolean;
+  blockCount?: number;
 }
 
 const MONTH_YEAR = new Intl.DateTimeFormat("en-US", { month: "short", year: "numeric" });
@@ -51,6 +57,8 @@ export function DiseaseHeader({
   isSignedIn,
   isFavorited,
   canEdit = false,
+  isAdmin = false,
+  blockCount = 0,
 }: DiseaseHeaderProps) {
   const { editing } = useEditMode();
 
@@ -92,6 +100,16 @@ export function DiseaseHeader({
         />
         {status !== "published" && <ClinicalBadge>Draft — not yet reviewed</ClinicalBadge>}
         {canEdit && <SectionEditToggle />}
+        {editing && isAdmin && (
+          <DeleteDiseaseButton
+            diseaseId={diseaseId}
+            canonicalName={diseaseName}
+            slug={diseaseSlug}
+            status={status}
+            blockCount={blockCount}
+            redirectTo="/conditions"
+          />
+        )}
       </div>
       <div className="flex flex-wrap items-center gap-2 font-ui text-sm text-secondary">
         {segments.map((segment, index) => (

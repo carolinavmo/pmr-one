@@ -39,6 +39,9 @@ export default async function DiseasePage({ params }: DiseasePageProps) {
   // Same check drives both — anyone who can review an unpublished
   // disease can also edit its prose (Author v1 Pass 1).
   const canEdit = canSeeUnpublished;
+  // Stricter than canEdit — deleting the whole page is an admin-only
+  // action, same gate as the /admin review queue's own delete button.
+  const isAdmin = session?.user.role === "admin";
 
   const snapshot = extractSnapshot(disease.blocks);
   const bodyBlocks = snapshot ? snapshot.rest : disease.blocks;
@@ -84,6 +87,8 @@ export default async function DiseasePage({ params }: DiseasePageProps) {
       isFavorited={isFavorited}
       illustration={snapshot.illustration}
       canEdit={canEdit}
+      isAdmin={isAdmin}
+      blockCount={disease.blocks.length}
     />
   ) : (
     <DiseaseHeader
@@ -99,6 +104,8 @@ export default async function DiseasePage({ params }: DiseasePageProps) {
       isSignedIn={Boolean(session)}
       isFavorited={isFavorited}
       canEdit={canEdit}
+      isAdmin={isAdmin}
+      blockCount={disease.blocks.length}
     />
   );
 
