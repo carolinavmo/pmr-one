@@ -1,0 +1,12 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "pmr-atlas-dev",
+      "runtimeExecutable": "C:\\dev\\pmr-atlas\\dev-server.cmd",
+      "runtimeArgs": [],
+      "port": 3000,
+      "autoPort": true
+    }
+  ]
+}

@@ -1,0 +1,250 @@
+@import "tailwindcss";
+
+/* ============================================================
+   PM&R Atlas — Design Tokens (Tier 1: Foundations)
+   Source: DESIGN_SYSTEM.md. Tailwind v4 uses CSS-first config —
+   this file IS the Tailwind config for tokens. Tier 2 (components)
+   and Tier 3 (system behavior) build on top of these, not here.
+   ============================================================ */
+
+:root {
+  /* ---------- Color: warm paper surfaces ----------
+     Founder follow-up on the reference sheet: main container (page
+     background) is white, not a hair off it — supersedes the earlier
+     fafbfc decision. surface and surface-card are now the same value
+     by design; the two tokens stay separate (rather than collapsing
+     into one) because they still mean different things structurally
+     (page vs. card), and card/section borders now carry that visual
+     separation instead of a background difference. */
+  --color-surface: #ffffff;
+  --color-surface-raised: #fcfcfe; /* founder request — replaces Slate 100, a subtler near-white tint instead */
+  --color-surface-card: #ffffff; /* founder reference sheet — "White" */
+  --color-border: #cbd5e1; /* founder reference sheet — "Slate 300" (was Slate 200) */
+  --color-text-primary: #0f172a; /* founder reference sheet — "Navy 900" */
+  --color-text-secondary: #64748b; /* founder reference sheet — "Slate 500", exact match, no change needed */
+
+  /* ---------- Color: three meaningful roles only ----------
+     Never used decoratively — see DESIGN_SYSTEM.md Color System.
+     Values below are the founder's reference-sheet palette (Teal 600/
+     Green/Amber/Rose) — a deliberately more vivid, saturated system
+     than this file's original "trust-not-hype" muted tones. */
+  --color-accent: #1ba7b7; /* founder reference sheet — "Teal 600" */
+  --color-accent-hover: #128a99; /* unchanged — already a valid darker step below the new Teal 600 */
+  --color-trust: #10b981; /* founder reference sheet — "Green" */
+  --color-insight: #f59e0b; /* founder reference sheet — "Amber" */
+  --color-warning: #ef4444; /* founder reference sheet — "Rose" (their label for red) */
+
+  /* ---------- Color: card styles (decorative, by design) ----------
+     A deliberate, separate palette from the four meaningful roles
+     above — chosen so none of these four hues could be mistaken for
+     Trust (green)/Insight (amber)/Warning (rust)/Accent (teal) at a
+     glance. Used only for author-chosen card backgrounds and badges
+     (ParagraphBlockView), never for anything that carries clinical
+     meaning. Blue/Violet/Slate below are the founder reference
+     sheet's own swatches; the sheet had no separate decorative "rose"
+     (its one red/pink swatch is Warning, above), so Rose here uses
+     Tailwind's standard rose-500 — same vivid-palette family, kept
+     visually distinct from Warning's red rather than duplicating it. */
+  --color-card-blue: #3b82f6;
+  --color-card-violet: #8b5cf6;
+  --color-card-rose: #f43f5e;
+  --color-card-slate: #64748b;
+
+  /* ---------- Color: badge backgrounds (fixed, not theme-swapped) ----------
+     A badge is its own small dark chip with light text — unlike every
+     other color token here, it's deliberately declared once, outside
+     the dark-mode block below, so it doesn't lighten in dark mode. The
+     card-color tokens above DO lighten in dark mode (they're meant to
+     read as text/border tint against a page background that itself
+     flips dark↔light); a badge's background never needs that, since
+     white text stays legible on it regardless of what the page around
+     it is doing. Recomputed from the new base hues above using this
+     file's existing ~18% darkening (unchanged ratio, just re-applied
+     to the new palette, so badges keep reading as "the same hue, one
+     notch darker" rather than an unrelated color). */
+  --color-badge-neutral: #0f172a;
+  --color-badge-accent: #168996;
+  --color-badge-trust: #0d986a;
+  --color-badge-insight: #c98209;
+  --color-badge-blue: #306bca;
+  --color-badge-violet: #724bca;
+  --color-badge-rose: #c8344d;
+  --color-badge-slate: #525f72;
+
+  /* ---------- Spacing: 8px base grid ----------
+     4/8/12/16/24/32/48/64px. Tailwind's default spacing scale
+     (steps 1,2,3,4,6,8,12,16) already maps exactly to this scale
+     — no override needed, documented here so it isn't rediscovered
+     by accident. Avoid steps outside that set (5,7,9,10...). */
+
+  /* ---------- Grid: reading vs. browsing (spec §7 context-first) ---------- */
+  --max-width-reading: 720px; /* Disease Page body, Clinical Case narrative */
+
+  /* ---------- Motion: fast, subtle, purposeful ----------
+     A decisive ease-out — fast start, settled finish, no bounce or
+     overshoot (VISUAL_IDENTITY.md §7) — not Tailwind's generic
+     ease-in-out default. */
+  --duration-fast: 120ms;
+  --duration-base: 200ms;
+  --ease-standard: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    /* Dark mode is a real requirement (Tier 3), not cosmetic —
+       residents study post-call, in dark rooms. Navy-black rather
+       than the original warm brown-black, mirroring the light mode
+       shift to navy typography. */
+    --color-surface: #0f1620;
+    --color-surface-raised: #161f2c;
+    --color-surface-card: #161f2c; /* same tier as surface-raised in dark mode — a literal white card would blow out here, and this already reads as "the next layer up" */
+    --color-border: #2a3542;
+    --color-text-primary: #eef1f4;
+    --color-text-secondary: #9aa8ba;
+
+    --color-accent: #48d1e1; /* lightened from the new Teal 600, same transform this file already used */
+    --color-accent-hover: #6dd8e0; /* unchanged — already brighter than the new dark-mode accent, so still reads as "hover" */
+    --color-trust: #36ebaf;
+    --color-insight: #f6bf61;
+    --color-warning: #f49696;
+
+    --color-card-blue: #90b8f8;
+    --color-card-violet: #c6b0fa;
+    --color-card-rose: #f793a4;
+    --color-card-slate: #96a1b0;
+  }
+}
+
+@theme inline {
+  --color-surface: var(--color-surface);
+  --color-surface-raised: var(--color-surface-raised);
+  --color-surface-card: var(--color-surface-card);
+  --color-border: var(--color-border);
+  --color-primary: var(--color-text-primary);
+  --color-secondary: var(--color-text-secondary);
+
+  --color-accent: var(--color-accent);
+  --color-accent-hover: var(--color-accent-hover);
+  --color-trust: var(--color-trust);
+  --color-insight: var(--color-insight);
+  --color-warning: var(--color-warning);
+
+  --color-card-blue: var(--color-card-blue);
+  --color-card-violet: var(--color-card-violet);
+  --color-card-rose: var(--color-card-rose);
+  --color-card-slate: var(--color-card-slate);
+
+  --color-badge-neutral: var(--color-badge-neutral);
+  --color-badge-accent: var(--color-badge-accent);
+  --color-badge-trust: var(--color-badge-trust);
+  --color-badge-insight: var(--color-badge-insight);
+  --color-badge-blue: var(--color-badge-blue);
+  --color-badge-violet: var(--color-badge-violet);
+  --color-badge-rose: var(--color-badge-rose);
+  --color-badge-slate: var(--color-badge-slate);
+
+  --max-width-reading: var(--max-width-reading);
+
+  --duration-fast: var(--duration-fast);
+  --duration-base: var(--duration-base);
+  --ease-standard: var(--ease-standard);
+
+  /* The token bare `transition`/`transition-colors` utilities actually
+     read their timing function from — wiring it here means every
+     existing transition-colors call site picks up the signature curve
+     with zero component edits (VISUAL_IDENTITY.md §7's "applied
+     everywhere, zero exceptions" rule). */
+  --default-transition-timing-function: var(--ease-standard);
+
+  /* Two-typeface system, split by role — not by page (Tier 1 Typography).
+     `--font-heading` is a deliberate, narrower exception on top of
+     that system (layout.tsx's fontHeading comment) — the disease page
+     title only, not a third role applied everywhere. */
+  --font-ui: var(--font-ui);
+  --font-reading: var(--font-reading);
+  --font-heading: var(--font-heading);
+
+  /* Main content font size — PM&R Atlas Design System doc's "Body"
+     spec (14px/22px), overriding Tailwind's default 16px/24px
+     `text-base`. Every prose block (paragraph, key point, clinical
+     pearl, warning, etc.) sets its own body text via `text-base` —
+     overriding the token here applies to all of them at once, rather
+     than editing each block component individually. */
+  --text-base: 14px;
+  --text-base--line-height: 22px;
+}
+
+body {
+  font-family: var(--font-ui);
+}
+
+/* Iconography Tier B (VISUAL_IDENTITY.md §5) — every Lucide icon
+   platform-wide gets one deliberate, non-default stroke weight
+   instead of whatever the library ships with. Lucide renders every
+   icon with this class already; one rule reskins all of them. */
+.lucide {
+  stroke-width: 1.5;
+}
+
+/* Google Translate widget (GoogleTranslateWidget.tsx) — temporary
+   "translate right now" stopgap, not the permanent i18n pipeline.
+   When a translation is active, Google shows its own banner
+   ("Translated to: Spanish · Show original") above the page —
+   deliberately left visible rather than hidden: it's Google's own
+   this-is-a-machine-translation disclosure with a one-click revert,
+   which lines up with this project's own insistence (see the i18n
+   plan) on flagging unreviewed machine translation rather than
+   presenting it as equivalent to reviewed content. It pushes the page
+   down in normal flow — no layout fix needed, nothing overlaps.
+
+   The classic `.goog-te-banner-frame` class + `body { top }` inline-
+   style hack some older docs reference doesn't apply to the version
+   Google currently serves (it uses an obfuscated, version-specific
+   class instead) — not worth chasing an unstable selector to suppress
+   a banner this project wants visible anyway.
+
+   SIMPLE layout renders as a `.goog-te-gadget-simple` trigger (its own
+   flag icon + "Select Language" link + caret), not a plain <select> —
+   `.goog-te-combo` only shows up inside the menu it opens. Google's
+   own stylesheet sets color/font-size/text-decoration directly on the
+   inner <a> (an internal, obfuscated class), which beats a plain
+   inherited override — `!important` is the only reliable way to match
+   this app's own pill-button styling instead of Google's default
+   bordered-box look. */
+#google_translate_element .goog-te-gadget-icon {
+  display: none;
+}
+
+#google_translate_element .goog-te-gadget-simple {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.25rem;
+  border-radius: 9999px;
+  border: 1px solid var(--color-border);
+  background: transparent !important;
+  padding: 0.25rem 0.75rem;
+}
+
+#google_translate_element .goog-te-gadget-simple a {
+  display: inline-flex;
+  align-items: center;
+  font-family: var(--font-ui) !important;
+  font-size: 0.875rem !important;
+  color: var(--color-primary) !important;
+  text-decoration: none !important;
+}
+
+#google_translate_element .goog-te-gadget-simple a span {
+  color: inherit !important;
+}
+
+#google_translate_element .goog-te-combo {
+  min-height: 2.25rem;
+  border-radius: 9999px;
+  border: 1px solid var(--color-border);
+  background: transparent;
+  padding: 0.25rem 0.5rem;
+  font-family: var(--font-ui);
+  font-size: 0.875rem;
+  color: var(--color-primary);
+}
