@@ -39,6 +39,9 @@ yarn-error.log*
 # claude code local settings (personal, machine-specific)
 .claude/settings.local.json
 
+# database backups (see scripts/backup-db.mjs) — live on Google Drive, not in git
+/db-backups/
+
 # typescript
 *.tsbuildinfo
 next-env.d.ts
