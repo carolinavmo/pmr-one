@@ -9,6 +9,10 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   // Credentials provider requires JWT sessions — it has no persistent
   // account row for the adapter's database-session strategy to attach to.
   session: { strategy: "jwt" },
+  // Required behind a reverse proxy (Railway, Render, etc.) — without this,
+  // NextAuth rejects requests because the forwarded host doesn't match what
+  // it expects. Vercel sets this implicitly; other hosts don't.
+  trustHost: true,
   providers: [
     Credentials({
       credentials: {
