@@ -17,6 +17,8 @@ import {
 import { auth } from "@/auth";
 import { getPlatformAnalytics } from "@/lib/analytics";
 import { AnalyticsLineChart } from "@/components/admin/AnalyticsLineChart";
+import { StatTile } from "@/components/admin/StatTile";
+import { SectionCard } from "@/components/admin/SectionCard";
 import { ClinicalBadge } from "@/components/ui/ClinicalBadge";
 import { CARD_COLOR_CHIP, CARD_COLOR_SWATCH } from "@/lib/card-colors";
 import type { CardColor } from "@/lib/editorial-blocks";
@@ -241,55 +243,6 @@ function initialsFor(name: string | null, email: string | null): string {
     return initials.toUpperCase();
   }
   return (email?.[0] ?? "?").toUpperCase();
-}
-
-function StatTile({
-  icon: Icon,
-  label,
-  value,
-  detail,
-  color,
-}: {
-  icon: typeof Users;
-  label: string;
-  value: number;
-  detail?: string;
-  color: CardColor;
-}) {
-  return (
-    <div className="flex items-center gap-3 rounded-xl border border-border bg-surface px-4 py-3.5 shadow-sm">
-      <span className={`flex size-10 shrink-0 items-center justify-center rounded-full ${CARD_COLOR_CHIP[color]}`}>
-        <Icon className="size-4.5" aria-hidden="true" />
-      </span>
-      <span className="flex min-w-0 flex-col leading-tight">
-        <span className="font-reading text-2xl font-semibold text-primary tabular-nums">
-          {value.toLocaleString()}
-        </span>
-        <span className="font-ui text-xs text-secondary">{label}</span>
-        {detail && <span className="truncate font-ui text-[11px] text-secondary/80">{detail}</span>}
-      </span>
-    </div>
-  );
-}
-
-function SectionCard({
-  icon: Icon,
-  title,
-  children,
-}: {
-  icon: typeof Users;
-  title: string;
-  children: React.ReactNode;
-}) {
-  return (
-    <section className="flex flex-col gap-4 rounded-xl border border-border bg-surface p-5 shadow-sm">
-      <h2 className="flex items-center gap-2 font-ui text-sm font-medium text-primary">
-        <Icon className="size-4 text-secondary" aria-hidden="true" />
-        {title}
-      </h2>
-      {children}
-    </section>
-  );
 }
 
 function ChartCard({
