@@ -53,6 +53,16 @@ const gastrocSoleusId = await findOrCreate(
 const diseaseName = "Plantar Fasciopathy";
 const diseaseSlug = slugify(diseaseName);
 
+// Same topic as plantar-fasciopathy-v2 ("Tendinopathies") — both pages
+// describe the same disease and belong in the same Explore branch.
+// Without a topic_id, src/lib/topics.ts's fetchDiseaseRows() silently
+// excludes the disease from the sidebar/breadcrumbs/prev-next (it
+// filters `WHERE topic_id IS NOT NULL`) — this bit us once already.
+const { rows: tendinopathiesTopicRows } = await pool.query(
+  `SELECT id FROM topic WHERE slug = 'tendinopathies'`
+);
+const tendinopathiesTopicId = tendinopathiesTopicRows[0]?.id ?? null;
+
 // Matched by slug, not canonical_name: "plantar-fasciopathy-v2" has the
 // same canonical_name ("Plantar Fasciopathy") as this disease, so
 // matching on canonical_name would silently grab v2's row and overwrite
@@ -62,7 +72,13 @@ const diseaseId = await findOrCreate(pool, "disease", "slug", diseaseSlug, {
   aliases: ["Plantar Fasciitis", "Jogger's Heel", "M72.2"],
   slug: diseaseSlug,
   status: "draft",
+  topic_id: tendinopathiesTopicId,
 });
+// findOrCreate only sets topic_id on first insert — patch it on every
+// run so re-seeding an already-existing row still fixes a null topic_id.
+if (tendinopathiesTopicId) {
+  await pool.query(`UPDATE disease SET topic_id = $1 WHERE id = $2`, [tendinopathiesTopicId, diseaseId]);
+}
 
 // ---------- Examination Maneuvers ----------
 // Deliberately exercises all three maneuver-disease relationship types
