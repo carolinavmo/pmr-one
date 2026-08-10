@@ -1,6 +1,6 @@
 import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
-import { Bell, Home, PersonStanding } from "lucide-react";
+import { Bell, Calendar, Home, PersonStanding } from "lucide-react";
 import { auth } from "@/auth";
 import { CommandPalette } from "./CommandPalette";
 import { UserMenu } from "./UserMenu";
@@ -51,6 +51,13 @@ export async function TopBar() {
           >
             <Home className="size-4" aria-hidden="true" />
             {t("myWorkspace")}
+          </Link>
+          <Link
+            href="/study-planner"
+            className="inline-flex min-h-11 items-center gap-1.5 font-ui text-sm font-medium text-primary transition-colors duration-base hover:text-accent"
+          >
+            <Calendar className="size-4" aria-hidden="true" />
+            {t("studyPlanner")}
           </Link>
           <Link
             href="/conditions"

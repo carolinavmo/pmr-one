@@ -3,7 +3,14 @@
 import { useSyncExternalStore } from "react";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
-import { PersonStanding, Sparkles, ChevronRight, PanelLeftClose, PanelLeftOpen } from "lucide-react";
+import {
+  PersonStanding,
+  Sparkles,
+  Calendar,
+  ChevronRight,
+  PanelLeftClose,
+  PanelLeftOpen,
+} from "lucide-react";
 import type { TopicNode } from "@/lib/topics";
 import { IndexSidebar } from "./IndexSidebar";
 import { LinkButton } from "@/components/ui/LinkButton";
@@ -98,6 +105,16 @@ export function SidebarFrame({ tree, userName, userEmail, userRole }: SidebarFra
       </div>
 
       <div className="flex flex-col gap-3 border-t border-border p-3">
+        <Link
+          href="/study-planner"
+          className="flex items-center gap-2.5 rounded-lg px-2 py-2 transition-colors duration-base hover:bg-border/40"
+        >
+          <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-accent/10 text-accent">
+            <Calendar className="size-4" aria-hidden="true" />
+          </span>
+          <span className="font-ui text-sm font-medium text-primary">{t("studyPlanner")}</span>
+        </Link>
+
         <div className="flex items-center gap-3 rounded-lg border border-dashed border-border px-3 py-2.5 opacity-70">
           <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-border/40 text-secondary">
             <Sparkles className="size-4" aria-hidden="true" />
