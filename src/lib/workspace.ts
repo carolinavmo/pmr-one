@@ -91,6 +91,14 @@ export async function recordPageView(
   );
 }
 
+export async function getPageViewCount(userId: string): Promise<number> {
+  const { rows } = await pool.query(
+    `SELECT count(*)::int AS count FROM page_view WHERE user_id = $1`,
+    [userId],
+  );
+  return rows[0]?.count ?? 0;
+}
+
 export async function isDiseaseFavorited(
   userId: string,
   diseaseId: string,

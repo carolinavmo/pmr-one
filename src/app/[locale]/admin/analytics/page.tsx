@@ -17,7 +17,7 @@ import {
 import { auth } from "@/auth";
 import { getPlatformAnalytics } from "@/lib/analytics";
 import { AnalyticsLineChart } from "@/components/admin/AnalyticsLineChart";
-import { StatTile } from "@/components/admin/StatTile";
+import { StatTile } from "@/components/ui/StatTile";
 import { SectionCard } from "@/components/admin/SectionCard";
 import { ClinicalBadge } from "@/components/ui/ClinicalBadge";
 import { CARD_COLOR_CHIP, CARD_COLOR_SWATCH } from "@/lib/card-colors";

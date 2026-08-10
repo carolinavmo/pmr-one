@@ -9,6 +9,7 @@ import { signOutAction } from "@/lib/actions/auth";
 interface UserMenuProps {
   name: string | null | undefined;
   email: string | null | undefined;
+  image: string | null | undefined;
   canReview: boolean;
   isAdmin: boolean;
 }
@@ -29,7 +30,7 @@ function initialsFor(name: string | null | undefined, email: string | null | und
 // Same click-outside/Escape pattern as NavDropdown.tsx, applied to the
 // account corner instead of a nav group — folds Account/Admin/Sign out
 // behind one avatar trigger rather than three separate top-level links.
-export function UserMenu({ name, email, canReview, isAdmin }: UserMenuProps) {
+export function UserMenu({ name, email, image, canReview, isAdmin }: UserMenuProps) {
   const t = useTranslations("nav");
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
@@ -61,8 +62,13 @@ export function UserMenu({ name, email, canReview, isAdmin }: UserMenuProps) {
         aria-label={t("accountMenu")}
         className="flex min-h-11 items-center gap-1.5 rounded-full py-1 pl-1 pr-2 transition-colors duration-base hover:bg-border/40"
       >
-        <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-accent font-ui text-sm font-semibold text-white ring-2 ring-surface">
-          {initialsFor(name, email)}
+        <span className="flex size-9 shrink-0 items-center justify-center overflow-hidden rounded-full bg-accent font-ui text-sm font-semibold text-white ring-2 ring-surface">
+          {image ? (
+            // eslint-disable-next-line @next/next/no-img-element -- user-owned upload (public/uploads/avatars), same as SimpleImageBlock/OverviewBlock; no fixed remote-pattern domain to configure.
+            <img src={image} alt="" className="size-full object-cover" />
+          ) : (
+            initialsFor(name, email)
+          )}
         </span>
         <ChevronDown className="size-4 text-secondary" aria-hidden="true" />
       </button>

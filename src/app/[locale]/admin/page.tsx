@@ -16,7 +16,7 @@ import { pool } from "@/lib/db";
 import { Button } from "@/components/ui/Button";
 import { ClinicalBadge } from "@/components/ui/ClinicalBadge";
 import { DeleteDiseaseButton } from "@/components/admin/DeleteDiseaseButton";
-import { StatTile } from "@/components/admin/StatTile";
+import { StatTile } from "@/components/ui/StatTile";
 import { publishDisease, unpublishDisease } from "./actions";
 
 interface DiseaseRow {
