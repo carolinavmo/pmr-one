@@ -14,18 +14,12 @@ import {
 import { KnowledgeObjectCard } from "@/components/ui/KnowledgeObjectCard";
 import { objectIcons } from "@/components/ui/objectIcons";
 import { BmiCalculatorCard } from "./BmiCalculatorCard";
-import { DashboardHeroSection } from "./DashboardHero";
-import {
-  EditModeProvider,
-  EditModeToggle,
-} from "@/components/disease-page/EditMode";
 import type { DiseaseCatalogEntry } from "@/lib/disease-catalog";
 import type {
   RecentlyViewedDisease,
   FavoriteDisease,
   UserNote,
 } from "@/lib/workspace";
-import type { DashboardHero } from "@/lib/dashboard-hero";
 
 interface SavedPearlView {
   id: string;
@@ -37,7 +31,6 @@ interface SavedPearlView {
 interface MemberDashboardProps {
   name: string | null | undefined;
   canReview: boolean;
-  hero: DashboardHero;
   recentlyViewed: RecentlyViewedDisease[];
   savedPearls: SavedPearlView[];
   favoriteDiseases: FavoriteDisease[];
@@ -107,7 +100,6 @@ const FAVORITE_TILE_COLORS = [
 export async function MemberDashboard({
   name,
   canReview,
-  hero,
   recentlyViewed,
   savedPearls,
   favoriteDiseases,
@@ -134,41 +126,18 @@ export async function MemberDashboard({
     },
   ];
 
-  // Same wrapping pattern as conditions/[slug]/page.tsx: the toggle and
-  // the editable hero both need to sit inside one EditModeProvider, and
-  // that Provider only ever mounts when the server has already
-  // confirmed editor/admin — a member gets no Provider at all, so
-  // useEditMode()'s default (editing: false) is the only state DashboardHeroSection
-  // can ever see, not just a hidden one.
-  const heroContent = (
-    <>
-      {canReview && (
-        <div className="flex justify-end">
-          <EditModeToggle />
-        </div>
-      )}
-      <DashboardHeroSection hero={hero} />
-    </>
-  );
-
   return (
     <main className="flex flex-1 flex-col items-center px-6 py-10">
       <div className="flex w-full max-w-6xl flex-col gap-8">
         <div className="flex flex-col gap-1">
           <h1 className="font-heading text-2xl font-semibold text-primary sm:text-3xl">
             {greeting(t)}
-            {firstName ? `, ${firstName}` : ""} 👋
+            {firstName ? `, ${t("doctorPrefix")} ${firstName}` : ""} 👋
           </h1>
           <p className="font-ui text-sm text-secondary">
             {t("continueJourney")}
           </p>
         </div>
-
-        {canReview ? (
-          <EditModeProvider>{heroContent}</EditModeProvider>
-        ) : (
-          heroContent
-        )}
 
         <section
           id="bookmarks"

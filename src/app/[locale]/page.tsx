@@ -8,7 +8,6 @@ import {
   getFavoriteDiseases,
   getAllNotes,
 } from "@/lib/workspace";
-import { getDashboardHero } from "@/lib/dashboard-hero";
 import { sanitizeRichText } from "@/lib/rich-text";
 import { KnowledgeObjectCard } from "@/components/ui/KnowledgeObjectCard";
 import { LinkButton } from "@/components/ui/LinkButton";
@@ -26,13 +25,12 @@ export default async function Home() {
     session?.user.role === "editor" || session?.user.role === "admin";
 
   if (session) {
-    const [recentlyViewed, savedPearls, favoriteDiseases, notes, hero] =
+    const [recentlyViewed, savedPearls, favoriteDiseases, notes] =
       await Promise.all([
         getRecentlyViewed(session.user.id, undefined, 6),
         getSavedPearls(session.user.id),
         getFavoriteDiseases(session.user.id),
         getAllNotes(session.user.id),
-        getDashboardHero(),
       ]);
     const viewedSlugs = new Set(recentlyViewed.map((d) => d.slug));
     const suggestedDiseases = diseases
@@ -43,7 +41,6 @@ export default async function Home() {
       <MemberDashboard
         name={session.user.name}
         canReview={canReview}
-        hero={hero}
         recentlyViewed={recentlyViewed}
         savedPearls={savedPearls.slice(0, 5).map((pearl) => ({
           id: pearl.id,
