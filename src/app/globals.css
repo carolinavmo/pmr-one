@@ -44,11 +44,32 @@
      sheet's own swatches; the sheet had no separate decorative "rose"
      (its one red/pink swatch is Warning, above), so Rose here uses
      Tailwind's standard rose-500 — same vivid-palette family, kept
-     visually distinct from Warning's red rather than duplicating it. */
+     visually distinct from Warning's red rather than duplicating it.
+     Widened from the original 4 to 16 (founder request: "around 20
+     colors" across this whole palette, text picker included — the
+     other 4 CardColor values, neutral/accent/trust/insight, are the
+     meaningful roles above, not decorative). The 12 additions below
+     are Tailwind's own 500-level hues, chosen to
+     fill the remaining gaps around the color wheel rather than
+     duplicate an existing swatch (e.g. sky/cyan/indigo sit clearly
+     apart from the existing blue, purple/fuchsia apart from violet,
+     pink apart from rose). */
   --color-card-blue: #3b82f6;
   --color-card-violet: #8b5cf6;
   --color-card-rose: #f43f5e;
   --color-card-slate: #64748b;
+  --color-card-red: #ef4444;
+  --color-card-orange: #f97316;
+  --color-card-yellow: #eab308;
+  --color-card-lime: #84cc16;
+  --color-card-green: #22c55e;
+  --color-card-teal: #14b8a6;
+  --color-card-cyan: #06b6d4;
+  --color-card-sky: #0ea5e9;
+  --color-card-indigo: #6366f1;
+  --color-card-purple: #a855f7;
+  --color-card-fuchsia: #d946ef;
+  --color-card-pink: #ec4899;
 
   /* ---------- Color: badge backgrounds (fixed, not theme-swapped) ----------
      A badge is its own small dark chip with light text — unlike every
@@ -70,6 +91,21 @@
   --color-badge-violet: #724bca;
   --color-badge-rose: #c8344d;
   --color-badge-slate: #525f72;
+  /* The 12 new card colors' badge counterparts — Tailwind's own
+     600-level hex for each (rather than hand-tuning a darkening
+     ratio), which already carries enough contrast for white text. */
+  --color-badge-red: #dc2626;
+  --color-badge-orange: #ea580c;
+  --color-badge-yellow: #ca8a04;
+  --color-badge-lime: #65a30d;
+  --color-badge-green: #16a34a;
+  --color-badge-teal: #0d9488;
+  --color-badge-cyan: #0891b2;
+  --color-badge-sky: #0284c7;
+  --color-badge-indigo: #4f46e5;
+  --color-badge-purple: #9333ea;
+  --color-badge-fuchsia: #c026d3;
+  --color-badge-pink: #db2777;
 
   /* ---------- Spacing: 8px base grid ----------
      4/8/12/16/24/32/48/64px. Tailwind's default spacing scale
@@ -112,6 +148,22 @@
     --color-card-violet: #c6b0fa;
     --color-card-rose: #f793a4;
     --color-card-slate: #96a1b0;
+    /* Same lighten-for-dark-bg transform as the 4 above, applied to
+       the 12 new hues — Tailwind's own 300-level step for each
+       (badge-* stays fixed-dark, not redefined here, same reasoning
+       as the original 4). */
+    --color-card-red: #fca5a5;
+    --color-card-orange: #fdba74;
+    --color-card-yellow: #fde047;
+    --color-card-lime: #bef264;
+    --color-card-green: #86efac;
+    --color-card-teal: #5eead4;
+    --color-card-cyan: #67e8f9;
+    --color-card-sky: #7dd3fc;
+    --color-card-indigo: #a5b4fc;
+    --color-card-purple: #d8b4fe;
+    --color-card-fuchsia: #f0abfc;
+    --color-card-pink: #f9a8d4;
   }
 }
 
@@ -133,6 +185,18 @@
   --color-card-violet: var(--color-card-violet);
   --color-card-rose: var(--color-card-rose);
   --color-card-slate: var(--color-card-slate);
+  --color-card-red: var(--color-card-red);
+  --color-card-orange: var(--color-card-orange);
+  --color-card-yellow: var(--color-card-yellow);
+  --color-card-lime: var(--color-card-lime);
+  --color-card-green: var(--color-card-green);
+  --color-card-teal: var(--color-card-teal);
+  --color-card-cyan: var(--color-card-cyan);
+  --color-card-sky: var(--color-card-sky);
+  --color-card-indigo: var(--color-card-indigo);
+  --color-card-purple: var(--color-card-purple);
+  --color-card-fuchsia: var(--color-card-fuchsia);
+  --color-card-pink: var(--color-card-pink);
 
   --color-badge-neutral: var(--color-badge-neutral);
   --color-badge-accent: var(--color-badge-accent);
@@ -142,6 +206,18 @@
   --color-badge-violet: var(--color-badge-violet);
   --color-badge-rose: var(--color-badge-rose);
   --color-badge-slate: var(--color-badge-slate);
+  --color-badge-red: var(--color-badge-red);
+  --color-badge-orange: var(--color-badge-orange);
+  --color-badge-yellow: var(--color-badge-yellow);
+  --color-badge-lime: var(--color-badge-lime);
+  --color-badge-green: var(--color-badge-green);
+  --color-badge-teal: var(--color-badge-teal);
+  --color-badge-cyan: var(--color-badge-cyan);
+  --color-badge-sky: var(--color-badge-sky);
+  --color-badge-indigo: var(--color-badge-indigo);
+  --color-badge-purple: var(--color-badge-purple);
+  --color-badge-fuchsia: var(--color-badge-fuchsia);
+  --color-badge-pink: var(--color-badge-pink);
 
   --max-width-reading: var(--max-width-reading);
 

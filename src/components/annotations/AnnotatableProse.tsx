@@ -52,7 +52,7 @@ function ColorSwatchRow({
   onPick: (color: CardColor) => void;
 }) {
   return (
-    <div className="flex items-center gap-1">
+    <div className="flex flex-wrap items-center gap-1">
       {CARD_COLOR_ORDER.map((color) => (
         <button
           key={color}
@@ -466,7 +466,7 @@ function AnnotatableProseActive({
               <p className="font-ui text-sm whitespace-pre-wrap text-primary">
                 {activeAnnotation.body}
               </p>
-              <div className="flex items-center justify-between gap-2">
+              <div className="flex items-start justify-between gap-2">
                 <ColorSwatchRow
                   value={activeAnnotation.color}
                   onPick={(color) =>

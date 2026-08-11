@@ -87,7 +87,19 @@ export type CardColor =
   | "blue"
   | "violet"
   | "rose"
-  | "slate";
+  | "slate"
+  | "red"
+  | "orange"
+  | "yellow"
+  | "lime"
+  | "green"
+  | "teal"
+  | "cyan"
+  | "sky"
+  | "indigo"
+  | "purple"
+  | "fuchsia"
+  | "pink";
 
 export interface ParagraphBlock extends BlockBase {
   type: "paragraph";

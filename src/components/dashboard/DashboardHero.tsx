@@ -37,6 +37,18 @@ const ICON_BG_CLASS: Record<CardColor, string> = {
   violet: "bg-card-violet/10",
   rose: "bg-card-rose/10",
   slate: "bg-card-slate/10",
+  red: "bg-card-red/10",
+  orange: "bg-card-orange/10",
+  yellow: "bg-card-yellow/10",
+  lime: "bg-card-lime/10",
+  green: "bg-card-green/10",
+  teal: "bg-card-teal/10",
+  cyan: "bg-card-cyan/10",
+  sky: "bg-card-sky/10",
+  indigo: "bg-card-indigo/10",
+  purple: "bg-card-purple/10",
+  fuchsia: "bg-card-fuchsia/10",
+  pink: "bg-card-pink/10",
 };
 
 function isCardIconName(value: string | null): value is CardIconName {

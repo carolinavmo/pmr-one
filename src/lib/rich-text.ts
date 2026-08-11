@@ -49,6 +49,18 @@ export const TEXT_COLOR_CLASS: Record<CardColor, string> = {
   violet: "text-card-violet",
   rose: "text-card-rose",
   slate: "text-card-slate",
+  red: "text-card-red",
+  orange: "text-card-orange",
+  yellow: "text-card-yellow",
+  lime: "text-card-lime",
+  green: "text-card-green",
+  teal: "text-card-teal",
+  cyan: "text-card-cyan",
+  sky: "text-card-sky",
+  indigo: "text-card-indigo",
+  purple: "text-card-purple",
+  fuchsia: "text-card-fuchsia",
+  pink: "text-card-pink",
 };
 
 // Highlight/background — a visible tint (not the ~5% a card's own
@@ -63,6 +75,18 @@ export const TEXT_BG_CLASS: Record<CardColor, string> = {
   violet: "bg-card-violet/25",
   rose: "bg-card-rose/25",
   slate: "bg-card-slate/25",
+  red: "bg-card-red/25",
+  orange: "bg-card-orange/25",
+  yellow: "bg-card-yellow/25",
+  lime: "bg-card-lime/25",
+  green: "bg-card-green/25",
+  teal: "bg-card-teal/25",
+  cyan: "bg-card-cyan/25",
+  sky: "bg-card-sky/25",
+  indigo: "bg-card-indigo/25",
+  purple: "bg-card-purple/25",
+  fuchsia: "bg-card-fuchsia/25",
+  pink: "bg-card-pink/25",
 };
 
 export { CARD_COLOR_ORDER as TEXT_COLOR_ORDER, CARD_COLOR_LABEL as TEXT_COLOR_LABEL, CARD_COLOR_SWATCH as TEXT_COLOR_SWATCH };

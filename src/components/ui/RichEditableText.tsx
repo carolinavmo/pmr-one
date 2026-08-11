@@ -487,7 +487,7 @@ export function RichEditableText({
           </button>
           {popover === "color" && (
             <ColorSwatchPicker
-              className="absolute top-8 left-0 z-10 w-44"
+              className="absolute top-8 left-0 z-10 w-48"
               onPick={(color) => {
                 toggleFormat(TEXT_COLOR_CLASS[color]);
                 setPopover(null);
@@ -507,7 +507,7 @@ export function RichEditableText({
           </button>
           {popover === "bg" && (
             <ColorSwatchPicker
-              className="absolute top-8 left-0 z-10 w-44"
+              className="absolute top-8 left-0 z-10 w-48"
               onPick={(color) => {
                 toggleFormat(TEXT_BG_CLASS[color]);
                 setPopover(null);
