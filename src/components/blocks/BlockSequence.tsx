@@ -217,6 +217,13 @@ export function BlockSequence({
   }
 
   const sections = splitIntoSections(blocks);
+  // Numbers only the headed sections, in the same order OnThisPage's
+  // getSectionSummaries does (it skips the headerless leading group
+  // entirely) — so a heading's own "3." always matches its row in the
+  // "On this page" list, without threading a second data source
+  // through here.
+  let headedCount = 0;
+  const sectionNumbers = sections.map((section) => (section.headingBlock ? ++headedCount : null));
 
   return (
     <BlockDndProvider diseaseId={diseaseId}>
@@ -252,6 +259,7 @@ export function BlockSequence({
           <SectionCard
             key={section.headingBlock.id ?? `section-${index}`}
             heading={heading}
+            sectionNumber={sectionNumbers[index]}
             branchColor={branchColor}
             canEdit={canEdit}
           >

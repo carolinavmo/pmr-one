@@ -8,6 +8,13 @@ import type { CardColor } from "@/lib/editorial-blocks";
 interface SectionCardProps {
   heading: ReactNode;
   children: ReactNode;
+  // This section's 1-based position among the page's *headed*
+  // sections — matches the number OnThisPage prints beside the same
+  // heading (getSectionSummaries uses the identical counting rule).
+  // `null` for the headerless leading group, which has no row in
+  // OnThisPage to match. Purely a render-time label, never persisted
+  // or editable — reordering sections changes it for free.
+  sectionNumber: number | null;
   // The disease's resolved branch color (getDiseaseBranchColor) — the
   // exact same color IndexSidebar.tsx tints this disease's immediate
   // parent topic with while its page is open. `null` for a disease
@@ -37,9 +44,9 @@ interface SectionCardProps {
 // only ever renders once a block's own section is editing, so cross-
 // section drag is naturally available exactly when both ends are open
 // and naturally unavailable otherwise, with no extra bookkeeping.
-export function SectionCard({ heading, children, branchColor, canEdit }: SectionCardProps) {
+export function SectionCard({ heading, children, sectionNumber, branchColor, canEdit }: SectionCardProps) {
   const body = (
-    <SectionCardBody heading={heading} branchColor={branchColor} canEdit={canEdit}>
+    <SectionCardBody heading={heading} sectionNumber={sectionNumber} branchColor={branchColor} canEdit={canEdit}>
       {children}
     </SectionCardBody>
   );
@@ -49,21 +56,52 @@ export function SectionCard({ heading, children, branchColor, canEdit }: Section
 function SectionCardBody({
   heading,
   children,
+  sectionNumber,
   branchColor,
   canEdit,
 }: {
   heading: ReactNode;
   children: ReactNode;
+  sectionNumber: number | null;
   branchColor: CardColor | null;
   canEdit: boolean;
 }) {
   const { editing } = useEditMode();
 
+  // Non-editable UI chrome, not part of the heading's own text — sits
+  // beside it (never inside the EditableText h2) so it's never at risk
+  // of getting swept into a save, and never needs the section renumbered
+  // by hand after a reorder. Sized to match the heading's own font size
+  // in each branch below (28px/36px full-size while editing per
+  // SectionHeadingBlockView's own className; 21px/28px inside the
+  // display card's colored title bar, matching that bar's own [&>h2]
+  // override).
+  function numberLabel(sizeClass: string, extraClass = "") {
+    if (sectionNumber == null) return null;
+    return (
+      <span className={`shrink-0 font-heading font-semibold text-primary ${sizeClass} ${extraClass}`} aria-hidden="true">
+        {sectionNumber}.
+      </span>
+    );
+  }
+
   if (editing) {
     return (
       <div className="flex flex-col gap-2">
         <div className="flex items-start justify-between gap-2">
-          <div className="min-w-0 flex-1">{heading}</div>
+          {/* items-start, not items-baseline: `heading` here is
+              BlockControls' full editing chrome (a hover "+" insert row
+              sits above every block, headings included), not a bare h2
+              — flex baseline alignment against that multi-row content
+              lands on its bottom edge, not the heading text. mt-4 on
+              the number and [&_h2]:!mt-0 on the heading (descendant
+              selector — h2 sits two levels deep in BlockControls' own
+              markup here, so [&>h2] can't reach it) both cancel out to
+              the same offset instead, so both start at the same y. */}
+          <div className="flex min-w-0 flex-1 items-start gap-2 [&_h2]:!mt-0">
+            {numberLabel("text-[28px] leading-[36px] tracking-[-0.2px]", "mt-4")}
+            <div className="min-w-0 flex-1">{heading}</div>
+          </div>
           <SectionEditToggle />
         </div>
         {children}
@@ -76,7 +114,8 @@ function SectionCardBody({
   return (
     <div className="mt-6 rounded-xl bg-surface-card first:mt-0">
       <div className={`flex items-center gap-3 rounded-t-xl px-4 py-3.5 ${headerTint}`}>
-        <div className="min-w-0 flex-1 [&>h2]:!mt-0 [&>h2]:!text-[21px] [&>h2]:!leading-[28px]">
+        <div className="flex min-w-0 flex-1 items-baseline gap-2 [&>h2]:!mt-0 [&>h2]:!text-[21px] [&>h2]:!leading-[28px]">
+          {numberLabel("text-[21px] leading-[28px]")}
           {heading}
         </div>
         {canEdit && <SectionEditToggle />}
