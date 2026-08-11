@@ -33,7 +33,19 @@ async function saveUploadedHeroBackground(file: File): Promise<string> {
     console.error(`saveUploadedHeroBackground: failed writing to ${dir}`, err);
     throw new Error("Could not save the uploaded image.");
   }
-  return `/uploads/hero/${filename}`;
+  // Served via the dynamic route (src/app/api/uploads/[...path]/route.ts's
+  // own comment explains why a plain /uploads/... static path doesn't
+  // reliably work for a file written after the server started).
+  return `/api/uploads/hero/${filename}`;
+}
+
+// Maps a stored upload URL back to its real path on disk — handles
+// both the current /api/uploads/... form and the legacy /uploads/...
+// form still sitting on existing rows (both live under the same
+// public/uploads/ directory; only the URL prefix differs).
+function uploadUrlToDiskPath(url: string): string {
+  const relative = url.startsWith("/api/uploads/") ? url.slice("/api".length) : url;
+  return path.join(process.cwd(), "public", relative);
 }
 
 export async function updateDashboardHeroTextAction(
@@ -88,7 +100,7 @@ export async function uploadDashboardHeroBackgroundAction(formData: FormData) {
   // save if it's already gone or was never a local upload (a stale
   // path from some future non-local storage swap, say).
   if (previous) {
-    const previousPath = path.join(process.cwd(), "public", previous);
+    const previousPath = uploadUrlToDiskPath(previous);
     await unlink(previousPath).catch(() => {});
   }
   revalidateShellSurfaces();
@@ -106,7 +118,7 @@ export async function removeDashboardHeroBackgroundAction() {
   );
 
   if (previous) {
-    const previousPath = path.join(process.cwd(), "public", previous);
+    const previousPath = uploadUrlToDiskPath(previous);
     await unlink(previousPath).catch(() => {});
   }
   revalidateShellSurfaces();

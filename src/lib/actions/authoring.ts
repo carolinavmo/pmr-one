@@ -38,7 +38,10 @@ async function saveUploadedIllustration(file: File): Promise<string> {
     console.error(`saveUploadedIllustration: failed writing to ${dir}`, err);
     throw new Error("Could not save the uploaded image.");
   }
-  return `/uploads/illustrations/${filename}`;
+  // Served via the dynamic route (route.ts's own comment explains
+  // why a plain /uploads/... static path doesn't reliably work for a
+  // file written after the server started).
+  return `/api/uploads/illustrations/${filename}`;
 }
 
 export async function requireEditor() {

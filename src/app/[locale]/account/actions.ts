@@ -33,17 +33,27 @@ async function saveUploadedAvatar(file: File): Promise<string> {
     console.error(`saveUploadedAvatar: failed writing to ${dir}`, err);
     throw new Error("Could not save the uploaded image.");
   }
-  return `/uploads/avatars/${filename}`;
+  // Served via the dynamic route (src/app/api/uploads/[...path]/route.ts's
+  // own comment explains why a plain /uploads/... static path doesn't
+  // reliably work for a file written after the server started).
+  return `/api/uploads/avatars/${filename}`;
 }
 
 // Best-effort cleanup of the file an avatar is replacing/removing —
 // never blocks the save if it's already gone, or was never a local
 // upload (an OAuth provider's own photo URL, say, if one's added
 // later) — same defensive pattern dashboard-hero.ts's own upload
-// action already uses.
+// action already uses. Accepts both the current /api/uploads/avatars/
+// form and the legacy /uploads/avatars/ form still on existing rows.
 async function deleteLocalAvatarIfAny(imageUrl: string | null) {
-  if (!imageUrl || !imageUrl.startsWith("/uploads/avatars/")) return;
-  const filePath = path.join(process.cwd(), "public", imageUrl);
+  if (!imageUrl) return;
+  const relative = imageUrl.startsWith("/api/uploads/avatars/")
+    ? imageUrl.slice("/api".length)
+    : imageUrl.startsWith("/uploads/avatars/")
+      ? imageUrl
+      : null;
+  if (!relative) return;
+  const filePath = path.join(process.cwd(), "public", relative);
   await unlink(filePath).catch(() => {});
 }
 
