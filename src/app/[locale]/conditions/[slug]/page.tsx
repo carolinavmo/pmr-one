@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import { auth } from "@/auth";
 import { getDiseaseBySlug } from "@/lib/disease-loader";
 import { recordPageView, getSavedPearlIds, isDiseaseFavorited } from "@/lib/workspace";
+import { getAnnotationsForDisease, type Annotation } from "@/lib/annotations";
 import { estimateReadingMinutes } from "@/lib/reading-time";
 import { getSectionSummaries } from "@/lib/sections";
 import { getBreadcrumbPath, getAdjacentDiseases, getDiseaseBranchColor } from "@/lib/topics";
@@ -14,6 +15,7 @@ import { DiseaseSnapshot, extractSnapshot } from "@/components/disease-page/Dise
 import { DiseaseHeader } from "@/components/disease-page/DiseaseHeader";
 import { WorkspacePanel } from "@/components/disease-page/WorkspacePanel";
 import { EditModeProvider } from "@/components/disease-page/EditMode";
+import { AnnotationProvider } from "@/components/annotations/AnnotationProvider";
 import { categoryForRegions } from "@/lib/disease-icons";
 
 interface DiseasePageProps {
@@ -57,6 +59,7 @@ export default async function DiseasePage({ params }: DiseasePageProps) {
   // rendering stay exactly as they were before this feature existed.
   let workspaceContext: { diseaseSlug: string; savedPearlIds: Set<string> } | undefined;
   let isFavorited = false;
+  let annotations: Annotation[] = [];
   if (session) {
     await recordPageView(session.user.id, disease.id);
     workspaceContext = {
@@ -64,6 +67,7 @@ export default async function DiseasePage({ params }: DiseasePageProps) {
       savedPearlIds: await getSavedPearlIds(session.user.id),
     };
     isFavorited = await isDiseaseFavorited(session.user.id, disease.id);
+    annotations = await getAnnotationsForDisease(session.user.id, disease.id);
   }
 
   const readingMinutes = estimateReadingMinutes(disease.blocks);
@@ -145,24 +149,40 @@ export default async function DiseasePage({ params }: DiseasePageProps) {
   // BlockControls wraps each block in its own div and a heading-scoped
   // negative margin would be trapped inside that wrapper instead of
   // reaching the outer flex gap.
+  const readingColumn = (
+    <div className="flex min-w-0 flex-1 flex-col gap-4 rounded-xl border border-transparent p-3">
+      {/* No single page-wide EditModeProvider anymore (#136) — the
+          header and every body section (SectionCard/EditableSection)
+          each mount their own, so editing toggles per region instead
+          of the whole page turning editable at once. A visitor or
+          non-editor never mounts any Provider at all, anywhere in
+          this tree — useEditMode()'s default (editing: false) stays
+          the only possible state, not just a hidden one. */}
+      {readingContent}
+    </div>
+  );
+
   return (
     <main className="flex items-start px-3 py-6">
-      <div className="flex min-w-0 flex-1 flex-col gap-4 rounded-xl border border-transparent p-3">
-        {/* No single page-wide EditModeProvider anymore (#136) — the
-            header and every body section (SectionCard/EditableSection)
-            each mount their own, so editing toggles per region instead
-            of the whole page turning editable at once. A visitor or
-            non-editor never mounts any Provider at all, anywhere in
-            this tree — useEditMode()'s default (editing: false) stays
-            the only possible state, not just a hidden one. */}
-        {readingContent}
-      </div>
-      {session && (
-        <WorkspacePanel
-          userId={session.user.id}
-          diseaseId={disease.id}
-          diseaseSlug={disease.slug}
-        />
+      {session ? (
+        // One AnnotationProvider wraps both the reading column (where
+        // AnnotatableProse instances relocate/render markers) and the
+        // Workspace drawer (whose management-list card needs the same
+        // locatedIds/allAnnotations) — the drawer can't independently
+        // probe the reading column's DOM itself (some fields, e.g. a
+        // SelfCheckBlock's answer, aren't even mounted until "Show
+        // answer" is clicked), so a shared Context is the only single
+        // source of truth for both. Same composition shape as
+        // `{canEdit ? <EditModeProvider>{headerContent}</EditModeProvider> : headerContent}`
+        // above — a Server Component passing a Server Component as
+        // `children` into a Client Component, already proven in this
+        // file.
+        <AnnotationProvider diseaseId={disease.id} initialAnnotations={annotations}>
+          {readingColumn}
+          <WorkspacePanel userId={session.user.id} diseaseId={disease.id} diseaseSlug={disease.slug} />
+        </AnnotationProvider>
+      ) : (
+        readingColumn
       )}
     </main>
   );

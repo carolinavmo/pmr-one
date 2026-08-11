@@ -18,6 +18,7 @@ import {
   getFavoriteDiseases,
   getAllNotes,
 } from "@/lib/workspace";
+import { getAllAnnotationsForUser } from "@/lib/annotations";
 import { sanitizeRichText } from "@/lib/rich-text";
 import { KnowledgeObjectCard } from "@/components/ui/KnowledgeObjectCard";
 import { LinkButton } from "@/components/ui/LinkButton";
@@ -36,12 +37,13 @@ export default async function Home() {
     session?.user.role === "editor" || session?.user.role === "admin";
 
   if (session) {
-    const [recentlyViewed, savedPearls, favoriteDiseases, notes] =
+    const [recentlyViewed, savedPearls, favoriteDiseases, notes, annotations] =
       await Promise.all([
         getRecentlyViewed(session.user.id, undefined, 6),
         getSavedPearls(session.user.id),
         getFavoriteDiseases(session.user.id),
         getAllNotes(session.user.id),
+        getAllAnnotationsForUser(session.user.id),
       ]);
     const viewedSlugs = new Set(recentlyViewed.map((d) => d.slug));
     const suggestedDiseases = diseases
@@ -61,6 +63,7 @@ export default async function Home() {
         }))}
         favoriteDiseases={favoriteDiseases}
         notes={notes}
+        annotations={annotations}
         suggestedDiseases={suggestedDiseases}
       />
     );

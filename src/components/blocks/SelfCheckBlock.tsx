@@ -36,6 +36,7 @@ export function SelfCheckBlockView({
             placeholder="Click to add the question"
             block={block}
             diseaseSlug={diseaseSlug}
+            fieldKey="question"
           />
         </div>
       </div>
@@ -48,6 +49,7 @@ export function SelfCheckBlockView({
           placeholder="Click to add the answer"
           block={block}
           diseaseSlug={diseaseSlug}
+          fieldKey="answer"
         />
       ) : (
         <button

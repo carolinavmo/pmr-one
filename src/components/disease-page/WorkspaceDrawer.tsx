@@ -3,8 +3,19 @@
 import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
-import { NotebookPen, BookMarked, History, Sparkles, X, LayoutPanelLeft } from "lucide-react";
+import {
+  NotebookPen,
+  BookMarked,
+  History,
+  Sparkles,
+  X,
+  LayoutPanelLeft,
+  Highlighter,
+  AlertTriangle,
+} from "lucide-react";
 import { saveNoteAction } from "@/lib/actions/workspace";
+import { deleteAnnotationAction } from "@/lib/actions/annotations";
+import { useAnnotations } from "@/components/annotations/AnnotationProvider";
 import { Button } from "@/components/ui/Button";
 import type { RecentlyViewedDisease } from "@/lib/workspace";
 
@@ -39,7 +50,14 @@ export function WorkspaceDrawer({
 }: WorkspaceDrawerProps) {
   const t = useTranslations("workspace");
   const tCommon = useTranslations("common");
+  const tAnnotations = useTranslations("annotations");
   const [open, setOpen] = useState(false);
+  const { allAnnotations, locatedIds, removeAnnotation } = useAnnotations();
+
+  async function handleDeleteAnnotation(id: string) {
+    const result = await deleteAnnotationAction(id);
+    if (result.ok) removeAnnotation(id);
+  }
 
   useEffect(() => {
     if (!open) return;
@@ -119,6 +137,55 @@ export function WorkspaceDrawer({
               {t("saveNote")}
             </Button>
           </form>
+        </div>
+
+        <div className="flex flex-col gap-3 rounded-xl border border-border/40 bg-surface-raised p-3.5 shadow-sm">
+          <div className="flex items-center gap-3">
+            <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-accent/10 text-accent">
+              <Highlighter className="size-4" aria-hidden="true" />
+            </span>
+            <div className="flex flex-col">
+              <span className="font-ui text-sm font-medium text-primary">
+                {tAnnotations("highlightsAndNotes")}
+              </span>
+              <span className="font-ui text-xs text-secondary">
+                {tCommon("savedCount", { count: allAnnotations.length })}
+              </span>
+            </div>
+          </div>
+          {allAnnotations.length === 0 ? (
+            <p className="font-ui text-sm text-secondary">{tAnnotations("noHighlightsYet")}</p>
+          ) : (
+            <ul className="flex flex-col gap-3">
+              {allAnnotations.map((annotation) => (
+                <li
+                  key={annotation.id}
+                  className="flex flex-col gap-1 border-t border-border/40 pt-2 first:border-t-0 first:pt-0"
+                >
+                  <blockquote className="line-clamp-2 border-l-2 border-border pl-2 font-ui text-xs text-secondary italic">
+                    &ldquo;{annotation.quoteExact}&rdquo;
+                  </blockquote>
+                  <div className="flex items-start justify-between gap-2">
+                    <p className="min-w-0 flex-1 font-ui text-sm text-primary">{annotation.body}</p>
+                    <button
+                      type="button"
+                      aria-label={tAnnotations("delete")}
+                      onClick={() => handleDeleteAnnotation(annotation.id)}
+                      className="shrink-0 text-secondary hover:text-warning"
+                    >
+                      <X className="size-3.5" aria-hidden="true" />
+                    </button>
+                  </div>
+                  {!locatedIds.has(annotation.id) && (
+                    <span className="inline-flex w-fit items-center gap-1 rounded-full bg-warning/10 px-2 py-0.5 font-ui text-[10px] text-warning">
+                      <AlertTriangle className="size-3" aria-hidden="true" />
+                      {tAnnotations("locationNotFound")}
+                    </span>
+                  )}
+                </li>
+              ))}
+            </ul>
+          )}
         </div>
 
         <div className="flex flex-col gap-3 rounded-xl border border-border/40 bg-surface-raised p-3.5 shadow-sm">

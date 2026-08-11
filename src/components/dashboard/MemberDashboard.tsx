@@ -7,6 +7,7 @@ import {
   BookMarked,
   Sparkles,
   NotebookPen,
+  Highlighter,
   HeartPulse,
   Ruler,
   Gauge,
@@ -20,6 +21,7 @@ import type {
   FavoriteDisease,
   UserNote,
 } from "@/lib/workspace";
+import type { AnnotationWithDisease } from "@/lib/annotations";
 
 interface SavedPearlView {
   id: string;
@@ -35,7 +37,37 @@ interface MemberDashboardProps {
   savedPearls: SavedPearlView[];
   favoriteDiseases: FavoriteDisease[];
   notes: UserNote[];
+  annotations: AnnotationWithDisease[];
   suggestedDiseases: DiseaseCatalogEntry[];
+}
+
+interface AnnotationGroup {
+  diseaseSlug: string;
+  diseaseName: string;
+  items: AnnotationWithDisease[];
+}
+
+// Annotations already arrive ordered by disease name (see
+// getAllAnnotationsForUser's SQL), so a single pass preserves that
+// order while clustering each disease's rows together — same
+// Map-bucketing idiom topics.ts uses for parent/child grouping.
+function groupAnnotationsByDisease(
+  annotations: AnnotationWithDisease[],
+): AnnotationGroup[] {
+  const groups = new Map<string, AnnotationGroup>();
+  for (const annotation of annotations) {
+    const existing = groups.get(annotation.diseaseId);
+    if (existing) {
+      existing.items.push(annotation);
+    } else {
+      groups.set(annotation.diseaseId, {
+        diseaseSlug: annotation.diseaseSlug,
+        diseaseName: annotation.diseaseName,
+        items: [annotation],
+      });
+    }
+  }
+  return Array.from(groups.values());
 }
 
 function greeting(t: (key: string) => string): string {
@@ -104,12 +136,15 @@ export async function MemberDashboard({
   savedPearls,
   favoriteDiseases,
   notes,
+  annotations,
   suggestedDiseases,
 }: MemberDashboardProps) {
   const t = await getTranslations("home");
   const tCommon = await getTranslations("common");
   const tNav = await getTranslations("nav");
+  const tAnnotations = await getTranslations("annotations");
   const firstName = firstNameOf(name);
+  const annotationGroups = groupAnnotationsByDisease(annotations);
 
   const QUICK_ACCESS = [
     {
@@ -307,6 +342,58 @@ export async function MemberDashboard({
                     </li>
                   ))}
                 </ul>
+              )}
+            </section>
+
+            <section
+              id="highlights-notes"
+              className="flex scroll-mt-20 flex-col gap-3 rounded-xl border border-border bg-surface-raised p-5"
+            >
+              <div className="flex items-center gap-3">
+                <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-accent/10 text-accent">
+                  <Highlighter className="size-4" aria-hidden="true" />
+                </span>
+                <div className="flex flex-col">
+                  <span className="font-heading text-base font-semibold text-primary">
+                    {tAnnotations("highlightsAndNotes")}
+                  </span>
+                  <span className="font-ui text-xs text-secondary">
+                    {tCommon("savedCount", { count: annotations.length })}
+                  </span>
+                </div>
+              </div>
+              {annotationGroups.length === 0 ? (
+                <p className="font-ui text-sm text-secondary">
+                  {tAnnotations("noHighlightsYet")}
+                </p>
+              ) : (
+                <div className="flex flex-col divide-y divide-border">
+                  {annotationGroups.map((group) => (
+                    <div key={group.diseaseSlug} className="flex flex-col gap-2 py-2.5">
+                      <Link
+                        href={`/conditions/${group.diseaseSlug}`}
+                        className="font-ui text-sm font-medium text-primary hover:text-accent"
+                      >
+                        {group.diseaseName}
+                      </Link>
+                      <ul className="flex flex-col gap-2">
+                        {group.items.map((annotation) => (
+                          <li
+                            key={annotation.id}
+                            className="flex flex-col gap-0.5 border-l-2 border-border pl-3"
+                          >
+                            <blockquote className="line-clamp-1 font-ui text-xs text-secondary italic">
+                              &ldquo;{annotation.quoteExact}&rdquo;
+                            </blockquote>
+                            <p className="line-clamp-2 font-ui text-sm text-primary">
+                              {annotation.body}
+                            </p>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  ))}
+                </div>
               )}
             </section>
 

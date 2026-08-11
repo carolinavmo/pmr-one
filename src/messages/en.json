@@ -232,6 +232,17 @@
     "deleteTaskConfirm": "Delete",
     "deleteTaskDeleting": "Deleting…"
   },
+  "annotations": {
+    "addNote": "Add note",
+    "notePlaceholder": "Add a private note…",
+    "save": "Save",
+    "cancel": "Cancel",
+    "edit": "Edit",
+    "delete": "Delete",
+    "highlightsAndNotes": "Highlights & Notes",
+    "noHighlightsYet": "Phrases you highlight will show up here.",
+    "locationNotFound": "Location not found — the surrounding text may have changed."
+  },
   "notFound": {
     "status": "404",
     "heading": "This page doesn't exist — or isn't published yet.",

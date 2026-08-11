@@ -106,6 +106,7 @@ export function IconTextBlockView({
                 placeholder=""
                 block={block}
                 diseaseSlug={diseaseSlug}
+                fieldKey="title"
               />
             )}
             <RichEditableText
@@ -118,6 +119,7 @@ export function IconTextBlockView({
               placeholder=""
               block={block}
               diseaseSlug={diseaseSlug}
+              fieldKey="label"
             />
             <RichEditableText
               as="span"
@@ -129,6 +131,7 @@ export function IconTextBlockView({
               placeholder=""
               block={block}
               diseaseSlug={diseaseSlug}
+              fieldKey="description"
             />
           </div>
         </div>
@@ -148,6 +151,7 @@ export function IconTextBlockView({
             placeholder=""
             block={block}
             diseaseSlug={diseaseSlug}
+            fieldKey="title"
           />
         )}
         <div className="flex items-center gap-3">
@@ -165,6 +169,7 @@ export function IconTextBlockView({
               placeholder=""
               block={block}
               diseaseSlug={diseaseSlug}
+              fieldKey="label"
             />
             <RichEditableText
               as="span"
@@ -176,6 +181,7 @@ export function IconTextBlockView({
               placeholder=""
               block={block}
               diseaseSlug={diseaseSlug}
+              fieldKey="description"
             />
           </div>
         </div>

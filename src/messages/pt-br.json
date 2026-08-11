@@ -232,6 +232,17 @@
     "deleteTaskConfirm": "Excluir",
     "deleteTaskDeleting": "Excluindo…"
   },
+  "annotations": {
+    "addNote": "Adicionar nota",
+    "notePlaceholder": "Adicione uma nota privada…",
+    "save": "Salvar",
+    "cancel": "Cancelar",
+    "edit": "Editar",
+    "delete": "Excluir",
+    "highlightsAndNotes": "Destaques e Notas",
+    "noHighlightsYet": "As frases que você destacar vão aparecer aqui.",
+    "locationNotFound": "Localização não encontrada — o texto ao redor pode ter mudado."
+  },
   "notFound": {
     "status": "404",
     "heading": "Esta página não existe — ou ainda não foi publicada.",

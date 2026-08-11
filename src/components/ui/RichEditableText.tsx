@@ -22,6 +22,7 @@ import {
 } from "lucide-react";
 import { useEditMode } from "@/components/disease-page/EditMode";
 import { ColorSwatchPicker } from "@/components/ui/ColorSwatchPicker";
+import { AnnotatableProse } from "@/components/annotations/AnnotatableProse";
 import type { EditorialBlock, HorizontalAlign } from "@/lib/editorial-blocks";
 import { updateBlockAlignmentAction } from "@/lib/actions/authoring";
 import {
@@ -49,8 +50,16 @@ interface RichEditableTextProps {
   // caller (Paragraph/KeyPoint/ClinicalPearl/SelfCheck) has both
   // readily available already; a future caller without a real block
   // (e.g. a static preview) just omits them and gets everything else.
+  // `block` also gates member annotation support (see the !editModeOn
+  // branch below) — a caller with no block simply isn't annotatable.
   block?: EditorialBlock;
   diseaseSlug?: string;
+  // Disambiguates the handful of block types that render more than one
+  // RichEditableText off the same block.id (self_check's question/
+  // answer, overview's paragraph/keyTakeaway, icon_text's title/label/
+  // description) — every other caller can omit it, defaulting to
+  // "content". Only matters for annotation anchoring; unused otherwise.
+  fieldKey?: string;
 }
 
 // Raw <ul>/<ol>/<blockquote> tags (inserted via execCommand, so they
@@ -132,6 +141,7 @@ export function RichEditableText({
   placeholder = "Click to add text",
   block,
   diseaseSlug,
+  fieldKey,
 }: RichEditableTextProps) {
   const { editing: editModeOn } = useEditMode();
   const [isEditing, setIsEditing] = useState(false);
@@ -156,12 +166,30 @@ export function RichEditableText({
     // react-hooks/static-components ("component created during
     // render"), even though this only ever picks between two plain
     // element-name strings, never a real component.
-    return clean
-      ? createElement(resolveTag(Tag, clean), {
-          className: `${className} ${PROSE_CONTENT_CLASS}`,
-          dangerouslySetInnerHTML: { __html: clean },
-        })
-      : createElement(resolveTag(Tag, clean), { className }, placeholder);
+    if (!clean) {
+      return createElement(resolveTag(Tag, clean), { className }, placeholder);
+    }
+    // A member's private highlights/notes render through
+    // AnnotatableProse, which itself renders the exact same plain
+    // output below when no AnnotationProvider is mounted (a visitor,
+    // or no session) — so this only changes anything for a signed-in
+    // member. `block` gates it: the one documented caller without a
+    // block (a static preview) falls through unchanged.
+    if (block) {
+      return (
+        <AnnotatableProse
+          tag={resolveTag(Tag, clean)}
+          html={clean}
+          className={`${className} ${PROSE_CONTENT_CLASS}`}
+          block={block}
+          fieldKey={fieldKey ?? "content"}
+        />
+      );
+    }
+    return createElement(resolveTag(Tag, clean), {
+      className: `${className} ${PROSE_CONTENT_CLASS}`,
+      dangerouslySetInnerHTML: { __html: clean },
+    });
   }
 
   if (!isEditing) {

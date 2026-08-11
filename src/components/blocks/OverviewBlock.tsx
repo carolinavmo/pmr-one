@@ -242,6 +242,7 @@ export function OverviewBlockView({
           placeholder="Overview paragraph…"
           block={block}
           diseaseSlug={diseaseSlug}
+          fieldKey="paragraph"
         />
 
         <div className="rounded-lg border border-accent/30 bg-accent/5 p-3">
@@ -259,6 +260,7 @@ export function OverviewBlockView({
             placeholder="Key takeaway…"
             block={block}
             diseaseSlug={diseaseSlug}
+            fieldKey="keyTakeaway"
           />
         </div>
       </div>
