@@ -67,6 +67,7 @@ const MANAGEABLE_TYPES = new Set([
   "rehabilitation_progression",
   "self_check",
   "tabs",
+  "media_tabs",
   "rich_table",
   "evidence_summary",
   "stat_card",

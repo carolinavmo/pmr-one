@@ -55,6 +55,7 @@ export function SimpleImageBlockView({
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [imageUrl, setImageUrl] = useState(block.imageUrl);
   const [uploading, setUploading] = useState(false);
+  const [uploadError, setUploadError] = useState<string | null>(null);
   const [imageWidth, setImageWidth] = useState<ImageWidth>(block.imageWidth ?? "full");
   const [widthOpen, setWidthOpen] = useState(false);
   const caption = block.caption;
@@ -62,11 +63,17 @@ export function SimpleImageBlockView({
 
   const handleFile = async (file: File) => {
     setUploading(true);
+    setUploadError(null);
     const formData = new FormData();
     formData.set("file", file);
-    await uploadSimpleImageAction(block.id, formData);
-    setImageUrl(URL.createObjectURL(file));
-    setUploading(false);
+    try {
+      await uploadSimpleImageAction(block.id, formData);
+      setImageUrl(URL.createObjectURL(file));
+    } catch {
+      setUploadError("Upload failed. Try again.");
+    } finally {
+      setUploading(false);
+    }
   };
 
   if (!editing) {
@@ -163,6 +170,7 @@ export function SimpleImageBlockView({
           >
             <ImagePlus className="size-6" aria-hidden="true" />
             <span className="font-ui text-sm">{uploading ? "Uploading…" : "Upload image"}</span>
+            {uploadError && <span className="font-ui text-xs text-warning">{uploadError}</span>}
           </button>
         )}
         <input

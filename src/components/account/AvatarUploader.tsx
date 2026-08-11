@@ -20,6 +20,7 @@ export function AvatarUploader({
 }) {
   const [imageUrl, setImageUrl] = useState(initialImageUrl);
   const [uploading, setUploading] = useState(false);
+  const [uploadError, setUploadError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   async function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
@@ -27,17 +28,29 @@ export function AvatarUploader({
     e.target.value = "";
     if (!file) return;
     setUploading(true);
+    setUploadError(null);
     const previewUrl = URL.createObjectURL(file);
     setImageUrl(previewUrl);
     const formData = new FormData();
     formData.set("file", file);
-    await updateAvatarAction(formData);
-    setUploading(false);
+    try {
+      await updateAvatarAction(formData);
+    } catch {
+      setImageUrl(initialImageUrl);
+      setUploadError("Upload failed. Try again.");
+    } finally {
+      setUploading(false);
+    }
   }
 
   async function handleRemove() {
     setImageUrl(null);
-    await removeAvatarAction();
+    try {
+      await removeAvatarAction();
+    } catch {
+      setImageUrl(initialImageUrl);
+      setUploadError("Couldn't remove photo. Try again.");
+    }
   }
 
   return (
@@ -93,6 +106,7 @@ export function AvatarUploader({
           </>
         )}
       </div>
+      {uploadError && <span className="font-ui text-xs text-warning">{uploadError}</span>}
     </div>
   );
 }

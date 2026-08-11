@@ -93,6 +93,7 @@ export function OverviewBlockView({
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [imageUrl, setImageUrl] = useState(block.imageUrl);
   const [uploading, setUploading] = useState(false);
+  const [uploadError, setUploadError] = useState<string | null>(null);
   const [settingsOpen, setSettingsOpen] = useState(false);
 
   const imageWidth = block.imageWidth ?? "1/3";
@@ -102,11 +103,17 @@ export function OverviewBlockView({
 
   const handleFile = async (file: File) => {
     setUploading(true);
+    setUploadError(null);
     const formData = new FormData();
     formData.set("file", file);
-    await uploadOverviewImageAction(block.id, formData);
-    setImageUrl(URL.createObjectURL(file));
-    setUploading(false);
+    try {
+      await uploadOverviewImageAction(block.id, formData);
+      setImageUrl(URL.createObjectURL(file));
+    } catch {
+      setUploadError("Upload failed. Try again.");
+    } finally {
+      setUploading(false);
+    }
   };
 
   // A reader with no image gets a clean single-column card (no "No
@@ -153,6 +160,7 @@ export function OverviewBlockView({
             >
               <ImagePlus className="size-6" aria-hidden="true" />
               <span className="font-ui text-xs">{uploading ? "Uploading…" : "Upload image"}</span>
+              {uploadError && <span className="font-ui text-xs text-warning">{uploadError}</span>}
             </button>
           )}
           {editing && (

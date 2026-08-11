@@ -95,6 +95,7 @@ function PhotoCard({
 }) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [uploading, setUploading] = useState(false);
+  const [uploadError, setUploadError] = useState<string | null>(null);
   const [title, setTitle] = useState(item.title);
   const [description, setDescription] = useState(item.description);
   const [metrics, setMetrics] = useState(item.metrics);
@@ -117,11 +118,17 @@ function PhotoCard({
 
   const handleFile = async (file: File) => {
     setUploading(true);
+    setUploadError(null);
     const formData = new FormData();
     formData.set("file", file);
-    await uploadPhotoCardGalleryIllustrationAction(blockId, item.id, formData);
-    onItemChange({ ...item, illustrationUrl: URL.createObjectURL(file) });
-    setUploading(false);
+    try {
+      await uploadPhotoCardGalleryIllustrationAction(blockId, item.id, formData);
+      onItemChange({ ...item, illustrationUrl: URL.createObjectURL(file) });
+    } catch {
+      setUploadError("Upload failed. Try again.");
+    } finally {
+      setUploading(false);
+    }
   };
 
   if (!editing && !item.title && !item.description) return null;
@@ -156,6 +163,7 @@ function PhotoCard({
           >
             <ImagePlus className="size-6" aria-hidden="true" />
             <span className="font-ui text-xs">{uploading ? "Uploading…" : "Upload image"}</span>
+            {uploadError && <span className="font-ui text-xs text-warning">{uploadError}</span>}
           </button>
         ) : (
           <div className="flex size-full items-center justify-center font-ui text-xs text-secondary">

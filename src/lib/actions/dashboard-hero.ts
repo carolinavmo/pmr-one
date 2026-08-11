@@ -26,8 +26,13 @@ async function saveUploadedHeroBackground(file: File): Promise<string> {
   const ext = path.extname(file.name) || ".png";
   const filename = `${randomUUID()}${ext}`;
   const dir = path.join(process.cwd(), "public", "uploads", "hero");
-  await mkdir(dir, { recursive: true });
-  await writeFile(path.join(dir, filename), bytes);
+  try {
+    await mkdir(dir, { recursive: true });
+    await writeFile(path.join(dir, filename), bytes);
+  } catch (err) {
+    console.error(`saveUploadedHeroBackground: failed writing to ${dir}`, err);
+    throw new Error("Could not save the uploaded image.");
+  }
   return `/uploads/hero/${filename}`;
 }
 

@@ -52,6 +52,7 @@ export function DashboardHeroSection({ hero }: { hero: DashboardHero }) {
   const { editing } = useEditMode();
   const [cards, setCards] = useState(hero.cards);
   const [uploading, setUploading] = useState(false);
+  const [uploadError, setUploadError] = useState<string | null>(null);
   const [scrimEnabled, setScrimEnabled] = useState(hero.backgroundScrim);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -71,10 +72,16 @@ export function DashboardHeroSection({ hero }: { hero: DashboardHero }) {
     e.target.value = "";
     if (!file) return;
     setUploading(true);
+    setUploadError(null);
     const formData = new FormData();
     formData.set("file", file);
-    await uploadDashboardHeroBackgroundAction(formData);
-    setUploading(false);
+    try {
+      await uploadDashboardHeroBackgroundAction(formData);
+    } catch {
+      setUploadError("Upload failed. Try again.");
+    } finally {
+      setUploading(false);
+    }
   };
 
   return (
@@ -186,6 +193,11 @@ export function DashboardHeroSection({ hero }: { hero: DashboardHero }) {
                   ? "Replace"
                   : "Upload image"}
             </button>
+            {uploadError && (
+              <span className="flex items-center rounded-full bg-surface px-2 font-ui text-xs text-warning shadow-sm">
+                {uploadError}
+              </span>
+            )}
             {hero.backgroundImageUrl && (
               <button
                 type="button"

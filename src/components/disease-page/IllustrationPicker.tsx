@@ -17,7 +17,7 @@ export function IllustrationPicker({
   searchPlaceholder = "Search existing illustrations…",
 }: {
   onSelectExisting: (illustrationId: string) => void;
-  onUploadNew: (formData: FormData) => void;
+  onUploadNew: (formData: FormData) => Promise<void>;
   onBack: () => void;
   searchPlaceholder?: string;
 }) {
@@ -30,6 +30,8 @@ export function IllustrationPicker({
   const [title, setTitle] = useState("");
   const [altText, setAltText] = useState("");
   const [file, setFile] = useState<File | null>(null);
+  const [uploading, setUploading] = useState(false);
+  const [uploadError, setUploadError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -173,18 +175,26 @@ export function IllustrationPicker({
           </label>
           <button
             type="button"
-            disabled={!file || !title.trim() || !altText.trim()}
-            onClick={() => {
+            disabled={!file || !title.trim() || !altText.trim() || uploading}
+            onClick={async () => {
               const formData = new FormData();
               formData.set("file", file as File);
               formData.set("title", title.trim());
               formData.set("altText", altText.trim());
-              onUploadNew(formData);
+              setUploading(true);
+              setUploadError(null);
+              try {
+                await onUploadNew(formData);
+              } catch {
+                setUploadError("Upload failed. Try again.");
+                setUploading(false);
+              }
             }}
             className="rounded bg-accent px-3 py-1.5 font-ui text-sm text-white hover:bg-accent-hover disabled:cursor-not-allowed disabled:opacity-50"
           >
-            Upload
+            {uploading ? "Uploading…" : "Upload"}
           </button>
+          {uploadError && <span className="font-ui text-xs text-warning">{uploadError}</span>}
         </div>
       )}
     </div>

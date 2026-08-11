@@ -28,8 +28,16 @@ async function saveUploadedIllustration(file: File): Promise<string> {
   const ext = path.extname(file.name) || ".png";
   const filename = `${randomUUID()}${ext}`;
   const dir = path.join(process.cwd(), "public", "uploads", "illustrations");
-  await mkdir(dir, { recursive: true });
-  await writeFile(path.join(dir, filename), bytes);
+  try {
+    await mkdir(dir, { recursive: true });
+    await writeFile(path.join(dir, filename), bytes);
+  } catch (err) {
+    // Surfaced to `railway logs` — the client only ever sees a generic
+    // "Upload failed," so this is the one place the real OS error
+    // (permissions, missing volume mount, disk full) is visible at all.
+    console.error(`saveUploadedIllustration: failed writing to ${dir}`, err);
+    throw new Error("Could not save the uploaded image.");
+  }
   return `/uploads/illustrations/${filename}`;
 }
 
@@ -216,6 +224,7 @@ type OwnsContentBlockType =
   | "comparison_table"
   | "self_check"
   | "tabs"
+  | "media_tabs"
   | "rich_table"
   | "evidence_summary"
   | "stat_card"
@@ -247,6 +256,8 @@ function emptyContentFor(blockType: OwnsContentBlockType) {
       return { question: "", answer: "" };
     case "tabs":
       return { tabs: [{ label: "Phase 1", columns: [{ title: "Goals", items: [""] }] }] };
+    case "media_tabs":
+      return { tabs: [{ label: "Tab 1", body: "" }] };
     case "rich_table":
       return {
         title: "",
@@ -431,6 +442,86 @@ export async function updateTabsAction(
   await pool.query(
     `UPDATE editorial_block SET content_config = jsonb_set(content_config, ARRAY['tabs'], $2::jsonb) WHERE id = $1`,
     [blockId, JSON.stringify(tabs)]
+  );
+  revalidateDiseaseSurfaces();
+}
+
+// Same "sanitize the rich fields, commit the whole array" shape as
+// updateTimelineStepsAction — each tab's `body` is a RichEditableText
+// field (the others, icon/label/sublabel, are plain strings), so it
+// goes through the same server-side sanitizer as every other
+// RichEditableText-backed field before storage.
+export async function updateMediaTabsAction(
+  blockId: string,
+  tabs: {
+    icon?: string;
+    label: string;
+    sublabel?: string;
+    imageUrl?: string;
+    imageWidth?: "1/4" | "1/3" | "1/2" | "2/3" | "3/4";
+    body: string;
+  }[]
+) {
+  await requireEditor();
+  const clean = tabs.map((t) => ({ ...t, body: sanitizeRichText(t.body) }));
+  await pool.query(
+    `UPDATE editorial_block SET content_config = jsonb_set(content_config, ARRAY['tabs'], $2::jsonb) WHERE id = $1`,
+    [blockId, JSON.stringify(clean)]
+  );
+  revalidateDiseaseSurfaces();
+}
+
+// Writes into tabs[tabIndex].imageUrl specifically — jsonb_set accepts
+// a numeric-string path segment to address an array element, same as
+// every other per-index jsonb write in this file. Returns the real
+// assetUrl (not left for the caller to fabricate) — every other
+// mutation on this block type commits the *whole* tabs array
+// (updateMediaTabsAction), so the caller's local state must hold the
+// real URL, never a client-only blob: preview, or the next unrelated
+// whole-array commit (a label edit, a reorder) would persist that
+// blob: URL — valid only in this one tab, for this one session — as
+// if it were the saved image.
+export async function uploadMediaTabsImageAction(
+  blockId: string,
+  tabIndex: number,
+  formData: FormData
+): Promise<string> {
+  await requireEditor();
+  const file = formData.get("file") as File | null;
+  if (!file) throw new Error("No file provided.");
+  const assetUrl = await saveUploadedIllustration(file);
+  await pool.query(
+    `UPDATE editorial_block
+     SET content_config = jsonb_set(content_config, ARRAY['tabs', $2::text, 'imageUrl'], to_jsonb($3::text))
+     WHERE id = $1`,
+    [blockId, String(tabIndex), assetUrl]
+  );
+  revalidateDiseaseSurfaces();
+  return assetUrl;
+}
+
+export async function removeMediaTabsImageAction(blockId: string, tabIndex: number) {
+  await requireEditor();
+  await pool.query(
+    `UPDATE editorial_block
+     SET content_config = content_config #- ARRAY['tabs', $2::text, 'imageUrl']
+     WHERE id = $1`,
+    [blockId, String(tabIndex)]
+  );
+  revalidateDiseaseSurfaces();
+}
+
+export async function setMediaTabsImageWidthAction(
+  blockId: string,
+  tabIndex: number,
+  width: "1/4" | "1/3" | "1/2" | "2/3" | "3/4"
+) {
+  await requireEditor();
+  await pool.query(
+    `UPDATE editorial_block
+     SET content_config = jsonb_set(content_config, ARRAY['tabs', $2::text, 'imageWidth'], to_jsonb($3::text))
+     WHERE id = $1`,
+    [blockId, String(tabIndex), width]
   );
   revalidateDiseaseSurfaces();
 }

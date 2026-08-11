@@ -160,8 +160,8 @@ export function MedicalIllustrationBlockView({
             await replaceIllustrationBlockAction(block.id, diseaseId, illustrationId);
           }}
           onUploadNew={async (formData) => {
-            setPickerOpen(false);
             await uploadReplacementIllustrationAction(block.id, diseaseId, formData);
+            setPickerOpen(false);
           }}
         />
       </div>

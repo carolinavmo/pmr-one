@@ -99,6 +99,16 @@ const SAMPLE_CONTENT: SampleContentConfig = {
       },
     ],
   },
+  media_tabs: {
+    tabs: [
+      {
+        label: "Anterior view",
+        sublabel: "Weight-bearing",
+        imageUrl: "https://example.com/image.png",
+        body: "Note the medial arch height compared to the contralateral side.",
+      },
+    ],
+  },
   rich_table: {
     title: "Rehab phases",
     badgeColumnTitle: "Phase",

@@ -17,6 +17,7 @@ import { LearningObjectiveBlockView } from "./LearningObjectiveBlock";
 import { TimelineBlockView } from "./TimelineBlock";
 import { InfographicBlockView } from "./InfographicBlock";
 import { TabsBlockView } from "./TabsBlock";
+import { MediaTabsBlockView } from "./MediaTabsBlock";
 import { RichTableBlockView } from "./RichTableBlock";
 import { EvidenceSummaryBlockView } from "./EvidenceSummaryBlock";
 import { StatCardBlockView } from "./StatCardBlock";
@@ -97,6 +98,8 @@ export function BlockRenderer({
       return <InfographicBlockView block={block} diseaseSlug={diseaseSlug} />;
     case "tabs":
       return <TabsBlockView block={block} />;
+    case "media_tabs":
+      return <MediaTabsBlockView block={block} diseaseSlug={diseaseSlug} />;
     case "rich_table":
       return <RichTableBlockView block={block} diseaseSlug={diseaseSlug} />;
     case "evidence_summary":

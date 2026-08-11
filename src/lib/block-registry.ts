@@ -98,6 +98,7 @@ export const BLOCK_REGISTRY: BlockRegistryEntry[] = [
   // Visual
   { type: "overview", label: "Overview", group: "visual", icon: LayoutTemplate, kind: "owns-content", status: "available", homeSections: /overview/i },
   { type: "simple_image", label: "Image", group: "visual", icon: ImagePlus, kind: "owns-content", status: "available" },
+  { type: "media_tabs", label: "Tabs with Images", group: "visual", icon: PanelsTopLeft, kind: "owns-content", status: "available" },
   { type: "medical_illustration", label: "Medical Illustration", group: "visual", icon: ImageIcon, kind: "references-object", status: "available" },
   { type: "comparison_table", label: "Comparison Table", group: "visual", icon: Table2, kind: "owns-content", status: "available" },
   { type: "rich_table", label: "Rich Table", group: "visual", icon: TableProperties, kind: "owns-content", status: "available" },

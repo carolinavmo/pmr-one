@@ -26,8 +26,13 @@ async function saveUploadedAvatar(file: File): Promise<string> {
   const ext = path.extname(file.name) || ".png";
   const filename = `${randomUUID()}${ext}`;
   const dir = path.join(process.cwd(), "public", "uploads", "avatars");
-  await mkdir(dir, { recursive: true });
-  await writeFile(path.join(dir, filename), bytes);
+  try {
+    await mkdir(dir, { recursive: true });
+    await writeFile(path.join(dir, filename), bytes);
+  } catch (err) {
+    console.error(`saveUploadedAvatar: failed writing to ${dir}`, err);
+    throw new Error("Could not save the uploaded image.");
+  }
   return `/uploads/avatars/${filename}`;
 }
 

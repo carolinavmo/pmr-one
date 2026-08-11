@@ -381,6 +381,34 @@ export interface TabsBlock extends BlockBase {
   }[];
 }
 
+// The generic tabs case TabsBlock deliberately isn't — each tab is one
+// optional image plus a free rich text body, the same "image column +
+// prose column" shape OverviewBlock already uses, just repeated per
+// tab instead of fixed to a single one. Same tab-switcher chrome
+// (icon/label/sublabel, add/remove/reorder tabs) as TabsBlock, but the
+// content underneath is prose+media, not structured checklists — for
+// when an author wants to write real paragraphs and drop in pictures
+// per tab (a rehab phase's own explanation, a differential's own
+// writeup), not a phase-by-phase checklist comparison.
+export interface MediaTabsBlock extends BlockBase {
+  type: "media_tabs";
+  id: string;
+  tabs: {
+    icon?: string;
+    label: string;
+    sublabel?: string;
+    imageUrl?: string;
+    // Same fixed fraction set OverviewBlock's own imageWidth uses —
+    // the image column's share of the grid vs. the text column's.
+    // Only meaningful while both imageUrl and body are present; either
+    // one being absent already collapses this tab to a single column
+    // (see MediaTabsBlockView), so a stale width from a since-removed
+    // image/body is simply inert until the other one comes back.
+    imageWidth?: "1/4" | "1/3" | "1/2" | "2/3" | "3/4";
+    body: string;
+  }[];
+}
+
 // A column's declared cell type governs every cell beneath it — the
 // same "typed by position" idea Comparison Table's string[][] already
 // uses, just with three shapes instead of one. Cell values are stored
@@ -708,6 +736,7 @@ export type EditorialBlock =
   | TimelineBlock
   | InfographicBlock
   | TabsBlock
+  | MediaTabsBlock
   | RichTableBlock
   | EvidenceSummaryBlock
   | StatCardBlock

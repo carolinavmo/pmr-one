@@ -232,6 +232,20 @@ async function resolveBlock(diseaseId: string, row: BlockRow): Promise<Editorial
           }[]) ?? [],
       };
 
+    case "media_tabs":
+      return {
+        type: "media_tabs",
+        id: row.id,
+        tabs:
+          (cc.tabs as {
+            icon?: string;
+            label: string;
+            sublabel?: string;
+            imageUrl?: string;
+            body: string;
+          }[]) ?? [],
+      };
+
     case "rich_table":
       return {
         type: "rich_table",

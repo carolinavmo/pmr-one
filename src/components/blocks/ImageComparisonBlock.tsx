@@ -154,14 +154,21 @@ function ImageSideEdit({
 }) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [uploading, setUploading] = useState(false);
+  const [uploadError, setUploadError] = useState<string | null>(null);
 
   const handleFile = async (file: File) => {
     setUploading(true);
+    setUploadError(null);
     const formData = new FormData();
     formData.set("file", file);
-    await uploadImageComparisonSideAction(blockId, side, formData);
-    onUploaded(URL.createObjectURL(file));
-    setUploading(false);
+    try {
+      await uploadImageComparisonSideAction(blockId, side, formData);
+      onUploaded(URL.createObjectURL(file));
+    } catch {
+      setUploadError("Upload failed. Try again.");
+    } finally {
+      setUploading(false);
+    }
   };
 
   return (
@@ -192,6 +199,7 @@ function ImageSideEdit({
           >
             <ImagePlus className="size-6" aria-hidden="true" />
             <span className="font-ui text-xs">{uploading ? "Uploading…" : "Upload image"}</span>
+            {uploadError && <span className="font-ui text-xs text-warning">{uploadError}</span>}
           </button>
         )}
         <input

@@ -99,6 +99,7 @@ export function BlockPicker({
           | "comparison_table"
           | "self_check"
           | "tabs"
+          | "media_tabs"
           | "rich_table"
           | "evidence_summary"
           | "stat_card"
@@ -205,8 +206,8 @@ export function BlockPicker({
           await insertMedicalIllustrationBlockAction(diseaseId, afterPosition, illustrationId);
         }}
         onUploadNew={async (formData) => {
-          onClose();
           await uploadIllustrationAction(diseaseId, afterPosition, formData);
+          onClose();
         }}
       />
     );

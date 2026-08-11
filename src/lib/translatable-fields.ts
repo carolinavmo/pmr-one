@@ -89,6 +89,8 @@ export const TRANSLATABLE_FIELDS: Record<EditorialBlock["type"], TranslatableFie
     ],
   },
 
+  media_tabs: { fields: ["tabs[].label", "tabs[].sublabel", "tabs[].body"] },
+
   // RichTableCellValue is a union (string | {icon,label}[] | {label,value}),
   // and a column's declared type governs every cell beneath it — rather
   // than branch on column type here, three paths are declared and each
