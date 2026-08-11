@@ -17,6 +17,7 @@ import { createDiseaseAction } from "@/lib/actions/diseases";
 import { ColorSwatchPicker } from "@/components/ui/ColorSwatchPicker";
 import { IconSwatchPicker } from "@/components/ui/IconSwatchPicker";
 import { useTopicDnd } from "./TopicManager";
+import type { TopicDisease } from "@/lib/topics";
 
 type DropZone = "before" | "after" | "into" | null;
 
@@ -38,7 +39,7 @@ interface TopicTreeEditorProps {
 // see the real saved state, not a rendering convenience.
 export function TopicTreeEditor({ node, depth, parentId, index }: TopicTreeEditorProps) {
   const router = useRouter();
-  const { draggingId, startDrag, endDrag, requestMove } = useTopicDnd();
+  const { draggingId, draggingKind, startDrag, endDrag, requestMove } = useTopicDnd();
   const [open, setOpen] = useState(depth === 0);
   const [renaming, setRenaming] = useState(false);
   const [name, setName] = useState(node.name);
@@ -57,7 +58,7 @@ export function TopicTreeEditor({ node, depth, parentId, index }: TopicTreeEdito
 
   const hasContent = node.children.length > 0 || node.diseases.length > 0;
   const Icon = node.icon ? topicIcons[node.icon] : null;
-  const isBeingDragged = draggingId === node.id;
+  const isBeingDragged = draggingKind === "topic" && draggingId === node.id;
   const isSeparator = node.kind === "separator";
   const indent = 8 + depth * 16;
 
@@ -115,7 +116,7 @@ export function TopicTreeEditor({ node, depth, parentId, index }: TopicTreeEdito
   }
 
   function handleDragOver(e: DragEvent<HTMLDivElement>) {
-    if (!draggingId || draggingId === node.id) return;
+    if (!draggingId || draggingKind !== "topic" || draggingId === node.id) return;
     e.preventDefault();
     const rect = rowRef.current?.getBoundingClientRect();
     if (!rect) return;
@@ -134,7 +135,7 @@ export function TopicTreeEditor({ node, depth, parentId, index }: TopicTreeEdito
     e.preventDefault();
     const zone = dropZone;
     setDropZone(null);
-    if (!zone || !draggingId || draggingId === node.id) return;
+    if (!zone || !draggingId || draggingKind !== "topic" || draggingId === node.id) return;
     if (zone === "before") await requestMove(parentId, index);
     else if (zone === "after") await requestMove(parentId, index + 1);
     else await requestMove(node.id, node.children.length);
@@ -159,7 +160,7 @@ export function TopicTreeEditor({ node, depth, parentId, index }: TopicTreeEdito
           onDragStart={(e) => {
             e.dataTransfer.effectAllowed = "move";
             e.dataTransfer.setData("text/plain", node.id);
-            startDrag(node.id);
+            startDrag(node.id, "topic");
           }}
           onDragEnd={endDrag}
           className="flex size-4 shrink-0 cursor-grab items-center justify-center text-secondary/50 active:cursor-grabbing"
@@ -391,19 +392,91 @@ export function TopicTreeEditor({ node, depth, parentId, index }: TopicTreeEdito
           {node.children.map((child, childIndex) => (
             <TopicTreeEditor key={child.id} node={child} depth={depth + 1} parentId={node.id} index={childIndex} />
           ))}
-          {node.diseases.map((disease) => (
-            <Link
-              key={disease.slug}
-              href={`/conditions/${disease.slug}`}
-              className="flex items-center gap-1.5 py-1 font-ui text-xs text-secondary hover:text-accent hover:underline"
-              style={{ paddingLeft: `${indent + 38}px` }}
-            >
-              <span className="size-1 shrink-0 rounded-full bg-current" aria-hidden="true" />
-              <span className="truncate">{disease.canonicalName}</span>
-            </Link>
+          {node.diseases.map((disease, diseaseIndex) => (
+            <DiseaseRow
+              key={disease.id}
+              disease={disease}
+              topicId={node.id}
+              index={diseaseIndex}
+              indent={indent}
+            />
           ))}
         </div>
       )}
+    </div>
+  );
+}
+
+interface DiseaseRowProps {
+  disease: TopicDisease;
+  // This disease's own topic id and its index among its rendered
+  // sibling diseases — mirrors TopicTreeEditorProps's parentId/index
+  // pair — so a sibling dropped "before"/"after" this one knows
+  // exactly where to insert within moveDiseaseAction's sibling list.
+  topicId: string;
+  index: number;
+  indent: number;
+}
+
+// A leaf row for one condition under its topic — draggable like a
+// TopicTreeEditor row, but simpler: no "into" zone (a condition never
+// holds children), no re-parenting (see moveDiseaseAction's comment),
+// just before/after reordering against its sibling conditions.
+function DiseaseRow({ disease, topicId, index, indent }: DiseaseRowProps) {
+  const { draggingId, draggingKind, startDrag, endDrag, requestDiseaseMove } = useTopicDnd();
+  const [dropZone, setDropZone] = useState<"before" | "after" | null>(null);
+  const rowRef = useRef<HTMLDivElement>(null);
+  const isBeingDragged = draggingKind === "disease" && draggingId === disease.id;
+
+  function handleDragOver(e: DragEvent<HTMLDivElement>) {
+    if (!draggingId || draggingKind !== "disease" || draggingId === disease.id) return;
+    e.preventDefault();
+    const rect = rowRef.current?.getBoundingClientRect();
+    if (!rect) return;
+    const y = e.clientY - rect.top;
+    setDropZone(y < rect.height / 2 ? "before" : "after");
+  }
+
+  async function handleDrop(e: DragEvent<HTMLDivElement>) {
+    e.preventDefault();
+    const zone = dropZone;
+    setDropZone(null);
+    if (!zone || !draggingId || draggingKind !== "disease" || draggingId === disease.id) return;
+    await requestDiseaseMove(topicId, zone === "before" ? index : index + 1);
+  }
+
+  return (
+    <div
+      ref={rowRef}
+      onDragOver={handleDragOver}
+      onDragLeave={() => setDropZone(null)}
+      onDrop={handleDrop}
+      className={`group flex items-center gap-1.5 border-t-2 border-b-2 py-1 transition-colors duration-base ${
+        isBeingDragged ? "opacity-40" : ""
+      } ${dropZone === "before" ? "border-t-accent" : "border-t-transparent"} ${
+        dropZone === "after" ? "border-b-accent" : "border-b-transparent"
+      }`}
+      style={{ paddingLeft: `${indent + 22}px` }}
+    >
+      <span
+        draggable
+        onDragStart={(e) => {
+          e.dataTransfer.effectAllowed = "move";
+          e.dataTransfer.setData("text/plain", disease.id);
+          startDrag(disease.id, "disease");
+        }}
+        onDragEnd={endDrag}
+        className="flex size-3.5 shrink-0 cursor-grab items-center justify-center text-secondary/40 opacity-0 transition-opacity duration-base group-hover:opacity-100 active:cursor-grabbing"
+      >
+        <GripVertical className="size-3" aria-hidden="true" />
+      </span>
+      <Link
+        href={`/conditions/${disease.slug}`}
+        className="flex min-w-0 flex-1 items-center gap-1.5 font-ui text-xs text-secondary hover:text-accent hover:underline"
+      >
+        <span className="size-1 shrink-0 rounded-full bg-current" aria-hidden="true" />
+        <span className="truncate">{disease.canonicalName}</span>
+      </Link>
     </div>
   );
 }

@@ -53,3 +53,48 @@ export async function createDiseaseAction(
 
   return { ok: true, slug };
 }
+
+// Reorders a condition within its own topic's disease list — the
+// Manage Topics drag-and-drop, condition side. Mirrors
+// moveTopicAction's sibling-renumbering shape (topics.ts's own
+// actions file) but never re-parents: a condition is only ever
+// dropped onto another condition row in the same topic, so `topicId`
+// is asserted against the row's actual topic_id rather than written,
+// same "re-check ownership in the SQL itself" discipline
+// study-planner.ts's mutations already follow.
+export async function moveDiseaseAction(
+  diseaseId: string,
+  topicId: string,
+  newIndex: number
+): Promise<{ ok: true } | { ok: false; error: string }> {
+  await requireAdmin();
+
+  const client = await pool.connect();
+  try {
+    await client.query("BEGIN");
+    const { rows: siblingRows } = await client.query(
+      `SELECT id FROM disease WHERE topic_id = $1 AND id != $2 ORDER BY position, canonical_name`,
+      [topicId, diseaseId]
+    );
+    const siblingIds: string[] = siblingRows.map((row) => row.id);
+    const clampedIndex = Math.max(0, Math.min(newIndex, siblingIds.length));
+    siblingIds.splice(clampedIndex, 0, diseaseId);
+
+    for (let i = 0; i < siblingIds.length; i++) {
+      await client.query(`UPDATE disease SET position = $2 WHERE id = $1 AND topic_id = $3`, [
+        siblingIds[i],
+        i,
+        topicId,
+      ]);
+    }
+    await client.query("COMMIT");
+  } catch (error) {
+    await client.query("ROLLBACK");
+    throw error;
+  } finally {
+    client.release();
+  }
+
+  revalidateShellSurfaces();
+  return { ok: true };
+}

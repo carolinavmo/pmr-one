@@ -4,14 +4,25 @@ import { createContext, useContext, useState } from "react";
 import { Plus, Minus } from "lucide-react";
 import type { TopicNode } from "@/lib/topics";
 import { createTopicAction, createSeparatorAction, moveTopicAction } from "@/lib/actions/topics";
+import { moveDiseaseAction } from "@/lib/actions/diseases";
 import { TopicTreeEditor } from "./TopicTreeEditor";
 import { Button } from "@/components/ui/Button";
 
+// A drag can carry either a topic (folder) or a disease (condition)
+// — "kind" is threaded alongside the id everywhere so a drop target
+// can tell the two apart and route to the right Server Action. A
+// disease drag is scoped to reordering within its own topic (see
+// moveDiseaseAction's own comment) — it's never a valid "into" target
+// for a topic row's re-parent drop zone.
+type DragKind = "topic" | "disease";
+
 interface TopicDndValue {
   draggingId: string | null;
-  startDrag: (id: string) => void;
+  draggingKind: DragKind | null;
+  startDrag: (id: string, kind: DragKind) => void;
   endDrag: () => void;
   requestMove: (newParentId: string | null, newIndex: number) => Promise<void>;
+  requestDiseaseMove: (topicId: string, newIndex: number) => Promise<void>;
 }
 
 const TopicDndContext = createContext<TopicDndValue | null>(null);
@@ -41,6 +52,7 @@ interface TopicManagerProps {
 // already relies on for its own move/delete buttons).
 export function TopicManager({ tree }: TopicManagerProps) {
   const [draggingId, setDraggingId] = useState<string | null>(null);
+  const [draggingKind, setDraggingKind] = useState<DragKind | null>(null);
   const [addingRoot, setAddingRoot] = useState(false);
   const [rootName, setRootName] = useState("");
   const [rootError, setRootError] = useState<string | null>(null);
@@ -52,13 +64,29 @@ export function TopicManager({ tree }: TopicManagerProps) {
 
   const dnd: TopicDndValue = {
     draggingId,
-    startDrag: setDraggingId,
-    endDrag: () => setDraggingId(null),
-    requestMove: async (newParentId, newIndex) => {
-      const id = draggingId;
+    draggingKind,
+    startDrag: (id, kind) => {
+      setDraggingId(id);
+      setDraggingKind(kind);
+    },
+    endDrag: () => {
       setDraggingId(null);
+      setDraggingKind(null);
+    },
+    requestMove: async (newParentId, newIndex) => {
+      const id = draggingKind === "topic" ? draggingId : null;
+      setDraggingId(null);
+      setDraggingKind(null);
       if (!id) return;
       const result = await moveTopicAction(id, newParentId, newIndex);
+      setDropError(result.ok ? null : result.error);
+    },
+    requestDiseaseMove: async (topicId, newIndex) => {
+      const id = draggingKind === "disease" ? draggingId : null;
+      setDraggingId(null);
+      setDraggingKind(null);
+      if (!id) return;
+      const result = await moveDiseaseAction(id, topicId, newIndex);
       setDropError(result.ok ? null : result.error);
     },
   };
@@ -111,7 +139,7 @@ export function TopicManager({ tree }: TopicManagerProps) {
 
           <div
             onDragOver={(e) => {
-              if (!draggingId) return;
+              if (!draggingId || draggingKind !== "topic") return;
               e.preventDefault();
               setRootDropActive(true);
             }}
@@ -119,13 +147,14 @@ export function TopicManager({ tree }: TopicManagerProps) {
             onDrop={(e) => {
               e.preventDefault();
               setRootDropActive(false);
+              if (draggingKind !== "topic") return;
               void dnd.requestMove(null, tree.length);
             }}
             className={`mt-1 rounded-md border border-dashed py-2 text-center font-ui text-xs transition-colors duration-base ${
               rootDropActive ? "border-accent bg-accent/5 text-accent" : "border-border text-secondary"
             }`}
           >
-            {draggingId ? "Drop here to make a root topic" : " "}
+            {draggingKind === "topic" ? "Drop here to make a root topic" : " "}
           </div>
         </div>
 

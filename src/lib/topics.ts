@@ -14,6 +14,7 @@ export type TopicIconName = CardIconName | MedicalIconName | AnatomyIconName;
 // JS — simpler and cheaper than recursive CTEs at this size.
 
 export interface TopicDisease {
+  id: string;
   slug: string;
   canonicalName: string;
 }
@@ -52,9 +53,11 @@ interface TopicRow {
 }
 
 interface DiseaseRow {
+  id: string;
   slug: string;
   canonical_name: string;
   topic_id: string;
+  position: number;
 }
 
 function isTopicIconName(value: string | null): value is TopicIconName {
@@ -83,9 +86,9 @@ async function fetchTopicRows(): Promise<TopicRow[]> {
 // separately gated too (defense in depth, not the only check).
 async function fetchDiseaseRows(includeUnpublished: boolean): Promise<DiseaseRow[]> {
   const { rows } = await pool.query(
-    `SELECT slug, canonical_name, topic_id FROM disease
+    `SELECT id, slug, canonical_name, topic_id, position FROM disease
      WHERE topic_id IS NOT NULL ${includeUnpublished ? "" : "AND status = 'published'"}
-     ORDER BY canonical_name`
+     ORDER BY position, canonical_name`
   );
   return rows;
 }
@@ -106,7 +109,9 @@ function buildTree(topicRows: TopicRow[], diseaseRows: DiseaseRow[]): TopicNode[
   }
 
   for (const row of diseaseRows) {
-    nodesById.get(row.topic_id)?.diseases.push({ slug: row.slug, canonicalName: row.canonical_name });
+    nodesById
+      .get(row.topic_id)
+      ?.diseases.push({ id: row.id, slug: row.slug, canonicalName: row.canonical_name });
   }
 
   const roots: TopicNode[] = [];
