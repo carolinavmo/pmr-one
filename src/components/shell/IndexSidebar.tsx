@@ -297,7 +297,7 @@ function TopicTreeItem({
               onNavigate={onNavigate}
             />
           ))}
-          {node.diseases.map((disease, diseaseIndex) => {
+          {node.diseases.map((disease) => {
             const active = activeDiseaseSlug === disease.slug;
             const diseaseSections =
               sectionIndex?.diseaseSlug === disease.slug ? sectionIndex.sections : null;
@@ -311,17 +311,8 @@ function TopicTreeItem({
                   }`}
                   style={{ paddingLeft: `${6 + (depth + 1) * 12}px` }}
                 >
-                  {/* Position within the topic — same order Manage
-                      Topics' drag-and-drop sets (moveDiseaseAction),
-                      read straight off `node.diseases`' own array
-                      order (topics.ts already sorts by `position`), so
-                      this needs no separate data or state of its own.
-                      Replaces the old plain bullet dot; a number is a
-                      strictly more useful marker once order is
-                      meaningful. */}
-                  <span className="min-w-0 flex-1 truncate">
-                    {diseaseIndex + 1}. {disease.canonicalName}
-                  </span>
+                  <span className="size-1 shrink-0 rounded-full bg-current" aria-hidden="true" />
+                  <span className="min-w-0 flex-1 truncate">{disease.canonicalName}</span>
                 </Link>
                 {/* Generalized to every disease in entry #125 — only
                     non-null once the client fetch above resolves for
@@ -330,7 +321,16 @@ function TopicTreeItem({
                     extra query on its behalf. */}
                 {diseaseSections && (
                   <div className="flex flex-col">
-                    {diseaseSections.map((section) => {
+                    {/* Numbered to match the disease page's own "On
+                        this page" list and heading prefixes — same
+                        source (`getSectionSummaries`, reached here via
+                        /api/disease-sections) and same counting rule,
+                        so the numbers always agree. Already live: this
+                        list already refetches on
+                        notifySectionIndexChanged (fired by
+                        reorderSectionAction), so a section drag-reorder
+                        renumbers this for free. */}
+                    {diseaseSections.map((section, sectionIndexInList) => {
                       const sectionActive = activeSectionId === section.id;
                       return (
                         <Link
@@ -344,13 +344,9 @@ function TopicTreeItem({
                           }`}
                           style={{ paddingLeft: `${6 + (depth + 2) * 12}px` }}
                         >
-                          <span
-                            className={`size-1 shrink-0 rounded-full ${
-                              sectionActive ? "bg-current" : "bg-secondary/30"
-                            }`}
-                            aria-hidden="true"
-                          />
-                          <span className="min-w-0 flex-1 truncate">{section.heading}</span>
+                          <span className="min-w-0 flex-1 truncate">
+                            {sectionIndexInList + 1}. {section.heading}
+                          </span>
                         </Link>
                       );
                     })}
