@@ -297,7 +297,7 @@ function TopicTreeItem({
               onNavigate={onNavigate}
             />
           ))}
-          {node.diseases.map((disease) => {
+          {node.diseases.map((disease, diseaseIndex) => {
             const active = activeDiseaseSlug === disease.slug;
             const diseaseSections =
               sectionIndex?.diseaseSlug === disease.slug ? sectionIndex.sections : null;
@@ -311,8 +311,17 @@ function TopicTreeItem({
                   }`}
                   style={{ paddingLeft: `${6 + (depth + 1) * 12}px` }}
                 >
-                  <span className="size-1 shrink-0 rounded-full bg-current" aria-hidden="true" />
-                  <span className="min-w-0 flex-1 truncate">{disease.canonicalName}</span>
+                  {/* Position within the topic — same order Manage
+                      Topics' drag-and-drop sets (moveDiseaseAction),
+                      read straight off `node.diseases`' own array
+                      order (topics.ts already sorts by `position`), so
+                      this needs no separate data or state of its own.
+                      Replaces the old plain bullet dot; a number is a
+                      strictly more useful marker once order is
+                      meaningful. */}
+                  <span className="min-w-0 flex-1 truncate">
+                    {diseaseIndex + 1}. {disease.canonicalName}
+                  </span>
                 </Link>
                 {/* Generalized to every disease in entry #125 — only
                     non-null once the client fetch above resolves for
