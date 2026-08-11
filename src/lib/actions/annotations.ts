@@ -4,10 +4,12 @@ import { auth } from "@/auth";
 import {
   createAnnotation,
   updateAnnotationBody,
+  updateAnnotationColor,
   deleteAnnotation,
   type Annotation,
   type AnnotationInput,
 } from "@/lib/annotations";
+import type { CardColor } from "@/lib/editorial-blocks";
 
 // Rigorous convention (matches study-planner.ts/topics.ts), not
 // workspace.ts's older FormData/silent-return style — this feature
@@ -51,6 +53,16 @@ export async function updateAnnotationAction(
   if (!body.trim()) return { ok: false, error: "Note can't be empty." };
 
   const updated = await updateAnnotationBody(session.user.id, annotationId, body);
+  if (!updated) return { ok: false, error: "Note not found." };
+  return { ok: true };
+}
+
+export async function updateAnnotationColorAction(
+  annotationId: string,
+  color: CardColor,
+): Promise<ActionResult> {
+  const session = await requireSession();
+  const updated = await updateAnnotationColor(session.user.id, annotationId, color);
   if (!updated) return { ok: false, error: "Note not found." };
   return { ok: true };
 }

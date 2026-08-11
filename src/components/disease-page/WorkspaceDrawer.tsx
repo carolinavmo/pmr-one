@@ -16,6 +16,7 @@ import {
 import { saveNoteAction } from "@/lib/actions/workspace";
 import { deleteAnnotationAction } from "@/lib/actions/annotations";
 import { useAnnotations } from "@/components/annotations/AnnotationProvider";
+import { CARD_COLOR_SWATCH } from "@/lib/card-colors";
 import { Button } from "@/components/ui/Button";
 import type { RecentlyViewedDisease } from "@/lib/workspace";
 
@@ -162,9 +163,15 @@ export function WorkspaceDrawer({
                   key={annotation.id}
                   className="flex flex-col gap-1 border-t border-border/40 pt-2 first:border-t-0 first:pt-0"
                 >
-                  <blockquote className="line-clamp-2 border-l-2 border-border pl-2 font-ui text-xs text-secondary italic">
-                    &ldquo;{annotation.quoteExact}&rdquo;
-                  </blockquote>
+                  <div className="flex items-start gap-1.5">
+                    <span
+                      className={`mt-1 size-2 shrink-0 rounded-full ${CARD_COLOR_SWATCH[annotation.color]}`}
+                      aria-hidden="true"
+                    />
+                    <blockquote className="line-clamp-2 min-w-0 flex-1 border-l-2 border-border pl-2 font-ui text-xs text-secondary italic">
+                      &ldquo;{annotation.quoteExact}&rdquo;
+                    </blockquote>
+                  </div>
                   <div className="flex items-start justify-between gap-2">
                     <p className="min-w-0 flex-1 font-ui text-sm text-primary">{annotation.body}</p>
                     <button

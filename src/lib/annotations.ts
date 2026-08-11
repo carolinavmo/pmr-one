@@ -1,4 +1,5 @@
 import { pool } from "@/lib/db";
+import type { CardColor } from "@/lib/editorial-blocks";
 
 // Private, per-member text-quote annotations — exam-study margin
 // notes on disease prose, visible only to the member who made them.
@@ -17,6 +18,7 @@ export interface Annotation {
   quoteExact: string;
   quoteSuffix: string;
   body: string;
+  color: CardColor;
   createdAt: string;
   updatedAt: string;
 }
@@ -28,6 +30,7 @@ export interface AnnotationInput {
   quoteExact: string;
   quoteSuffix: string;
   body: string;
+  color: CardColor;
 }
 
 export interface AnnotationWithDisease extends Annotation {
@@ -44,6 +47,7 @@ function mapAnnotationRow(r: {
   quote_exact: string;
   quote_suffix: string;
   body: string;
+  color: string;
   created_at: Date | string;
   updated_at: Date | string;
 }): Annotation {
@@ -56,6 +60,7 @@ function mapAnnotationRow(r: {
     quoteExact: r.quote_exact,
     quoteSuffix: r.quote_suffix,
     body: r.body,
+    color: r.color as CardColor,
     createdAt: r.created_at instanceof Date ? r.created_at.toISOString() : r.created_at,
     updatedAt: r.updated_at instanceof Date ? r.updated_at.toISOString() : r.updated_at,
   };
@@ -63,7 +68,7 @@ function mapAnnotationRow(r: {
 
 const ANNOTATION_COLUMNS = `
   id, disease_id, block_id, block_field, quote_prefix, quote_exact,
-  quote_suffix, body, created_at, updated_at
+  quote_suffix, body, color, created_at, updated_at
 `;
 
 export async function getAnnotationsForDisease(
@@ -84,7 +89,7 @@ export async function getAllAnnotationsForUser(
 ): Promise<AnnotationWithDisease[]> {
   const { rows } = await pool.query(
     `SELECT a.id, a.disease_id, a.block_id, a.block_field, a.quote_prefix, a.quote_exact,
-            a.quote_suffix, a.body, a.created_at, a.updated_at,
+            a.quote_suffix, a.body, a.color, a.created_at, a.updated_at,
             d.slug AS disease_slug, d.canonical_name AS disease_name
      FROM annotation a
      JOIN disease d ON d.id = a.disease_id
@@ -106,8 +111,8 @@ export async function createAnnotation(
 ): Promise<Annotation> {
   const { rows } = await pool.query(
     `INSERT INTO annotation
-       (user_id, disease_id, block_id, block_field, quote_prefix, quote_exact, quote_suffix, body)
-     VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+       (user_id, disease_id, block_id, block_field, quote_prefix, quote_exact, quote_suffix, body, color)
+     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
      RETURNING ${ANNOTATION_COLUMNS}`,
     [
       userId,
@@ -118,6 +123,7 @@ export async function createAnnotation(
       input.quoteExact,
       input.quoteSuffix,
       input.body,
+      input.color,
     ],
   );
   return mapAnnotationRow(rows[0]);
@@ -132,6 +138,19 @@ export async function updateAnnotationBody(
     `UPDATE annotation SET body = $3, updated_at = now()
      WHERE id = $1 AND user_id = $2`,
     [annotationId, userId, body],
+  );
+  return (rowCount ?? 0) > 0;
+}
+
+export async function updateAnnotationColor(
+  userId: string,
+  annotationId: string,
+  color: CardColor,
+): Promise<boolean> {
+  const { rowCount } = await pool.query(
+    `UPDATE annotation SET color = $3, updated_at = now()
+     WHERE id = $1 AND user_id = $2`,
+    [annotationId, userId, color],
   );
   return (rowCount ?? 0) > 0;
 }

@@ -11,7 +11,7 @@ interface AnnotationContextValue {
   locatedIds: Set<string>;
   reportLocated: (id: string, located: boolean) => void;
   addAnnotation: (annotation: Annotation) => void;
-  updateAnnotationLocal: (id: string, body: string) => void;
+  updateAnnotationLocal: (id: string, patch: Partial<Pick<Annotation, "body" | "color">>) => void;
   removeAnnotation: (id: string) => void;
 }
 
@@ -84,9 +84,12 @@ export function AnnotationProvider({
     setAnnotations((current) => [...current, annotation]);
   }, []);
 
-  const updateAnnotationLocal = useCallback((id: string, body: string) => {
-    setAnnotations((current) => current.map((a) => (a.id === id ? { ...a, body } : a)));
-  }, []);
+  const updateAnnotationLocal = useCallback(
+    (id: string, patch: Partial<Pick<Annotation, "body" | "color">>) => {
+      setAnnotations((current) => current.map((a) => (a.id === id ? { ...a, ...patch } : a)));
+    },
+    [],
+  );
 
   const removeAnnotation = useCallback((id: string) => {
     setAnnotations((current) => current.filter((a) => a.id !== id));

@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import { KnowledgeObjectCard } from "@/components/ui/KnowledgeObjectCard";
 import { objectIcons } from "@/components/ui/objectIcons";
+import { CARD_COLOR_SWATCH } from "@/lib/card-colors";
 import { BmiCalculatorCard } from "./BmiCalculatorCard";
 import type { DiseaseCatalogEntry } from "@/lib/disease-catalog";
 import type {
@@ -382,9 +383,15 @@ export async function MemberDashboard({
                             key={annotation.id}
                             className="flex flex-col gap-0.5 border-l-2 border-border pl-3"
                           >
-                            <blockquote className="line-clamp-1 font-ui text-xs text-secondary italic">
-                              &ldquo;{annotation.quoteExact}&rdquo;
-                            </blockquote>
+                            <div className="flex items-start gap-1.5">
+                              <span
+                                className={`mt-1 size-2 shrink-0 rounded-full ${CARD_COLOR_SWATCH[annotation.color]}`}
+                                aria-hidden="true"
+                              />
+                              <blockquote className="line-clamp-1 min-w-0 flex-1 font-ui text-xs text-secondary italic">
+                                &ldquo;{annotation.quoteExact}&rdquo;
+                              </blockquote>
+                            </div>
                             <p className="line-clamp-2 font-ui text-sm text-primary">
                               {annotation.body}
                             </p>

@@ -1,22 +1,74 @@
 "use client";
 
-import { createElement, useEffect, useMemo, useRef, useState, type ElementType } from "react";
+import {
+  createElement,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type ElementType,
+} from "react";
 import { useTranslations } from "next-intl";
-import { MessageSquarePlus, MessageSquareText, Pencil, Trash2, X } from "lucide-react";
-import type { EditorialBlock } from "@/lib/editorial-blocks";
+import {
+  MessageSquarePlus,
+  MessageSquareText,
+  Pencil,
+  Trash2,
+  X,
+} from "lucide-react";
+import type { EditorialBlock, CardColor } from "@/lib/editorial-blocks";
+import {
+  CARD_COLOR_ORDER,
+  CARD_COLOR_SWATCH,
+  CARD_COLOR_LABEL,
+} from "@/lib/card-colors";
+import { TEXT_BG_CLASS } from "@/lib/rich-text";
 import { useAnnotations } from "@/components/annotations/AnnotationProvider";
-import { captureQuote, relocateQuote, type QuoteAnchor } from "@/lib/annotation-anchor";
+import {
+  captureQuote,
+  relocateQuote,
+  type QuoteAnchor,
+} from "@/lib/annotation-anchor";
 import {
   createAnnotationAction,
   updateAnnotationAction,
+  updateAnnotationColorAction,
   deleteAnnotationAction,
 } from "@/lib/actions/annotations";
 import type { Annotation } from "@/lib/annotations";
 
-// Raw <mark> tags this file injects client-side, after render — not
-// part of the sanitized HTML, so this needs its own styling here
-// rather than relying on PROSE_CONTENT_CLASS's `[&_...]` selectors.
-const HIGHLIGHT_CLASS = "bg-accent/20 rounded-sm";
+const DEFAULT_COLOR: CardColor = "accent";
+
+// A small inline row of the same 8 CardColor swatches ColorSwatchPicker
+// renders in its own bordered popover — not reused directly here since
+// both call sites below are already inside a popover of their own
+// (nesting popover-in-popover borders/shadows reads as a mistake, not
+// a picker). Same underlying palette data (card-colors.ts) either way.
+function ColorSwatchRow({
+  value,
+  onPick,
+}: {
+  value: CardColor;
+  onPick: (color: CardColor) => void;
+}) {
+  return (
+    <div className="flex items-center gap-1">
+      {CARD_COLOR_ORDER.map((color) => (
+        <button
+          key={color}
+          type="button"
+          title={CARD_COLOR_LABEL[color]}
+          onClick={() => onPick(color)}
+          className={`size-4 shrink-0 rounded-full ${CARD_COLOR_SWATCH[color]} transition-transform duration-base hover:scale-110 ${
+            value === color
+              ? "ring-2 ring-accent ring-offset-1 ring-offset-surface-raised"
+              : ""
+          }`}
+        />
+      ))}
+    </div>
+  );
+}
 
 interface Position {
   top: number;
@@ -38,17 +90,34 @@ interface AnnotatableProseProps {
 // half needs hooks (useState/useEffect/refs) that can't be called
 // conditionally — see EditMode.tsx's own EditModeProvider/body split
 // for the same pattern already established in this codebase.
-export function AnnotatableProse({ tag, html, className, block, fieldKey }: AnnotatableProseProps) {
+export function AnnotatableProse({
+  tag,
+  html,
+  className,
+  block,
+  fieldKey,
+}: AnnotatableProseProps) {
   const { enabled } = useAnnotations();
 
   // No AnnotationProvider mounted (a visitor, or no session) — render
   // exactly what RichEditableText used to render inline before this
   // feature existed. Zero extra DOM, byte-identical to before.
   if (!enabled) {
-    return createElement(tag, { className, dangerouslySetInnerHTML: { __html: html } });
+    return createElement(tag, {
+      className,
+      dangerouslySetInnerHTML: { __html: html },
+    });
   }
 
-  return <AnnotatableProseActive tag={tag} html={html} className={className} block={block} fieldKey={fieldKey} />;
+  return (
+    <AnnotatableProseActive
+      tag={tag}
+      html={html}
+      className={className}
+      block={block}
+      fieldKey={fieldKey}
+    />
+  );
 }
 
 function measurePositions(
@@ -58,11 +127,16 @@ function measurePositions(
   const containerRect = container.getBoundingClientRect();
   const positions: Record<string, Position> = {};
   for (const id of ids) {
-    const marks = container.querySelectorAll<HTMLElement>(`mark[data-annotation-id="${CSS.escape(id)}"]`);
+    const marks = container.querySelectorAll<HTMLElement>(
+      `mark[data-annotation-id="${CSS.escape(id)}"]`,
+    );
     const lastMark = marks[marks.length - 1];
     if (!lastMark) continue;
     const rect = lastMark.getBoundingClientRect();
-    positions[id] = { top: rect.top - containerRect.top, left: rect.right - containerRect.left };
+    positions[id] = {
+      top: rect.top - containerRect.top,
+      left: rect.right - containerRect.left,
+    };
   }
   return positions;
 }
@@ -76,7 +150,12 @@ function measurePositions(
 // identical styling read as one continuous highlight visually, same
 // technique real-world text-highlighting implementations use for
 // exactly this reason.
-function wrapQuoteRange(container: HTMLElement, range: Range, annotationId: string): HTMLElement[] {
+function wrapQuoteRange(
+  container: HTMLElement,
+  range: Range,
+  annotationId: string,
+  bgClass: string,
+): HTMLElement[] {
   const walker = document.createTreeWalker(container, NodeFilter.SHOW_TEXT);
   const nodes: Text[] = [];
   let current: Node | null;
@@ -105,7 +184,7 @@ function wrapQuoteRange(container: HTMLElement, range: Range, annotationId: stri
   for (const piece of nodes) {
     if (!piece.parentNode) continue;
     const mark = document.createElement("mark");
-    mark.className = HIGHLIGHT_CLASS;
+    mark.className = `${bgClass} rounded-sm`;
     mark.dataset.annotationId = annotationId;
     piece.parentNode.insertBefore(mark, piece);
     mark.appendChild(piece);
@@ -114,7 +193,13 @@ function wrapQuoteRange(container: HTMLElement, range: Range, annotationId: stri
   return marks;
 }
 
-function AnnotatableProseActive({ tag: Tag, html, className, block, fieldKey }: AnnotatableProseProps) {
+function AnnotatableProseActive({
+  tag: Tag,
+  html,
+  className,
+  block,
+  fieldKey,
+}: AnnotatableProseProps) {
   const t = useTranslations("annotations");
   const {
     diseaseId,
@@ -138,16 +223,21 @@ function AnnotatableProseActive({ tag: Tag, html, className, block, fieldKey }: 
   );
 
   const containerRef = useRef<HTMLElement>(null);
-  const [markerPositions, setMarkerPositions] = useState<Record<string, Position>>({});
+  const [markerPositions, setMarkerPositions] = useState<
+    Record<string, Position>
+  >({});
   const [hoverId, setHoverId] = useState<string | null>(null);
   const [pinnedId, setPinnedId] = useState<string | null>(null);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editDraft, setEditDraft] = useState("");
 
-  const [selectionAnchor, setSelectionAnchor] = useState<QuoteAnchor | null>(null);
+  const [selectionAnchor, setSelectionAnchor] = useState<QuoteAnchor | null>(
+    null,
+  );
   const [selectionPos, setSelectionPos] = useState<Position | null>(null);
   const [addingNote, setAddingNote] = useState(false);
   const [noteDraft, setNoteDraft] = useState("");
+  const [noteColor, setNoteColor] = useState<CardColor>(DEFAULT_COLOR);
   const [saving, setSaving] = useState(false);
 
   // Re-injects every annotation's highlight into the pristine sanitized
@@ -170,7 +260,12 @@ function AnnotatableProseActive({ tag: Tag, html, className, block, fieldKey }: 
         reportLocated(annotation.id, false);
         continue;
       }
-      const marks = wrapQuoteRange(container, range, annotation.id);
+      const marks = wrapQuoteRange(
+        container,
+        range,
+        annotation.id,
+        TEXT_BG_CLASS[annotation.color],
+      );
       if (marks.length === 0) {
         reportLocated(annotation.id, false);
         continue;
@@ -196,7 +291,9 @@ function AnnotatableProseActive({ tag: Tag, html, className, block, fieldKey }: 
     const container = containerRef.current;
     if (!container) return;
     const observer = new ResizeObserver(() => {
-      setMarkerPositions((current) => measurePositions(container, Object.keys(current)));
+      setMarkerPositions((current) =>
+        measurePositions(container, Object.keys(current)),
+      );
     });
     observer.observe(container);
     return () => observer.disconnect();
@@ -227,7 +324,10 @@ function AnnotatableProseActive({ tag: Tag, html, className, block, fieldKey }: 
     }
     const rangeRect = range.getBoundingClientRect();
     const containerRect = container.getBoundingClientRect();
-    setSelectionPos({ top: rangeRect.top - containerRect.top, left: rangeRect.left - containerRect.left });
+    setSelectionPos({
+      top: rangeRect.top - containerRect.top,
+      left: rangeRect.left - containerRect.left,
+    });
     setSelectionAnchor(anchor);
     setAddingNote(false);
   }
@@ -242,6 +342,7 @@ function AnnotatableProseActive({ tag: Tag, html, className, block, fieldKey }: 
       quoteExact: selectionAnchor.exact,
       quoteSuffix: selectionAnchor.suffix,
       body: noteDraft.trim(),
+      color: noteColor,
     });
     setSaving(false);
     if (result.ok && result.annotation) {
@@ -250,6 +351,7 @@ function AnnotatableProseActive({ tag: Tag, html, className, block, fieldKey }: 
       setSelectionAnchor(null);
       setAddingNote(false);
       setNoteDraft("");
+      setNoteColor(DEFAULT_COLOR);
     }
   }
 
@@ -257,8 +359,15 @@ function AnnotatableProseActive({ tag: Tag, html, className, block, fieldKey }: 
     if (!editDraft.trim()) return;
     const result = await updateAnnotationAction(annotationId, editDraft.trim());
     if (result.ok) {
-      updateAnnotationLocal(annotationId, editDraft.trim());
+      updateAnnotationLocal(annotationId, { body: editDraft.trim() });
       setEditingId(null);
+    }
+  }
+
+  async function handleChangeColor(annotationId: string, color: CardColor) {
+    const result = await updateAnnotationColorAction(annotationId, color);
+    if (result.ok) {
+      updateAnnotationLocal(annotationId, { color });
     }
   }
 
@@ -299,8 +408,16 @@ function AnnotatableProseActive({ tag: Tag, html, className, block, fieldKey }: 
             data-annotation-ui
             aria-label={t("addNote")}
             onMouseEnter={() => setHoverId(annotation.id)}
-            onMouseLeave={() => setHoverId((current) => (current === annotation.id ? null : current))}
-            onClick={() => setPinnedId((current) => (current === annotation.id ? null : annotation.id))}
+            onMouseLeave={() =>
+              setHoverId((current) =>
+                current === annotation.id ? null : current,
+              )
+            }
+            onClick={() =>
+              setPinnedId((current) =>
+                current === annotation.id ? null : annotation.id,
+              )
+            }
             className="absolute z-10 flex size-4 -translate-y-1/2 items-center justify-center rounded-full bg-accent text-white shadow-sm"
             style={{ top: pos.top, left: pos.left + 2 }}
           >
@@ -313,7 +430,10 @@ function AnnotatableProseActive({ tag: Tag, html, className, block, fieldKey }: 
         <div
           data-annotation-ui
           className="absolute top-6 left-0 z-20 w-64 rounded-lg border border-border bg-surface-raised p-3 shadow-md"
-          style={{ top: activePos.top + 16, left: Math.max(0, activePos.left - 200) }}
+          style={{
+            top: activePos.top + 16,
+            left: Math.max(0, activePos.left - 200),
+          }}
         >
           {editingId === activeAnnotation.id ? (
             <div className="flex flex-col gap-2">
@@ -343,27 +463,37 @@ function AnnotatableProseActive({ tag: Tag, html, className, block, fieldKey }: 
             </div>
           ) : (
             <div className="flex flex-col gap-2">
-              <p className="font-ui text-sm whitespace-pre-wrap text-primary">{activeAnnotation.body}</p>
-              <div className="flex justify-end gap-1">
-                <button
-                  type="button"
-                  aria-label={t("edit")}
-                  onClick={() => {
-                    setEditDraft(activeAnnotation.body);
-                    setEditingId(activeAnnotation.id);
-                  }}
-                  className="flex size-6 items-center justify-center rounded text-secondary hover:bg-border/40 hover:text-primary"
-                >
-                  <Pencil className="size-3.5" aria-hidden="true" />
-                </button>
-                <button
-                  type="button"
-                  aria-label={t("delete")}
-                  onClick={() => handleDelete(activeAnnotation.id)}
-                  className="flex size-6 items-center justify-center rounded text-secondary hover:bg-warning/10 hover:text-warning"
-                >
-                  <Trash2 className="size-3.5" aria-hidden="true" />
-                </button>
+              <p className="font-ui text-sm whitespace-pre-wrap text-primary">
+                {activeAnnotation.body}
+              </p>
+              <div className="flex items-center justify-between gap-2">
+                <ColorSwatchRow
+                  value={activeAnnotation.color}
+                  onPick={(color) =>
+                    handleChangeColor(activeAnnotation.id, color)
+                  }
+                />
+                <div className="flex gap-1">
+                  <button
+                    type="button"
+                    aria-label={t("edit")}
+                    onClick={() => {
+                      setEditDraft(activeAnnotation.body);
+                      setEditingId(activeAnnotation.id);
+                    }}
+                    className="flex size-6 items-center justify-center rounded text-secondary hover:bg-border/40 hover:text-primary"
+                  >
+                    <Pencil className="size-3.5" aria-hidden="true" />
+                  </button>
+                  <button
+                    type="button"
+                    aria-label={t("delete")}
+                    onClick={() => handleDelete(activeAnnotation.id)}
+                    className="flex size-6 items-center justify-center rounded text-secondary hover:bg-warning/10 hover:text-warning"
+                  >
+                    <Trash2 className="size-3.5" aria-hidden="true" />
+                  </button>
+                </div>
               </div>
             </div>
           )}
@@ -376,7 +506,10 @@ function AnnotatableProseActive({ tag: Tag, html, className, block, fieldKey }: 
           data-annotation-ui
           onClick={() => setAddingNote(true)}
           className="absolute z-20 inline-flex items-center gap-1 rounded-full bg-accent px-2 py-1 font-ui text-xs font-medium text-white shadow-md"
-          style={{ top: Math.max(0, selectionPos!.top - 32), left: selectionPos!.left }}
+          style={{
+            top: Math.max(0, selectionPos!.top - 32),
+            left: selectionPos!.left,
+          }}
         >
           <MessageSquarePlus className="size-3" aria-hidden="true" />
           {t("addNote")}
@@ -387,7 +520,10 @@ function AnnotatableProseActive({ tag: Tag, html, className, block, fieldKey }: 
         <div
           data-annotation-ui
           className="absolute z-20 w-64 rounded-lg border border-border bg-surface-raised p-3 shadow-md"
-          style={{ top: Math.max(0, selectionPos!.top - 8), left: selectionPos!.left }}
+          style={{
+            top: Math.max(0, selectionPos!.top - 8),
+            left: selectionPos!.left,
+          }}
         >
           <div className="flex flex-col gap-2">
             <div className="flex items-start justify-between gap-2">
@@ -401,6 +537,7 @@ function AnnotatableProseActive({ tag: Tag, html, className, block, fieldKey }: 
                   setAddingNote(false);
                   setSelectionAnchor(null);
                   setNoteDraft("");
+                  setNoteColor(DEFAULT_COLOR);
                 }}
                 className="shrink-0 text-secondary hover:text-primary"
               >
@@ -415,7 +552,8 @@ function AnnotatableProseActive({ tag: Tag, html, className, block, fieldKey }: 
               rows={3}
               className="rounded-md border border-border bg-surface px-2 py-1.5 font-ui text-sm text-primary outline-none focus:border-accent"
             />
-            <div className="flex justify-end">
+            <div className="flex items-center justify-between gap-2">
+              <ColorSwatchRow value={noteColor} onPick={setNoteColor} />
               <button
                 type="button"
                 disabled={saving || !noteDraft.trim()}
