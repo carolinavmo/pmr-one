@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState, type ElementType } from "react";
+import { createElement, useEffect, useRef, useState, type ElementType } from "react";
 import {
   Bold,
   Italic,
@@ -64,6 +64,26 @@ const PROSE_CONTENT_CLASS =
   "[&_ul]:list-disc [&_ul]:pl-5 [&_ol]:list-decimal [&_ol]:pl-5 [&_li]:my-0.5 [&_blockquote]:border-l-2 [&_blockquote]:border-border [&_blockquote]:pl-3 [&_blockquote]:italic [&_blockquote]:text-secondary";
 
 const SAFE_URL_PATTERN = /^https?:\/\//i;
+
+// rich-text.ts's sanitizer deliberately allows ul/ol/li/blockquote —
+// block-level content — inside these fields (its own comment calls
+// this out as "the one genuine widening" beyond a pure inline-span
+// vocabulary), and the toolbar's own list/quote buttons let an editor
+// insert one directly. But every caller here defaults `as` to "p", and
+// a <p> can never legally contain a block-level child — the browser
+// silently closes it early when parsing the raw HTML string, which
+// desyncs from what React's SSR literally wrote and throws a
+// hydration mismatch (harmless in effect, since React just
+// regenerates the subtree, but a real console error on every affected
+// page). Rather than banning list/quote formatting or rewriting every
+// call site's `as` prop, fall back to a <div> — a legal container for
+// both inline and block content — only when the content actually has
+// something a <p> can't hold; the common no-list case keeps its <p>
+// unchanged.
+const BLOCK_LEVEL_CONTENT_PATTERN = /<(ul|ol|blockquote)[\s>]/i;
+function resolveTag(tag: ElementType, html: string): ElementType {
+  return tag === "p" && BLOCK_LEVEL_CONTENT_PATTERN.test(html) ? "div" : tag;
+}
 
 const ALIGN_OPTIONS: { value: HorizontalAlign; Icon: typeof AlignLeft }[] = [
   { value: "left", Icon: AlignLeft },
@@ -131,11 +151,17 @@ export function RichEditableText({
 
   if (!editModeOn) {
     const clean = sanitizeRichText(value);
-    return clean ? (
-      <Tag className={`${className} ${PROSE_CONTENT_CLASS}`} dangerouslySetInnerHTML={{ __html: clean }} />
-    ) : (
-      <Tag className={className}>{placeholder}</Tag>
-    );
+    // createElement, not JSX, for the dynamically-resolved tag — a
+    // capitalized JSX identifier bound to a runtime value trips
+    // react-hooks/static-components ("component created during
+    // render"), even though this only ever picks between two plain
+    // element-name strings, never a real component.
+    return clean
+      ? createElement(resolveTag(Tag, clean), {
+          className: `${className} ${PROSE_CONTENT_CLASS}`,
+          dangerouslySetInnerHTML: { __html: clean },
+        })
+      : createElement(resolveTag(Tag, clean), { className }, placeholder);
   }
 
   if (!isEditing) {
@@ -149,11 +175,12 @@ export function RichEditableText({
         setIsEditing(true);
       },
     };
-    return preview ? (
-      <Tag {...commonProps} dangerouslySetInnerHTML={{ __html: preview }} />
-    ) : (
-      <Tag {...commonProps}>{placeholder}</Tag>
-    );
+    return preview
+      ? createElement(resolveTag(Tag, preview), {
+          ...commonProps,
+          dangerouslySetInnerHTML: { __html: preview },
+        })
+      : createElement(resolveTag(Tag, preview), commonProps, placeholder);
   }
 
   const commit = async () => {
@@ -566,20 +593,20 @@ export function RichEditableText({
           </>
         )}
       </div>
-      <Tag
-        ref={editableRef as never}
-        contentEditable
-        suppressContentEditableWarning
-        onBlur={commit}
-        onKeyDown={(e: React.KeyboardEvent) => {
+      {createElement(resolveTag(Tag, frozenHtml), {
+        ref: editableRef,
+        contentEditable: true,
+        suppressContentEditableWarning: true,
+        onBlur: commit,
+        onKeyDown: (e: React.KeyboardEvent) => {
           if (e.key === "Enter" && !isWithinList()) {
             e.preventDefault();
             document.execCommand("insertLineBreak");
           }
-        }}
-        dangerouslySetInnerHTML={{ __html: frozenHtml }}
-        className={`${className} ${PROSE_CONTENT_CLASS} w-full rounded border border-accent bg-surface-raised px-2 py-1 outline-none`}
-      />
+        },
+        dangerouslySetInnerHTML: { __html: frozenHtml },
+        className: `${className} ${PROSE_CONTENT_CLASS} w-full rounded border border-accent bg-surface-raised px-2 py-1 outline-none`,
+      })}
     </div>
   );
 }
