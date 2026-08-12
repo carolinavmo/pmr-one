@@ -87,6 +87,12 @@ function buildDefinition(items, levels, calculationExplanation, resultNote) {
       citation: "Keith RA, Granger CV, Hamilton BB, Sherwin FS. The functional independence measure: a new tool for rehabilitation. Adv Clin Rehabil. 1987;1:6-18.",
       url: "https://www.sralab.org/rehabilitation-measures/functional-independence-measure",
     },
+    // FIM is a proprietary, copyrighted instrument owned by UDSMR
+    // (Uniform Data System for Medical Rehabilitation) — formal
+    // certification requires UDSMR-approved training. This flag
+    // surfaces a "non-official calculator" notice regardless of
+    // locale, distinct from the unofficial-translation notice.
+    proprietary: true,
     // No interpretation bands — see file header comment. resultNote is
     // the fallback shown in its place (label/description) plus the
     // continuous gradient range bar's endpoint labels.

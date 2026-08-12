@@ -78,6 +78,11 @@ export interface CalculatorDefinition {
   // translation row (scientific citations aren't translated); only
   // calculationExplanation actually varies per locale.
   source?: CalculatorSource;
+  // True for scales that are themselves proprietary/licensed instruments
+  // (e.g. FIM, owned by UDSMR) — triggers a generic "not an official/
+  // certified implementation" notice distinct from the unofficial-
+  // translation notice, and shown regardless of locale.
+  proprietary?: boolean;
 }
 
 export interface CalculatorCategory {

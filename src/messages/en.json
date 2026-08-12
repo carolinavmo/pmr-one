@@ -260,6 +260,8 @@
     "viewSource": "View source",
     "unofficialTranslationHeading": "Unofficial translation",
     "unofficialTranslationBody": "The version shown is an unofficial translation and has not been specifically validated. Confirm the official validated version and its conditions of use before clinical or research application.",
+    "proprietaryNoticeHeading": "Non-official calculator",
+    "proprietaryNoticeBody": "This is an independent, non-official implementation provided for reference and educational purposes. The original instrument is a proprietary, copyrighted tool; formal certification and licensed clinical use require training through its official rights holder.",
     "disclaimer": "This calculator is a clinical reference aid. Results should always be interpreted in context by a qualified clinician."
   },
   "annotations": {

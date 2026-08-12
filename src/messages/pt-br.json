@@ -260,6 +260,8 @@
     "viewSource": "Ver fonte",
     "unofficialTranslationHeading": "Tradução não oficial",
     "unofficialTranslationBody": "A versão apresentada é uma tradução não oficial e não foi validada especificamente. Confirme a versão oficial validada e as respectivas condições de uso antes da aplicação clínica ou em pesquisa.",
+    "proprietaryNoticeHeading": "Calculadora não oficial",
+    "proprietaryNoticeBody": "Esta é uma implementação independente e não oficial, disponibilizada para fins de referência e educacionais. O instrumento original é uma ferramenta proprietária e protegida por direitos autorais; a certificação formal e o uso clínico licenciado exigem treinamento pelo respectivo detentor dos direitos.",
     "disclaimer": "Esta calculadora é um auxílio de referência clínica. Os resultados devem sempre ser interpretados em contexto por um profissional de saúde qualificado."
   },
   "annotations": {

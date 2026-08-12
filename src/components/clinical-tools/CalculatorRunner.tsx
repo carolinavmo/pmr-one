@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, type CSSProperties } from "react";
 import { useTranslations, useLocale } from "next-intl";
-import { RotateCcw, Copy, Check, ExternalLink, TriangleAlert } from "lucide-react";
+import { RotateCcw, Copy, Check, ExternalLink, TriangleAlert, ShieldAlert } from "lucide-react";
 import type { Calculator, CalculatorItem } from "@/lib/clinical-tools";
 import { scoreCalculator, resolveInterpretation } from "@/lib/calculator-scoring";
 
@@ -30,17 +30,33 @@ function itemMax(item: CalculatorItem) {
   return Math.max(...item.options.map((option) => option.value));
 }
 
-// Buckets a single item's answer into the same good/warning/serious/
-// critical vocabulary the overall result bar uses, so "Score by item"
-// reads at a glance instead of every bar looking identically neutral —
+// Same red→orange→amber→green spectrum as the overall result bar's
+// gradient, but sampled continuously per item (instead of bucketed into
+// 4 flat severity colors) so "Score by item" reads as a smooth ramp —
 // the ratio is relative to that item's own max, not the scale's, since
 // items don't share a common point value (Barthel mixes 5/10/15-point
-// items).
-function itemFillClass(value: number, max: number) {
-  if (max <= 0) return DEFAULT_SEVERITY_FILL_CLASS;
-  const ratio = value / max;
-  const severity = ratio >= 1 ? "good" : ratio >= 0.5 ? "warning" : ratio > 0 ? "serious" : "critical";
-  return SEVERITY_FILL_CLASS[severity];
+// items). color-mix() blends the theme's own CSS custom properties
+// directly, so this stays correct in dark mode without any JS-side
+// color math or hex duplication.
+const GRADIENT_STOPS = ["var(--color-warning)", "var(--color-card-orange)", "var(--color-insight)", "var(--color-trust)"];
+
+function itemFillStyle(value: number, max: number): CSSProperties {
+  if (max <= 0) return { backgroundColor: "var(--color-border)" };
+  const ratio = Math.max(0, Math.min(1, value / max));
+  // Biases the ramp toward green as it approaches a good result — a
+  // plain linear interpolation reaches full green only at ratio 1,
+  // which reads as too much amber/orange for scores that are already
+  // mostly independent.
+  const eased = Math.pow(ratio, 0.6);
+  const segmentCount = GRADIENT_STOPS.length - 1;
+  const scaled = eased * segmentCount;
+  const segmentIndex = Math.min(Math.floor(scaled), segmentCount - 1);
+  const localT = scaled - segmentIndex;
+  const fromColor = GRADIENT_STOPS[segmentIndex];
+  const toColor = GRADIENT_STOPS[segmentIndex + 1];
+  return {
+    backgroundColor: `color-mix(in srgb, ${toColor} ${localT * 100}%, ${fromColor})`,
+  };
 }
 
 // The one generic engine every calculator (present and future) renders
@@ -236,6 +252,16 @@ export function CalculatorRunner({ calculator }: { calculator: Calculator }) {
 
   return (
     <div className="flex flex-col gap-6">
+      {calculator.definition.proprietary && (
+        <div className="flex items-start gap-3 rounded-xl border border-insight/30 bg-insight/5 p-4">
+          <ShieldAlert className="mt-0.5 size-5 shrink-0 text-insight" aria-hidden="true" />
+          <div className="flex flex-col gap-1">
+            <h3 className="font-ui text-sm font-semibold text-primary">{t("proprietaryNoticeHeading")}</h3>
+            <p className="font-ui text-sm text-secondary">{t("proprietaryNoticeBody")}</p>
+          </div>
+        </div>
+      )}
+
       {locale !== "en" && (
         <div className="flex items-start gap-3 rounded-xl border border-insight/30 bg-insight/5 p-4">
           <TriangleAlert className="mt-0.5 size-5 shrink-0 text-insight" aria-hidden="true" />
@@ -409,8 +435,8 @@ export function CalculatorRunner({ calculator }: { calculator: Calculator }) {
                           </span>
                           <div className="h-1.5 min-w-16 flex-1 overflow-hidden rounded-full bg-border/50">
                             <div
-                              className={`h-full rounded-full transition-all duration-base ${itemFillClass(value, max)}`}
-                              style={{ width: `${itemPercent}%` }}
+                              className="h-full rounded-full transition-all duration-base"
+                              style={{ width: `${itemPercent}%`, ...itemFillStyle(value, max) }}
                             />
                           </div>
                           <span className="w-6 shrink-0 text-right font-ui text-xs font-medium text-secondary tabular-nums">
