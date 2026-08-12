@@ -83,6 +83,21 @@ const FORMULAS: Record<string, (values: number[]) => number> = {
     const mean = values.reduce((sum, value) => sum + value, 0) / values.length;
     return Math.round((mean / 10) * 100);
   },
+  // Sunnybrook Facial Grading System: the one calculator whose items
+  // aren't all the same shape — 3 fixed-order groups sliced by index
+  // (same convention as spadi/prwe above), each on its own rubric:
+  // Resting Symmetry (3 items, 0-1 each), Voluntary Movement (5 items,
+  // 1-5 each), Synkinesis (5 items, 0-3 each). The official composite
+  // formula: (Movement sum x 4) - (Resting sum x 5) - Synkinesis sum,
+  // clamped to 0-100 (100 = normal facial function) since the raw
+  // formula can theoretically dip slightly negative at the worst end.
+  sunnybrook: (values) => {
+    const resting = values.slice(0, 3).reduce((sum, value) => sum + value, 0);
+    const movement = values.slice(3, 8).reduce((sum, value) => sum + value, 0);
+    const synkinesis = values.slice(8, 13).reduce((sum, value) => sum + value, 0);
+    const total = movement * 4 - resting * 5 - synkinesis;
+    return Math.max(0, Math.min(100, Math.round(total)));
+  },
 };
 
 // Returns null until every item has an answer — the caller uses that
