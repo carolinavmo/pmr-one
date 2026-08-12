@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import {
@@ -7,7 +8,6 @@ import {
   Calendar,
   ShieldCheck,
   Globe,
-  Brain,
   Plus,
 } from "lucide-react";
 import { auth } from "@/auth";
@@ -130,22 +130,25 @@ export default async function Home() {
       {/* Hero band — a full-width tinted section (the app's usual pages
           stay plain-white; this is the one deliberately "arrival"
           moment, same reasoning the homepage's own Eyebrow component
-          restricts itself to). The decorative mark on the right is
-          drawn entirely from vector icons + CSS gradients (no raster
-          image) — a large tilted Brain icon in a soft accent-teal glow
-          with fading "speed" lines and a couple of plus accents,
-          echoing the navbar logo's running-brain mascot without
-          reproducing it literally. That's deliberate: a hand-drawn
-          cartoon blown up to hero size gets soft/pixelated, while an
-          icon + CSS treatment stays perfectly crisp at any size, costs
-          nothing to load, and — unlike the photo it replaces — reads
-          fine in dark mode too, so it no longer needs a light-mode-only
-          escape hatch. Desktop (lg+) only: the content column would
-          have nothing to make room for below that breakpoint. */}
+          restricts itself to). The decorative mark on the right is the
+          actual navbar logo mark (brand-logo-v2.png — transparent
+          background, 1381x1139 source), sitting level (no tilt) as a
+          large horizontal mark rather than the earlier smaller, more
+          tilted, more heavily-glowing version — a light backdrop wash
+          and a couple of fading "speed" lines carry the brand feel now
+          without the mark itself looking like it's lit from behind.
+          Displayed well below its native resolution (a few hundred px
+          vs. 1381 wide), so unlike the old full-bleed background photo
+          — which was stretched *beyond* its resolution to cover an
+          entire section — this stays crisp. The glow/lines/plus accents
+          are still pure CSS, so they cost nothing and hold up in dark
+          mode without a light-mode-only escape hatch. Desktop (lg+)
+          only: the content column would have nothing to make room for
+          below that breakpoint. */}
       <section className="relative w-full overflow-hidden border-b border-border bg-surface-raised">
         <div className="pointer-events-none absolute inset-0 hidden lg:block" aria-hidden="true">
-          <div className="absolute top-1/2 -right-32 size-[34rem] -translate-y-1/2 rounded-full bg-accent/10 blur-3xl" />
-          <div className="absolute top-1/2 right-16 size-72 -translate-y-1/2 rounded-full bg-accent/15 blur-2xl" />
+          <div className="absolute top-1/2 -right-40 h-72 w-[42rem] -translate-y-1/2 rounded-full bg-accent/5 blur-3xl dark:bg-accent/10" />
+          <div className="absolute top-1/2 right-8 h-56 w-96 -translate-y-1/2 rounded-full bg-accent/8 blur-2xl dark:bg-accent/12" />
           <div
             className="absolute top-12 right-20 size-28 opacity-25"
             style={{
@@ -153,12 +156,27 @@ export default async function Home() {
               backgroundSize: "14px 14px",
             }}
           />
-          <div className="absolute top-[36%] right-64 h-px w-44 bg-gradient-to-r from-transparent to-accent/50" />
-          <div className="absolute top-[46%] right-64 h-px w-64 bg-gradient-to-r from-transparent to-accent/40" />
-          <div className="absolute top-[56%] right-64 h-px w-36 bg-gradient-to-r from-transparent to-accent/30" />
-          <Brain
-            className="absolute top-1/2 right-32 size-56 -translate-y-1/2 -rotate-6 text-accent drop-shadow-xl"
-            strokeWidth={1.25}
+          <div className="absolute top-[38%] right-72 h-px w-40 bg-gradient-to-r from-transparent to-accent/45" />
+          <div className="absolute top-[50%] right-72 h-px w-56 bg-gradient-to-r from-transparent to-accent/35" />
+          <div className="absolute top-[62%] right-72 h-px w-32 bg-gradient-to-r from-transparent to-accent/25" />
+          {/* A generic dark drop-shadow (Tailwind's drop-shadow-xl
+              default) reads fine in light mode but actively hurts dark
+              mode — it adds more black weight around a mark that
+              already has dark outline strokes, on a dark surface, so
+              the figure nearly disappears. A small, tight teal-tinted
+              shadow built from the theme's own accent token works in
+              both — enough lift to separate the mark from the surface,
+              short of a backlit "glow." */}
+          <Image
+            src="/brand-logo-v2.png"
+            alt=""
+            width={1381}
+            height={1139}
+            className="absolute top-1/2 right-10 w-[27rem] -translate-y-1/2"
+            style={{
+              filter:
+                "drop-shadow(0 6px 12px rgb(0 0 0 / 0.10)) drop-shadow(0 0 10px var(--color-accent))",
+            }}
           />
           <Plus className="absolute top-20 right-12 size-4 text-accent/40" strokeWidth={2.5} />
           <Plus className="absolute bottom-24 right-80 size-3 text-accent/30" strokeWidth={2.5} />
