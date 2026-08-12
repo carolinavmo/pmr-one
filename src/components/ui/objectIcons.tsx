@@ -12,6 +12,7 @@ import {
   Dumbbell,
   Syringe,
   Bone,
+  Calculator,
   type LucideIcon,
 } from "lucide-react";
 import type { KnowledgeObjectType } from "@/lib/knowledge-objects";
@@ -33,4 +34,5 @@ export const objectIcons: Record<KnowledgeObjectType, LucideIcon> = {
   exercise: Dumbbell,
   procedure: Syringe,
   anatomy_structure: Bone,
+  clinical_calculator: Calculator,
 };

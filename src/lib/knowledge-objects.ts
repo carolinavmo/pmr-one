@@ -15,4 +15,5 @@ export type KnowledgeObjectType =
   | "rehabilitation_protocol"
   | "exercise"
   | "procedure"
-  | "anatomy_structure";
+  | "anatomy_structure"
+  | "clinical_calculator";

@@ -6,6 +6,7 @@ import { Link } from "@/i18n/navigation";
 import {
   PersonStanding,
   Sparkles,
+  Calculator,
   Calendar,
   ChevronRight,
   PanelLeftClose,
@@ -105,6 +106,15 @@ export function SidebarFrame({ tree, userName, userEmail, userRole }: SidebarFra
       </div>
 
       <div className="flex flex-col gap-3 border-t border-border p-3">
+        <Link
+          href="/clinical-tools"
+          className="flex items-center gap-2.5 rounded-lg px-2 py-2 transition-colors duration-base hover:bg-border/40"
+        >
+          <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-accent/10 text-accent">
+            <Calculator className="size-4" aria-hidden="true" />
+          </span>
+          <span className="font-ui text-sm font-medium text-primary">{t("clinicalTools")}</span>
+        </Link>
         <Link
           href="/study-planner"
           className="flex items-center gap-2.5 rounded-lg px-2 py-2 transition-colors duration-base hover:bg-border/40"
