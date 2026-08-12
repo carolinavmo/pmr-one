@@ -8,7 +8,6 @@ import {
   Calendar,
   ShieldCheck,
   Globe,
-  GraduationCap,
 } from "lucide-react";
 import { auth } from "@/auth";
 import { getPublishedDiseases, getPlatformStats } from "@/lib/disease-catalog";
@@ -130,10 +129,32 @@ export default async function Home() {
       {/* Hero band — a full-width tinted section (the app's usual pages
           stay plain-white; this is the one deliberately "arrival"
           moment, same reasoning the homepage's own Eyebrow component
-          restricts itself to). */}
-      <section className="w-full border-b border-border bg-surface-raised">
-        <div className="mx-auto flex w-full max-w-6xl flex-col gap-10 px-6 py-16 lg:flex-row lg:items-center lg:gap-12">
-          <div className="flex flex-1 flex-col gap-6">
+          restricts itself to). The running-brain illustration (same
+          mascot as the navbar logo) is a true background layer, not a
+          boxed photo — it was composed with an empty light-toned left
+          half specifically for text to sit over, so content stays in a
+          capped-width column that clears the figure on the right.
+          Light-mode only: the image's near-white background would read
+          as a stray pale rectangle on the dark surface, so dark mode
+          falls back to the plain tinted section it already used
+          everywhere else. Desktop (lg+) only for the same reason
+          object-cover cropping on a narrow mobile viewport would mostly
+          just show empty space or an awkwardly tight crop of the
+          figure. */}
+      <section className="relative w-full overflow-hidden border-b border-border bg-surface-raised">
+        <Image
+          src="/hero-brain-bg.png"
+          alt=""
+          fill
+          priority
+          className="pointer-events-none absolute inset-0 hidden object-cover object-right lg:block dark:lg:hidden"
+        />
+        <div className="relative mx-auto w-full max-w-6xl px-6 py-16 lg:py-20">
+          {/* Capped width only at lg — no auto margins of its own, so
+              it hugs this container's left edge (matching the rest of
+              the page's max-w-6xl alignment) instead of re-centering
+              itself inside the full-bleed section above. */}
+          <div className="flex flex-col gap-6 lg:max-w-xl">
             <div className="flex max-w-reading flex-col gap-4">
               <h1 className="font-reading text-4xl text-primary sm:text-5xl">
                 {t("heroTitle")}
@@ -150,7 +171,7 @@ export default async function Home() {
                 {t("heroCtaSecondary")}
               </LinkButton>
             </div>
-            <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
+            <div className="grid grid-cols-2 gap-4 sm:grid-cols-4 lg:grid-cols-2">
               {featureRow.map(({ title, body, Icon }) => (
                 <div key={title} className="flex flex-col gap-1.5">
                   <Icon className="size-4.5 text-accent" aria-hidden="true" />
@@ -158,28 +179,6 @@ export default async function Home() {
                   <span className="font-ui text-xs text-secondary">{body}</span>
                 </div>
               ))}
-            </div>
-          </div>
-
-          <div className="relative w-full max-w-md shrink-0 lg:max-w-lg">
-            <Image
-              src="/homepage-hero.png"
-              alt=""
-              width={1728}
-              height={917}
-              priority
-              className="w-full rounded-2xl"
-            />
-            <div className="absolute -bottom-4 left-4 flex max-w-[220px] items-center gap-3 rounded-xl border border-border bg-surface p-3.5 shadow-lg sm:left-0">
-              <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-accent/10 text-accent">
-                <GraduationCap className="size-5" aria-hidden="true" />
-              </span>
-              <div className="flex flex-col leading-tight">
-                <span className="font-ui text-sm font-semibold text-primary">
-                  {t("heroBadgeTitle")}
-                </span>
-                <span className="font-ui text-xs text-secondary">{t("heroBadgeBody")}</span>
-              </div>
             </div>
           </div>
         </div>
