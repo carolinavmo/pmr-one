@@ -1,4 +1,3 @@
-import Image from "next/image";
 import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import {
@@ -8,6 +7,8 @@ import {
   Calendar,
   ShieldCheck,
   Globe,
+  Brain,
+  Plus,
 } from "lucide-react";
 import { auth } from "@/auth";
 import { getPublishedDiseases, getPlatformStats } from "@/lib/disease-catalog";
@@ -129,26 +130,39 @@ export default async function Home() {
       {/* Hero band — a full-width tinted section (the app's usual pages
           stay plain-white; this is the one deliberately "arrival"
           moment, same reasoning the homepage's own Eyebrow component
-          restricts itself to). The running-brain illustration (same
-          mascot as the navbar logo) is a true background layer, not a
-          boxed photo — it was composed with an empty light-toned left
-          half specifically for text to sit over, so content stays in a
-          capped-width column that clears the figure on the right.
-          Light-mode only: the image's near-white background would read
-          as a stray pale rectangle on the dark surface, so dark mode
-          falls back to the plain tinted section it already used
-          everywhere else. Desktop (lg+) only for the same reason
-          object-cover cropping on a narrow mobile viewport would mostly
-          just show empty space or an awkwardly tight crop of the
-          figure. */}
+          restricts itself to). The decorative mark on the right is
+          drawn entirely from vector icons + CSS gradients (no raster
+          image) — a large tilted Brain icon in a soft accent-teal glow
+          with fading "speed" lines and a couple of plus accents,
+          echoing the navbar logo's running-brain mascot without
+          reproducing it literally. That's deliberate: a hand-drawn
+          cartoon blown up to hero size gets soft/pixelated, while an
+          icon + CSS treatment stays perfectly crisp at any size, costs
+          nothing to load, and — unlike the photo it replaces — reads
+          fine in dark mode too, so it no longer needs a light-mode-only
+          escape hatch. Desktop (lg+) only: the content column would
+          have nothing to make room for below that breakpoint. */}
       <section className="relative w-full overflow-hidden border-b border-border bg-surface-raised">
-        <Image
-          src="/hero-brain-bg.png"
-          alt=""
-          fill
-          priority
-          className="pointer-events-none absolute inset-0 hidden object-cover object-right lg:block dark:lg:hidden"
-        />
+        <div className="pointer-events-none absolute inset-0 hidden lg:block" aria-hidden="true">
+          <div className="absolute top-1/2 -right-32 size-[34rem] -translate-y-1/2 rounded-full bg-accent/10 blur-3xl" />
+          <div className="absolute top-1/2 right-16 size-72 -translate-y-1/2 rounded-full bg-accent/15 blur-2xl" />
+          <div
+            className="absolute top-12 right-20 size-28 opacity-25"
+            style={{
+              backgroundImage: "radial-gradient(var(--color-accent) 1px, transparent 1px)",
+              backgroundSize: "14px 14px",
+            }}
+          />
+          <div className="absolute top-[36%] right-64 h-px w-44 bg-gradient-to-r from-transparent to-accent/50" />
+          <div className="absolute top-[46%] right-64 h-px w-64 bg-gradient-to-r from-transparent to-accent/40" />
+          <div className="absolute top-[56%] right-64 h-px w-36 bg-gradient-to-r from-transparent to-accent/30" />
+          <Brain
+            className="absolute top-1/2 right-32 size-56 -translate-y-1/2 -rotate-6 text-accent drop-shadow-xl"
+            strokeWidth={1.25}
+          />
+          <Plus className="absolute top-20 right-12 size-4 text-accent/40" strokeWidth={2.5} />
+          <Plus className="absolute bottom-24 right-80 size-3 text-accent/30" strokeWidth={2.5} />
+        </div>
         <div className="relative mx-auto w-full max-w-6xl px-6 py-16 lg:py-20">
           {/* Capped width only at lg — no auto margins of its own, so
               it hugs this container's left edge (matching the rest of
