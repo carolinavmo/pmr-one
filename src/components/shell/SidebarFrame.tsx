@@ -79,13 +79,8 @@ export function SidebarFrame({ tree, userName, userEmail, userRole }: SidebarFra
       <div className="flex items-center justify-between px-4 py-3">
         <Link href="/" className="flex min-w-0 items-center gap-2">
           <Image src="/brand-logo-v2.png" alt="" width={1381} height={1139} priority className="h-9 w-auto shrink-0" />
-          <span className="flex min-w-0 flex-col leading-none">
-            <span className="truncate font-heading text-base font-semibold text-primary">
-              PM&amp;R Atlas
-            </span>
-            <span className="truncate font-ui text-[10px] text-secondary">
-              {t("tagline")}
-            </span>
+          <span className="truncate font-heading text-base font-semibold text-primary">
+            PM&amp;R Atlas
           </span>
         </Link>
         <button
