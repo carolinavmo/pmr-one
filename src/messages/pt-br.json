@@ -257,6 +257,8 @@
     "howToInterpretHeading": "Como interpretar",
     "sourceHeading": "Fonte",
     "viewSource": "Ver fonte",
+    "unofficialTranslationHeading": "Tradução não oficial",
+    "unofficialTranslationBody": "A versão apresentada é uma tradução não oficial e não foi validada especificamente. Confirme a versão oficial validada e as respectivas condições de uso antes da aplicação clínica ou em pesquisa.",
     "disclaimer": "Esta calculadora é um auxílio de referência clínica. Os resultados devem sempre ser interpretados em contexto por um profissional de saúde qualificado."
   },
   "annotations": {

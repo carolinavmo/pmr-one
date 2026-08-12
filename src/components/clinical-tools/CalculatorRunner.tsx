@@ -1,8 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { useTranslations } from "next-intl";
-import { RotateCcw, Copy, Check, ExternalLink } from "lucide-react";
+import { useTranslations, useLocale } from "next-intl";
+import { RotateCcw, Copy, Check, ExternalLink, TriangleAlert } from "lucide-react";
 import type { Calculator, CalculatorItem } from "@/lib/clinical-tools";
 import { scoreCalculator, resolveInterpretation } from "@/lib/calculator-scoring";
 
@@ -30,6 +30,19 @@ function itemMax(item: CalculatorItem) {
   return Math.max(...item.options.map((option) => option.value));
 }
 
+// Buckets a single item's answer into the same good/warning/serious/
+// critical vocabulary the overall result bar uses, so "Score by item"
+// reads at a glance instead of every bar looking identically neutral —
+// the ratio is relative to that item's own max, not the scale's, since
+// items don't share a common point value (Barthel mixes 5/10/15-point
+// items).
+function itemFillClass(value: number, max: number) {
+  if (max <= 0) return DEFAULT_SEVERITY_FILL_CLASS;
+  const ratio = value / max;
+  const severity = ratio >= 1 ? "good" : ratio >= 0.5 ? "warning" : ratio > 0 ? "serious" : "critical";
+  return SEVERITY_FILL_CLASS[severity];
+}
+
 // The one generic engine every calculator (present and future) renders
 // through — given a Calculator, it doesn't know or care whether the
 // scale is a 10-category point-sum (Barthel), a single-select ordinal,
@@ -39,6 +52,7 @@ function itemMax(item: CalculatorItem) {
 // trip, matching the reference site's own stateless behavior.
 export function CalculatorRunner({ calculator }: { calculator: Calculator }) {
   const t = useTranslations("clinicalTools");
+  const locale = useLocale();
   const [answers, setAnswers] = useState<Record<string, number>>({});
   const [copied, setCopied] = useState(false);
 
@@ -62,7 +76,9 @@ export function CalculatorRunner({ calculator }: { calculator: Calculator }) {
     score === null ? null : Math.min(100, Math.max(0, ((score - scoreMin) / scoreRange) * 100));
 
   const calculationExpression =
-    score === null ? null : `${items.map((item) => answers[item.id]).join(" + ")} = ${score}`;
+    score === null
+      ? null
+      : `${calculator.abbreviation ?? calculator.name} = ${items.map((item) => answers[item.id]).join(" + ")} = ${score}`;
 
   async function handleCopyCalculation() {
     if (!calculationExpression) return;
@@ -132,6 +148,18 @@ export function CalculatorRunner({ calculator }: { calculator: Calculator }) {
 
   return (
     <div className="flex flex-col gap-6">
+      {locale !== "en" && (
+        <div className="flex items-start gap-3 rounded-xl border border-insight/30 bg-insight/5 p-4">
+          <TriangleAlert className="mt-0.5 size-5 shrink-0 text-insight" aria-hidden="true" />
+          <div className="flex flex-col gap-1">
+            <h3 className="font-ui text-sm font-semibold text-primary">
+              {t("unofficialTranslationHeading")}
+            </h3>
+            <p className="font-ui text-sm text-secondary">{t("unofficialTranslationBody")}</p>
+          </div>
+        </div>
+      )}
+
       <div className="flex flex-col gap-2 rounded-xl border border-border/40 bg-surface-raised p-3.5 shadow-sm">
         <div className="flex items-center justify-between gap-3">
           <span className="font-ui text-sm font-medium text-primary">
@@ -270,7 +298,7 @@ export function CalculatorRunner({ calculator }: { calculator: Calculator }) {
                           </span>
                           <div className="h-1.5 min-w-16 flex-1 overflow-hidden rounded-full bg-border/50">
                             <div
-                              className="h-full rounded-full bg-accent transition-all duration-base"
+                              className={`h-full rounded-full transition-all duration-base ${itemFillClass(value, max)}`}
                               style={{ width: `${itemPercent}%` }}
                             />
                           </div>
