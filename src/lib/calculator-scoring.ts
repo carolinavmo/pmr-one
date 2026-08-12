@@ -98,6 +98,15 @@ const FORMULAS: Record<string, (values: number[]) => number> = {
     const total = movement * 4 - resting * 5 - synkinesis;
     return Math.max(0, Math.min(100, Math.round(total)));
   },
+  // UDI-6: every item is 0 (not at all) to 3 (greatly), normalized to
+  // a 0-100 percentage of the maximum possible — the standard UDI-6
+  // transform is (raw sum / 18) x 100, mathematically identical to
+  // (mean / 3) x 100, matching percent4/percent10's shape at a 0-3
+  // item scale instead of 0-4/0-10. descendingGood (higher = worse).
+  percent3: (values) => {
+    const mean = values.reduce((sum, value) => sum + value, 0) / values.length;
+    return Math.round((mean / 3) * 100);
+  },
 };
 
 // Returns null until every item has an answer — the caller uses that
