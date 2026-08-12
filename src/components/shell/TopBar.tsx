@@ -1,6 +1,7 @@
 import { getTranslations } from "next-intl/server";
+import Image from "next/image";
 import { Link } from "@/i18n/navigation";
-import { Bell, Calculator, Calendar, Home, PersonStanding } from "lucide-react";
+import { Bell, Calculator, Calendar, Home } from "lucide-react";
 import { auth } from "@/auth";
 import { CommandPalette } from "./CommandPalette";
 import { UserMenu } from "./UserMenu";
@@ -33,10 +34,8 @@ export async function TopBar() {
     <header className="sticky top-0 z-10 bg-surface">
       <div className="flex flex-wrap items-center gap-4 px-4 py-3 lg:px-6">
         <MobileIndexDrawer />
-        <Link href="/" className="flex shrink-0 items-center gap-2.5 lg:hidden">
-          <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-accent text-white">
-            <PersonStanding className="size-5" aria-hidden="true" />
-          </span>
+        <Link href="/" className="flex shrink-0 items-center gap-2 lg:hidden">
+          <Image src="/brand-logo-v2.png" alt="" width={1381} height={1139} priority className="h-9 w-auto shrink-0" />
           <span className="font-heading text-lg font-semibold text-primary">PM&amp;R Atlas</span>
         </Link>
 

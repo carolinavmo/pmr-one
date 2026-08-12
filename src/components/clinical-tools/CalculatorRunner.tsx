@@ -40,9 +40,10 @@ function itemMax(item: CalculatorItem) {
 // color math or hex duplication.
 const GRADIENT_STOPS = ["var(--color-warning)", "var(--color-card-orange)", "var(--color-insight)", "var(--color-trust)"];
 
-function itemFillStyle(value: number, max: number): CSSProperties {
+function itemFillStyle(value: number, max: number, descendingGood?: boolean): CSSProperties {
   if (max <= 0) return { backgroundColor: "var(--color-border)" };
-  const ratio = Math.max(0, Math.min(1, value / max));
+  let ratio = Math.max(0, Math.min(1, value / max));
+  if (descendingGood) ratio = 1 - ratio;
   // Biases the ramp toward green as it approaches a good result — a
   // plain linear interpolation reaches full green only at ratio 1,
   // which reads as too much amber/orange for scores that are already
@@ -94,7 +95,7 @@ export function CalculatorRunner({ calculator }: { calculator: Calculator }) {
     return () => observer.disconnect();
   }, []);
 
-  const { items, calculationExplanation, source, resultNote } = calculator.definition;
+  const { items, calculationExplanation, source, resultNote, descendingGood } = calculator.definition;
   const answeredCount = Object.keys(answers).length;
   const totalCount = items.length;
   const percent = totalCount === 0 ? 0 : Math.round((answeredCount / totalCount) * 100);
@@ -214,8 +215,7 @@ export function CalculatorRunner({ calculator }: { calculator: Calculator }) {
           <div
             className="h-3 overflow-hidden rounded-full"
             style={{
-              background:
-                "linear-gradient(to right, var(--color-warning), var(--color-card-orange), var(--color-insight), var(--color-trust))",
+              background: `linear-gradient(to right, ${(descendingGood ? [...GRADIENT_STOPS].reverse() : GRADIENT_STOPS).join(", ")})`,
             }}
           />
         ) : (
@@ -436,7 +436,7 @@ export function CalculatorRunner({ calculator }: { calculator: Calculator }) {
                           <div className="h-1.5 min-w-16 flex-1 overflow-hidden rounded-full bg-border/50">
                             <div
                               className="h-full rounded-full transition-all duration-base"
-                              style={{ width: `${itemPercent}%`, ...itemFillStyle(value, max) }}
+                              style={{ width: `${itemPercent}%`, ...itemFillStyle(value, max, descendingGood) }}
                             />
                           </div>
                           <span className="w-6 shrink-0 text-right font-ui text-xs font-medium text-secondary tabular-nums">

@@ -83,6 +83,14 @@ export interface CalculatorDefinition {
   // certified implementation" notice distinct from the unofficial-
   // translation notice, and shown regardless of locale.
   proprietary?: boolean;
+  // True when a LOWER score is clinically better — e.g. the modified
+  // Rankin Scale (0 = no symptoms, 6 = dead). Every other calculator so
+  // far is ascending-good (higher = more independent), which the
+  // per-item severity bar and the resultNote gradient bar both assume
+  // by default; this flips both so "low" still renders as good/green
+  // instead of red. Discrete `interpretation` bands are unaffected —
+  // their severity is authored explicitly per band regardless of order.
+  descendingGood?: boolean;
 }
 
 export interface CalculatorCategory {
