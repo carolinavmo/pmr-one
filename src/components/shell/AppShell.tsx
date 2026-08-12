@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import { Sidebar } from "./Sidebar";
 import { TopBar } from "./TopBar";
+import { Footer } from "./Footer";
 
 // One chrome set for every visitor, signed in or not — the Index
 // (topic tree) is real public reference content, not an account
@@ -26,6 +27,7 @@ export async function AppShell({ children }: { children: ReactNode }) {
         <Sidebar />
         <div className="flex min-w-0 flex-1 flex-col">{children}</div>
       </div>
+      <Footer />
     </div>
   );
 }

@@ -25,7 +25,7 @@
     "search": "Pesquisar…",
     "explore": "Explorar",
     "noMatchingTopics": "Nenhum tópico correspondente",
-    "searchPlaceholder": "Pesquisar patologias, manobras de exame, pérolas…",
+    "searchPlaceholder": "Pesquisar patologias, manobras de exame, calculadoras…",
     "searchLabel": "Pesquisar",
     "paletteLoading": "A carregar…",
     "noMatchesFor": "Sem resultados para \"{query}\".",
@@ -39,6 +39,12 @@
     "openExplore": "Abrir Explorar",
     "closeExplore": "Fechar Explorar",
     "languageSwitcher": "Mudar idioma"
+  },
+  "footer": {
+    "tagline": "Uma referência rápida e curada por especialistas para o exame musculoesquelético e infiltrações em MFR.",
+    "linksLabel": "Rodapé",
+    "copyright": "© {year} PM&R Atlas",
+    "disclaimer": "Apenas para referência educativa — não substitui o julgamento clínico."
   },
   "disease": {
     "breadcrumbLabel": "Localização",

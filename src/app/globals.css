@@ -107,6 +107,18 @@
   --color-badge-fuchsia: #c026d3;
   --color-badge-pink: #db2777;
 
+  /* ---------- Color: footer (fixed, not theme-swapped) ----------
+     Same "declared once, doesn't flip with light/dark" reasoning as
+     the badge tokens above — a deliberately dark teal band that reads
+     the same regardless of the page theme around it, rather than a
+     surface tone that lightens in dark mode. Deeper than
+     --color-badge-teal since this is a full-width section, not a
+     small chip; teal-950/900/200 (Tailwind's own steps). */
+  --color-footer-bg: #042f2e;
+  --color-footer-border: #134e4a;
+  --color-footer-text: #f0fdfa;
+  --color-footer-text-secondary: #99f6e4;
+
   /* ---------- Spacing: 8px base grid ----------
      4/8/12/16/24/32/48/64px. Tailwind's default spacing scale
      (steps 1,2,3,4,6,8,12,16) already maps exactly to this scale
@@ -263,6 +275,11 @@
   --color-badge-purple: var(--color-badge-purple);
   --color-badge-fuchsia: var(--color-badge-fuchsia);
   --color-badge-pink: var(--color-badge-pink);
+
+  --color-footer-bg: var(--color-footer-bg);
+  --color-footer-border: var(--color-footer-border);
+  --color-footer-text: var(--color-footer-text);
+  --color-footer-text-secondary: var(--color-footer-text-secondary);
 
   --max-width-reading: var(--max-width-reading);
 

@@ -25,7 +25,7 @@
     "search": "Search…",
     "explore": "Explore",
     "noMatchingTopics": "No matching topics",
-    "searchPlaceholder": "Search conditions, exam maneuvers, pearls…",
+    "searchPlaceholder": "Search conditions, exam maneuvers, calculators…",
     "searchLabel": "Search",
     "paletteLoading": "Loading…",
     "noMatchesFor": "No matches for \"{query}\".",
@@ -39,6 +39,12 @@
     "openExplore": "Open Explore",
     "closeExplore": "Close Explore",
     "languageSwitcher": "Change language"
+  },
+  "footer": {
+    "tagline": "A fast, expert-curated MSK exam and injection reference for PM&R residents.",
+    "linksLabel": "Footer",
+    "copyright": "© {year} PM&R Atlas",
+    "disclaimer": "For educational reference only — not a substitute for clinical judgment."
   },
   "disease": {
     "breadcrumbLabel": "Breadcrumb",

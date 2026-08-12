@@ -25,7 +25,7 @@
     "search": "Buscar…",
     "explore": "Explorar",
     "noMatchingTopics": "No hay temas coincidentes",
-    "searchPlaceholder": "Buscar patologías, maniobras exploratorias, perlas…",
+    "searchPlaceholder": "Buscar patologías, maniobras exploratorias, calculadoras…",
     "searchLabel": "Buscar",
     "paletteLoading": "Cargando…",
     "noMatchesFor": "Sin resultados para «{query}».",
@@ -39,6 +39,12 @@
     "openExplore": "Abrir Explorar",
     "closeExplore": "Cerrar Explorar",
     "languageSwitcher": "Cambiar idioma"
+  },
+  "footer": {
+    "tagline": "Una referencia rápida y curada por expertos para la exploración musculoesquelética y las infiltraciones en MFR.",
+    "linksLabel": "Pie de página",
+    "copyright": "© {year} PM&R Atlas",
+    "disclaimer": "Solo con fines educativos — no sustituye el juicio clínico."
   },
   "disease": {
     "breadcrumbLabel": "Ruta de navegación",
