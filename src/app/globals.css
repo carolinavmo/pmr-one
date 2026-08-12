@@ -109,15 +109,17 @@
 
   /* ---------- Color: footer (fixed, not theme-swapped) ----------
      Same "declared once, doesn't flip with light/dark" reasoning as
-     the badge tokens above — a deliberately dark teal band that reads
-     the same regardless of the page theme around it, rather than a
-     surface tone that lightens in dark mode. Deeper than
-     --color-badge-teal since this is a full-width section, not a
-     small chip; teal-950/900/200 (Tailwind's own steps). */
-  --color-footer-bg: #042f2e;
-  --color-footer-border: #134e4a;
-  --color-footer-text: #f0fdfa;
-  --color-footer-text-secondary: #99f6e4;
+     the badge tokens above — a deliberate teal band that reads the
+     same regardless of the page theme around it, rather than a
+     surface tone that lightens in dark mode. Founder-specified exact
+     hex (#5CA4B4), not derived from the Tailwind teal ramp used
+     elsewhere. Secondary text is white at reduced opacity rather than
+     a separate hex, so it always stays a legible step below full white
+     on this one fixed background. */
+  --color-footer-bg: #5ca4b4;
+  --color-footer-border: rgb(255 255 255 / 25%);
+  --color-footer-text: #ffffff;
+  --color-footer-text-secondary: rgb(255 255 255 / 85%);
 
   /* ---------- Spacing: 8px base grid ----------
      4/8/12/16/24/32/48/64px. Tailwind's default spacing scale
