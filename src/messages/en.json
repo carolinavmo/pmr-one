@@ -250,6 +250,7 @@
     "interpretationHeading": "Interpretation",
     "itemScoreHeading": "Score by item",
     "calculationDetailHeading": "Calculation detail",
+    "calculationPointsLabel": "points",
     "copyCalculation": "Copy calculation",
     "calculationCopied": "Copied",
     "howCalculatedHeading": "How it's calculated",

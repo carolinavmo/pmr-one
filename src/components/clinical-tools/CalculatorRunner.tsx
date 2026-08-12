@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useTranslations, useLocale } from "next-intl";
 import { RotateCcw, Copy, Check, ExternalLink, TriangleAlert } from "lucide-react";
 import type { Calculator, CalculatorItem } from "@/lib/clinical-tools";
@@ -54,9 +54,31 @@ export function CalculatorRunner({ calculator }: { calculator: Calculator }) {
   const t = useTranslations("clinicalTools");
   const locale = useLocale();
   const [answers, setAnswers] = useState<Record<string, number>>({});
+  // Tracked separately from answers (which stores the selected option's
+  // point value, for scoring) because several items — e.g. Lawton-Brody's
+  // housekeeping domain — have multiple options that share the same
+  // value. Highlighting and React's list key both need to identify the
+  // exact option clicked, not just its point value.
+  const [selectedIndex, setSelectedIndex] = useState<Record<string, number>>({});
   const [copied, setCopied] = useState(false);
+  // The shell's <header> is itself sticky and its height varies — it
+  // wraps to extra rows below the `lg` breakpoint (and at any width, in
+  // a longer-label locale), so no fixed Tailwind offset tracks it
+  // correctly. Measuring it directly is the only robust way to stick
+  // the progress bar right beneath it rather than under or far below it.
+  const [stickyOffset, setStickyOffset] = useState(76);
 
-  const { items, calculationExplanation, source } = calculator.definition;
+  useEffect(() => {
+    const header = document.querySelector("header");
+    if (!header) return;
+    const updateOffset = () => setStickyOffset(header.getBoundingClientRect().height + 8);
+    updateOffset();
+    const observer = new ResizeObserver(updateOffset);
+    observer.observe(header);
+    return () => observer.disconnect();
+  }, []);
+
+  const { items, calculationExplanation, source, resultNote } = calculator.definition;
   const answeredCount = Object.keys(answers).length;
   const totalCount = items.length;
   const percent = totalCount === 0 ? 0 : Math.round((answeredCount / totalCount) * 100);
@@ -64,6 +86,10 @@ export function CalculatorRunner({ calculator }: { calculator: Calculator }) {
   const score = scoreCalculator(calculator.definition, answers);
   const interpretation = score === null ? null : resolveInterpretation(calculator.definition, score);
   const bands = calculator.definition.interpretation ?? [];
+  // resultNote is a fallback for scales with no discrete severity bands
+  // (e.g. FIM) — same label/description shape as a band's interpretation,
+  // but paired with a continuous gradient bar instead of colored segments.
+  const interpretationDisplay = bands.length > 0 ? interpretation : (resultNote ?? null);
 
   // Derived rather than solely relying on the stored maxScore field, so
   // the range bar stays correct even for a future calculator that omits
@@ -75,23 +101,11 @@ export function CalculatorRunner({ calculator }: { calculator: Calculator }) {
   const pointerPercent =
     score === null ? null : Math.min(100, Math.max(0, ((score - scoreMin) / scoreRange) * 100));
 
-  const calculationExpression =
-    score === null
-      ? null
-      : `${calculator.abbreviation ?? calculator.name} = ${items.map((item) => answers[item.id]).join(" + ")} = ${score}`;
-
-  async function handleCopyCalculation() {
-    if (!calculationExpression) return;
-    await navigator.clipboard.writeText(calculationExpression);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 1500);
-  }
-
   // Consecutive items sharing the same (optional) section collapse into
   // one subsection — Barthel authors no section on any item, so this
   // produces a single unlabeled group and renders as a flat list; a
-  // future domain-organized scale (e.g. FIM) gets real subsections for
-  // free just by authoring item.section.
+  // domain-organized scale (e.g. FIM's 6 official subscales) gets real
+  // subsections for free just by authoring item.section.
   const itemGroups: { section: string | null; items: CalculatorItem[] }[] = [];
   for (const item of items) {
     const key = item.section ?? null;
@@ -103,13 +117,70 @@ export function CalculatorRunner({ calculator }: { calculator: Calculator }) {
     }
   }
 
+  // The calculation detail names every item rather than showing a bare
+  // arithmetic sum ("7 + 7 + ... = 126") — with 18 items sharing a 1-7
+  // rubric, a flat list of numbers can't be matched back to the item it
+  // came from, which defeats the point of a copyable clinical record.
+  // domainTotals rolls sections up one level further (e.g. FIM's
+  // Motor/Cognitive split above its 6 subscales) for the header line's
+  // per-domain subtotal — only calculators that author item.domain get
+  // this; everything else just gets a plain score line.
+  const domainOrder: string[] = [];
+  const domainTotals: Record<string, { score: number; max: number }> = {};
+  for (const item of items) {
+    if (!item.domain) continue;
+    if (!domainTotals[item.domain]) {
+      domainTotals[item.domain] = { score: 0, max: 0 };
+      domainOrder.push(item.domain);
+    }
+    domainTotals[item.domain].score += answers[item.id] ?? 0;
+    domainTotals[item.domain].max += itemMax(item);
+  }
+
+  type CalculationLine = { kind: "header" | "section" | "item"; text: string };
+  const calculationLines: CalculationLine[] =
+    score === null
+      ? []
+      : [
+          {
+            kind: "header",
+            text:
+              `${calculator.abbreviation ?? calculator.name} = ${score}/${scoreMax} ${t("calculationPointsLabel")}` +
+              (domainOrder.length > 0
+                ? ` (${domainOrder.map((domain) => `${domain}: ${domainTotals[domain].score}`).join(" | ")})`
+                : ""),
+          },
+          ...itemGroups.flatMap((group) => [
+            ...(group.section ? [{ kind: "section" as const, text: group.section }] : []),
+            ...group.items.map((item) => ({
+              kind: "item" as const,
+              text: `${item.label}: ${answers[item.id] ?? 0}`,
+            })),
+          ]),
+        ];
+  const calculationCopyText = calculationLines
+    .map((line) => (line.kind === "item" ? `- ${line.text}` : line.text))
+    .join("\n");
+
+  async function handleCopyCalculation() {
+    if (calculationLines.length === 0) return;
+    await navigator.clipboard.writeText(calculationCopyText);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 1500);
+  }
+
   // Shared between the live result (with a pointer marking the current
   // score) and the always-visible "how to interpret" card (without one)
-  // — same segmented, severity-colored bar either way. Segment widths
-  // use flex-grow weights (item count, not raw percentages) so a
-  // single-value band like Barthel's "100" still renders with a
-  // visible sliver instead of collapsing to zero width.
+  // — same bar either way. Two fill modes: a segmented, severity-colored
+  // bar when discrete bands are authored (segment widths use flex-grow
+  // weights — item count, not raw percentages — so a single-value band
+  // like Barthel's "100" still renders with a visible sliver instead of
+  // collapsing to zero width); otherwise, for a resultNote-only scale
+  // (e.g. FIM, which has no published cut-offs), a continuous gradient
+  // across the same red→amber→green severity colors, since there's no
+  // band structure to segment by.
   function renderRangeBar(withPointer: boolean) {
+    const useGradient = bands.length === 0 && !!resultNote;
     return (
       <div className={withPointer ? "relative pt-6" : undefined}>
         {withPointer && pointerPercent !== null && (
@@ -123,24 +194,41 @@ export function CalculatorRunner({ calculator }: { calculator: Calculator }) {
             <span className="-mt-1 size-1.5 rotate-45 bg-primary" aria-hidden="true" />
           </div>
         )}
-        <div className="flex h-3 overflow-hidden rounded-full">
-          {bands.map((band) => (
-            <div
-              key={`${band.min}-${band.max}-${band.label}`}
-              style={{ flexGrow: Math.max(band.max - band.min + 1, 3) }}
-              className={SEVERITY_FILL_CLASS[band.severity ?? ""] ?? DEFAULT_SEVERITY_FILL_CLASS}
-            />
-          ))}
-        </div>
+        {useGradient ? (
+          <div
+            className="h-3 overflow-hidden rounded-full"
+            style={{
+              background:
+                "linear-gradient(to right, var(--color-warning), var(--color-card-orange), var(--color-insight), var(--color-trust))",
+            }}
+          />
+        ) : (
+          <div className="flex h-3 overflow-hidden rounded-full">
+            {bands.map((band) => (
+              <div
+                key={`${band.min}-${band.max}-${band.label}`}
+                style={{ flexGrow: Math.max(band.max - band.min + 1, 3) }}
+                className={SEVERITY_FILL_CLASS[band.severity ?? ""] ?? DEFAULT_SEVERITY_FILL_CLASS}
+              />
+            ))}
+          </div>
+        )}
         <div className="mt-1.5 flex items-center justify-between font-ui text-xs text-secondary">
           <span className="tabular-nums">{scoreMin}</span>
           <span className="tabular-nums">{scoreMax}</span>
         </div>
-        {bands.length > 0 && (
+        {useGradient ? (
           <div className="flex items-center justify-between font-ui text-[11px] text-secondary/80">
-            <span>{bands[0].label}</span>
-            <span>{bands[bands.length - 1].label}</span>
+            <span>{resultNote!.lowLabel}</span>
+            <span>{resultNote!.highLabel}</span>
           </div>
+        ) : (
+          bands.length > 0 && (
+            <div className="flex items-center justify-between font-ui text-[11px] text-secondary/80">
+              <span>{bands[0].label}</span>
+              <span>{bands[bands.length - 1].label}</span>
+            </div>
+          )
         )}
       </div>
     );
@@ -160,7 +248,10 @@ export function CalculatorRunner({ calculator }: { calculator: Calculator }) {
         </div>
       )}
 
-      <div className="flex flex-col gap-2 rounded-xl border border-border/40 bg-surface-raised p-3.5 shadow-sm">
+      <div
+        className="sticky z-[5] flex flex-col gap-2 rounded-xl border border-border/40 bg-surface-raised p-3.5 shadow-sm"
+        style={{ top: stickyOffset }}
+      >
         <div className="flex items-center justify-between gap-3">
           <span className="font-ui text-sm font-medium text-primary">
             {t("itemsAnswered", { answered: answeredCount, total: totalCount })}
@@ -170,7 +261,10 @@ export function CalculatorRunner({ calculator }: { calculator: Calculator }) {
             {answeredCount > 0 && (
               <button
                 type="button"
-                onClick={() => setAnswers({})}
+                onClick={() => {
+                  setAnswers({});
+                  setSelectedIndex({});
+                }}
                 className="inline-flex items-center gap-1 font-ui text-xs font-medium text-secondary transition-colors duration-base hover:text-accent"
               >
                 <RotateCcw className="size-3" aria-hidden="true" />
@@ -189,7 +283,7 @@ export function CalculatorRunner({ calculator }: { calculator: Calculator }) {
 
       <div className="flex flex-col gap-5">
         {items.map((item, index) => {
-          const selected = answers[item.id];
+          const currentSelectedIndex = selectedIndex[item.id];
           return (
             <div key={item.id} className="flex flex-col gap-2">
               <div className="flex items-start gap-2.5">
@@ -203,37 +297,54 @@ export function CalculatorRunner({ calculator }: { calculator: Calculator }) {
                   )}
                 </div>
               </div>
-              <div className="flex flex-wrap gap-2">
-                {item.options.map((option) => {
-                  const isSelected = selected === option.value;
-                  return (
-                    <button
-                      key={option.value}
-                      type="button"
-                      onClick={() =>
-                        setAnswers((current) => ({ ...current, [item.id]: option.value }))
-                      }
-                      className={`flex min-w-36 flex-1 flex-col gap-1 rounded-lg border p-3 text-left transition-colors duration-base ${
-                        isSelected
-                          ? "border-accent bg-accent/5"
-                          : "border-border hover:border-accent/50 hover:bg-border/10"
-                      }`}
-                    >
-                      <span
-                        className={`inline-flex w-fit items-center rounded-full px-2 py-0.5 font-ui text-xs font-semibold tabular-nums ${
-                          isSelected ? "bg-accent text-white" : "bg-border/50 text-secondary"
-                        }`}
-                      >
-                        {t("pointsAbbrev", { value: option.value })}
-                      </span>
-                      <span className="font-ui text-sm text-primary">{option.label}</span>
-                      {option.description && (
-                        <span className="font-ui text-xs text-secondary">{option.description}</span>
-                      )}
-                    </button>
-                  );
-                })}
-              </div>
+              {/* Scales with many options per item (e.g. FIM's 7-level
+                  rubric) use a denser card so all options still fit on
+                  one row instead of wrapping — everything else (max 5
+                  options, e.g. Berg) keeps the original, more spacious
+                  sizing unchanged. */}
+              {(() => {
+                const isCompact = item.options.length >= 6;
+                return (
+                  <div className={`flex flex-wrap ${isCompact ? "gap-1.5" : "gap-2"}`}>
+                    {item.options.map((option, optionIndex) => {
+                      const isSelected = currentSelectedIndex === optionIndex;
+                      return (
+                        <button
+                          key={optionIndex}
+                          type="button"
+                          onClick={() => {
+                            setAnswers((current) => ({ ...current, [item.id]: option.value }));
+                            setSelectedIndex((current) => ({ ...current, [item.id]: optionIndex }));
+                          }}
+                          className={`flex flex-1 flex-col text-left transition-colors duration-base ${
+                            isCompact ? "min-w-24 gap-0.5 rounded-md border p-2" : "min-w-36 gap-1 rounded-lg border p-3"
+                          } ${
+                            isSelected
+                              ? "border-accent bg-accent/5"
+                              : "border-border hover:border-accent/50 hover:bg-border/10"
+                          }`}
+                        >
+                          <span
+                            className={`inline-flex w-fit items-center rounded-full font-ui font-semibold tabular-nums ${
+                              isCompact ? "px-1.5 py-0.5 text-[10px]" : "px-2 py-0.5 text-xs"
+                            } ${isSelected ? "bg-accent text-white" : "bg-border/50 text-secondary"}`}
+                          >
+                            {t("pointsAbbrev", { value: option.value })}
+                          </span>
+                          <span className={`font-ui text-primary ${isCompact ? "text-xs" : "text-sm"}`}>
+                            {option.label}
+                          </span>
+                          {option.description && (
+                            <span className={`font-ui text-secondary ${isCompact ? "text-[10px]" : "text-xs"}`}>
+                              {option.description}
+                            </span>
+                          )}
+                        </button>
+                      );
+                    })}
+                  </div>
+                );
+              })()}
             </div>
           );
         })}
@@ -251,19 +362,19 @@ export function CalculatorRunner({ calculator }: { calculator: Calculator }) {
                 <span className="text-lg font-medium text-secondary">/{scoreMax}</span>
               </p>
             </div>
-            {interpretation && (
+            {interpretationDisplay && (
               <div>
                 <h3 className="font-ui text-xs font-semibold tracking-wide text-secondary uppercase">
                   {t("interpretationHeading")}
                 </h3>
-                <p className="font-ui text-base font-semibold text-primary">{interpretation.label}</p>
-                {interpretation.description && (
-                  <p className="font-ui text-sm text-secondary">{interpretation.description}</p>
+                <p className="font-ui text-base font-semibold text-primary">{interpretationDisplay.label}</p>
+                {interpretationDisplay.description && (
+                  <p className="font-ui text-sm text-secondary">{interpretationDisplay.description}</p>
                 )}
               </div>
             )}
           </div>
-          {bands.length > 0 && renderRangeBar(true)}
+          {(bands.length > 0 || resultNote) && renderRangeBar(true)}
         </div>
       )}
 
@@ -316,7 +427,7 @@ export function CalculatorRunner({ calculator }: { calculator: Calculator }) {
         </div>
       )}
 
-      {calculationExpression && (
+      {calculationLines.length > 0 && (
         <div className="flex flex-col gap-2 rounded-xl border border-border/40 bg-surface-raised p-4">
           <div className="flex items-center justify-between gap-3">
             <h3 className="font-ui text-xs font-semibold tracking-wide text-secondary uppercase">
@@ -340,7 +451,33 @@ export function CalculatorRunner({ calculator }: { calculator: Calculator }) {
               )}
             </button>
           </div>
-          <p className="font-ui text-sm text-primary tabular-nums">{calculationExpression}</p>
+          <div className="flex flex-col gap-0.5">
+            {calculationLines.map((line, index) => {
+              if (line.kind === "header") {
+                return (
+                  <p key={index} className="font-ui text-sm font-semibold text-primary tabular-nums">
+                    {line.text}
+                  </p>
+                );
+              }
+              if (line.kind === "section") {
+                return (
+                  <p
+                    key={index}
+                    className="mt-2 font-ui text-xs font-semibold tracking-wide text-secondary uppercase first:mt-1"
+                  >
+                    {line.text}
+                  </p>
+                );
+              }
+              return (
+                <p key={index} className="pl-3 font-ui text-sm text-primary tabular-nums">
+                  {"- "}
+                  {line.text}
+                </p>
+              );
+            })}
+          </div>
         </div>
       )}
 

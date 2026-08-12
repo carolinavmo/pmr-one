@@ -19,7 +19,7 @@ export default async function CalculatorPage({ params }: CalculatorPageProps) {
   const t = await getTranslations("clinicalTools");
 
   return (
-    <main className="mx-auto flex w-full max-w-3xl flex-col gap-6 px-6 py-16">
+    <main className="mx-auto flex w-full max-w-5xl flex-col gap-6 px-4 py-16">
       <div className="flex flex-col gap-2">
         <Link
           href="/clinical-tools"

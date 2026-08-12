@@ -18,12 +18,19 @@ export interface CalculatorItem {
   label: string;
   instructions?: string;
   options: CalculatorItemOption[];
-  // Optional grouping label (e.g. "Motor domain") for scales that
-  // organize items into subsections, like FIM's motor/cognitive split.
-  // Consecutive items sharing the same section render under one
-  // subsection heading with its own subtotal; Barthel has none, so it
-  // renders as a single flat list.
+  // Optional grouping label for scales organized into subsections —
+  // e.g. FIM's 6 official subscales (Self-Care, Sphincter Control,
+  // Transfers, Locomotion, Communication, Social Cognition). Consecutive
+  // items sharing the same section render under one subsection heading
+  // with its own subtotal; Barthel has none, so it renders as a single
+  // flat list.
   section?: string;
+  // Optional coarser grouping *above* section — e.g. FIM's Motor vs.
+  // Cognitive split, which itself contains several sections. Used only
+  // for the calculation-detail summary line's per-domain subtotal
+  // (e.g. "Motor: 70 | Cognitive: 27"); the item-by-item "Score by
+  // item" card groups by section, not domain.
+  domain?: string;
 }
 
 export interface CalculatorInterpretationBand {
@@ -32,6 +39,17 @@ export interface CalculatorInterpretationBand {
   label: string;
   description?: string;
   severity?: "good" | "warning" | "serious" | "critical";
+}
+
+// For scales with no published severity cut-offs (e.g. FIM) — a
+// fallback shown in place of a band-specific interpretation, paired
+// with a continuous gradient range bar instead of discrete colored
+// segments. Ignored when `interpretation` bands are present.
+export interface CalculatorResultNote {
+  label: string;
+  description?: string;
+  lowLabel: string;
+  highLabel: string;
 }
 
 export type CalculatorScoring =
@@ -48,6 +66,9 @@ export interface CalculatorDefinition {
   scoring: CalculatorScoring;
   maxScore?: number;
   interpretation?: CalculatorInterpretationBand[];
+  // Fallback shown only when `interpretation` is absent — see
+  // CalculatorResultNote.
+  resultNote?: CalculatorResultNote;
   // Plain-language description of the scoring method, authored per
   // calculator (and per locale, like item/option text) rather than
   // derived from scoring.method — a formula-scored scale needs prose
