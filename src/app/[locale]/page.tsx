@@ -1,15 +1,7 @@
 import Image from "next/image";
 import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
-import {
-  BookOpen,
-  ListChecks,
-  TrendingUp,
-  Calendar,
-  ShieldCheck,
-  Globe,
-  Plus,
-} from "lucide-react";
+import { Calendar, ShieldCheck, Globe, Plus } from "lucide-react";
 import { auth } from "@/auth";
 import { getPublishedDiseases, getPlatformStats } from "@/lib/disease-catalog";
 import {
@@ -20,6 +12,8 @@ import {
 } from "@/lib/workspace";
 import { getAllAnnotationsForUser } from "@/lib/annotations";
 import { sanitizeRichText } from "@/lib/rich-text";
+import { getHomepageHero } from "@/lib/homepage-hero";
+import { HomeHero } from "@/components/home/HomeHero";
 import { KnowledgeObjectCard } from "@/components/ui/KnowledgeObjectCard";
 import { LinkButton } from "@/components/ui/LinkButton";
 import { Eyebrow } from "@/components/ui/Eyebrow";
@@ -27,7 +21,12 @@ import { StatTile } from "@/components/ui/StatTile";
 import { objectIcons } from "@/components/ui/objectIcons";
 import { MemberDashboard } from "@/components/dashboard/MemberDashboard";
 
-export default async function Home() {
+interface HomeProps {
+  searchParams: Promise<{ preview?: string }>;
+}
+
+export default async function Home({ searchParams }: HomeProps) {
+  const { preview } = await searchParams;
   const [diseases, session, stats] = await Promise.all([
     getPublishedDiseases(),
     auth(),
@@ -36,7 +35,15 @@ export default async function Home() {
   const canReview =
     session?.user.role === "editor" || session?.user.role === "admin";
 
-  if (session) {
+  // The guest-facing hero below normally never renders for a signed-in
+  // visitor (they get the member dashboard instead, which has its own
+  // separate hero) — an editor/admin can preview and edit it anyway by
+  // appending ?preview=hero (see the "Preview homepage" link in
+  // UserMenu), which is the only way they'd ever see this branch while
+  // signed in.
+  const previewingHero = preview === "hero" && canReview;
+
+  if (session && !previewingHero) {
     const [recentlyViewed, savedPearls, favoriteDiseases, notes, annotations] =
       await Promise.all([
         getRecentlyViewed(session.user.id, undefined, 6),
@@ -71,6 +78,7 @@ export default async function Home() {
 
   const t = await getTranslations("home");
   const tCommon = await getTranslations("common");
+  const hero = await getHomepageHero();
 
   const statCells = [
     { label: t("statConditions"), value: stats.conditions, Icon: objectIcons.disease },
@@ -89,13 +97,6 @@ export default async function Home() {
       value: stats.references,
       Icon: objectIcons.reference,
     },
-  ];
-
-  const featureRow = [
-    { title: t("featureEvidenceTitle"), body: t("featureEvidenceBody"), Icon: BookOpen },
-    { title: t("featureClinicalTitle"), body: t("featureClinicalBody"), Icon: objectIcons.disease },
-    { title: t("featureStructuredTitle"), body: t("featureStructuredBody"), Icon: ListChecks },
-    { title: t("featureProgressTitle"), body: t("featureProgressBody"), Icon: TrendingUp },
   ];
 
   const everythingCards = [
@@ -186,33 +187,12 @@ export default async function Home() {
               it hugs this container's left edge (matching the rest of
               the page's max-w-6xl alignment) instead of re-centering
               itself inside the full-bleed section above. */}
-          <div className="flex flex-col gap-6 lg:max-w-xl">
-            <div className="flex max-w-reading flex-col gap-4">
-              <h1 className="font-reading text-4xl text-primary sm:text-5xl">
-                {t("heroTitle")}
-              </h1>
-              <p className="font-reading text-lg leading-7 text-secondary">
-                {t("heroSubtitle")}
-              </p>
-            </div>
-            <div className="flex flex-wrap gap-3">
-              <LinkButton href="/conditions" variant="primary">
-                {tCommon("browseConditions")}
-              </LinkButton>
-              <LinkButton href="/register" variant="secondary">
-                {t("heroCtaSecondary")}
-              </LinkButton>
-            </div>
-            <div className="grid grid-cols-2 gap-4 sm:grid-cols-4 lg:grid-cols-2">
-              {featureRow.map(({ title, body, Icon }) => (
-                <div key={title} className="flex flex-col gap-1.5">
-                  <Icon className="size-4.5 text-accent" aria-hidden="true" />
-                  <span className="font-ui text-sm font-medium text-primary">{title}</span>
-                  <span className="font-ui text-xs text-secondary">{body}</span>
-                </div>
-              ))}
-            </div>
-          </div>
+          <HomeHero
+            hero={hero}
+            canEdit={canReview}
+            browseConditionsLabel={tCommon("browseConditions")}
+            ctaSecondaryLabel={t("heroCtaSecondary")}
+          />
         </div>
       </section>
 

@@ -67,7 +67,23 @@ export default async function RootLayout({ children, params }: LayoutProps<"/[lo
     <html
       lang={LOCALE_META[locale].bcp47}
       className={`${fontUI.variable} ${fontReading.variable} ${fontHeading.variable} h-full scroll-smooth antialiased`}
+      suppressHydrationWarning
     >
+      <head>
+        {/* Runs before hydration so a stored light/dark override
+            (ThemeToggle.tsx, /account) applies before first paint —
+            without this, the page would flash the OS-default theme
+            for a frame whenever the stored preference disagrees with
+            it. Inline and synchronous is the only way to beat paint;
+            "system" (no override) intentionally leaves nothing in
+            storage, so this script simply does nothing that day. */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html:
+              "(function(){try{var t=localStorage.getItem('pmr-theme');if(t==='light'||t==='dark'){document.documentElement.setAttribute('data-theme',t);}}catch(e){}})();",
+          }}
+        />
+      </head>
       <body className="min-h-full flex flex-col bg-surface text-primary font-ui">
         {/* Required even before any component calls useTranslations() —
             next-intl's Client Component Link/usePathname/useRouter

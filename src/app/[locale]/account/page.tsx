@@ -7,6 +7,7 @@ import { getAllNotes, getSavedPearls, getFavoriteDiseases, getPageViewCount } fr
 import { Button } from "@/components/ui/Button";
 import { StatTile } from "@/components/ui/StatTile";
 import { AvatarUploader } from "@/components/account/AvatarUploader";
+import { ThemeToggle } from "@/components/account/ThemeToggle";
 import { ClinicalBadge } from "@/components/ui/ClinicalBadge";
 import { changePasswordAction, updateNameAction } from "./actions";
 
@@ -79,6 +80,18 @@ export default async function AccountPage({ searchParams }: AccountPageProps) {
             <StatTile icon={FileText} label={t("favouritesLabel")} value={favorites.length} color="accent" />
             <StatTile icon={Eye} label={t("viewedLabel")} value={viewCount} color="trust" />
           </div>
+        </section>
+
+        <section className="flex flex-col gap-3">
+          <h2 className="font-ui text-sm font-medium text-primary">{t("appearanceHeading")}</h2>
+          <ThemeToggle
+            groupLabel={t("appearanceHeading")}
+            optionLabels={{
+              light: t("themeLight"),
+              dark: t("themeDark"),
+              system: t("themeSystem"),
+            }}
+          />
         </section>
 
         <section className="flex flex-col gap-4">

@@ -125,8 +125,17 @@
   --ease-standard: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
+/* Dark tokens live in one place (this media query) and are mirrored
+   verbatim into the two `[data-theme]` blocks below, which let the
+   /account toggle (ThemeToggle.tsx) force a mode regardless of the OS
+   preference. `:not([data-theme="light"])` on the media query means an
+   explicit "light" choice still wins even when the OS itself is dark;
+   the standalone `[data-theme="dark"]` block (no media guard) is what
+   makes an explicit "dark" choice work when the OS is light. No build
+   step here to share the property list once (Tailwind v4 is CSS-first,
+   no Sass) — three copies is the plain-CSS way to do this. */
 @media (prefers-color-scheme: dark) {
-  :root {
+  :root:not([data-theme="light"]) {
     /* Dark mode is a real requirement (Tier 3), not cosmetic —
        residents study post-call, in dark rooms. Navy-black rather
        than the original warm brown-black, mirroring the light mode
@@ -165,6 +174,42 @@
     --color-card-fuchsia: #f0abfc;
     --color-card-pink: #f9a8d4;
   }
+}
+
+/* Explicit "dark" choice — same values as the media query above,
+   applied unconditionally so it works even when the OS itself is in
+   light mode. See the comment above the media query for why this
+   isn't shared via a preprocessor mixin. */
+:root[data-theme="dark"] {
+  --color-surface: #0f1620;
+  --color-surface-raised: #161f2c;
+  --color-surface-card: #161f2c;
+  --color-border: #2a3542;
+  --color-text-primary: #eef1f4;
+  --color-text-secondary: #9aa8ba;
+
+  --color-accent: #48d1e1;
+  --color-accent-hover: #6dd8e0;
+  --color-trust: #36ebaf;
+  --color-insight: #f6bf61;
+  --color-warning: #f49696;
+
+  --color-card-blue: #90b8f8;
+  --color-card-violet: #c6b0fa;
+  --color-card-rose: #f793a4;
+  --color-card-slate: #96a1b0;
+  --color-card-red: #fca5a5;
+  --color-card-orange: #fdba74;
+  --color-card-yellow: #fde047;
+  --color-card-lime: #bef264;
+  --color-card-green: #86efac;
+  --color-card-teal: #5eead4;
+  --color-card-cyan: #67e8f9;
+  --color-card-sky: #7dd3fc;
+  --color-card-indigo: #a5b4fc;
+  --color-card-purple: #d8b4fe;
+  --color-card-fuchsia: #f0abfc;
+  --color-card-pink: #f9a8d4;
 }
 
 @theme inline {

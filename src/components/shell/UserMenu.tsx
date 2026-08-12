@@ -93,6 +93,15 @@ export function UserMenu({ name, email, image, canReview, isAdmin }: UserMenuPro
               {t("admin")}
             </Link>
           )}
+          {canReview && (
+            <Link
+              href="/?preview=hero"
+              onClick={() => setOpen(false)}
+              className="block rounded-md px-3 py-2 font-ui text-sm text-primary hover:bg-border/40"
+            >
+              {t("previewHomepage")}
+            </Link>
+          )}
           {isAdmin && (
             <Link
               href="/admin/topics"
