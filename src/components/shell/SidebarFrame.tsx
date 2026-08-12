@@ -1,20 +1,19 @@
 "use client";
 
-import { useSyncExternalStore } from "react";
+import { useEffect, useState, useSyncExternalStore } from "react";
 import { useTranslations } from "next-intl";
-import Image from "next/image";
 import { Link } from "@/i18n/navigation";
 import {
   Sparkles,
   Calculator,
   Calendar,
   ChevronRight,
+  Home,
   PanelLeftClose,
   PanelLeftOpen,
 } from "lucide-react";
 import type { TopicNode } from "@/lib/topics";
 import { IndexSidebar } from "./IndexSidebar";
-import { LinkButton } from "@/components/ui/LinkButton";
 
 // Persisted app-wide (not per-page) — same collapsed/expanded
 // preference should hold as a reader moves around the site, same
@@ -58,7 +57,24 @@ interface SidebarFrameProps {
 export function SidebarFrame({ tree, userName, userEmail, userRole }: SidebarFrameProps) {
   const collapsed = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
   const t = useTranslations("nav");
-  const tCommon = useTranslations("common");
+
+  // The sidebar now sits in a row below TopBar (the brand wordmark
+  // moved there) rather than spanning the full viewport height itself,
+  // so its own sticky offset and height have to track TopBar's actual
+  // rendered height — which varies by locale (text length) and
+  // viewport (TopBar's row can wrap) — rather than assuming 0. Same
+  // ResizeObserver-on-the-header pattern CalculatorRunner.tsx already
+  // uses for its sticky progress bar, for the same reason.
+  const [topOffset, setTopOffset] = useState(0);
+  useEffect(() => {
+    const header = document.querySelector("header");
+    if (!header) return;
+    const updateOffset = () => setTopOffset(header.getBoundingClientRect().height);
+    updateOffset();
+    const observer = new ResizeObserver(updateOffset);
+    observer.observe(header);
+    return () => observer.disconnect();
+  }, []);
 
   if (collapsed) {
     return (
@@ -67,7 +83,8 @@ export function SidebarFrame({ tree, userName, userEmail, userRole }: SidebarFra
         onClick={() => setCollapsed(false)}
         aria-label={t("showExplore")}
         title={t("showExplore")}
-        className="sticky top-4 left-4 z-20 hidden size-10 shrink-0 items-center justify-center self-start rounded-full border border-border bg-surface text-secondary shadow-lg transition-colors duration-base hover:text-accent lg:flex"
+        style={{ top: topOffset + 16 }}
+        className="sticky left-4 z-20 hidden size-10 shrink-0 items-center justify-center self-start rounded-full border border-border bg-surface text-secondary shadow-lg transition-colors duration-base hover:text-accent lg:flex"
       >
         <PanelLeftOpen className="size-4.5" aria-hidden="true" />
       </button>
@@ -75,60 +92,67 @@ export function SidebarFrame({ tree, userName, userEmail, userRole }: SidebarFra
   }
 
   return (
-    <aside className="sticky top-0 hidden h-screen w-80 shrink-0 flex-col border-r border-border bg-surface-raised lg:flex">
-      <div className="flex items-center justify-between px-4 py-3">
-        <Link href="/" className="flex min-w-0 items-center gap-2">
-          <Image src="/brand-logo-v2.png" alt="" width={1381} height={1139} priority className="h-9 w-auto shrink-0" />
-          <span className="truncate font-heading text-base font-semibold text-primary">
-            PM&amp;R Atlas
-          </span>
-        </Link>
+    <aside
+      style={{ top: topOffset, height: `calc(100vh - ${topOffset}px)` }}
+      className="sticky hidden w-80 shrink-0 flex-col border-r border-border bg-surface-raised lg:flex"
+    >
+      <div className="relative flex flex-col gap-0.5 border-b border-border px-3 pt-3 pb-2">
         <button
           type="button"
           onClick={() => setCollapsed(true)}
           aria-label={t("collapseSidebar")}
           title={t("collapseSidebar")}
-          className="flex size-7 shrink-0 items-center justify-center rounded text-secondary hover:bg-border/40 hover:text-primary"
+          className="absolute top-2 right-2 flex size-6 shrink-0 items-center justify-center rounded text-secondary hover:bg-border/40 hover:text-primary"
         >
-          <PanelLeftClose className="size-4" aria-hidden="true" />
+          <PanelLeftClose className="size-3.5" aria-hidden="true" />
         </button>
+        <Link
+          href="/"
+          className="flex items-center gap-2 rounded-lg px-2 py-1.5 transition-colors duration-base hover:bg-border/40"
+        >
+          <span className="flex size-7 shrink-0 items-center justify-center rounded-full bg-accent/10 text-accent">
+            <Home className="size-3.5" aria-hidden="true" />
+          </span>
+          <span className="font-ui text-xs font-medium text-primary">{t("myWorkspace")}</span>
+        </Link>
+        <Link
+          href="/clinical-tools"
+          className="flex items-center gap-2 rounded-lg px-2 py-1.5 transition-colors duration-base hover:bg-border/40"
+        >
+          <span className="flex size-7 shrink-0 items-center justify-center rounded-full bg-accent/10 text-accent">
+            <Calculator className="size-3.5" aria-hidden="true" />
+          </span>
+          <span className="font-ui text-xs font-medium text-primary">{t("clinicalTools")}</span>
+        </Link>
+        <Link
+          href="/study-planner"
+          className="flex items-center gap-2 rounded-lg px-2 py-1.5 transition-colors duration-base hover:bg-border/40"
+        >
+          <span className="flex size-7 shrink-0 items-center justify-center rounded-full bg-accent/10 text-accent">
+            <Calendar className="size-3.5" aria-hidden="true" />
+          </span>
+          <span className="font-ui text-xs font-medium text-primary">{t("studyPlanner")}</span>
+        </Link>
       </div>
 
-      <div className="flex min-h-0 flex-1 flex-col overflow-y-auto px-3 pb-3">
+      <div className="flex min-h-0 flex-1 flex-col overflow-y-auto px-3 py-3">
         <IndexSidebar tree={tree} />
       </div>
 
       <div className="flex flex-col gap-3 border-t border-border p-3">
-        <Link
-          href="/clinical-tools"
-          className="flex items-center gap-2.5 rounded-lg px-2 py-2 transition-colors duration-base hover:bg-border/40"
-        >
-          <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-accent/10 text-accent">
-            <Calculator className="size-4" aria-hidden="true" />
-          </span>
-          <span className="font-ui text-sm font-medium text-primary">{t("clinicalTools")}</span>
-        </Link>
-        <Link
-          href="/study-planner"
-          className="flex items-center gap-2.5 rounded-lg px-2 py-2 transition-colors duration-base hover:bg-border/40"
-        >
-          <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-accent/10 text-accent">
-            <Calendar className="size-4" aria-hidden="true" />
-          </span>
-          <span className="font-ui text-sm font-medium text-primary">{t("studyPlanner")}</span>
-        </Link>
-
-        <div className="flex items-center gap-3 rounded-lg border border-dashed border-border px-3 py-2.5 opacity-70">
-          <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-border/40 text-secondary">
-            <Sparkles className="size-4" aria-hidden="true" />
-          </span>
-          <div className="flex flex-col">
-            <span className="font-ui text-sm font-medium text-primary">{t("aiAssistant")}</span>
-            <span className="font-ui text-xs text-secondary">{tCommon("comingSoon")}</span>
+        {!(userEmail || userName) && (
+          <div className="flex items-center gap-3 rounded-lg bg-accent px-3 py-2.5">
+            <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-white/20 text-white">
+              <Sparkles className="size-4" aria-hidden="true" />
+            </span>
+            <div className="flex flex-col">
+              <span className="font-ui text-sm font-medium text-white">{t("goPremium")}</span>
+              <span className="font-ui text-xs text-white/80">{t("goPremiumSubtitle")}</span>
+            </div>
           </div>
-        </div>
+        )}
 
-        {userEmail || userName ? (
+        {(userEmail || userName) && (
           <Link
             href="/account"
             className="flex items-center gap-2.5 rounded-lg px-2 py-2 transition-colors duration-base hover:bg-border/40"
@@ -144,10 +168,6 @@ export function SidebarFrame({ tree, userName, userEmail, userRole }: SidebarFra
             </span>
             <ChevronRight className="size-4 shrink-0 text-secondary" aria-hidden="true" />
           </Link>
-        ) : (
-          <LinkButton href="/login" variant="secondary" className="w-full justify-center">
-            {tCommon("signIn")}
-          </LinkButton>
         )}
       </div>
     </aside>

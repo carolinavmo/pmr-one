@@ -20,6 +20,8 @@
     "showExplore": "Show Explore",
     "collapseSidebar": "Collapse sidebar",
     "aiAssistant": "AI Assistant",
+    "goPremium": "Go Premium",
+    "goPremiumSubtitle": "Unlock the full toolkit",
     "search": "Search…",
     "explore": "Explore",
     "noMatchingTopics": "No matching topics",
@@ -136,7 +138,8 @@
   "search": {
     "browseAllConditionsInstead": "Browse all conditions instead",
     "nothingToSearchYet": "Nothing to search yet.",
-    "browseAllConditions": "Browse all conditions"
+    "browseAllConditions": "Browse all conditions",
+    "searchButton": "Search"
   },
   "auth": {
     "signInHeading": "Sign in",

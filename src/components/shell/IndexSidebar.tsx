@@ -129,6 +129,12 @@ export function IndexSidebar({ tree, onNavigate }: IndexSidebarProps) {
 
   return (
     <div className="flex min-h-0 flex-1 flex-col gap-2">
+      <div className="flex items-center justify-between px-1">
+        <span className="font-ui text-[11px] font-medium tracking-wide text-secondary uppercase">
+          {t("explore")}
+        </span>
+      </div>
+
       <div className="relative shrink-0">
         <Search
           className="pointer-events-none absolute top-1/2 left-2.5 size-3.5 -translate-y-1/2 text-secondary"
@@ -140,12 +146,6 @@ export function IndexSidebar({ tree, onNavigate }: IndexSidebarProps) {
           placeholder={t("search")}
           className="w-full rounded-lg border border-border bg-surface py-1.5 pr-2 pl-8 font-ui text-xs text-primary outline-none placeholder:text-secondary focus:border-accent"
         />
-      </div>
-
-      <div className="flex items-center justify-between px-1">
-        <span className="font-ui text-[11px] font-medium tracking-wide text-secondary uppercase">
-          {t("explore")}
-        </span>
       </div>
 
       <nav className="flex min-h-0 flex-1 flex-col gap-0 overflow-y-auto">

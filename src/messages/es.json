@@ -20,6 +20,8 @@
     "showExplore": "Mostrar Explorar",
     "collapseSidebar": "Contraer barra lateral",
     "aiAssistant": "Asistente de IA",
+    "goPremium": "Hazte Premium",
+    "goPremiumSubtitle": "Desbloquea todas las herramientas",
     "search": "Buscar…",
     "explore": "Explorar",
     "noMatchingTopics": "No hay temas coincidentes",
@@ -136,7 +138,8 @@
   "search": {
     "browseAllConditionsInstead": "Explorar todas las patologías",
     "nothingToSearchYet": "Aún no hay nada que buscar.",
-    "browseAllConditions": "Explorar todas las patologías"
+    "browseAllConditions": "Explorar todas las patologías",
+    "searchButton": "Buscar"
   },
   "auth": {
     "signInHeading": "Iniciar sesión",

@@ -76,7 +76,7 @@ export function CommandPalette() {
 
   return (
     <div ref={containerRef} className="relative w-full">
-      <span className="flex min-h-11 items-center gap-2 rounded-full border border-border bg-surface-raised px-4 transition-colors duration-base focus-within:border-accent/50">
+      <span className="flex min-h-9 items-center gap-2 rounded-full border border-border bg-surface-raised px-4 transition-colors duration-base focus-within:border-accent/50">
         <Search className="size-4 shrink-0 text-secondary" aria-hidden="true" />
         <input
           ref={inputRef}
@@ -95,11 +95,17 @@ export function CommandPalette() {
           aria-label={t("searchLabel")}
           className="min-w-0 flex-1 bg-transparent font-ui text-sm text-primary placeholder:text-secondary focus:outline-none"
         />
-        {!query && (
-          <span className="hidden shrink-0 rounded border border-border bg-surface px-1.5 py-0.5 font-ui text-xs text-secondary sm:inline">
-            ⌘K
-          </span>
-        )}
+        <button
+          type="button"
+          onClick={() => {
+            inputRef.current?.focus();
+            if (query) setOpen(true);
+            ensureItemsLoaded();
+          }}
+          className="hidden shrink-0 rounded-full bg-accent px-3 py-1 font-ui text-xs font-medium text-white transition-colors duration-base hover:bg-accent/90 sm:inline"
+        >
+          {tSearch("searchButton")}
+        </button>
       </span>
 
       {showDropdown && (
