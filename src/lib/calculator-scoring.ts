@@ -55,6 +55,34 @@ const FORMULAS: Record<string, (values: number[]) => number> = {
     const mean = values.reduce((sum, value) => sum + value, 0) / values.length;
     return Math.round(mean * 100) / 100;
   },
+  // KOOS's five subscales (Pain, Symptoms, ADL, Sport/Rec, QoL) each
+  // score their own items 0 (no problems) to 4 (extreme problems), then
+  // invert and normalize to 0-100 where 100 = no problems, matching the
+  // instrument's own published convention (ascending-good, unlike the
+  // raw 0-4 item scale it's built from). Each subscale is its own
+  // calculator row (same "one calculator per subscale" split as the
+  // Boston Carpal Tunnel Questionnaire), all reusing this one formula.
+  koos: (values) => {
+    const mean = values.reduce((sum, value) => sum + value, 0) / values.length;
+    return Math.round(100 - (mean / 4) * 100);
+  },
+  // FAAM's two subscales (ADL, Sport) share this shape too: every item
+  // 0 (unable) to 4 (no difficulty), normalized to a 0-100 percentage
+  // of the maximum possible — already ascending-good since a higher
+  // per-item value already means "less difficulty," unlike KOOS's
+  // inverted scale above.
+  percent4: (values) => {
+    const mean = values.reduce((sum, value) => sum + value, 0) / values.length;
+    return Math.round((mean / 4) * 100);
+  },
+  // Foot Function Index: every item is a 0-10 NRS (0 = no pain/
+  // difficulty, 10 = worst), normalized to a 0-100 percentage —
+  // descendingGood (unlike percent4/koos, a higher raw item value
+  // already means worse here, so no inversion).
+  percent10: (values) => {
+    const mean = values.reduce((sum, value) => sum + value, 0) / values.length;
+    return Math.round((mean / 10) * 100);
+  },
 };
 
 // Returns null until every item has an answer — the caller uses that

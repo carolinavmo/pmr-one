@@ -70,6 +70,7 @@ function itemFillStyle(value: number, max: number, descendingGood?: boolean): CS
 export function CalculatorRunner({ calculator }: { calculator: Calculator }) {
   const t = useTranslations("clinicalTools");
   const locale = useLocale();
+  const isTranslatedLocale = locale !== "en";
   const [answers, setAnswers] = useState<Record<string, number>>({});
   // Tracked separately from answers (which stores the selected option's
   // point value, for scoring) because several items — e.g. Lawton-Brody's
@@ -253,7 +254,23 @@ export function CalculatorRunner({ calculator }: { calculator: Calculator }) {
 
   return (
     <div className="flex flex-col gap-6">
-      {calculator.definition.proprietary && (
+      {/* A proprietary calculator viewed in a non-English locale is both
+          "non-official" and "unofficially translated" at once — shown
+          as one combined notice rather than stacking two near-identical
+          amber boxes, which read as a duplicate/bug rather than two
+          distinct caveats. */}
+      {calculator.definition.proprietary && isTranslatedLocale && (
+        <div className="flex items-start gap-3 rounded-xl border border-insight/30 bg-insight/5 p-4">
+          <ShieldAlert className="mt-0.5 size-5 shrink-0 text-insight" aria-hidden="true" />
+          <div className="flex flex-col gap-1">
+            <h3 className="font-ui text-sm font-semibold text-primary">
+              {t("proprietaryAndTranslationNoticeHeading")}
+            </h3>
+            <p className="font-ui text-sm text-secondary">{t("proprietaryAndTranslationNoticeBody")}</p>
+          </div>
+        </div>
+      )}
+      {calculator.definition.proprietary && !isTranslatedLocale && (
         <div className="flex items-start gap-3 rounded-xl border border-insight/30 bg-insight/5 p-4">
           <ShieldAlert className="mt-0.5 size-5 shrink-0 text-insight" aria-hidden="true" />
           <div className="flex flex-col gap-1">
@@ -262,8 +279,7 @@ export function CalculatorRunner({ calculator }: { calculator: Calculator }) {
           </div>
         </div>
       )}
-
-      {locale !== "en" && (
+      {!calculator.definition.proprietary && isTranslatedLocale && (
         <div className="flex items-start gap-3 rounded-xl border border-insight/30 bg-insight/5 p-4">
           <TriangleAlert className="mt-0.5 size-5 shrink-0 text-insight" aria-hidden="true" />
           <div className="flex flex-col gap-1">
