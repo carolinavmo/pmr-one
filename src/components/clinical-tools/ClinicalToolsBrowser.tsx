@@ -75,6 +75,7 @@ export function ClinicalToolsBrowser({
                     title={calculator.abbreviation ? `${calculator.name} (${calculator.abbreviation})` : calculator.name}
                     context={calculator.description}
                     href={`/clinical-tools/${calculator.slug}`}
+                    categoryColor={category.color}
                   />
                 ))}
               </div>

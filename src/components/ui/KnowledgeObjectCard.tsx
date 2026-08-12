@@ -3,6 +3,8 @@ import { objectIcons } from "./objectIcons";
 import { cardIcons, type CardIconName } from "./cardIcons";
 import { TrustIndicator } from "./TrustIndicator";
 import type { KnowledgeObjectType } from "@/lib/knowledge-objects";
+import type { CardColor } from "@/lib/editorial-blocks";
+import { CARD_COLOR_CARD, CARD_COLOR_CHIP } from "@/lib/card-colors";
 
 interface BaseProps {
   title: string;
@@ -14,6 +16,12 @@ interface BaseProps {
   // icon repeated for every row. Optional: every existing call site
   // that doesn't pass one keeps its current icon unchanged.
   icon?: CardIconName;
+  // A subtle border/background/icon-chip tint (same CARD_COLOR_CARD/
+  // CARD_COLOR_CHIP tokens the topic sidebar and admin editor already
+  // use) — currently only ClinicalToolsBrowser passes this, tying each
+  // calculator card to its category's color. Optional and additive:
+  // every other call site keeps its current plain-neutral look.
+  categoryColor?: CardColor;
 }
 
 // Illustration cards are the one exception to "icon leads" — the
@@ -31,7 +39,7 @@ type KnowledgeObjectCardProps =
 // behind "one object, one look, everywhere" (Tier 2). Variants only
 // change content, never the five-slot layout.
 export function KnowledgeObjectCard(props: KnowledgeObjectCardProps) {
-  const { type, title, context, href, reviewedAt, icon } = props;
+  const { type, title, context, href, reviewedAt, icon, categoryColor } = props;
   const Icon = icon ? cardIcons[icon] : objectIcons[type];
   const isPearl = type === "clinical_pearl";
   const showTrust = type !== "reference";
@@ -39,8 +47,8 @@ export function KnowledgeObjectCard(props: KnowledgeObjectCardProps) {
   return (
     <Link
       href={href}
-      className={`flex items-start gap-3 rounded-lg border bg-surface-raised p-4 transition-colors duration-base hover:bg-border/20 ${
-        isPearl ? "border-insight/40" : "border-border"
+      className={`flex items-start gap-3 rounded-lg border p-4 transition-colors duration-base hover:bg-border/20 ${
+        categoryColor ? CARD_COLOR_CARD[categoryColor] : isPearl ? "border-insight/40 bg-surface-raised" : "border-border bg-surface-raised"
       }`}
     >
       {type === "medical_illustration" ? (
@@ -53,7 +61,11 @@ export function KnowledgeObjectCard(props: KnowledgeObjectCardProps) {
       ) : (
         <span
           className={`flex size-12 shrink-0 items-center justify-center rounded-md ${
-            isPearl ? "bg-insight/10 text-insight" : "bg-surface text-secondary"
+            categoryColor
+              ? CARD_COLOR_CHIP[categoryColor]
+              : isPearl
+                ? "bg-insight/10 text-insight"
+                : "bg-surface text-secondary"
           }`}
         >
           <Icon className="size-5" aria-hidden="true" />
