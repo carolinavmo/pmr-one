@@ -328,11 +328,15 @@ export function CalculatorRunner({ calculator }: { calculator: Calculator }) {
                   rubric) use a denser card so all options still fit on
                   one row instead of wrapping — everything else (max 5
                   options, e.g. Berg) keeps the original, more spacious
-                  sizing unchanged. */}
-              {(() => {
-                const isCompact = item.options.length >= 6;
-                return (
-                  <div className={`flex flex-wrap ${isCompact ? "gap-1.5" : "gap-2"}`}>
+                  sizing unchanged. A numericScale item (SPADI/PRWE's
+                  0-10 scales) skips the card layout entirely: every
+                  option is just its own numeral, so it renders as one
+                  non-wrapping row of small numbered buttons, with the
+                  two endpoint descriptions (if any) shown once below
+                  the row instead of repeated inside every button. */}
+              {item.numericScale ? (
+                <div className="flex flex-col gap-1.5">
+                  <div className="flex gap-1">
                     {item.options.map((option, optionIndex) => {
                       const isSelected = currentSelectedIndex === optionIndex;
                       return (
@@ -343,35 +347,69 @@ export function CalculatorRunner({ calculator }: { calculator: Calculator }) {
                             setAnswers((current) => ({ ...current, [item.id]: option.value }));
                             setSelectedIndex((current) => ({ ...current, [item.id]: optionIndex }));
                           }}
-                          className={`flex flex-1 flex-col text-left transition-colors duration-base ${
-                            isCompact ? "min-w-24 gap-0.5 rounded-md border p-2" : "min-w-36 gap-1 rounded-lg border p-3"
-                          } ${
+                          className={`flex-1 rounded-md border py-1.5 text-center font-ui text-xs font-semibold tabular-nums transition-colors duration-base ${
                             isSelected
-                              ? "border-accent bg-accent/5"
-                              : "border-border hover:border-accent/50 hover:bg-border/10"
+                              ? "border-accent bg-accent text-white"
+                              : "border-border text-secondary hover:border-accent/50 hover:bg-border/10"
                           }`}
                         >
-                          <span
-                            className={`inline-flex w-fit items-center rounded-full font-ui font-semibold tabular-nums ${
-                              isCompact ? "px-1.5 py-0.5 text-[10px]" : "px-2 py-0.5 text-xs"
-                            } ${isSelected ? "bg-accent text-white" : "bg-border/50 text-secondary"}`}
-                          >
-                            {t("pointsAbbrev", { value: option.value })}
-                          </span>
-                          <span className={`font-ui text-primary ${isCompact ? "text-xs" : "text-sm"}`}>
-                            {option.label}
-                          </span>
-                          {option.description && (
-                            <span className={`font-ui text-secondary ${isCompact ? "text-[10px]" : "text-xs"}`}>
-                              {option.description}
-                            </span>
-                          )}
+                          {option.label}
                         </button>
                       );
                     })}
                   </div>
-                );
-              })()}
+                  {(item.options[0]?.description || item.options[item.options.length - 1]?.description) && (
+                    <div className="flex items-center justify-between font-ui text-[11px] text-secondary/80">
+                      <span>{item.options[0]?.description}</span>
+                      <span>{item.options[item.options.length - 1]?.description}</span>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                (() => {
+                  const isCompact = item.options.length >= 6;
+                  return (
+                    <div className={`flex flex-wrap ${isCompact ? "gap-1.5" : "gap-2"}`}>
+                      {item.options.map((option, optionIndex) => {
+                        const isSelected = currentSelectedIndex === optionIndex;
+                        return (
+                          <button
+                            key={optionIndex}
+                            type="button"
+                            onClick={() => {
+                              setAnswers((current) => ({ ...current, [item.id]: option.value }));
+                              setSelectedIndex((current) => ({ ...current, [item.id]: optionIndex }));
+                            }}
+                            className={`flex flex-1 flex-col text-left transition-colors duration-base ${
+                              isCompact ? "min-w-24 gap-0.5 rounded-md border p-2" : "min-w-36 gap-1 rounded-lg border p-3"
+                            } ${
+                              isSelected
+                                ? "border-accent bg-accent/5"
+                                : "border-border hover:border-accent/50 hover:bg-border/10"
+                            }`}
+                          >
+                            <span
+                              className={`inline-flex w-fit items-center rounded-full font-ui font-semibold tabular-nums ${
+                                isCompact ? "px-1.5 py-0.5 text-[10px]" : "px-2 py-0.5 text-xs"
+                              } ${isSelected ? "bg-accent text-white" : "bg-border/50 text-secondary"}`}
+                            >
+                              {t("pointsAbbrev", { value: option.value })}
+                            </span>
+                            <span className={`font-ui text-primary ${isCompact ? "text-xs" : "text-sm"}`}>
+                              {option.label}
+                            </span>
+                            {option.description && (
+                              <span className={`font-ui text-secondary ${isCompact ? "text-[10px]" : "text-xs"}`}>
+                                {option.description}
+                              </span>
+                            )}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  );
+                })()
+              )}
             </div>
           );
         })}

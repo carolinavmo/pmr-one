@@ -31,6 +31,17 @@ export interface CalculatorItem {
   // (e.g. "Motor: 70 | Cognitive: 27"); the item-by-item "Score by
   // item" card groups by section, not domain.
   domain?: string;
+  // True for a long numeric rating scale where every option's label is
+  // just its own value (e.g. SPADI/PRWE's 0-10 pain/difficulty scales)
+  // and only the two endpoints carry real wording, via description.
+  // Renders as a single non-wrapping row of small numbered buttons
+  // instead of the standard descriptive option cards — those cards
+  // assume a handful of options each with its own real label, which
+  // reads badly at 11 options that are all just numerals. Not inferred
+  // from option count alone: RASS also has 10 options, but each carries
+  // a distinct, meaningful label (not a plain numeral) that still needs
+  // the full card treatment.
+  numericScale?: boolean;
 }
 
 export interface CalculatorInterpretationBand {

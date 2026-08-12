@@ -62,6 +62,7 @@ function buildDefinition(items, rubrics, calculationExplanation, resultNote) {
       id: item.id,
       section: item.section,
       label: item.label,
+      numericScale: true,
       options: rubrics[item.rubric],
     })),
     scoring: { method: "formula", formula: "spadi" },
