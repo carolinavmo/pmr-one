@@ -108,11 +108,12 @@ export function CalculatorRunner({ calculator }: { calculator: Calculator }) {
   // but paired with a continuous gradient bar instead of colored segments.
   const interpretationDisplay = bands.length > 0 ? interpretation : (resultNote ?? null);
 
-  // Derived rather than solely relying on the stored maxScore field, so
-  // the range bar stays correct even for a future calculator that omits
-  // it — scoreMin has no stored equivalent at all (every scale so far
-  // starts at 0, but that's an assumption this computes instead of bakes in).
-  const scoreMin = items.reduce((sum, item) => sum + itemMin(item), 0);
+  // Derived from the items themselves by default — correct for every
+  // "sum"-scored calculator so far, all of which start at 0. A
+  // "formula"-scored calculator's result lives on a different scale
+  // than its raw item values (e.g. DASH's 1-5 items produce a 0-100
+  // result), so minScore/maxScore must be stated explicitly there.
+  const scoreMin = calculator.definition.minScore ?? items.reduce((sum, item) => sum + itemMin(item), 0);
   const scoreMax = calculator.definition.maxScore ?? items.reduce((sum, item) => sum + itemMax(item), 0);
   const scoreRange = Math.max(scoreMax - scoreMin, 1);
   const pointerPercent =

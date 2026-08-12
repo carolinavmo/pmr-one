@@ -64,6 +64,13 @@ export interface CalculatorSource {
 export interface CalculatorDefinition {
   items: CalculatorItem[];
   scoring: CalculatorScoring;
+  // For "sum"-scored calculators, min/max are always derivable from the
+  // items themselves (and almost never set) — CalculatorRunner falls
+  // back to that derivation. A "formula"-scored calculator's result
+  // lives on a different scale than its raw item values (e.g. DASH's
+  // 1-5 items produce a 0-100 result), so both bounds must be stated
+  // explicitly; minScore has no derived fallback at all, unlike maxScore.
+  minScore?: number;
   maxScore?: number;
   interpretation?: CalculatorInterpretationBand[];
   // Fallback shown only when `interpretation` is absent — see

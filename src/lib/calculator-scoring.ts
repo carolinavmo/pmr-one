@@ -12,8 +12,41 @@ import type { CalculatorDefinition, CalculatorInterpretationBand } from "@/lib/c
 
 // Registered by slug (definition.scoring.formula) as each formula-
 // scored calculator is authored. Each function receives every
-// answered item's raw option value, in item order.
-const FORMULAS: Record<string, (values: number[]) => number> = {};
+// answered item's raw option value, in item order. Rounded to the
+// nearest whole number by the formula itself (not by the caller) —
+// these transforms produce fractional results (e.g. (avg-1)*25) that
+// would otherwise carry floating-point noise into the UI, unlike
+// every "sum"-scored calculator, which is always a clean integer.
+const FORMULAS: Record<string, (values: number[]) => number> = {
+  // DASH / QuickDASH: ((mean of all items) - 1) x 25, mapping the
+  // 1-5 per-item scale to a 0-100 result. Both use the same formula —
+  // only the item count differs (30 vs 11) — so the same function
+  // covers whichever item set the calculator actually authors.
+  dash: (values) => {
+    const mean = values.reduce((sum, value) => sum + value, 0) / values.length;
+    return Math.round((mean - 1) * 25);
+  },
+  // SPADI: pain items (first 5, each 0-10) and disability items
+  // (remaining 8, each 0-10) are each normalized to 0-100 by their own
+  // subscale maximum, then the two percentages are averaged.
+  spadi: (values) => {
+    const pain = values.slice(0, 5);
+    const disability = values.slice(5, 13);
+    const painScore = (pain.reduce((sum, value) => sum + value, 0) / 50) * 100;
+    const disabilityScore = (disability.reduce((sum, value) => sum + value, 0) / 80) * 100;
+    return Math.round((painScore + disabilityScore) / 2);
+  },
+  // PRWE: pain items (first 5, each 0-10) are summed directly (0-50);
+  // function items (remaining 10, each 0-10) are summed then halved
+  // (0-50), so both subscales carry equal weight in the 0-100 total.
+  prwe: (values) => {
+    const pain = values.slice(0, 5);
+    const fn = values.slice(5, 15);
+    const painScore = pain.reduce((sum, value) => sum + value, 0);
+    const functionScore = fn.reduce((sum, value) => sum + value, 0) / 2;
+    return Math.round(painScore + functionScore);
+  },
+};
 
 // Returns null until every item has an answer — the caller uses that
 // to gate showing a result at all, matching the reference site's own
