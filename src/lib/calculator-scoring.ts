@@ -46,6 +46,15 @@ const FORMULAS: Record<string, (values: number[]) => number> = {
     const functionScore = fn.reduce((sum, value) => sum + value, 0) / 2;
     return Math.round(painScore + functionScore);
   },
+  // Plain mean of every item's raw value, rounded to 2 decimals rather
+  // than a whole number — unlike DASH/SPADI/PRWE's 0-100 results, this
+  // stays on the same small 1-5 scale as the items themselves (e.g. the
+  // Boston Carpal Tunnel Questionnaire's two subscales), where rounding
+  // to an integer would collapse most of the scale's resolution.
+  mean: (values) => {
+    const mean = values.reduce((sum, value) => sum + value, 0) / values.length;
+    return Math.round(mean * 100) / 100;
+  },
 };
 
 // Returns null until every item has an answer — the caller uses that
