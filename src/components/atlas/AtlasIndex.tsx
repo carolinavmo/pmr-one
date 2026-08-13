@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 import { Search, Plus, Pencil, Trash2, FileText, Folder, GripVertical, ChevronDown, ChevronRight, Check } from "lucide-react";
 import type { AtlasSection, AtlasPage } from "@/lib/atlas";
@@ -21,6 +21,100 @@ function reorderIds(ids: string[], draggedId: string, dropTargetId: string): str
   if (idx === -1) return ids;
   without.splice(idx, 0, draggedId);
   return without;
+}
+
+// Native HTML5 drag-and-drop (draggable + onDragStart/onDragOver/onDrop)
+// turned out unreliable in practice — browsers vary in how forgiving
+// they are about the initial grab, trackpads in particular routinely
+// fail to register a dragstart at all. Pointer events don't have that
+// problem (same primitive ResizableRow.tsx already uses for its
+// column-resize handle): a plain pointerdown/pointermove/pointerup
+// sequence tracked on `window`, with manual rect hit-testing against
+// each row's own ref to figure out which row the pointer is currently
+// over. `ids`/`onReorder` are read fresh on every pointerdown via the
+// arguments closed over by `startDrag`, so a stale prop from an
+// earlier render is never in play.
+function useReorderDrag(ids: string[], onReorder: (orderedIds: string[]) => void) {
+  const [draggedId, setDraggedId] = useState<string | null>(null);
+  const [overId, setOverId] = useState<string | null>(null);
+  const rowRefs = useRef<Map<string, HTMLElement>>(new Map());
+  const cleanupRef = useRef<(() => void) | null>(null);
+
+  useEffect(() => {
+    return () => cleanupRef.current?.();
+  }, []);
+
+  function registerRow(id: string) {
+    return (el: HTMLElement | null) => {
+      if (el) rowRefs.current.set(id, el);
+      else rowRefs.current.delete(id);
+    };
+  }
+
+  function startDrag(id: string) {
+    return (e: React.PointerEvent) => {
+      e.preventDefault();
+      setDraggedId(id);
+      // Plain closure variable, not a functional setState updater —
+      // handleUp needs to read "wherever the pointer ended up" once,
+      // outside React's own state (same reasoning as ResizableRow's
+      // `snapped` local).
+      let currentOverId: string | null = null;
+      document.body.style.cursor = "grabbing";
+      document.body.style.userSelect = "none";
+
+      const handleMove = (ev: PointerEvent) => {
+        let found: string | null = null;
+        for (const [rowId, el] of rowRefs.current) {
+          const rect = el.getBoundingClientRect();
+          if (ev.clientY >= rect.top && ev.clientY <= rect.bottom) {
+            found = rowId;
+            break;
+          }
+        }
+        currentOverId = found;
+        setOverId(found);
+      };
+
+      // commit:false is what a lost pointer (pointercancel — the
+      // browser interrupting the gesture for its own reasons: a stylus
+      // lift, a system gesture, the tab losing focus mid-drag) needs:
+      // clean the drag state back up without treating "wherever the
+      // pointer happened to be last" as an intentional drop.
+      const end = (commit: boolean) => {
+        cleanupRef.current = null;
+        window.removeEventListener("pointermove", handleMove);
+        window.removeEventListener("pointerup", handleUp);
+        window.removeEventListener("pointercancel", handleCancel);
+        document.body.style.removeProperty("cursor");
+        document.body.style.removeProperty("user-select");
+        if (commit && currentOverId && currentOverId !== id) {
+          onReorder(reorderIds(ids, id, currentOverId));
+        }
+        setDraggedId(null);
+        setOverId(null);
+      };
+      const handleUp = () => end(true);
+      const handleCancel = () => end(false);
+
+      cleanupRef.current = () => end(false);
+      window.addEventListener("pointermove", handleMove);
+      window.addEventListener("pointerup", handleUp);
+      window.addEventListener("pointercancel", handleCancel);
+    };
+  }
+
+  return { draggedId, overId, registerRow, startDrag };
+}
+
+// Shared by both drag scopes below — a ring (not a border/outline that
+// would shift layout) around whichever row the pointer is currently
+// over, plus dimming the row actually being dragged.
+function dragRowClass(id: string, draggedId: string | null, overId: string | null): string | undefined {
+  const classes: string[] = [];
+  if (draggedId === id) classes.push("opacity-40");
+  if (overId === id && draggedId !== id) classes.push("rounded-md ring-2 ring-accent ring-inset");
+  return classes.length ? classes.join(" ") : undefined;
 }
 
 interface AtlasIndexProps {
@@ -52,8 +146,11 @@ export function AtlasIndex({
 }: AtlasIndexProps) {
   const t = useTranslations("myAtlas");
   const [query, setQuery] = useState("");
-  const [draggedSectionId, setDraggedSectionId] = useState<string | null>(null);
   const [editMode, setEditMode] = useState(false);
+  const sectionDrag = useReorderDrag(
+    sections.map((s) => s.id),
+    onReorderSections
+  );
 
   const filteredPages = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -97,18 +194,8 @@ export function AtlasIndex({
         {sections.map((section) => (
           <div
             key={section.id}
-            draggable={false}
-            onDragOver={(e) => {
-              e.preventDefault();
-            }}
-            onDrop={(e) => {
-              e.preventDefault();
-              if (draggedSectionId) {
-                onReorderSections(reorderIds(sections.map((s) => s.id), draggedSectionId, section.id));
-              }
-              setDraggedSectionId(null);
-            }}
-            className={draggedSectionId === section.id ? "opacity-40" : undefined}
+            ref={sectionDrag.registerRow(section.id)}
+            className={dragRowClass(section.id, sectionDrag.draggedId, sectionDrag.overId)}
           >
             <AtlasSectionGroup
               section={section}
@@ -121,8 +208,7 @@ export function AtlasIndex({
               onDeleteSection={onDeleteSection}
               onCreatePage={onCreatePage}
               onReorderPages={onReorderPages}
-              onDragHandleStart={() => setDraggedSectionId(section.id)}
-              onDragHandleEnd={() => setDraggedSectionId(null)}
+              onDragHandleStart={sectionDrag.startDrag(section.id)}
             />
           </div>
         ))}
@@ -145,7 +231,6 @@ function AtlasSectionGroup({
   onCreatePage,
   onReorderPages,
   onDragHandleStart,
-  onDragHandleEnd,
 }: {
   section: AtlasSection;
   pages: AtlasPage[];
@@ -157,16 +242,18 @@ function AtlasSectionGroup({
   onDeleteSection: (sectionId: string) => void;
   onCreatePage: (sectionId: string) => void;
   onReorderPages: (sectionId: string, orderedIds: string[]) => void;
-  onDragHandleStart: () => void;
-  onDragHandleEnd: () => void;
+  onDragHandleStart: (e: React.PointerEvent) => void;
 }) {
   const t = useTranslations("myAtlas");
   const [renaming, setRenaming] = useState(false);
   const [name, setName] = useState(section.name);
   const [colorPickerOpen, setColorPickerOpen] = useState(false);
-  const [draggedPageId, setDraggedPageId] = useState<string | null>(null);
   const [collapsed, setCollapsed] = useState(false);
   const [confirmingDelete, setConfirmingDelete] = useState(false);
+  const pageDrag = useReorderDrag(
+    pages.map((p) => p.id),
+    (orderedIds) => onReorderPages(section.id, orderedIds)
+  );
 
   function commitRename() {
     setRenaming(false);
@@ -184,14 +271,8 @@ function AtlasSectionGroup({
           <button
             type="button"
             aria-label={t("dragToReorder")}
-            draggable
-            onDragStart={(e) => {
-              e.dataTransfer.effectAllowed = "move";
-              e.dataTransfer.setData("text/plain", section.id);
-              onDragHandleStart();
-            }}
-            onDragEnd={onDragHandleEnd}
-            className="flex size-6 shrink-0 cursor-grab items-center justify-center text-secondary hover:bg-border/40 active:cursor-grabbing"
+            onPointerDown={onDragHandleStart}
+            className="flex size-6 shrink-0 touch-none cursor-grab items-center justify-center text-secondary hover:bg-border/40 active:cursor-grabbing"
           >
             <GripVertical className="size-3.5" aria-hidden="true" />
           </button>
@@ -294,18 +375,8 @@ function AtlasSectionGroup({
           {pages.map((page) => (
             <li
               key={page.id}
-              onDragOver={(e) => e.preventDefault()}
-              onDrop={(e) => {
-                e.preventDefault();
-                if (draggedPageId) {
-                  onReorderPages(
-                    section.id,
-                    reorderIds(pages.map((p) => p.id), draggedPageId, page.id)
-                  );
-                }
-                setDraggedPageId(null);
-              }}
-              className={draggedPageId === page.id ? "opacity-40" : undefined}
+              ref={pageDrag.registerRow(page.id)}
+              className={dragRowClass(page.id, pageDrag.draggedId, pageDrag.overId)}
             >
               <div
                 className={`group/page flex w-full items-center gap-1 rounded-md px-1.5 py-1 transition-colors duration-base ${
@@ -318,14 +389,8 @@ function AtlasSectionGroup({
                   <button
                     type="button"
                     aria-label={t("dragToReorder")}
-                    draggable
-                    onDragStart={(e) => {
-                      e.dataTransfer.effectAllowed = "move";
-                      e.dataTransfer.setData("text/plain", page.id);
-                      setDraggedPageId(page.id);
-                    }}
-                    onDragEnd={() => setDraggedPageId(null)}
-                    className="flex size-6 shrink-0 cursor-grab items-center justify-center hover:bg-border/40 active:cursor-grabbing"
+                    onPointerDown={pageDrag.startDrag(page.id)}
+                    className="flex size-6 shrink-0 touch-none cursor-grab items-center justify-center hover:bg-border/40 active:cursor-grabbing"
                   >
                     <GripVertical className="size-3.5" aria-hidden="true" />
                   </button>
