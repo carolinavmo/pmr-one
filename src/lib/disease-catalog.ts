@@ -66,6 +66,22 @@ export async function getAllDiseasesForCatalog(): Promise<DiseaseCatalogEntry[]>
   return rows.map(mapRow);
 }
 
+// Member dashboard's "New Conditions" section — most-recently-published
+// first. Falls back to created_at for any row published before
+// published_at started being set on the publish action, so a real
+// disease never silently drops out of "new" for lacking the column.
+export async function getRecentlyPublishedDiseases(
+  limit: number,
+): Promise<DiseaseCatalogEntry[]> {
+  const { rows } = await pool.query(
+    `${CATALOG_QUERY} WHERE d.status = 'published'
+     ORDER BY COALESCE(d.published_at, d.created_at) DESC
+     LIMIT $1`,
+    [limit],
+  );
+  return rows.map(mapRow);
+}
+
 export interface PlatformStats {
   conditions: number;
   examinationManeuvers: number;

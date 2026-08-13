@@ -1,4 +1,5 @@
 import { pool } from "@/lib/db";
+import type { CardColor } from "@/lib/editorial-blocks";
 
 // Personal Workspace v1 — three real capabilities only (Notes, Saved
 // Pearls, Recently Viewed). Same pool.query pattern as
@@ -171,6 +172,35 @@ export async function toggleCalculatorFavorite(
     [userId, calculatorId],
   );
   return true;
+}
+
+export interface FavoriteCalculator {
+  id: string;
+  slug: string;
+  name: string;
+  abbreviation: string | null;
+  categoryColor: CardColor;
+}
+
+export async function getFavoriteCalculators(
+  userId: string,
+): Promise<FavoriteCalculator[]> {
+  const { rows } = await pool.query(
+    `SELECT c.id, c.slug, c.name, c.abbreviation, cat.color AS category_color
+     FROM clinical_calculator_favorite cf
+     JOIN clinical_calculator c ON c.id = cf.calculator_id
+     JOIN clinical_calculator_category cat ON cat.id = c.category_id
+     WHERE cf.user_id = $1
+     ORDER BY c.name`,
+    [userId],
+  );
+  return rows.map((r) => ({
+    id: r.id,
+    slug: r.slug,
+    name: r.name,
+    abbreviation: r.abbreviation ?? null,
+    categoryColor: r.category_color as CardColor,
+  }));
 }
 
 export interface UserNote {

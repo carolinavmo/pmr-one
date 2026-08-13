@@ -3,15 +3,17 @@ import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { Calendar, ShieldCheck, Globe, Plus } from "lucide-react";
 import { auth } from "@/auth";
-import { getPublishedDiseases, getPlatformStats } from "@/lib/disease-catalog";
+import {
+  getPublishedDiseases,
+  getPlatformStats,
+  getRecentlyPublishedDiseases,
+} from "@/lib/disease-catalog";
 import {
   getRecentlyViewed,
-  getSavedPearls,
   getFavoriteDiseases,
-  getAllNotes,
+  getFavoriteCalculators,
 } from "@/lib/workspace";
 import { getAllAnnotationsForUser } from "@/lib/annotations";
-import { sanitizeRichText } from "@/lib/rich-text";
 import { getHomepageHero } from "@/lib/homepage-hero";
 import { HomeHero } from "@/components/home/HomeHero";
 import { KnowledgeObjectCard } from "@/components/ui/KnowledgeObjectCard";
@@ -44,34 +46,23 @@ export default async function Home({ searchParams }: HomeProps) {
   const previewingHero = preview === "hero" && canReview;
 
   if (session && !previewingHero) {
-    const [recentlyViewed, savedPearls, favoriteDiseases, notes, annotations] =
+    const [recentlyViewed, favoriteDiseases, favoriteCalculators, annotations, newConditions] =
       await Promise.all([
         getRecentlyViewed(session.user.id, undefined, 6),
-        getSavedPearls(session.user.id),
         getFavoriteDiseases(session.user.id),
-        getAllNotes(session.user.id),
+        getFavoriteCalculators(session.user.id),
         getAllAnnotationsForUser(session.user.id),
+        getRecentlyPublishedDiseases(4),
       ]);
-    const viewedSlugs = new Set(recentlyViewed.map((d) => d.slug));
-    const suggestedDiseases = diseases
-      .filter((d) => !viewedSlugs.has(d.slug))
-      .slice(0, 4);
 
     return (
       <MemberDashboard
         name={session.user.name}
-        canReview={canReview}
         recentlyViewed={recentlyViewed}
-        savedPearls={savedPearls.slice(0, 5).map((pearl) => ({
-          id: pearl.id,
-          html: sanitizeRichText(pearl.body),
-          diseaseSlug: pearl.diseaseSlug,
-          diseaseName: pearl.diseaseName,
-        }))}
         favoriteDiseases={favoriteDiseases}
-        notes={notes}
+        favoriteCalculators={favoriteCalculators}
         annotations={annotations}
-        suggestedDiseases={suggestedDiseases}
+        newConditions={newConditions}
       />
     );
   }
