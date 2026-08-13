@@ -20,6 +20,12 @@ export function revalidateDiseaseSurfaces() {
 // sidebar on every route, the catalog's `?topic=` filter, and every
 // disease page's breadcrumbs), the review queue, or the dashboard
 // hero (rendered on the homepage).
+// Called after a calculator favorite toggle — the only write /
+// clinical-tools itself needs to react to.
+export function revalidateClinicalToolsSurfaces() {
+  revalidatePath("/[locale]/clinical-tools", "page");
+}
+
 export function revalidateShellSurfaces() {
   revalidatePath("/[locale]", "layout");
   revalidatePath("/[locale]", "page");

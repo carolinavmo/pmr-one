@@ -1,8 +1,8 @@
 "use server";
 
 import { auth } from "@/auth";
-import { saveNote, toggleSavedPearl, toggleDiseaseFavorite } from "@/lib/workspace";
-import { revalidateDiseaseSurfaces } from "@/lib/revalidation";
+import { saveNote, toggleSavedPearl, toggleDiseaseFavorite, toggleCalculatorFavorite } from "@/lib/workspace";
+import { revalidateDiseaseSurfaces, revalidateClinicalToolsSurfaces } from "@/lib/revalidation";
 
 export async function saveNoteAction(formData: FormData) {
   const session = await auth();
@@ -33,4 +33,14 @@ export async function toggleDiseaseFavoriteAction(formData: FormData) {
 
   await toggleDiseaseFavorite(session.user.id, diseaseId);
   revalidateDiseaseSurfaces();
+}
+
+export async function toggleCalculatorFavoriteAction(formData: FormData) {
+  const session = await auth();
+  if (!session) return;
+
+  const calculatorId = formData.get("calculatorId") as string;
+
+  await toggleCalculatorFavorite(session.user.id, calculatorId);
+  revalidateClinicalToolsSurfaces();
 }

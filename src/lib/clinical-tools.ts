@@ -132,6 +132,12 @@ export interface CalculatorSummary {
   itemCount: number;
   estimatedMinutesMin: number | null;
   estimatedMinutesMax: number | null;
+  // True for the small set of free-preview instruments a signed-out
+  // visitor can actually run — every other calculator still shows its
+  // card here (browsable, not hidden), but its detail page gates the
+  // interactive runner itself behind a session (see
+  // /clinical-tools/[slug]/page.tsx).
+  isPublic: boolean;
 }
 
 export interface Calculator extends CalculatorSummary {
@@ -175,7 +181,7 @@ export async function getAllCalculators(locale: string): Promise<CalculatorSumma
        COALESCE(t.name, c.name) AS name,
        c.abbreviation,
        COALESCE(t.description, c.description) AS description,
-       c.population, c.estimated_minutes_min, c.estimated_minutes_max,
+       c.population, c.estimated_minutes_min, c.estimated_minutes_max, c.is_public,
        jsonb_array_length(COALESCE(t.definition, c.definition) -> 'items') AS item_count
      FROM clinical_calculator c
      JOIN clinical_calculator_category cat ON cat.id = c.category_id
@@ -198,6 +204,7 @@ export async function getAllCalculators(locale: string): Promise<CalculatorSumma
     itemCount: r.item_count,
     estimatedMinutesMin: r.estimated_minutes_min,
     estimatedMinutesMax: r.estimated_minutes_max,
+    isPublic: r.is_public,
   }));
 }
 
@@ -212,7 +219,7 @@ export async function getCalculatorBySlug(
        COALESCE(t.name, c.name) AS name,
        c.abbreviation,
        COALESCE(t.description, c.description) AS description,
-       c.population, c.estimated_minutes_min, c.estimated_minutes_max,
+       c.population, c.estimated_minutes_min, c.estimated_minutes_max, c.is_public,
        COALESCE(t.definition, c.definition) AS definition
      FROM clinical_calculator c
      JOIN clinical_calculator_category cat ON cat.id = c.category_id
@@ -237,6 +244,7 @@ export async function getCalculatorBySlug(
     itemCount: definition.items.length,
     estimatedMinutesMin: r.estimated_minutes_min,
     estimatedMinutesMax: r.estimated_minutes_max,
+    isPublic: r.is_public,
     definition,
   };
 }

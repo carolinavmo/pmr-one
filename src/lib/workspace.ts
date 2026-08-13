@@ -146,6 +146,33 @@ export async function getFavoriteDiseases(
   return rows.map((r) => ({ slug: r.slug, canonicalName: r.canonical_name }));
 }
 
+export async function getFavoritedCalculatorIds(
+  userId: string,
+): Promise<Set<string>> {
+  const { rows } = await pool.query(
+    `SELECT calculator_id FROM clinical_calculator_favorite WHERE user_id = $1`,
+    [userId],
+  );
+  return new Set(rows.map((r) => r.calculator_id as string));
+}
+
+export async function toggleCalculatorFavorite(
+  userId: string,
+  calculatorId: string,
+): Promise<boolean> {
+  const { rows } = await pool.query(
+    `DELETE FROM clinical_calculator_favorite WHERE user_id = $1 AND calculator_id = $2 RETURNING 1`,
+    [userId, calculatorId],
+  );
+  if (rows.length > 0) return false;
+
+  await pool.query(
+    `INSERT INTO clinical_calculator_favorite (user_id, calculator_id) VALUES ($1, $2)`,
+    [userId, calculatorId],
+  );
+  return true;
+}
+
 export interface UserNote {
   diseaseSlug: string;
   diseaseName: string;
