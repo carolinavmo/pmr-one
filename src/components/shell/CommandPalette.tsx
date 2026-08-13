@@ -76,7 +76,7 @@ export function CommandPalette() {
 
   return (
     <div ref={containerRef} className="relative w-full">
-      <span className="flex min-h-10 items-center gap-2 rounded-full border border-accent/30 bg-surface px-4 transition-colors duration-base focus-within:border-accent">
+      <span className="flex min-h-10 items-center gap-2 rounded-full border border-accent/30 bg-surface pl-4 transition-colors duration-base focus-within:border-accent">
         <Search className="size-4 shrink-0 text-accent" aria-hidden="true" />
         <input
           ref={inputRef}
@@ -102,7 +102,7 @@ export function CommandPalette() {
             if (query) setOpen(true);
             ensureItemsLoaded();
           }}
-          className="hidden shrink-0 rounded-full bg-accent-hover px-4 py-1.5 font-ui text-xs font-medium text-white transition-colors duration-base hover:bg-accent sm:inline"
+          className="hidden shrink-0 -my-px -mr-px items-center self-stretch rounded-r-full bg-accent-hover px-5 font-ui text-sm font-medium text-white transition-colors duration-base hover:bg-accent sm:flex"
         >
           {tSearch("searchButton")}
         </button>
