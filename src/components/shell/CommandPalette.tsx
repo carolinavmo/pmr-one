@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
-import { Link } from "@/i18n/navigation";
+import { Link, usePathname } from "@/i18n/navigation";
 import { Search } from "lucide-react";
 import type { SearchableItem } from "@/components/ui/SearchExperience";
 import { objectIcons } from "@/components/ui/objectIcons";
@@ -19,9 +19,10 @@ const RESULT_LIMIT = 8;
 // then filters client-side same as SearchExperience did — the catalog
 // is small enough that this doesn't need a debounced server round trip
 // per keystroke.
-export function CommandPalette() {
+export function CommandPalette({ signedOut }: { signedOut: boolean }) {
   const t = useTranslations("nav");
   const tSearch = useTranslations("search");
+  const pathname = usePathname();
   const [query, setQuery] = useState("");
   const [open, setOpen] = useState(false);
   const [items, setItems] = useState<SearchableItem[] | null>(null);
@@ -73,6 +74,16 @@ export function CommandPalette() {
   }, [items, query]);
 
   const showDropdown = open && query.trim().length > 0;
+
+  // The guest homepage's own hero already carries a "Explore PM&R
+  // Atlas" / "Create account" pair as the primary calls to action —
+  // an omnipresent search box competing for attention there isn't
+  // doing anything a signed-out visitor needs yet. Every other route,
+  // and every signed-in visitor, keeps it. Placed after every hook
+  // above so this early return never changes hook order.
+  if (signedOut && pathname === "/") {
+    return null;
+  }
 
   return (
     <div ref={containerRef} className="relative w-full">

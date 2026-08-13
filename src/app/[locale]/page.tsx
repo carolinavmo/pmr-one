@@ -146,11 +146,11 @@ export default async function Home({ searchParams }: HomeProps) {
           />
           <div className="absolute top-0 left-1/2 h-96 w-[50rem] -translate-x-1/2 -translate-y-1/3 rounded-full bg-accent/8 blur-3xl" />
         </div>
-        <div className="relative mx-auto w-full max-w-6xl px-6 pt-6 pb-16 lg:pt-8 lg:pb-20">
+        <div className="relative mx-auto w-full max-w-6xl px-6 pt-8 pb-20 lg:pt-10 lg:pb-28">
           <HomeHero
             hero={hero}
             canEdit={canReview}
-            browseConditionsLabel={tCommon("browseConditions")}
+            ctaPrimaryLabel={t("heroCtaPrimary")}
             ctaSecondaryLabel={t("heroCtaSecondary")}
             eyebrowLabel={t("heroEyebrow")}
           />
@@ -166,17 +166,17 @@ export default async function Home({ searchParams }: HomeProps) {
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {everythingCards.map(({ title, body, Icon, href, color }) => {
               const card = (
-                <div className="group flex h-full flex-col gap-3 rounded-xl border border-border bg-surface-raised p-5 shadow-sm transition-colors duration-base hover:border-accent/40">
+                <div className="group flex h-full flex-col gap-3 rounded-2xl border border-border bg-surface-raised p-5 shadow-sm transition-shadow duration-base hover:shadow-md">
                   <span
-                    className={`flex size-10 shrink-0 items-center justify-center rounded-full ${CARD_COLOR_CHIP[color]}`}
+                    className={`flex size-12 shrink-0 items-center justify-center rounded-full ${CARD_COLOR_CHIP[color]}`}
                   >
-                    <Icon className="size-4.5" aria-hidden="true" />
+                    <Icon className="size-5" aria-hidden="true" />
                   </span>
                   <span className="font-ui text-sm font-semibold text-primary">{title}</span>
                   <span className="font-ui text-sm text-secondary">{body}</span>
                   {href && (
                     <ArrowRight
-                      className="mt-auto size-4 text-accent opacity-0 transition-opacity duration-base group-hover:opacity-100"
+                      className="mt-auto size-4 self-end text-accent transition-transform duration-base group-hover:translate-x-0.5"
                       aria-hidden="true"
                     />
                   )}

@@ -43,13 +43,13 @@ function splitHeroTitle(title: string): [string, string | null] {
 export function HomeHero({
   hero,
   canEdit,
-  browseConditionsLabel,
+  ctaPrimaryLabel,
   ctaSecondaryLabel,
   eyebrowLabel,
 }: {
   hero: HomepageHero;
   canEdit: boolean;
-  browseConditionsLabel: string;
+  ctaPrimaryLabel: string;
   ctaSecondaryLabel: string;
   eyebrowLabel: string;
 }) {
@@ -95,24 +95,27 @@ export function HomeHero({
                 as="p"
                 value={hero.subtitle}
                 onSave={(v) => updateHomepageHeroTextAction("subtitle", v)}
-                className="max-w-reading font-reading text-lg leading-7 text-secondary"
+                className="max-w-4xl font-reading text-lg leading-7 text-secondary"
               />
             </div>
           </div>
         </div>
         <div className="flex flex-wrap justify-center gap-3">
           <LinkButton href="/conditions" variant="primary">
-            {browseConditionsLabel}
+            {ctaPrimaryLabel}
           </LinkButton>
           <LinkButton href="/register" variant="secondary">
             {ctaSecondaryLabel}
           </LinkButton>
         </div>
-        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="grid grid-cols-1 divide-y divide-border sm:grid-cols-2 sm:divide-y-0 lg:grid-cols-4">
           {hero.cards.map((card, index) => {
             const Icon = HERO_FEATURE_ICONS[index] ?? ShieldCheck;
             return (
-              <div key={index} className="flex items-start gap-2.5 text-left">
+              <div
+                key={index}
+                className="flex items-start gap-2.5 py-4 text-left sm:border-l sm:border-border sm:px-6 sm:py-0 sm:first:border-l-0 sm:first:pl-0"
+              >
                 <Icon className="mt-0.5 size-4.5 shrink-0 text-accent" aria-hidden="true" />
                 <div className="flex flex-col">
                   <EditableText

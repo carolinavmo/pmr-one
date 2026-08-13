@@ -55,7 +55,7 @@ export async function TopBar() {
         </div>
 
         <div className="min-w-40 flex-1 md:max-w-md lg:absolute lg:inset-x-0 lg:top-1/2 lg:mx-auto lg:w-full lg:max-w-md lg:-translate-y-1/2">
-          <CommandPalette />
+          <CommandPalette signedOut={!session} />
         </div>
 
         <div className="ml-auto flex shrink-0 items-center gap-4 lg:ml-0">
