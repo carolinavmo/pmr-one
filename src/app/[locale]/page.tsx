@@ -1,13 +1,9 @@
 import Image from "next/image";
 import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
-import { ArrowRight, Calendar, ShieldCheck, Globe } from "lucide-react";
+import { ArrowRight, type LucideIcon } from "lucide-react";
 import { auth } from "@/auth";
-import {
-  getPublishedDiseases,
-  getPlatformStats,
-  getRecentlyPublishedDiseases,
-} from "@/lib/disease-catalog";
+import { getRecentlyPublishedDiseases } from "@/lib/disease-catalog";
 import {
   getRecentlyViewed,
   getFavoriteDiseases,
@@ -16,10 +12,7 @@ import {
 import { getAllAnnotationsForUser } from "@/lib/annotations";
 import { getHomepageHero } from "@/lib/homepage-hero";
 import { HomeHero } from "@/components/home/HomeHero";
-import { KnowledgeObjectCard } from "@/components/ui/KnowledgeObjectCard";
 import { LinkButton } from "@/components/ui/LinkButton";
-import { Eyebrow } from "@/components/ui/Eyebrow";
-import { StatTile } from "@/components/ui/StatTile";
 import { objectIcons } from "@/components/ui/objectIcons";
 import { CARD_COLOR_CHIP } from "@/lib/card-colors";
 import type { CardColor } from "@/lib/editorial-blocks";
@@ -31,11 +24,7 @@ interface HomeProps {
 
 export default async function Home({ searchParams }: HomeProps) {
   const { preview } = await searchParams;
-  const [diseases, session, stats] = await Promise.all([
-    getPublishedDiseases(),
-    auth(),
-    getPlatformStats(),
-  ]);
+  const session = await auth();
   const canReview =
     session?.user.role === "editor" || session?.user.role === "admin";
 
@@ -70,32 +59,21 @@ export default async function Home({ searchParams }: HomeProps) {
   }
 
   const t = await getTranslations("home");
-  const tCommon = await getTranslations("common");
   const hero = await getHomepageHero();
 
-  const statCells = [
-    { label: t("statConditions"), value: stats.conditions, Icon: objectIcons.disease },
-    {
-      label: t("statExamManeuvers"),
-      value: stats.examinationManeuvers,
-      Icon: objectIcons.examination_maneuver,
-    },
-    {
-      label: t("statClinicalPearls"),
-      value: stats.clinicalPearls,
-      Icon: objectIcons.clinical_pearl,
-    },
-    {
-      label: t("statReferences"),
-      value: stats.references,
-      Icon: objectIcons.reference,
-    },
-  ];
-
-  // Same "accent/trust/insight/blue" order the stats row below already
-  // uses (statCells) — one consistent color rhythm across the page
-  // rather than each section picking its own.
-  const everythingCards: { title: string; body: string; Icon: typeof ShieldCheck; href: string | null; color: CardColor }[] = [
+  // Same "accent/trust/insight/blue" color rhythm the app's other
+  // decorative palettes use — one consistent order rather than each
+  // section picking its own. Icons are the app's own
+  // per-Knowledge-Object-type vocabulary (objectIcons — the same
+  // stethoscope/hand/branch/checklist glyphs used in search results
+  // and knowledge-object cards elsewhere), not a one-off set picked
+  // just for this section. Examination, Treatment, and Rehabilitation
+  // don't have their own top-level browse route (that content lives
+  // inside each condition page, not as a standalone index), so those
+  // three stay non-clickable — same "info card" treatment the old
+  // Evidence-Based/Multi-Language claims used, rather than links to
+  // pages that don't exist.
+  const everythingCards: { title: string; body: string; Icon: LucideIcon; href: string | null; color: CardColor }[] = [
     {
       title: t("cardConditionsTitle"),
       body: t("cardConditionsBody"),
@@ -104,25 +82,32 @@ export default async function Home({ searchParams }: HomeProps) {
       color: "accent",
     },
     {
-      title: t("cardPlannerTitle"),
-      body: t("cardPlannerBody"),
-      Icon: Calendar,
-      href: "/study-planner",
+      title: t("cardExaminationTitle"),
+      body: t("cardExaminationBody"),
+      Icon: objectIcons.examination_maneuver,
+      href: null,
       color: "trust",
     },
     {
-      title: t("cardEvidenceTitle"),
-      body: t("cardEvidenceBody"),
-      Icon: ShieldCheck,
+      title: t("cardTreatmentTitle"),
+      body: t("cardTreatmentBody"),
+      Icon: objectIcons.treatment_algorithm,
       href: null,
       color: "insight",
     },
     {
-      title: t("cardLanguageTitle"),
-      body: t("cardLanguageBody"),
-      Icon: Globe,
+      title: t("cardRehabilitationTitle"),
+      body: t("cardRehabilitationBody"),
+      Icon: objectIcons.rehabilitation_protocol,
       href: null,
       color: "blue",
+    },
+    {
+      title: t("cardClinicalToolsTitle"),
+      body: t("cardClinicalToolsBody"),
+      Icon: objectIcons.clinical_calculator,
+      href: "/clinical-tools",
+      color: "orange",
     },
   ];
 
@@ -163,10 +148,10 @@ export default async function Home({ searchParams }: HomeProps) {
           <h2 className="text-center font-heading text-2xl font-semibold text-primary">
             {t("everythingHeading")}
           </h2>
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-5">
             {everythingCards.map(({ title, body, Icon, href, color }) => {
               const card = (
-                <div className="group flex h-full flex-col gap-3 rounded-2xl border border-border bg-surface-raised p-5 shadow-sm transition-shadow duration-base hover:shadow-md">
+                <div className="group flex h-full flex-col items-center gap-3 rounded-2xl bg-surface-raised px-6 py-10 text-center shadow-sm transition-shadow duration-base hover:shadow-md">
                   <span
                     className={`flex size-12 shrink-0 items-center justify-center rounded-full ${CARD_COLOR_CHIP[color]}`}
                   >
@@ -176,7 +161,7 @@ export default async function Home({ searchParams }: HomeProps) {
                   <span className="font-ui text-sm text-secondary">{body}</span>
                   {href && (
                     <ArrowRight
-                      className="mt-auto size-4 self-end text-accent transition-transform duration-base group-hover:translate-x-0.5"
+                      className="mt-auto size-4 text-accent transition-transform duration-base group-hover:translate-x-0.5"
                       aria-hidden="true"
                     />
                   )}
@@ -191,55 +176,6 @@ export default async function Home({ searchParams }: HomeProps) {
               );
             })}
           </div>
-        </div>
-
-        {/* Real, computed stats — never fabricated */}
-        <div className="grid grid-cols-2 gap-3 border-y border-border py-10 sm:grid-cols-4">
-          {statCells.map(({ label, value, Icon }, i) => (
-            <StatTile
-              key={label}
-              icon={Icon}
-              label={label}
-              value={value}
-              color={(["accent", "trust", "insight", "blue"] as const)[i]}
-            />
-          ))}
-        </div>
-
-        {/* Conditions catalog */}
-        <div className="flex flex-col gap-4">
-          <h2>
-            <Eyebrow>{t("conditionsHeading")}</Eyebrow>
-          </h2>
-          {diseases.length === 0 ? (
-            <p className="font-ui text-sm text-secondary">
-              {tCommon("moreConditionsComing")}
-              {canReview && (
-                <>
-                  {" "}
-                  {t("publishFromQueuePrefix")}{" "}
-                  <Link href="/admin" className="text-accent hover:underline">
-                    {t("reviewQueueLink")}
-                  </Link>
-                  .
-                </>
-              )}
-            </p>
-          ) : (
-            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
-              {diseases.map((disease) => (
-                <KnowledgeObjectCard
-                  key={disease.id}
-                  type="disease"
-                  icon={disease.icon}
-                  title={disease.canonicalName}
-                  context={disease.snippet}
-                  href={`/conditions/${disease.slug}`}
-                  reviewedAt={disease.reviewedAt}
-                />
-              ))}
-            </div>
-          )}
         </div>
 
         {/* Closing CTA — the app's one real brand color (teal), not an
