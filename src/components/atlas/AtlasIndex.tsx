@@ -108,7 +108,7 @@ export function AtlasIndex({
               }
               setDraggedSectionId(null);
             }}
-            className={draggedSectionId && draggedSectionId !== section.id ? "opacity-60" : undefined}
+            className={draggedSectionId === section.id ? "opacity-40" : undefined}
           >
             <AtlasSectionGroup
               section={section}
@@ -185,11 +185,15 @@ function AtlasSectionGroup({
             type="button"
             aria-label={t("dragToReorder")}
             draggable
-            onDragStart={onDragHandleStart}
+            onDragStart={(e) => {
+              e.dataTransfer.effectAllowed = "move";
+              e.dataTransfer.setData("text/plain", section.id);
+              onDragHandleStart();
+            }}
             onDragEnd={onDragHandleEnd}
-            className="flex size-4 shrink-0 cursor-grab items-center justify-center text-secondary active:cursor-grabbing"
+            className="flex size-6 shrink-0 cursor-grab items-center justify-center text-secondary hover:bg-border/40 active:cursor-grabbing"
           >
-            <GripVertical className="size-3" aria-hidden="true" />
+            <GripVertical className="size-3.5" aria-hidden="true" />
           </button>
         )}
         {editMode ? (
@@ -301,7 +305,7 @@ function AtlasSectionGroup({
                 }
                 setDraggedPageId(null);
               }}
-              className={draggedPageId && draggedPageId !== page.id ? "opacity-60" : undefined}
+              className={draggedPageId === page.id ? "opacity-40" : undefined}
             >
               <div
                 className={`group/page flex w-full items-center gap-1 rounded-md px-1.5 py-1 transition-colors duration-base ${
@@ -315,11 +319,15 @@ function AtlasSectionGroup({
                     type="button"
                     aria-label={t("dragToReorder")}
                     draggable
-                    onDragStart={() => setDraggedPageId(page.id)}
+                    onDragStart={(e) => {
+                      e.dataTransfer.effectAllowed = "move";
+                      e.dataTransfer.setData("text/plain", page.id);
+                      setDraggedPageId(page.id);
+                    }}
                     onDragEnd={() => setDraggedPageId(null)}
-                    className="flex size-4 shrink-0 cursor-grab items-center justify-center active:cursor-grabbing"
+                    className="flex size-6 shrink-0 cursor-grab items-center justify-center hover:bg-border/40 active:cursor-grabbing"
                   >
-                    <GripVertical className="size-3" aria-hidden="true" />
+                    <GripVertical className="size-3.5" aria-hidden="true" />
                   </button>
                 )}
                 <button
