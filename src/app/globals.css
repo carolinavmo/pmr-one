@@ -229,6 +229,25 @@
   --color-card-pink: #f9a8d4;
 }
 
+/* Homepage hero background photo — light-mode only (it's a near-white
+   PNG that would paint a bright rectangle over the dark surface).
+   Tailwind's own `dark:` variant defaults to `prefers-color-scheme`
+   in this app (no `@custom-variant dark` is registered), which is a
+   different signal than the manual `data-theme` toggle every other
+   dark-mode style here keys off — so this follows the same two-block
+   convention as the color tokens above instead of `dark:hidden`. */
+.hero-bg-photo {
+  display: block;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .hero-bg-photo {
+    display: none;
+  }
+}
+:root[data-theme="dark"] .hero-bg-photo {
+  display: none;
+}
+
 @theme inline {
   --color-surface: var(--color-surface);
   --color-surface-raised: var(--color-surface-raised);

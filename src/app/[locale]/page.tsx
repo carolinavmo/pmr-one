@@ -1,7 +1,7 @@
 import Image from "next/image";
 import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
-import { Calendar, ShieldCheck, Globe, Plus } from "lucide-react";
+import { ArrowRight, Calendar, ShieldCheck, Globe } from "lucide-react";
 import { auth } from "@/auth";
 import {
   getPublishedDiseases,
@@ -21,6 +21,8 @@ import { LinkButton } from "@/components/ui/LinkButton";
 import { Eyebrow } from "@/components/ui/Eyebrow";
 import { StatTile } from "@/components/ui/StatTile";
 import { objectIcons } from "@/components/ui/objectIcons";
+import { CARD_COLOR_CHIP } from "@/lib/card-colors";
+import type { CardColor } from "@/lib/editorial-blocks";
 import { MemberDashboard } from "@/components/dashboard/MemberDashboard";
 
 interface HomeProps {
@@ -90,30 +92,37 @@ export default async function Home({ searchParams }: HomeProps) {
     },
   ];
 
-  const everythingCards = [
+  // Same "accent/trust/insight/blue" order the stats row below already
+  // uses (statCells) — one consistent color rhythm across the page
+  // rather than each section picking its own.
+  const everythingCards: { title: string; body: string; Icon: typeof ShieldCheck; href: string | null; color: CardColor }[] = [
     {
       title: t("cardConditionsTitle"),
       body: t("cardConditionsBody"),
       Icon: objectIcons.disease,
       href: "/conditions",
+      color: "accent",
     },
     {
       title: t("cardPlannerTitle"),
       body: t("cardPlannerBody"),
       Icon: Calendar,
       href: "/study-planner",
+      color: "trust",
     },
     {
       title: t("cardEvidenceTitle"),
       body: t("cardEvidenceBody"),
       Icon: ShieldCheck,
       href: null,
+      color: "insight",
     },
     {
       title: t("cardLanguageTitle"),
       body: t("cardLanguageBody"),
       Icon: Globe,
       href: null,
+      color: "blue",
     },
   ];
 
@@ -122,67 +131,28 @@ export default async function Home({ searchParams }: HomeProps) {
       {/* Hero band — a full-width tinted section (the app's usual pages
           stay plain-white; this is the one deliberately "arrival"
           moment, same reasoning the homepage's own Eyebrow component
-          restricts itself to). The decorative mark on the right is the
-          actual navbar logo mark (brand-logo-v2.png — transparent
-          background, 1381x1139 source), sitting level (no tilt) as a
-          large horizontal mark rather than the earlier smaller, more
-          tilted, more heavily-glowing version — a light backdrop wash
-          and a couple of fading "speed" lines carry the brand feel now
-          without the mark itself looking like it's lit from behind.
-          Displayed well below its native resolution (a few hundred px
-          vs. 1381 wide), so unlike the old full-bleed background photo
-          — which was stretched *beyond* its resolution to cover an
-          entire section — this stays crisp. The glow/lines/plus accents
-          are still pure CSS, so they cost nothing and hold up in dark
-          mode without a light-mode-only escape hatch. Desktop (lg+)
-          only: the content column would have nothing to make room for
-          below that breakpoint. */}
+          restricts itself to). The flowing-line artwork is a supplied
+          background image, light-mode only (it's a near-white PNG —
+          dark mode keeps the plain ambient glow instead of showing a
+          bright rectangle on a dark surface). */}
       <section className="relative w-full overflow-hidden border-b border-border bg-surface-raised">
-        <div className="pointer-events-none absolute inset-0 hidden lg:block" aria-hidden="true">
-          <div className="absolute top-1/2 -right-40 h-72 w-[42rem] -translate-y-1/2 rounded-full bg-accent/5 blur-3xl dark:bg-accent/10" />
-          <div className="absolute top-1/2 right-8 h-56 w-96 -translate-y-1/2 rounded-full bg-accent/8 blur-2xl dark:bg-accent/12" />
-          <div
-            className="absolute top-12 right-20 size-28 opacity-25"
-            style={{
-              backgroundImage: "radial-gradient(var(--color-accent) 1px, transparent 1px)",
-              backgroundSize: "14px 14px",
-            }}
-          />
-          <div className="absolute top-[38%] right-72 h-px w-40 bg-gradient-to-r from-transparent to-accent/45" />
-          <div className="absolute top-[50%] right-72 h-px w-56 bg-gradient-to-r from-transparent to-accent/35" />
-          <div className="absolute top-[62%] right-72 h-px w-32 bg-gradient-to-r from-transparent to-accent/25" />
-          {/* A generic dark drop-shadow (Tailwind's drop-shadow-xl
-              default) reads fine in light mode but actively hurts dark
-              mode — it adds more black weight around a mark that
-              already has dark outline strokes, on a dark surface, so
-              the figure nearly disappears. A small, tight teal-tinted
-              shadow built from the theme's own accent token works in
-              both — enough lift to separate the mark from the surface,
-              short of a backlit "glow." */}
+        <div className="pointer-events-none absolute inset-0" aria-hidden="true">
           <Image
-            src="/brand-logo-v2.png"
+            src="/homepage-hero-bg.png"
             alt=""
-            width={1381}
-            height={1139}
-            className="absolute top-1/2 right-10 w-[27rem] -translate-y-1/2"
-            style={{
-              filter:
-                "drop-shadow(0 6px 12px rgb(0 0 0 / 0.10)) drop-shadow(0 0 10px var(--color-accent))",
-            }}
+            fill
+            priority
+            className="hero-bg-photo object-cover"
           />
-          <Plus className="absolute top-20 right-12 size-4 text-accent/40" strokeWidth={2.5} />
-          <Plus className="absolute bottom-24 right-80 size-3 text-accent/30" strokeWidth={2.5} />
+          <div className="absolute top-0 left-1/2 h-96 w-[50rem] -translate-x-1/2 -translate-y-1/3 rounded-full bg-accent/8 blur-3xl" />
         </div>
-        <div className="relative mx-auto w-full max-w-6xl px-6 py-16 lg:py-20">
-          {/* Capped width only at lg — no auto margins of its own, so
-              it hugs this container's left edge (matching the rest of
-              the page's max-w-6xl alignment) instead of re-centering
-              itself inside the full-bleed section above. */}
+        <div className="relative mx-auto w-full max-w-6xl px-6 pt-6 pb-16 lg:pt-8 lg:pb-20">
           <HomeHero
             hero={hero}
             canEdit={canReview}
             browseConditionsLabel={tCommon("browseConditions")}
             ctaSecondaryLabel={t("heroCtaSecondary")}
+            eyebrowLabel={t("heroEyebrow")}
           />
         </div>
       </section>
@@ -194,14 +164,22 @@ export default async function Home({ searchParams }: HomeProps) {
             {t("everythingHeading")}
           </h2>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            {everythingCards.map(({ title, body, Icon, href }) => {
+            {everythingCards.map(({ title, body, Icon, href, color }) => {
               const card = (
-                <div className="flex h-full flex-col gap-3 rounded-xl border border-border bg-surface-raised p-5 shadow-sm transition-colors duration-base hover:border-accent/40">
-                  <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-accent/10 text-accent">
+                <div className="group flex h-full flex-col gap-3 rounded-xl border border-border bg-surface-raised p-5 shadow-sm transition-colors duration-base hover:border-accent/40">
+                  <span
+                    className={`flex size-10 shrink-0 items-center justify-center rounded-full ${CARD_COLOR_CHIP[color]}`}
+                  >
                     <Icon className="size-4.5" aria-hidden="true" />
                   </span>
                   <span className="font-ui text-sm font-semibold text-primary">{title}</span>
                   <span className="font-ui text-sm text-secondary">{body}</span>
+                  {href && (
+                    <ArrowRight
+                      className="mt-auto size-4 text-accent opacity-0 transition-opacity duration-base group-hover:opacity-100"
+                      aria-hidden="true"
+                    />
+                  )}
                 </div>
               );
               return href ? (

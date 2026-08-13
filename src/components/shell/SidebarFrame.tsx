@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useSyncExternalStore } from "react";
 import { useTranslations } from "next-intl";
-import { Link } from "@/i18n/navigation";
+import { Link, usePathname } from "@/i18n/navigation";
 import {
   Sparkles,
   Calculator,
@@ -57,6 +57,8 @@ interface SidebarFrameProps {
 export function SidebarFrame({ tree, userName, userEmail, userRole }: SidebarFrameProps) {
   const collapsed = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
   const t = useTranslations("nav");
+  const pathname = usePathname();
+  const signedOut = !(userEmail || userName);
 
   // The sidebar now sits in a row below TopBar (the brand wordmark
   // moved there) rather than spanning the full viewport height itself,
@@ -75,6 +77,16 @@ export function SidebarFrame({ tree, userName, userEmail, userRole }: SidebarFra
     observer.observe(header);
     return () => observer.disconnect();
   }, []);
+
+  // A signed-out visitor lands on the homepage's own guest hero — the
+  // Index (topic tree) has nowhere to anchor yet (no disease page is
+  // open), so it stays out of the way until they actually go
+  // somewhere (Explore Conditions, sign in, ...). Every other route,
+  // and every signed-in visitor, still gets the persistent sidebar.
+  // Below every hook so this early return never changes hook order.
+  if (signedOut && pathname === "/") {
+    return null;
+  }
 
   if (collapsed) {
     return (
