@@ -257,7 +257,7 @@
     "removeFromFavourites": "Remove from Favourites",
     "membersOnly": "Members only",
     "membersOnlyHeading": "Members-only calculator",
-    "membersOnlyBody": "Sign in to use this calculator interactively. Creating an account is free.",
+    "membersOnlyBody": "Sign in to use this calculator interactively.",
     "backToAll": "← All clinical tools",
     "itemCount": "{count, plural, one {# item} other {# items}}",
     "estimatedMinutes": "~{minutes} min",

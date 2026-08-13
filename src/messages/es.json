@@ -257,7 +257,7 @@
     "removeFromFavourites": "Quitar de Favoritos",
     "membersOnly": "Solo miembros",
     "membersOnlyHeading": "Calculadora exclusiva para miembros",
-    "membersOnlyBody": "Inicie sesión para usar esta calculadora de forma interactiva. Crear una cuenta es gratis.",
+    "membersOnlyBody": "Inicie sesión para usar esta calculadora de forma interactiva.",
     "backToAll": "← Todas las herramientas clínicas",
     "itemCount": "{count, plural, one {# ítem} other {# ítems}}",
     "estimatedMinutes": "~{minutes} min",
