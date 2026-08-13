@@ -274,6 +274,7 @@
     "copiedToClipboard": "¡Copiado!",
     "deletePage": "Eliminar página",
     "confirmDeletePage": "¿Eliminar esta página? Esta acción no se puede deshacer.",
+    "cancel": "Cancelar",
     "moveToSection": "Sección",
     "dragToReorder": "Arrastrar para reordenar",
     "collapseSection": "Contraer sección",

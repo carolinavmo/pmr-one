@@ -5,6 +5,7 @@ import { useTranslations, useFormatter } from "next-intl";
 import { Clipboard, Check, Trash2 } from "lucide-react";
 import type { AtlasPage, AtlasSection } from "@/lib/atlas";
 import { RichEditableText } from "@/components/ui/RichEditableText";
+import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { EditModeProvider, useEditMode } from "@/components/disease-page/EditMode";
 import { savePageBodyAction } from "@/lib/actions/atlas";
 
@@ -120,6 +121,7 @@ function PageEditorHeader({
   const format = useFormatter();
   const [title, setTitle] = useState(page.title);
   const [copied, setCopied] = useState(false);
+  const [confirmingDelete, setConfirmingDelete] = useState(false);
   const copyTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
   // "now" must come from an effect, not render: computing it inline would
   // give the SSR pass and the client's hydration pass two different
@@ -183,9 +185,7 @@ function PageEditorHeader({
           </button>
           <button
             type="button"
-            onClick={() => {
-              if (window.confirm(t("confirmDeletePage"))) onDeletePage(page.id);
-            }}
+            onClick={() => setConfirmingDelete(true)}
             aria-label={t("deletePage")}
             title={t("deletePage")}
             className="flex size-8 items-center justify-center rounded-lg text-secondary hover:bg-warning/10 hover:text-warning"
@@ -194,6 +194,19 @@ function PageEditorHeader({
           </button>
         </div>
       </div>
+
+      {confirmingDelete && (
+        <ConfirmDialog
+          title={t("confirmDeletePage")}
+          confirmLabel={t("deletePage")}
+          cancelLabel={t("cancel")}
+          onConfirm={() => {
+            setConfirmingDelete(false);
+            onDeletePage(page.id);
+          }}
+          onCancel={() => setConfirmingDelete(false)}
+        />
+      )}
       <div className="flex flex-wrap items-center gap-x-2 gap-y-1 font-ui text-xs text-secondary">
         {/* A native <select> styled to read as plain breadcrumb text
             (no border/background) rather than a boxed control — same

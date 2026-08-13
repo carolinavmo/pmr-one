@@ -274,6 +274,7 @@
     "copiedToClipboard": "Copied!",
     "deletePage": "Delete page",
     "confirmDeletePage": "Delete this page? This cannot be undone.",
+    "cancel": "Cancel",
     "moveToSection": "Section",
     "dragToReorder": "Drag to reorder",
     "collapseSection": "Collapse section",

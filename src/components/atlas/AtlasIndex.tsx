@@ -7,6 +7,7 @@ import type { AtlasSection, AtlasPage } from "@/lib/atlas";
 import type { CardColor } from "@/lib/editorial-blocks";
 import { CARD_COLOR_TINT, CARD_COLOR_TEXT } from "@/lib/card-colors";
 import { ColorSwatchPicker } from "@/components/ui/ColorSwatchPicker";
+import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 
 // Drop-on-a-row reordering: dropping the dragged id onto a target row
 // inserts it immediately before that row. Simpler than tracking a
@@ -165,6 +166,7 @@ function AtlasSectionGroup({
   const [colorPickerOpen, setColorPickerOpen] = useState(false);
   const [draggedPageId, setDraggedPageId] = useState<string | null>(null);
   const [collapsed, setCollapsed] = useState(false);
+  const [confirmingDelete, setConfirmingDelete] = useState(false);
 
   function commitRename() {
     setRenaming(false);
@@ -248,9 +250,7 @@ function AtlasSectionGroup({
             </button>
             <button
               type="button"
-              onClick={() => {
-                if (window.confirm(t("confirmDeleteSection"))) onDeleteSection(section.id);
-              }}
+              onClick={() => setConfirmingDelete(true)}
               aria-label={t("deleteSection")}
               title={t("deleteSection")}
               className="flex size-6 items-center justify-center rounded text-secondary hover:bg-warning/10 hover:text-warning"
@@ -334,6 +334,19 @@ function AtlasSectionGroup({
             </li>
           ))}
         </ul>
+      )}
+
+      {confirmingDelete && (
+        <ConfirmDialog
+          title={t("confirmDeleteSection")}
+          confirmLabel={t("deleteSection")}
+          cancelLabel={t("cancel")}
+          onConfirm={() => {
+            setConfirmingDelete(false);
+            onDeleteSection(section.id);
+          }}
+          onCancel={() => setConfirmingDelete(false)}
+        />
       )}
     </div>
   );
