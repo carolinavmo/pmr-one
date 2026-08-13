@@ -57,7 +57,7 @@ export function AtlasEditor({
 
   if (!page) {
     return (
-      <div className="flex flex-1 items-center justify-center p-6 text-center">
+      <div className="flex flex-1 items-center justify-center p-12 text-center">
         <p className="font-ui text-sm text-secondary">{t("noPageSelected")}</p>
       </div>
     );
@@ -124,6 +124,16 @@ function PageEditorHeader({
   const [title, setTitle] = useState(page.title);
   const [copied, setCopied] = useState(false);
   const copyTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
+  // "now" must come from an effect, not render: computing it inline would
+  // give the SSR pass and the client's hydration pass two different
+  // instants, so relativeTime() renders different text ("27 seconds ago"
+  // vs "28 seconds ago") and React throws a hydration mismatch.
+  const [now, setNow] = useState<Date | null>(null);
+
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- deliberate hydration-safe pattern: state starts null on both server and client's first render, then updates post-mount so the client-only value never has to match SSR output.
+    setNow(new Date());
+  }, []);
 
   function commitTitle() {
     if (title !== page.title) onRenamePage(page.id, title);
@@ -214,8 +224,12 @@ function PageEditorHeader({
             </option>
           ))}
         </select>
-        <span aria-hidden="true">·</span>
-        <span>{t("editedRelative", { time: format.relativeTime(new Date(page.updatedAt), new Date()) })}</span>
+        {now && (
+          <>
+            <span aria-hidden="true">·</span>
+            <span>{t("editedRelative", { time: format.relativeTime(new Date(page.updatedAt), now) })}</span>
+          </>
+        )}
         <span aria-hidden="true">·</span>
         <span className="inline-flex items-center gap-1 text-trust">
           <Check className="size-3" aria-hidden="true" />

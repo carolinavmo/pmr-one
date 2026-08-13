@@ -59,15 +59,8 @@ export function AtlasIndex({
     return pages.filter((p) => (p.title || t("untitledPage")).toLowerCase().includes(q));
   }, [pages, query, t]);
 
-  // The primary "New page" button needs a target section — the
-  // selected page's own section if there is one (writing follow-up
-  // notes tends to happen alongside what you're already looking at),
-  // otherwise the first section.
-  const selectedPage = pages.find((p) => p.id === selectedPageId);
-  const defaultSectionId = selectedPage?.sectionId ?? sections[0]?.id;
-
   return (
-    <aside className="flex w-full flex-col gap-3 border-b border-border p-4 lg:w-72 lg:shrink-0 lg:border-r lg:border-b-0">
+    <aside className="flex w-full flex-col gap-2 border-b border-border bg-surface-sunken p-3 lg:w-80 lg:shrink-0 lg:border-r lg:border-b-0">
       <div className="relative">
         <Search
           className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-secondary"
@@ -78,22 +71,11 @@ export function AtlasIndex({
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder={t("searchPlaceholder")}
-          className="w-full rounded-full border border-border bg-surface py-2 pr-3 pl-9 font-ui text-sm text-primary outline-none focus:border-accent"
+          className="w-full rounded-full border border-border bg-surface py-1.5 pr-3 pl-9 font-ui text-xs text-primary outline-none focus:border-accent"
         />
       </div>
 
-      {defaultSectionId && (
-        <button
-          type="button"
-          onClick={() => onCreatePage(defaultSectionId)}
-          className="flex w-full items-center justify-center gap-1.5 rounded-xl bg-accent px-3 py-2.5 font-ui text-sm font-medium text-white transition-colors duration-base hover:bg-accent-hover"
-        >
-          <Plus className="size-4" aria-hidden="true" />
-          {t("newPage")}
-        </button>
-      )}
-
-      <div className="flex flex-col gap-3">
+      <div className="flex flex-col gap-2">
         {sections.map((section) => (
           <div
             key={section.id}
@@ -174,21 +156,8 @@ function AtlasSectionGroup({
   }
 
   return (
-    <div className="flex flex-col gap-1">
+    <div className="flex flex-col gap-0.5">
       <div className="group flex items-center gap-1.5 px-1">
-        <button
-          type="button"
-          aria-label={collapsed ? t("expandSection") : t("collapseSection")}
-          title={collapsed ? t("expandSection") : t("collapseSection")}
-          onClick={() => setCollapsed((c) => !c)}
-          className="flex size-4 shrink-0 items-center justify-center text-secondary hover:text-primary"
-        >
-          {collapsed ? (
-            <ChevronRight className="size-3.5" aria-hidden="true" />
-          ) : (
-            <ChevronDown className="size-3.5" aria-hidden="true" />
-          )}
-        </button>
         <button
           type="button"
           aria-label={t("dragToReorder")}
@@ -231,7 +200,7 @@ function AtlasSectionGroup({
             className="min-w-0 flex-1 rounded border border-accent bg-surface px-1.5 py-0.5 font-ui text-xs font-semibold text-primary outline-none"
           />
         ) : (
-          <span className="min-w-0 flex-1 truncate font-ui text-xs font-semibold tracking-wide text-primary uppercase">
+          <span className="min-w-0 flex-1 truncate font-ui text-[11px] font-semibold tracking-wide text-secondary uppercase">
             {section.name}
           </span>
         )}
@@ -266,12 +235,25 @@ function AtlasSectionGroup({
             <Plus className="size-4" aria-hidden="true" />
           </button>
         </div>
+        <button
+          type="button"
+          aria-label={collapsed ? t("expandSection") : t("collapseSection")}
+          title={collapsed ? t("expandSection") : t("collapseSection")}
+          onClick={() => setCollapsed((c) => !c)}
+          className="flex size-4 shrink-0 items-center justify-center text-secondary hover:text-primary"
+        >
+          {collapsed ? (
+            <ChevronRight className="size-3.5" aria-hidden="true" />
+          ) : (
+            <ChevronDown className="size-3.5" aria-hidden="true" />
+          )}
+        </button>
       </div>
 
       {collapsed ? null : pages.length === 0 ? (
-        <p className="px-2 py-1 font-ui text-xs text-secondary italic">{t("emptySectionPrompt")}</p>
+        <p className="px-2 py-0.5 font-ui text-xs text-secondary italic">{t("emptySectionPrompt")}</p>
       ) : (
-        <ul className="flex flex-col gap-0.5">
+        <ul className="flex flex-col">
           {pages.map((page) => (
             <li
               key={page.id}
@@ -289,7 +271,7 @@ function AtlasSectionGroup({
               className={draggedPageId && draggedPageId !== page.id ? "opacity-60" : undefined}
             >
               <div
-                className={`group/page flex w-full items-center gap-1.5 rounded-lg px-2 py-2 transition-colors duration-base ${
+                className={`group/page flex w-full items-center gap-1 rounded-md px-1.5 py-1 transition-colors duration-base ${
                   selectedPageId === page.id
                     ? `${CARD_COLOR_TINT[section.color]} ${CARD_COLOR_TEXT[section.color]}`
                     : "text-secondary hover:bg-border/40 hover:text-primary"
@@ -310,8 +292,8 @@ function AtlasSectionGroup({
                   onClick={() => onSelectPage(page.id)}
                   className="flex min-w-0 flex-1 items-center gap-1.5 text-left"
                 >
-                  <FileText className="size-4 shrink-0" aria-hidden="true" />
-                  <span className="truncate font-ui text-sm">{page.title || t("untitledPage")}</span>
+                  <FileText className="size-3.5 shrink-0" aria-hidden="true" />
+                  <span className="truncate font-ui text-xs">{page.title || t("untitledPage")}</span>
                 </button>
               </div>
             </li>
@@ -332,9 +314,9 @@ function NewSectionButton({ onCreateSection }: { onCreateSection: (name: string)
       <button
         type="button"
         onClick={() => setAdding(true)}
-        className="flex items-center gap-1.5 rounded-lg border border-dashed border-border px-2.5 py-1.5 font-ui text-xs font-medium text-secondary hover:border-accent hover:text-accent"
+        className="flex w-full items-center justify-center gap-1.5 rounded-xl bg-accent px-3 py-2 font-ui text-sm font-medium text-white transition-colors duration-base hover:bg-accent-hover"
       >
-        <Plus className="size-3.5" aria-hidden="true" />
+        <Plus className="size-4" aria-hidden="true" />
         {t("newSection")}
       </button>
     );
@@ -360,7 +342,7 @@ function NewSectionButton({ onCreateSection }: { onCreateSection: (name: string)
         }
       }}
       placeholder={t("newSection")}
-      className="rounded-lg border border-accent bg-surface px-2 py-1 font-ui text-xs text-primary outline-none"
+      className="w-full rounded-xl border border-accent bg-surface px-3 py-2 font-ui text-sm text-primary outline-none"
     />
   );
 }
