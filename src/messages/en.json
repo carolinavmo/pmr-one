@@ -263,10 +263,8 @@
     "confirmDeleteSection": "Delete this section and all its pages? This cannot be undone.",
     "newPage": "New page",
     "untitledPage": "Untitled page",
-    "copySuffix": "(copy)",
     "copyNote": "Copy",
     "copiedToClipboard": "Copied!",
-    "duplicatePage": "Duplicate page",
     "deletePage": "Delete page",
     "confirmDeletePage": "Delete this page? This cannot be undone.",
     "moveToSection": "Section",
@@ -277,6 +275,7 @@
     "emptySectionPrompt": "No pages yet.",
     "emptyPagePlaceholder": "Start writing…",
     "editedRelative": "Edited {time}",
+    "save": "Save",
     "saved": "Saved",
     "wordCount": "{count, plural, one {# word} other {# words}}",
     "characterCount": "{count, plural, one {# character} other {# characters}}"

@@ -11,7 +11,6 @@ import {
   deleteSection,
   reorderSections,
   createPage,
-  duplicatePage,
   renamePage,
   movePage,
   reorderPages,
@@ -64,13 +63,6 @@ export async function reorderSectionsAction(orderedIds: string[]): Promise<void>
 export async function createPageAction(sectionId: string, title: string): Promise<AtlasPage> {
   const userId = await requireUserId();
   const page = await createPage(userId, sectionId, title);
-  revalidateAtlasSurfaces();
-  return page;
-}
-
-export async function duplicatePageAction(pageId: string, newTitle: string): Promise<AtlasPage> {
-  const userId = await requireUserId();
-  const page = await duplicatePage(userId, pageId, newTitle);
   revalidateAtlasSurfaces();
   return page;
 }

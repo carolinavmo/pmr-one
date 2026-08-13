@@ -263,10 +263,8 @@
     "confirmDeleteSection": "Eliminar esta secção e todas as suas páginas? Esta ação não pode ser revertida.",
     "newPage": "Nova página",
     "untitledPage": "Página sem título",
-    "copySuffix": "(cópia)",
     "copyNote": "Copiar",
     "copiedToClipboard": "Copiado!",
-    "duplicatePage": "Duplicar página",
     "deletePage": "Eliminar página",
     "confirmDeletePage": "Eliminar esta página? Esta ação não pode ser revertida.",
     "moveToSection": "Secção",
@@ -277,6 +275,7 @@
     "emptySectionPrompt": "Ainda sem páginas.",
     "emptyPagePlaceholder": "Comece a escrever…",
     "editedRelative": "Editado {time}",
+    "save": "Guardar",
     "saved": "Guardado",
     "wordCount": "{count, plural, one {# palavra} other {# palavras}}",
     "characterCount": "{count, plural, one {# carácter} other {# caracteres}}"

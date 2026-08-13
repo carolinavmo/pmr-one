@@ -254,17 +254,17 @@ function AtlasSectionGroup({
             >
               <Trash2 className="size-3.5" aria-hidden="true" />
             </button>
-            <button
-              type="button"
-              onClick={() => onCreatePage(section.id)}
-              aria-label={t("newPage")}
-              title={t("newPage")}
-              className="flex size-6 items-center justify-center rounded text-secondary hover:bg-border/40 hover:text-accent"
-            >
-              <Plus className="size-4" aria-hidden="true" />
-            </button>
           </div>
         )}
+        <button
+          type="button"
+          onClick={() => onCreatePage(section.id)}
+          aria-label={t("newPage")}
+          title={t("newPage")}
+          className="flex size-6 shrink-0 items-center justify-center rounded text-secondary hover:bg-border/40 hover:text-accent"
+        >
+          <Plus className="size-4" aria-hidden="true" />
+        </button>
         <button
           type="button"
           aria-label={collapsed ? t("expandSection") : t("collapseSection")}

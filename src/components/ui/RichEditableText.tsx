@@ -20,6 +20,7 @@ import {
   AlignRight,
   Sigma,
   MoreHorizontal,
+  Save,
 } from "lucide-react";
 import { useEditMode } from "@/components/disease-page/EditMode";
 import { ColorSwatchPicker } from "@/components/ui/ColorSwatchPicker";
@@ -74,6 +75,12 @@ interface RichEditableTextProps {
   // current full inline toolbar untouched.
   autoEdit?: boolean;
   compact?: boolean;
+  // Label for the explicit Save control the compact toolbar shows (My
+  // Handbook only — see the `compact` block below). Left as a plain
+  // English default rather than a next-intl hook so this component
+  // stays translation-agnostic like every other label here; a caller
+  // that cares about locale (AtlasEditor) passes its own t() string.
+  saveLabel?: string;
 }
 
 // Raw <ul>/<ol>/<blockquote> tags (inserted via execCommand, so they
@@ -158,6 +165,7 @@ export function RichEditableText({
   fieldKey,
   autoEdit = false,
   compact = false,
+  saveLabel = "Save",
 }: RichEditableTextProps) {
   const { editing: editModeOn } = useEditMode();
   const [isEditing, setIsEditing] = useState(autoEdit);
@@ -211,8 +219,14 @@ export function RichEditableText({
 
   if (!isEditing) {
     const preview = sanitizeRichText(value);
+    // compact (My Handbook) skips the dashed "click to edit" outline —
+    // a plain-notes page reads better as unadorned text at rest, with
+    // just the hover wash as the discoverability cue. Every other
+    // caller (disease-page block editing) keeps the outline, since
+    // there it's the only signal a given field is editable at all.
+    const idleBorderClass = compact ? "" : "outline-dashed outline-1 outline-border/60";
     const commonProps = {
-      className: `${className} ${PROSE_CONTENT_CLASS} cursor-text rounded outline-dashed outline-1 outline-border/60 transition-colors duration-base hover:bg-accent/5 ${
+      className: `${className} ${PROSE_CONTENT_CLASS} cursor-text rounded ${idleBorderClass} transition-colors duration-base hover:bg-accent/5 ${
         !value ? "text-secondary italic" : ""
       }`,
       onClick: () => {
@@ -228,6 +242,9 @@ export function RichEditableText({
       : createElement(resolveTag(Tag, preview), commonProps, placeholder);
   }
 
+  // Shared by onBlur and the explicit "Save" button (compact toolbar
+  // only) — both end the edit session and drop back to the preview
+  // render, saving only if the content actually changed.
   const commit = async () => {
     const html = editableRef.current?.innerHTML ?? "";
     setIsEditing(false);
@@ -641,6 +658,17 @@ export function RichEditableText({
               </div>
             )}
           </div>
+
+          <div className="mx-0.5 h-5 w-px shrink-0 bg-border" />
+
+          <button
+            type="button"
+            onClick={commit}
+            className="ml-auto flex h-7 items-center gap-1 rounded bg-accent px-2 font-ui text-xs font-medium text-white transition-colors duration-base hover:bg-accent/90"
+          >
+            <Save className="size-3.5" aria-hidden="true" />
+            {saveLabel}
+          </button>
         </div>
       )}
       {!compact && (
@@ -869,7 +897,16 @@ export function RichEditableText({
           }
         },
         dangerouslySetInnerHTML: { __html: frozenHtml },
-        className: `${className} ${PROSE_CONTENT_CLASS} w-full rounded border border-accent bg-surface-raised px-2 py-1 outline-none`,
+        // Once isEditing is true, the field is uncontrolled (see the
+        // frozenHtml comment up top) — a truly empty starting value
+        // just renders an empty node, with nothing built in to show
+        // `placeholder` the way an <input> would. `:empty:before`
+        // fills that gap without any React state: the browser applies
+        // it only while the element has zero child nodes and drops it
+        // the instant a keystroke lands, no re-render (and no risk to
+        // the live cursor/selection) required.
+        "data-placeholder": placeholder,
+        className: `${className} ${PROSE_CONTENT_CLASS} empty:before:content-[attr(data-placeholder)] empty:before:font-reading empty:before:text-lg empty:before:text-secondary/60 empty:before:pointer-events-none w-full rounded border border-accent bg-surface-raised px-2 py-1 outline-none`,
       })}
     </div>
   );

@@ -179,27 +179,6 @@ export async function createPage(userId: string, sectionId: string, title: strin
   return mapPageRow(rows[0]);
 }
 
-// Serves the "Templates" use case directly — copy a template page's
-// content into a new one and start editing, rather than retyping it.
-export async function duplicatePage(userId: string, pageId: string, newTitle: string): Promise<AtlasPage> {
-  const { rows: source } = await pool.query(
-    `SELECT section_id, body FROM atlas_page WHERE id = $1 AND user_id = $2`,
-    [pageId, userId]
-  );
-  if (source.length === 0) throw new Error("Page not found");
-  const { rows: countRows } = await pool.query(
-    `SELECT COUNT(*)::int AS count FROM atlas_page WHERE section_id = $1`,
-    [source[0].section_id]
-  );
-  const { rows } = await pool.query(
-    `INSERT INTO atlas_page (user_id, section_id, title, body, position)
-     VALUES ($1, $2, $3, $4, $5)
-     RETURNING id, section_id, title, body, position, updated_at`,
-    [userId, source[0].section_id, newTitle, source[0].body, countRows[0].count]
-  );
-  return mapPageRow(rows[0]);
-}
-
 export async function renamePage(userId: string, pageId: string, title: string): Promise<void> {
   await pool.query(`UPDATE atlas_page SET title = $1, updated_at = now() WHERE id = $2 AND user_id = $3`, [
     title,

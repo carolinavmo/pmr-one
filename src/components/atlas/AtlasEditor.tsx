@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { useTranslations, useFormatter } from "next-intl";
-import { Clipboard, Check, CopyPlus, Trash2 } from "lucide-react";
+import { Clipboard, Check, Trash2 } from "lucide-react";
 import type { AtlasPage, AtlasSection } from "@/lib/atlas";
 import { RichEditableText } from "@/components/ui/RichEditableText";
 import { EditModeProvider, useEditMode } from "@/components/disease-page/EditMode";
@@ -39,7 +39,6 @@ interface AtlasEditorProps {
   sections: AtlasSection[];
   onRenamePage: (pageId: string, title: string) => void;
   onMovePage: (pageId: string, sectionId: string) => void;
-  onDuplicatePage: (pageId: string) => void;
   onDeletePage: (pageId: string) => void;
   onBodySaved: (pageId: string, body: string) => void;
 }
@@ -49,7 +48,6 @@ export function AtlasEditor({
   sections,
   onRenamePage,
   onMovePage,
-  onDuplicatePage,
   onDeletePage,
   onBodySaved,
 }: AtlasEditorProps) {
@@ -79,7 +77,6 @@ export function AtlasEditor({
         sections={sections}
         onRenamePage={onRenamePage}
         onMovePage={onMovePage}
-        onDuplicatePage={onDuplicatePage}
         onDeletePage={onDeletePage}
       />
       <EditModeProvider>
@@ -95,6 +92,7 @@ export function AtlasEditor({
             className="min-h-[50vh] font-reading text-base leading-relaxed text-primary"
             autoEdit
             compact
+            saveLabel={t("save")}
           />
         </ForceEditingOn>
       </EditModeProvider>
@@ -111,14 +109,12 @@ function PageEditorHeader({
   sections,
   onRenamePage,
   onMovePage,
-  onDuplicatePage,
   onDeletePage,
 }: {
   page: AtlasPage;
   sections: AtlasSection[];
   onRenamePage: (pageId: string, title: string) => void;
   onMovePage: (pageId: string, sectionId: string) => void;
-  onDuplicatePage: (pageId: string) => void;
   onDeletePage: (pageId: string) => void;
 }) {
   const t = useTranslations("myAtlas");
@@ -185,15 +181,6 @@ function PageEditorHeader({
             }`}
           >
             {copied ? <Check className="size-4" aria-hidden="true" /> : <Clipboard className="size-4" aria-hidden="true" />}
-          </button>
-          <button
-            type="button"
-            onClick={() => onDuplicatePage(page.id)}
-            aria-label={t("duplicatePage")}
-            title={t("duplicatePage")}
-            className="flex size-8 items-center justify-center rounded-lg text-secondary hover:bg-border/40 hover:text-primary"
-          >
-            <CopyPlus className="size-4" aria-hidden="true" />
           </button>
           <button
             type="button"

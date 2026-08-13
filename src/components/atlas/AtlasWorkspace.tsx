@@ -11,7 +11,6 @@ import {
   deleteSectionAction,
   reorderSectionsAction,
   createPageAction,
-  duplicatePageAction,
   renamePageAction,
   movePageAction,
   reorderPagesAction,
@@ -84,14 +83,6 @@ export function AtlasWorkspace({
     setSelectedPageId(page.id);
   }
 
-  async function handleDuplicatePage(pageId: string) {
-    const source = pages.find((p) => p.id === pageId);
-    if (!source) return;
-    const page = await duplicatePageAction(pageId, `${source.title || t("untitledPage")} ${t("copySuffix")}`);
-    setPages((prev) => [...prev, page]);
-    setSelectedPageId(page.id);
-  }
-
   async function handleRenamePage(pageId: string, title: string) {
     setPages((prev) => prev.map((p) => (p.id === pageId ? { ...p, title } : p)));
     await renamePageAction(pageId, title);
@@ -155,7 +146,6 @@ export function AtlasWorkspace({
         sections={sections}
         onRenamePage={handleRenamePage}
         onMovePage={handleMovePage}
-        onDuplicatePage={handleDuplicatePage}
         onDeletePage={handleDeletePage}
         onBodySaved={handleBodySaved}
       />
