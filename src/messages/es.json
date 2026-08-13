@@ -250,6 +250,7 @@
   "myAtlas": {
     "pageTitle": "Mi Manual",
     "pageSubtitle": "Tu propio manual — escribe y guarda tus notas, protocolos y plantillas.",
+    "indexLabel": "Índice",
     "searchPlaceholder": "Buscar tus páginas…",
     "defaultSectionPages": "Mis Páginas",
     "defaultSectionProtocols": "Mis Protocolos",

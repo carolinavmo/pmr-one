@@ -61,7 +61,10 @@ export function AtlasIndex({
   }, [pages, query, t]);
 
   return (
-    <aside className="flex w-full flex-col gap-2 border-b border-border bg-surface-sunken p-3 lg:w-80 lg:shrink-0 lg:border-r lg:border-b-0">
+    <aside className="flex w-full flex-col gap-2 bg-surface-sunken p-3 lg:w-80 lg:shrink-0">
+      <p className="px-1 font-ui text-[11px] font-semibold tracking-wide text-secondary uppercase">
+        {t("indexLabel")}
+      </p>
       <div className="flex items-center gap-2">
         <div className="relative min-w-0 flex-1">
           <Search

@@ -250,6 +250,7 @@
   "myAtlas": {
     "pageTitle": "My Handbook",
     "pageSubtitle": "Your own handbook — write and keep your notes, protocols and templates.",
+    "indexLabel": "Index",
     "searchPlaceholder": "Search your pages…",
     "defaultSectionPages": "My Pages",
     "defaultSectionProtocols": "My Protocols",

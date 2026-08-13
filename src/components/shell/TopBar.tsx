@@ -44,7 +44,7 @@ export async function TopBar() {
   const tCommon = await getTranslations("common");
 
   return (
-    <header className="sticky top-0 z-10 border-b border-border bg-surface">
+    <header className="sticky top-0 z-10 border-b border-border bg-surface-raised">
       <div className="relative flex flex-wrap items-center gap-4 px-4 py-3 lg:flex-nowrap lg:justify-between lg:px-6">
         <div className="flex shrink-0 items-center gap-4">
           <MobileIndexDrawer />

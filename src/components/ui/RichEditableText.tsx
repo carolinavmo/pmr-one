@@ -169,10 +169,26 @@ export function RichEditableText({
 }: RichEditableTextProps) {
   const { editing: editModeOn } = useEditMode();
   const [isEditing, setIsEditing] = useState(autoEdit);
-  const [popover, setPopover] = useState<"size" | "color" | "bg" | "symbols" | null>(null);
+  const [popover, setPopover] = useState<"size" | "color" | "bg" | "symbols" | "link" | null>(null);
   const [moreOpen, setMoreOpen] = useState(false);
   const [frozenHtml, setFrozenHtml] = useState(value);
+  const [linkUrl, setLinkUrl] = useState("");
+  const [linkError, setLinkError] = useState<string | null>(null);
   const editableRef = useRef<HTMLElement>(null);
+  // The Range captured the moment "Link" is clicked — the URL input
+  // lives in its own popover, and giving it real keyboard focus (it
+  // has to, to be typeable) inevitably steals focus away from the
+  // contentEditable field, which would otherwise collapse
+  // window.getSelection() before Apply ever runs. Stashing the Range
+  // here instead of re-reading the selection at Apply time survives
+  // that focus hop.
+  const pendingLinkRangeRef = useRef<Range | null>(null);
+  // onBlur normally means "the member clicked away — commit and end
+  // the edit session" (see commit(), below). Focusing the link
+  // popover's input is a blur for the same reason, but isn't that —
+  // it's a sub-step of the same edit. This flag tells onBlur to
+  // stand down for that one, expected blur.
+  const suppressBlurRef = useRef(false);
 
   // React's `autoFocus` prop doesn't reliably focus a contentEditable
   // element (unlike a plain `<input>`/`<textarea>`, which is why
@@ -225,10 +241,14 @@ export function RichEditableText({
     // caller (disease-page block editing) keeps the outline, since
     // there it's the only signal a given field is editable at all.
     const idleBorderClass = compact ? "" : "outline-dashed outline-1 outline-border/60";
+    // compact's empty state matches the live-editing placeholder's look
+    // (font-reading, larger, secondary/60) rather than the small italic
+    // default — this is now the *first* thing a member sees on a blank
+    // My Handbook page (isEditing starts false), not a transient state
+    // between keystrokes, so it earns the same care.
+    const emptyClass = !value ? (compact ? "font-reading text-lg text-secondary/60" : "text-secondary italic") : "";
     const commonProps = {
-      className: `${className} ${PROSE_CONTENT_CLASS} cursor-text rounded ${idleBorderClass} transition-colors duration-base hover:bg-accent/5 ${
-        !value ? "text-secondary italic" : ""
-      }`,
+      className: `${className} ${PROSE_CONTENT_CLASS} cursor-text rounded ${idleBorderClass} transition-colors duration-base hover:bg-accent/5 ${emptyClass}`,
       onClick: () => {
         setFrozenHtml(value);
         setIsEditing(true);
@@ -244,8 +264,10 @@ export function RichEditableText({
 
   // Shared by onBlur and the explicit "Save" button (compact toolbar
   // only) — both end the edit session and drop back to the preview
-  // render, saving only if the content actually changed.
+  // render, saving only if the content actually changed. Skipped
+  // entirely while suppressBlurRef is set — see its declaration above.
   const commit = async () => {
+    if (suppressBlurRef.current) return;
     const html = editableRef.current?.innerHTML ?? "";
     setIsEditing(false);
     setPopover(null);
@@ -293,8 +315,27 @@ export function RichEditableText({
       if (node instanceof HTMLElement && predicate(node)) {
         const parent = node.parentNode;
         if (!parent) return false;
+        // Removing the node the current Selection anchors into (an <a>
+        // for removeLink, most notably) can make some browsers drop
+        // focus to <body> as a side effect of invalidating that
+        // selection — independent of, and not caught by, the toolbar's
+        // own mousedown-based blur guard (preventBlur only stops a
+        // *click* from moving focus, not this). Suppress across the
+        // mutation, refocus immediately (before the browser's own
+        // fallback-to-body has a chance to land), and hold the
+        // suppression for a couple more frames — that native blur can
+        // arrive *after* this synchronous handler returns, and a single
+        // requestAnimationFrame reset raced it in testing (reset landed
+        // first, so the delayed blur still ended the edit session).
+        suppressBlurRef.current = true;
         while (node.firstChild) parent.insertBefore(node.firstChild, node);
         parent.removeChild(node);
+        editableRef.current?.focus();
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => {
+            suppressBlurRef.current = false;
+          });
+        });
         return true;
       }
       node = node.parentNode;
@@ -338,27 +379,56 @@ export function RichEditableText({
   };
 
   // Same idea as wrapSelection, but for a real <a href> instead of a
-  // decorative span — window.prompt() rather than a toolbar popover
-  // input on purpose: a popover text field would need to receive
-  // focus, and this toolbar's own mousedown guard (preventBlur, below)
-  // exists specifically to stop focus from ever leaving the
-  // contentEditable field when a toolbar control is clicked. Letting
-  // an input steal that focus would fire the field's onBlur → commit()
-  // and silently end the edit session the moment someone clicked into
-  // the URL box. A native prompt() sidesteps that entirely — it's a
-  // separate browser-level modal, not a DOM node inside this
-  // component, so the page's own focus/selection state (and the
-  // Range captured just before it opens) survives it intact.
+  // decorative span. Opens the toolbar's own URL popover rather than
+  // window.prompt() — prompt()/alert() are unreliable across browsers
+  // (some block them outright, throwing "prompt() is not supported"
+  // instead of showing anything, which silently broke this control
+  // entirely) and don't match the rest of this toolbar's UI anyway.
+  // The popover's input necessarily steals DOM focus from the
+  // contentEditable to be typeable, which would otherwise collapse
+  // window.getSelection() and fire onBlur → commit() the instant it's
+  // clicked — so the Range is captured into a ref *before* that
+  // happens, and suppressBlurRef tells onBlur to stand down for that
+  // one expected blur (see both declarations above).
   const applyLink = () => {
     const sel = window.getSelection();
     if (!sel || sel.rangeCount === 0 || sel.isCollapsed) return;
     const range = sel.getRangeAt(0);
     if (!withinEditable(range.commonAncestorContainer)) return;
-    const savedRange = range.cloneRange();
-    const url = window.prompt("Link URL (https://…)");
-    if (!url) return;
+    pendingLinkRangeRef.current = range.cloneRange();
+    suppressBlurRef.current = true;
+    setLinkUrl("");
+    setLinkError(null);
+    setPopover("link");
+  };
+
+  const focusEditable = () => {
+    // Re-run after the popover unmounts (its input currently holds
+    // focus) rather than in the same tick, so there's a real focusable
+    // node to land on.
+    requestAnimationFrame(() => editableRef.current?.focus());
+  };
+
+  const cancelLink = () => {
+    pendingLinkRangeRef.current = null;
+    suppressBlurRef.current = false;
+    setPopover(null);
+    focusEditable();
+  };
+
+  const confirmLink = () => {
+    const range = pendingLinkRangeRef.current;
+    const url = linkUrl.trim();
+    if (!range) {
+      cancelLink();
+      return;
+    }
+    if (!url) {
+      cancelLink();
+      return;
+    }
     if (!SAFE_URL_PATTERN.test(url)) {
-      window.alert("Links must start with http:// or https://");
+      setLinkError("Links must start with http:// or https://");
       return;
     }
     const a = document.createElement("a");
@@ -366,13 +436,73 @@ export function RichEditableText({
     a.target = "_blank";
     a.rel = "noopener noreferrer";
     a.className = LINK_CLASS;
-    a.appendChild(savedRange.extractContents());
-    savedRange.insertNode(a);
-    const newRange = document.createRange();
-    newRange.selectNodeContents(a);
-    sel.removeAllRanges();
-    sel.addRange(newRange);
+    a.appendChild(range.extractContents());
+    range.insertNode(a);
+    const sel = window.getSelection();
+    if (sel) {
+      const newRange = document.createRange();
+      newRange.selectNodeContents(a);
+      sel.removeAllRanges();
+      sel.addRange(newRange);
+    }
+    pendingLinkRangeRef.current = null;
+    suppressBlurRef.current = false;
+    setPopover(null);
+    focusEditable();
   };
+
+  // Shared by every toolbar's Link popover — a small URL input +
+  // Apply/Cancel, positioned under the Link button that opened it.
+  // stopPropagation (not preventDefault) on mousedown: the toolbar
+  // row's own preventBlur handler is what stops a *button* click from
+  // stealing focus, but this popover's input is supposed to be
+  // focusable — letting that mousedown bubble up would block it from
+  // ever receiving focus at all.
+  const renderLinkPopover = () =>
+    popover === "link" && (
+      <div
+        onMouseDown={(e) => e.stopPropagation()}
+        className="absolute top-8 left-0 z-20 w-64 rounded-lg border border-border bg-surface-raised p-2 shadow-md"
+      >
+        <input
+          type="text"
+          autoFocus
+          value={linkUrl}
+          onChange={(e) => {
+            setLinkUrl(e.target.value);
+            if (linkError) setLinkError(null);
+          }}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              e.preventDefault();
+              confirmLink();
+            } else if (e.key === "Escape") {
+              e.preventDefault();
+              cancelLink();
+            }
+          }}
+          placeholder="https://…"
+          className="w-full rounded border border-border bg-surface px-2 py-1 font-ui text-xs text-primary outline-none focus:border-accent"
+        />
+        {linkError && <p className="mt-1 font-ui text-xs text-warning">{linkError}</p>}
+        <div className="mt-1.5 flex justify-end gap-1">
+          <button
+            type="button"
+            onClick={cancelLink}
+            className="rounded px-2 py-1 font-ui text-xs text-secondary hover:bg-border/40 hover:text-primary"
+          >
+            Cancel
+          </button>
+          <button
+            type="button"
+            onClick={confirmLink}
+            className="rounded bg-accent px-2 py-1 font-ui text-xs font-medium text-white hover:bg-accent/90"
+          >
+            Apply
+          </button>
+        </div>
+      </div>
+    );
 
   // The inverse of applyLink — unwraps the nearest ancestor <a>, same
   // unwrapAncestor primitive toggleFormat uses above, just matching a
@@ -446,7 +576,11 @@ export function RichEditableText({
       {compact && (
         <div
           onMouseDown={preventBlur}
-          className="mb-1 flex flex-wrap items-center gap-0.5 rounded-lg border border-border bg-surface-raised p-1 shadow-sm"
+          // lg+ has room for every control inline (the sibling block
+          // right below renders that version) — this collapsed-with-
+          // "More" row is only needed below that width, where the full
+          // set doesn't fit on one line.
+          className="mb-1 flex flex-wrap items-center gap-0.5 rounded-lg border border-border bg-surface-raised p-1 shadow-sm lg:hidden"
         >
           <button
             type="button"
@@ -502,14 +636,17 @@ export function RichEditableText({
 
           <div className="mx-0.5 h-5 w-px shrink-0 bg-border" />
 
-          <button
-            type="button"
-            aria-label="Link"
-            onClick={applyLink}
-            className="flex size-7 items-center justify-center rounded text-secondary hover:bg-border/40 hover:text-primary"
-          >
-            <LinkIcon className="size-3.5" aria-hidden="true" />
-          </button>
+          <div className="relative">
+            <button
+              type="button"
+              aria-label="Link"
+              onClick={applyLink}
+              className="flex size-7 items-center justify-center rounded text-secondary hover:bg-border/40 hover:text-primary"
+            >
+              <LinkIcon className="size-3.5" aria-hidden="true" />
+            </button>
+            {renderLinkPopover()}
+          </div>
 
           <div className="mx-0.5 h-5 w-px shrink-0 bg-border" />
 
@@ -671,6 +808,216 @@ export function RichEditableText({
           </button>
         </div>
       )}
+      {compact && (
+        // lg+ variant of the same toolbar — every control the "More"
+        // flyout hides above gets its own button in one row instead,
+        // since a wide viewport has the room and a click-through
+        // dropdown is pure friction once space isn't the constraint.
+        <div
+          onMouseDown={preventBlur}
+          className="mb-1 hidden flex-wrap items-center gap-0.5 rounded-lg border border-border bg-surface-raised p-1 shadow-sm lg:flex"
+        >
+          <button
+            type="button"
+            aria-label="Bold"
+            onClick={() => toggleFormat(BOLD_CLASS)}
+            className="flex size-7 items-center justify-center rounded text-secondary hover:bg-border/40 hover:text-primary"
+          >
+            <Bold className="size-3.5" aria-hidden="true" />
+          </button>
+          <button
+            type="button"
+            aria-label="Italic"
+            onClick={() => toggleFormat(ITALIC_CLASS)}
+            className="flex size-7 items-center justify-center rounded text-secondary hover:bg-border/40 hover:text-primary"
+          >
+            <Italic className="size-3.5" aria-hidden="true" />
+          </button>
+          <button
+            type="button"
+            aria-label="Underline"
+            onClick={() => toggleFormat(UNDERLINE_CLASS)}
+            className="flex size-7 items-center justify-center rounded text-secondary hover:bg-border/40 hover:text-primary"
+          >
+            <UnderlineIcon className="size-3.5" aria-hidden="true" />
+          </button>
+          <button
+            type="button"
+            aria-label="Strikethrough"
+            onClick={() => toggleFormat(STRIKETHROUGH_CLASS)}
+            className="flex size-7 items-center justify-center rounded text-secondary hover:bg-border/40 hover:text-primary"
+          >
+            <Strikethrough className="size-3.5" aria-hidden="true" />
+          </button>
+
+          <div className="mx-0.5 h-5 w-px shrink-0 bg-border" />
+
+          <div className="relative">
+            <button
+              type="button"
+              aria-label="Font size"
+              onClick={() => setPopover((p) => (p === "size" ? null : "size"))}
+              className="flex size-7 items-center justify-center rounded text-secondary hover:bg-border/40 hover:text-primary"
+            >
+              <Type className="size-3.5" aria-hidden="true" />
+            </button>
+            {popover === "size" && (
+              <div className="absolute top-8 left-0 z-10 flex gap-1 rounded-lg border border-border bg-surface-raised p-1.5 shadow-md">
+                {FONT_SIZE_ORDER.map((size) => (
+                  <button
+                    key={size}
+                    type="button"
+                    onClick={() => {
+                      wrapSelection(FONT_SIZE_CLASS[size]);
+                      setPopover(null);
+                    }}
+                    className="rounded px-2 py-1 font-ui text-xs text-secondary hover:bg-border/40 hover:text-primary"
+                  >
+                    {FONT_SIZE_LABEL[size]}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+
+          <div className="relative">
+            <button
+              type="button"
+              aria-label="Text color"
+              onClick={() => setPopover((p) => (p === "color" ? null : "color"))}
+              className="flex size-7 items-center justify-center rounded text-secondary hover:bg-border/40 hover:text-primary"
+            >
+              <Palette className="size-3.5" aria-hidden="true" />
+            </button>
+            {popover === "color" && (
+              <ColorSwatchPicker
+                className="absolute top-8 left-0 z-10 w-48"
+                onPick={(color) => {
+                  toggleFormat(TEXT_COLOR_CLASS[color]);
+                  setPopover(null);
+                }}
+              />
+            )}
+          </div>
+
+          <div className="relative">
+            <button
+              type="button"
+              aria-label="Highlight color"
+              onClick={() => setPopover((p) => (p === "bg" ? null : "bg"))}
+              className="flex size-7 items-center justify-center rounded text-secondary hover:bg-border/40 hover:text-primary"
+            >
+              <Highlighter className="size-3.5" aria-hidden="true" />
+            </button>
+            {popover === "bg" && (
+              <ColorSwatchPicker
+                className="absolute top-8 left-0 z-10 w-48"
+                onPick={(color) => {
+                  toggleFormat(TEXT_BG_CLASS[color]);
+                  setPopover(null);
+                }}
+              />
+            )}
+          </div>
+
+          <button
+            type="button"
+            aria-label="Clear formatting"
+            onClick={clearFormatting}
+            className="flex size-7 items-center justify-center rounded text-secondary hover:bg-border/40 hover:text-warning"
+          >
+            <Eraser className="size-3.5" aria-hidden="true" />
+          </button>
+
+          <div className="mx-0.5 h-5 w-px shrink-0 bg-border" />
+
+          <button
+            type="button"
+            aria-label="Bulleted list"
+            onClick={() => document.execCommand("insertUnorderedList")}
+            className="flex size-7 items-center justify-center rounded text-secondary hover:bg-border/40 hover:text-primary"
+          >
+            <List className="size-3.5" aria-hidden="true" />
+          </button>
+          <button
+            type="button"
+            aria-label="Numbered list"
+            onClick={() => document.execCommand("insertOrderedList")}
+            className="flex size-7 items-center justify-center rounded text-secondary hover:bg-border/40 hover:text-primary"
+          >
+            <ListOrdered className="size-3.5" aria-hidden="true" />
+          </button>
+          <button
+            type="button"
+            aria-label="Quote"
+            onClick={() => document.execCommand("formatBlock", false, "blockquote")}
+            className="flex size-7 items-center justify-center rounded text-secondary hover:bg-border/40 hover:text-primary"
+          >
+            <Quote className="size-3.5" aria-hidden="true" />
+          </button>
+
+          <div className="mx-0.5 h-5 w-px shrink-0 bg-border" />
+
+          <div className="relative">
+            <button
+              type="button"
+              aria-label="Link"
+              onClick={applyLink}
+              className="flex size-7 items-center justify-center rounded text-secondary hover:bg-border/40 hover:text-primary"
+            >
+              <LinkIcon className="size-3.5" aria-hidden="true" />
+            </button>
+            {renderLinkPopover()}
+          </div>
+          <button
+            type="button"
+            aria-label="Remove link"
+            onClick={removeLink}
+            className="flex size-7 items-center justify-center rounded text-secondary hover:bg-border/40 hover:text-primary"
+          >
+            <Unlink className="size-3.5" aria-hidden="true" />
+          </button>
+
+          <div className="relative">
+            <button
+              type="button"
+              aria-label="Insert symbol"
+              onClick={() => setPopover((p) => (p === "symbols" ? null : "symbols"))}
+              className="flex size-7 items-center justify-center rounded text-secondary hover:bg-border/40 hover:text-primary"
+            >
+              <Sigma className="size-3.5" aria-hidden="true" />
+            </button>
+            {popover === "symbols" && (
+              <div className="absolute top-8 left-0 z-10 grid w-56 grid-cols-8 gap-0.5 rounded-lg border border-border bg-surface-raised p-1.5 shadow-md">
+                {SYMBOLS.map((symbol) => (
+                  <button
+                    key={symbol}
+                    type="button"
+                    onClick={() => {
+                      insertSymbol(symbol);
+                      setPopover(null);
+                    }}
+                    className="flex size-6 items-center justify-center rounded font-reading text-sm text-primary hover:bg-border/40"
+                  >
+                    {symbol}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+
+          <div className="mx-0.5 h-5 w-px shrink-0 bg-border" />
+
+          <button
+            type="button"
+            onClick={commit}
+            className="ml-auto flex h-7 items-center gap-1 rounded bg-accent px-2 font-ui text-xs font-medium text-white transition-colors duration-base hover:bg-accent/90"
+          >
+            <Save className="size-3.5" aria-hidden="true" />
+            {saveLabel}
+          </button>
+        </div>
+      )}
       {!compact && (
       <div
         onMouseDown={preventBlur}
@@ -790,14 +1137,17 @@ export function RichEditableText({
 
         <div className="mx-0.5 h-5 w-px shrink-0 bg-border" />
 
-        <button
-          type="button"
-          aria-label="Link"
-          onClick={applyLink}
-          className="flex size-7 items-center justify-center rounded text-secondary hover:bg-border/40 hover:text-primary"
-        >
-          <LinkIcon className="size-3.5" aria-hidden="true" />
-        </button>
+        <div className="relative">
+          <button
+            type="button"
+            aria-label="Link"
+            onClick={applyLink}
+            className="flex size-7 items-center justify-center rounded text-secondary hover:bg-border/40 hover:text-primary"
+          >
+            <LinkIcon className="size-3.5" aria-hidden="true" />
+          </button>
+          {renderLinkPopover()}
+        </div>
         <button
           type="button"
           aria-label="Remove link"
