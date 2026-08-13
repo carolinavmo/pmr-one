@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter, Poppins, Staatliches } from "next/font/google";
+import { Inter, Poppins, Yanone_Kaffeesatz } from "next/font/google";
 import { notFound } from "next/navigation";
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages } from "next-intl/server";
@@ -41,13 +41,13 @@ const fontHeading = Poppins({
   weight: ["600", "700"],
 });
 
-// Brand wordmark only ("PM&R Atlas" in TopBar.tsx) — Staatliches is a
-// single-weight display face, not a general-purpose typeface, so it's
-// scoped to that one span rather than added as a third body/heading role.
-const fontBrand = Staatliches({
+// Brand wordmark only ("PM&R Atlas" in TopBar.tsx) — a condensed
+// display face, not a general-purpose typeface, so it's scoped to that
+// one span rather than added as a third body/heading role.
+const fontBrand = Yanone_Kaffeesatz({
   variable: "--font-brand",
   subsets: ["latin"],
-  weight: "400",
+  weight: ["700"],
 });
 
 export const metadata: Metadata = {

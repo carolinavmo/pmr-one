@@ -1,5 +1,14 @@
 import { pool } from "@/lib/db";
 import type { CardColor } from "@/lib/editorial-blocks";
+import { sanitizeRichText } from "@/lib/rich-text";
+import {
+  SAMPLE_PAGE_TITLE,
+  SAMPLE_PAGE_BODY,
+  SAMPLE_PROTOCOL_TITLE,
+  SAMPLE_PROTOCOL_BODY,
+  SAMPLE_TEMPLATE_TITLE,
+  SAMPLE_TEMPLATE_BODY,
+} from "@/lib/atlas-sample-content";
 
 // "My Clinical Handbook" — a member's own free-form notes, grouped into
 // sections. Same pool.query pattern as study-planner.ts, no ORM. Every
@@ -76,12 +85,15 @@ export async function getAtlasWorkspace(
     [userId]
   );
   if (existing.length === 0) {
+    const sectionIds: string[] = [];
     for (let i = 0; i < defaultSectionNames.length; i++) {
-      await pool.query(
-        `INSERT INTO atlas_section (user_id, name, color, position) VALUES ($1, $2, $3, $4)`,
+      const { rows } = await pool.query(
+        `INSERT INTO atlas_section (user_id, name, color, position) VALUES ($1, $2, $3, $4) RETURNING id`,
         [userId, defaultSectionNames[i], DEFAULT_SECTION_COLORS[i], i]
       );
+      sectionIds.push(rows[0].id);
     }
+    await seedSampleContent(userId, sectionIds[0], sectionIds[1], sectionIds[2]);
   }
 
   const [{ rows: sectionRows }, { rows: pageRows }] = await Promise.all([
@@ -99,6 +111,32 @@ export async function getAtlasWorkspace(
     sections: sectionRows.map(mapSectionRow),
     pages: pageRows.map(mapPageRow),
   };
+}
+
+// One worked example per default section — same condition throughout
+// (lateral epicondylopathy) so a brand-new member can see how a note,
+// a protocol, and a template actually differ, not just read empty
+// section labels. Only ever called once, from getAtlasWorkspace's
+// first-visit branch above — these become ordinary rows a member can
+// edit or delete like any other page.
+async function seedSampleContent(
+  userId: string,
+  pagesSectionId: string,
+  protocolsSectionId: string,
+  templatesSectionId: string
+): Promise<void> {
+  await pool.query(
+    `INSERT INTO atlas_page (user_id, section_id, title, body, position) VALUES ($1, $2, $3, $4, 0)`,
+    [userId, pagesSectionId, SAMPLE_PAGE_TITLE, sanitizeRichText(SAMPLE_PAGE_BODY)]
+  );
+  await pool.query(
+    `INSERT INTO atlas_page (user_id, section_id, title, body, position) VALUES ($1, $2, $3, $4, 0)`,
+    [userId, protocolsSectionId, SAMPLE_PROTOCOL_TITLE, sanitizeRichText(SAMPLE_PROTOCOL_BODY)]
+  );
+  await pool.query(
+    `INSERT INTO atlas_page (user_id, section_id, title, body, position) VALUES ($1, $2, $3, $4, 0)`,
+    [userId, templatesSectionId, SAMPLE_TEMPLATE_TITLE, sanitizeRichText(SAMPLE_TEMPLATE_BODY)]
+  );
 }
 
 export async function createSection(userId: string, name: string): Promise<AtlasSection> {

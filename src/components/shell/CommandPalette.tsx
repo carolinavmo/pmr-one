@@ -76,7 +76,7 @@ export function CommandPalette() {
 
   return (
     <div ref={containerRef} className="relative w-full">
-      <span className="flex min-h-10 items-center gap-2 rounded-full bg-surface px-4 shadow-sm transition-colors duration-base focus-within:ring-2 focus-within:ring-accent/30">
+      <span className="flex min-h-10 items-center gap-2 rounded-full border border-accent/30 bg-surface px-4 transition-colors duration-base focus-within:border-accent">
         <Search className="size-4 shrink-0 text-accent" aria-hidden="true" />
         <input
           ref={inputRef}
