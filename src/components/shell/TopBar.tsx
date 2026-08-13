@@ -50,7 +50,7 @@ export async function TopBar() {
           <MobileIndexDrawer />
           <Link href="/" className="flex shrink-0 items-center gap-2">
             <Image src="/brand-logo-v2.png" alt="" width={1381} height={1139} priority className="h-11 w-auto shrink-0" />
-            <span className="font-brand text-[2.75rem] leading-none tracking-wide text-primary uppercase">PM&amp;R Atlas</span>
+            <span className="font-brand translate-y-[3px] text-[2.4rem] leading-none tracking-wide text-primary uppercase">PM&amp;R Atlas</span>
           </Link>
         </div>
 
