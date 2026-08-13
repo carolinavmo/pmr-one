@@ -102,7 +102,7 @@ export function CommandPalette() {
             if (query) setOpen(true);
             ensureItemsLoaded();
           }}
-          className="hidden shrink-0 -my-px -mr-px items-center self-stretch rounded-r-full bg-accent-hover px-5 font-ui text-sm font-medium text-white transition-colors duration-base hover:bg-accent sm:flex"
+          className="hidden shrink-0 -my-px -mr-px items-center self-stretch rounded-full bg-accent-hover px-5 font-ui text-sm font-medium text-white transition-colors duration-base hover:bg-accent sm:flex"
         >
           {tSearch("searchButton")}
         </button>
