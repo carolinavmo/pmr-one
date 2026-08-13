@@ -136,7 +136,7 @@ export function AtlasWorkspace({
   }
 
   return (
-    <div className="flex flex-1 flex-col gap-4 lg:flex-row lg:gap-6">
+    <div className="flex flex-1 flex-col overflow-hidden rounded-2xl border border-border bg-surface-raised shadow-sm lg:flex-row">
       <AtlasIndex
         sections={sections}
         pages={pages}

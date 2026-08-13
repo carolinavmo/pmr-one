@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState, type ReactNode } from "react";
-import { useTranslations } from "next-intl";
+import { useTranslations, useFormatter } from "next-intl";
 import { Clipboard, Check, CopyPlus, Trash2 } from "lucide-react";
 import type { AtlasPage, AtlasSection } from "@/lib/atlas";
 import { RichEditableText } from "@/components/ui/RichEditableText";
@@ -19,6 +19,19 @@ function ForceEditingOn({ children }: { children: ReactNode }) {
     setEditing(true);
   }, [setEditing]);
   return <>{children}</>;
+}
+
+// Regex strip rather than a DOM parser — this runs during render
+// (for the word/character footer), including on the server, where
+// `document` doesn't exist. Approximate is fine for a passive counter;
+// exactness isn't the point the way it is for copyToClipboard's own
+// DOM-based strip (an event-handler-only, client-side call).
+function stripHtml(html: string): string {
+  return html
+    .replace(/<[^>]*>/g, " ")
+    .replace(/&nbsp;/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
 }
 
 interface AtlasEditorProps {
@@ -44,21 +57,23 @@ export function AtlasEditor({
 
   if (!page) {
     return (
-      <div className="flex flex-1 items-center justify-center rounded-xl border border-dashed border-border p-12 text-center">
+      <div className="flex flex-1 items-center justify-center p-6 text-center">
         <p className="font-ui text-sm text-secondary">{t("noPageSelected")}</p>
       </div>
     );
   }
+
+  const { words, characters } = (() => {
+    const text = stripHtml(page.body);
+    return { words: text ? text.split(" ").length : 0, characters: text.length };
+  })();
 
   return (
     // Keying the whole editor by page.id forces a fresh mount whenever
     // the selected page changes — resets the title input's local state
     // and RichEditableText's internal isEditing/frozenHtml state, which
     // would otherwise leak from the previously selected page.
-    <div
-      key={page.id}
-      className="flex flex-1 flex-col gap-4 rounded-xl border border-border bg-surface-raised p-5"
-    >
+    <div key={page.id} className="flex min-w-0 flex-1 flex-col gap-4 p-6">
       <PageEditorHeader
         page={page}
         sections={sections}
@@ -81,6 +96,10 @@ export function AtlasEditor({
           />
         </ForceEditingOn>
       </EditModeProvider>
+      <div className="flex items-center justify-between border-t border-border pt-3 font-ui text-xs text-secondary">
+        <span>{t("wordCount", { count: words })}</span>
+        <span>{t("characterCount", { count: characters })}</span>
+      </div>
     </div>
   );
 }
@@ -101,6 +120,7 @@ function PageEditorHeader({
   onDeletePage: (pageId: string) => void;
 }) {
   const t = useTranslations("myAtlas");
+  const format = useFormatter();
   const [title, setTitle] = useState(page.title);
   const [copied, setCopied] = useState(false);
   const copyTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -133,14 +153,14 @@ function PageEditorHeader({
   }
 
   return (
-    <div className="flex flex-col gap-2 border-b border-border pb-3">
-      <div className="flex items-center justify-between gap-3">
+    <div className="flex flex-col gap-1.5 border-b border-border pb-4">
+      <div className="flex items-start justify-between gap-3">
         <input
           value={title}
           onChange={(e) => setTitle(e.target.value)}
           onBlur={commitTitle}
           placeholder={t("untitledPage")}
-          className="w-full bg-transparent font-heading text-xl font-semibold text-primary outline-none placeholder:font-normal placeholder:text-secondary"
+          className="w-full bg-transparent font-heading text-2xl font-bold text-primary outline-none placeholder:font-normal placeholder:text-secondary"
         />
         <div className="flex shrink-0 items-center gap-1.5">
           <button
@@ -176,17 +196,32 @@ function PageEditorHeader({
           </button>
         </div>
       </div>
-      <select
-        value={page.sectionId}
-        onChange={(e) => onMovePage(page.id, e.target.value)}
-        className="w-fit rounded-lg border border-border bg-surface px-2 py-1 font-ui text-xs text-secondary outline-none focus:border-accent"
-      >
-        {sections.map((section) => (
-          <option key={section.id} value={section.id}>
-            {section.name}
-          </option>
-        ))}
-      </select>
+      <div className="flex flex-wrap items-center gap-x-2 gap-y-1 font-ui text-xs text-secondary">
+        {/* A native <select> styled to read as plain breadcrumb text
+            (no border/background) rather than a boxed control — same
+            "move to another section" action as before, framed to match
+            the mockup's "My Pages / Shoulder" breadcrumb line instead
+            of sitting in its own separate row. */}
+        <select
+          value={page.sectionId}
+          onChange={(e) => onMovePage(page.id, e.target.value)}
+          aria-label={t("moveToSection")}
+          className="rounded bg-transparent font-medium text-secondary outline-none hover:text-primary focus:text-primary"
+        >
+          {sections.map((section) => (
+            <option key={section.id} value={section.id}>
+              {section.name}
+            </option>
+          ))}
+        </select>
+        <span aria-hidden="true">·</span>
+        <span>{t("editedRelative", { time: format.relativeTime(new Date(page.updatedAt), new Date()) })}</span>
+        <span aria-hidden="true">·</span>
+        <span className="inline-flex items-center gap-1 text-trust">
+          <Check className="size-3" aria-hidden="true" />
+          {t("saved")}
+        </span>
+      </div>
     </div>
   );
 }

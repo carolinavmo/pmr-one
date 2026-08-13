@@ -273,7 +273,11 @@
     "expandSection": "Expandir sección",
     "noPageSelected": "Selecciona o crea una página para empezar a escribir.",
     "emptySectionPrompt": "Aún no hay páginas.",
-    "emptyPagePlaceholder": "Empieza a escribir…"
+    "emptyPagePlaceholder": "Empieza a escribir…",
+    "editedRelative": "Editado {time}",
+    "saved": "Guardado",
+    "wordCount": "{count, plural, one {# palabra} other {# palabras}}",
+    "characterCount": "{count, plural, one {# carácter} other {# caracteres}}"
   },
   "clinicalTools": {
     "pageTitle": "Herramientas Clínicas",

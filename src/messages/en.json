@@ -273,7 +273,11 @@
     "expandSection": "Expand section",
     "noPageSelected": "Select or create a page to start writing.",
     "emptySectionPrompt": "No pages yet.",
-    "emptyPagePlaceholder": "Start writing…"
+    "emptyPagePlaceholder": "Start writing…",
+    "editedRelative": "Edited {time}",
+    "saved": "Saved",
+    "wordCount": "{count, plural, one {# word} other {# words}}",
+    "characterCount": "{count, plural, one {# character} other {# characters}}"
   },
   "clinicalTools": {
     "pageTitle": "Clinical Tools",
