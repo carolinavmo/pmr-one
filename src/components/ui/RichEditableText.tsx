@@ -378,6 +378,29 @@ export function RichEditableText({
     }
   };
 
+  // formatBlock("blockquote") isn't a real toggle the way execCommand's
+  // "bold" is — clicking it a second time just re-applies "blockquote"
+  // as a no-op instead of removing it, so the selection got stuck
+  // quoted with no way back. Checking the selection's own ancestry for
+  // an existing <blockquote> (same pattern isFormatActive uses for
+  // classed spans) and formatting back to a plain paragraph when found
+  // makes it behave like every other toggle button in this toolbar.
+  const isWithinBlockquote = () => {
+    const sel = window.getSelection();
+    if (!sel || sel.rangeCount === 0) return false;
+    let node: Node | null = sel.getRangeAt(0).commonAncestorContainer;
+    if (!withinEditable(node)) return false;
+    while (node && node !== editableRef.current) {
+      if (node instanceof HTMLElement && node.tagName === "BLOCKQUOTE") return true;
+      node = node.parentNode;
+    }
+    return false;
+  };
+
+  const toggleQuote = () => {
+    document.execCommand("formatBlock", false, isWithinBlockquote() ? "p" : "blockquote");
+  };
+
   // Same idea as wrapSelection, but for a real <a href> instead of a
   // decorative span. Opens the toolbar's own URL popover rather than
   // window.prompt() — prompt()/alert() are unreliable across browsers
@@ -628,7 +651,7 @@ export function RichEditableText({
           <button
             type="button"
             aria-label="Quote"
-            onClick={() => document.execCommand("formatBlock", false, "blockquote")}
+            onClick={toggleQuote}
             className="flex size-7 items-center justify-center rounded text-secondary hover:bg-border/40 hover:text-primary"
           >
             <Quote className="size-3.5" aria-hidden="true" />
@@ -950,7 +973,7 @@ export function RichEditableText({
           <button
             type="button"
             aria-label="Quote"
-            onClick={() => document.execCommand("formatBlock", false, "blockquote")}
+            onClick={toggleQuote}
             className="flex size-7 items-center justify-center rounded text-secondary hover:bg-border/40 hover:text-primary"
           >
             <Quote className="size-3.5" aria-hidden="true" />
@@ -1206,7 +1229,7 @@ export function RichEditableText({
         <button
           type="button"
           aria-label="Quote"
-          onClick={() => document.execCommand("formatBlock", false, "blockquote")}
+          onClick={toggleQuote}
           className="flex size-7 items-center justify-center rounded text-secondary hover:bg-border/40 hover:text-primary"
         >
           <Quote className="size-3.5" aria-hidden="true" />
