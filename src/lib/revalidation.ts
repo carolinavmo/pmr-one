@@ -26,6 +26,11 @@ export function revalidateClinicalToolsSurfaces() {
   revalidatePath("/[locale]/clinical-tools", "page");
 }
 
+// Called after any write to a member's own "My PM&R Atlas" pages/sections.
+export function revalidateAtlasSurfaces() {
+  revalidatePath("/[locale]/my-atlas", "page");
+}
+
 export function revalidateShellSurfaces() {
   revalidatePath("/[locale]", "layout");
   revalidatePath("/[locale]", "page");

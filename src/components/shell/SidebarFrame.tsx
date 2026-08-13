@@ -9,6 +9,7 @@ import {
   Calendar,
   ChevronRight,
   Home,
+  NotebookPen,
   PanelLeftClose,
   PanelLeftOpen,
 } from "lucide-react";
@@ -132,6 +133,15 @@ export function SidebarFrame({ tree, userName, userEmail, userRole }: SidebarFra
             <Calendar className="size-3.5" aria-hidden="true" />
           </span>
           <span className="font-ui text-xs font-medium text-primary">{t("studyPlanner")}</span>
+        </Link>
+        <Link
+          href="/my-atlas"
+          className="flex items-center gap-2 rounded-lg px-2 py-1.5 transition-colors duration-base hover:bg-border/40"
+        >
+          <span className="flex size-7 shrink-0 items-center justify-center rounded-full bg-accent/10 text-accent">
+            <NotebookPen className="size-3.5" aria-hidden="true" />
+          </span>
+          <span className="font-ui text-xs font-medium text-primary">{t("myAtlas")}</span>
         </Link>
       </div>
 

@@ -1,0 +1,348 @@
+"use client";
+
+import { useMemo, useState } from "react";
+import { useTranslations } from "next-intl";
+import { Search, Plus, Pencil, Trash2, FileText, Folder, GripVertical, ChevronDown, ChevronRight } from "lucide-react";
+import type { AtlasSection, AtlasPage } from "@/lib/atlas";
+import type { CardColor } from "@/lib/editorial-blocks";
+import { CARD_COLOR_TINT, CARD_COLOR_TEXT } from "@/lib/card-colors";
+import { ColorSwatchPicker } from "@/components/ui/ColorSwatchPicker";
+
+// Drop-on-a-row reordering: dropping the dragged id onto a target row
+// inserts it immediately before that row. Simpler than tracking a
+// precise before/after boundary per row (BlockControls.tsx's approach,
+// needed there for its row/stack-into-columns drop zones) — a flat
+// list reorder doesn't need that precision.
+function reorderIds(ids: string[], draggedId: string, dropTargetId: string): string[] {
+  if (draggedId === dropTargetId) return ids;
+  const without = ids.filter((id) => id !== draggedId);
+  const idx = without.indexOf(dropTargetId);
+  if (idx === -1) return ids;
+  without.splice(idx, 0, draggedId);
+  return without;
+}
+
+interface AtlasIndexProps {
+  sections: AtlasSection[];
+  pages: AtlasPage[];
+  selectedPageId: string | null;
+  onSelectPage: (pageId: string) => void;
+  onCreateSection: (name: string) => void;
+  onRenameSection: (sectionId: string, name: string) => void;
+  onUpdateSectionColor: (sectionId: string, color: CardColor) => void;
+  onDeleteSection: (sectionId: string) => void;
+  onReorderSections: (orderedIds: string[]) => void;
+  onCreatePage: (sectionId: string) => void;
+  onReorderPages: (sectionId: string, orderedIds: string[]) => void;
+}
+
+export function AtlasIndex({
+  sections,
+  pages,
+  selectedPageId,
+  onSelectPage,
+  onCreateSection,
+  onRenameSection,
+  onUpdateSectionColor,
+  onDeleteSection,
+  onReorderSections,
+  onCreatePage,
+  onReorderPages,
+}: AtlasIndexProps) {
+  const t = useTranslations("myAtlas");
+  const [query, setQuery] = useState("");
+  const [draggedSectionId, setDraggedSectionId] = useState<string | null>(null);
+
+  const filteredPages = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    if (!q) return pages;
+    return pages.filter((p) => (p.title || t("untitledPage")).toLowerCase().includes(q));
+  }, [pages, query, t]);
+
+  return (
+    <aside className="flex w-full flex-col gap-2 lg:w-72 lg:shrink-0">
+      <div className="relative">
+        <Search
+          className="pointer-events-none absolute top-1/2 left-2.5 size-3.5 -translate-y-1/2 text-secondary"
+          aria-hidden="true"
+        />
+        <input
+          type="search"
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          placeholder={t("searchPlaceholder")}
+          className="w-full rounded-full border border-border bg-surface-raised py-1.5 pr-3 pl-8 font-ui text-xs text-primary outline-none focus:border-accent"
+        />
+      </div>
+
+      <div className="flex flex-col gap-2.5">
+        {sections.map((section) => (
+          <div
+            key={section.id}
+            draggable={false}
+            onDragOver={(e) => {
+              e.preventDefault();
+            }}
+            onDrop={(e) => {
+              e.preventDefault();
+              if (draggedSectionId) {
+                onReorderSections(reorderIds(sections.map((s) => s.id), draggedSectionId, section.id));
+              }
+              setDraggedSectionId(null);
+            }}
+            className={draggedSectionId && draggedSectionId !== section.id ? "opacity-60" : undefined}
+          >
+            <AtlasSectionGroup
+              section={section}
+              pages={filteredPages.filter((p) => p.sectionId === section.id)}
+              selectedPageId={selectedPageId}
+              onSelectPage={onSelectPage}
+              onRenameSection={onRenameSection}
+              onUpdateSectionColor={onUpdateSectionColor}
+              onDeleteSection={onDeleteSection}
+              onCreatePage={onCreatePage}
+              onReorderPages={onReorderPages}
+              onDragHandleStart={() => setDraggedSectionId(section.id)}
+              onDragHandleEnd={() => setDraggedSectionId(null)}
+            />
+          </div>
+        ))}
+      </div>
+
+      <NewSectionButton onCreateSection={onCreateSection} />
+    </aside>
+  );
+}
+
+function AtlasSectionGroup({
+  section,
+  pages,
+  selectedPageId,
+  onSelectPage,
+  onRenameSection,
+  onUpdateSectionColor,
+  onDeleteSection,
+  onCreatePage,
+  onReorderPages,
+  onDragHandleStart,
+  onDragHandleEnd,
+}: {
+  section: AtlasSection;
+  pages: AtlasPage[];
+  selectedPageId: string | null;
+  onSelectPage: (pageId: string) => void;
+  onRenameSection: (sectionId: string, name: string) => void;
+  onUpdateSectionColor: (sectionId: string, color: CardColor) => void;
+  onDeleteSection: (sectionId: string) => void;
+  onCreatePage: (sectionId: string) => void;
+  onReorderPages: (sectionId: string, orderedIds: string[]) => void;
+  onDragHandleStart: () => void;
+  onDragHandleEnd: () => void;
+}) {
+  const t = useTranslations("myAtlas");
+  const [renaming, setRenaming] = useState(false);
+  const [name, setName] = useState(section.name);
+  const [colorPickerOpen, setColorPickerOpen] = useState(false);
+  const [draggedPageId, setDraggedPageId] = useState<string | null>(null);
+  const [collapsed, setCollapsed] = useState(false);
+
+  function commitRename() {
+    setRenaming(false);
+    if (name.trim() && name.trim() !== section.name) {
+      onRenameSection(section.id, name.trim());
+    } else {
+      setName(section.name);
+    }
+  }
+
+  return (
+    <div className="flex flex-col gap-0.5">
+      <div className="group flex items-center gap-1 px-1">
+        <button
+          type="button"
+          aria-label={collapsed ? t("expandSection") : t("collapseSection")}
+          title={collapsed ? t("expandSection") : t("collapseSection")}
+          onClick={() => setCollapsed((c) => !c)}
+          className="flex size-4 shrink-0 items-center justify-center text-secondary hover:text-primary"
+        >
+          {collapsed ? (
+            <ChevronRight className="size-3" aria-hidden="true" />
+          ) : (
+            <ChevronDown className="size-3" aria-hidden="true" />
+          )}
+        </button>
+        <button
+          type="button"
+          aria-label={t("dragToReorder")}
+          draggable
+          onDragStart={onDragHandleStart}
+          onDragEnd={onDragHandleEnd}
+          className="flex size-4 shrink-0 cursor-grab items-center justify-center text-secondary opacity-0 group-hover:opacity-100 active:cursor-grabbing"
+        >
+          <GripVertical className="size-3" aria-hidden="true" />
+        </button>
+        <div className="relative shrink-0">
+          <button
+            type="button"
+            aria-label={t("sectionColor")}
+            title={t("sectionColor")}
+            onClick={() => setColorPickerOpen((open) => !open)}
+            className={`flex items-center justify-center ${CARD_COLOR_TEXT[section.color]}`}
+          >
+            <Folder className="size-3.5 fill-current" aria-hidden="true" />
+          </button>
+          {colorPickerOpen && (
+            <ColorSwatchPicker
+              className="absolute top-5 left-0 z-10 w-44"
+              onPick={(color) => {
+                onUpdateSectionColor(section.id, color);
+                setColorPickerOpen(false);
+              }}
+            />
+          )}
+        </div>
+        {renaming ? (
+          <input
+            autoFocus
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            onBlur={commitRename}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") commitRename();
+            }}
+            className="min-w-0 flex-1 rounded border border-accent bg-surface px-1.5 py-0.5 font-ui text-xs font-semibold text-primary outline-none"
+          />
+        ) : (
+          <span className="min-w-0 flex-1 truncate font-ui text-[11px] font-semibold tracking-wide text-secondary uppercase">
+            {section.name}
+          </span>
+        )}
+        <div className="flex shrink-0 items-center gap-0.5 opacity-0 transition-opacity group-hover:opacity-100">
+          <button
+            type="button"
+            onClick={() => setRenaming(true)}
+            aria-label={t("renameSection")}
+            title={t("renameSection")}
+            className="flex size-5 items-center justify-center rounded text-secondary hover:bg-border/40 hover:text-primary"
+          >
+            <Pencil className="size-3" aria-hidden="true" />
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              if (window.confirm(t("confirmDeleteSection"))) onDeleteSection(section.id);
+            }}
+            aria-label={t("deleteSection")}
+            title={t("deleteSection")}
+            className="flex size-5 items-center justify-center rounded text-secondary hover:bg-warning/10 hover:text-warning"
+          >
+            <Trash2 className="size-3" aria-hidden="true" />
+          </button>
+          <button
+            type="button"
+            onClick={() => onCreatePage(section.id)}
+            aria-label={t("newPage")}
+            title={t("newPage")}
+            className="flex size-5 items-center justify-center rounded text-secondary hover:bg-border/40 hover:text-accent"
+          >
+            <Plus className="size-3.5" aria-hidden="true" />
+          </button>
+        </div>
+      </div>
+
+      {collapsed ? null : pages.length === 0 ? (
+        <p className="px-2 py-0.5 font-ui text-[11px] text-secondary italic">{t("emptySectionPrompt")}</p>
+      ) : (
+        <ul className="flex flex-col">
+          {pages.map((page) => (
+            <li
+              key={page.id}
+              onDragOver={(e) => e.preventDefault()}
+              onDrop={(e) => {
+                e.preventDefault();
+                if (draggedPageId) {
+                  onReorderPages(
+                    section.id,
+                    reorderIds(pages.map((p) => p.id), draggedPageId, page.id)
+                  );
+                }
+                setDraggedPageId(null);
+              }}
+              className={draggedPageId && draggedPageId !== page.id ? "opacity-60" : undefined}
+            >
+              <div
+                className={`group/page flex w-full items-center gap-1 rounded-lg px-1.5 py-1 transition-colors duration-base ${
+                  selectedPageId === page.id
+                    ? `${CARD_COLOR_TINT[section.color]} ${CARD_COLOR_TEXT[section.color]}`
+                    : "text-secondary hover:bg-border/40 hover:text-primary"
+                }`}
+              >
+                <button
+                  type="button"
+                  aria-label={t("dragToReorder")}
+                  draggable
+                  onDragStart={() => setDraggedPageId(page.id)}
+                  onDragEnd={() => setDraggedPageId(null)}
+                  className="flex size-4 shrink-0 cursor-grab items-center justify-center opacity-0 group-hover/page:opacity-100 active:cursor-grabbing"
+                >
+                  <GripVertical className="size-3" aria-hidden="true" />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => onSelectPage(page.id)}
+                  className="flex min-w-0 flex-1 items-center gap-1.5 text-left"
+                >
+                  <FileText className="size-3.5 shrink-0" aria-hidden="true" />
+                  <span className="truncate font-ui text-xs">{page.title || t("untitledPage")}</span>
+                </button>
+              </div>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  );
+}
+
+function NewSectionButton({ onCreateSection }: { onCreateSection: (name: string) => void }) {
+  const t = useTranslations("myAtlas");
+  const [adding, setAdding] = useState(false);
+  const [name, setName] = useState("");
+
+  if (!adding) {
+    return (
+      <button
+        type="button"
+        onClick={() => setAdding(true)}
+        className="flex items-center gap-1.5 rounded-lg border border-dashed border-border px-2 py-1 font-ui text-xs font-medium text-secondary hover:border-accent hover:text-accent"
+      >
+        <Plus className="size-3.5" aria-hidden="true" />
+        {t("newSection")}
+      </button>
+    );
+  }
+
+  function commit() {
+    if (name.trim()) onCreateSection(name.trim());
+    setName("");
+    setAdding(false);
+  }
+
+  return (
+    <input
+      autoFocus
+      value={name}
+      onChange={(e) => setName(e.target.value)}
+      onBlur={commit}
+      onKeyDown={(e) => {
+        if (e.key === "Enter") commit();
+        if (e.key === "Escape") {
+          setName("");
+          setAdding(false);
+        }
+      }}
+      placeholder={t("newSection")}
+      className="rounded-lg border border-accent bg-surface px-2 py-1 font-ui text-xs text-primary outline-none"
+    />
+  );
+}
