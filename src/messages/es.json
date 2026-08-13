@@ -257,6 +257,8 @@
     "newSection": "Nueva carpeta",
     "renameSection": "Renombrar sección",
     "sectionColor": "Color de la sección",
+    "editIndex": "Editar índice",
+    "doneEditingIndex": "Listo",
     "deleteSection": "Eliminar sección",
     "confirmDeleteSection": "¿Eliminar esta sección y todas sus páginas? Esta acción no se puede deshacer.",
     "newPage": "Nueva página",

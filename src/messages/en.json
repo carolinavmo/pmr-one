@@ -257,6 +257,8 @@
     "newSection": "New folder",
     "renameSection": "Rename section",
     "sectionColor": "Section color",
+    "editIndex": "Edit index",
+    "doneEditingIndex": "Done",
     "deleteSection": "Delete section",
     "confirmDeleteSection": "Delete this section and all its pages? This cannot be undone.",
     "newPage": "New page",

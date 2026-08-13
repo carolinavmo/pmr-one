@@ -257,6 +257,8 @@
     "newSection": "Nova pasta",
     "renameSection": "Renomear secção",
     "sectionColor": "Cor da secção",
+    "editIndex": "Editar índice",
+    "doneEditingIndex": "Concluído",
     "deleteSection": "Eliminar secção",
     "confirmDeleteSection": "Eliminar esta secção e todas as suas páginas? Esta ação não pode ser revertida.",
     "newPage": "Nova página",

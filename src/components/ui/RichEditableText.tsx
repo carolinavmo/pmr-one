@@ -19,6 +19,7 @@ import {
   AlignCenter,
   AlignRight,
   Sigma,
+  MoreHorizontal,
 } from "lucide-react";
 import { useEditMode } from "@/components/disease-page/EditMode";
 import { ColorSwatchPicker } from "@/components/ui/ColorSwatchPicker";
@@ -60,6 +61,19 @@ interface RichEditableTextProps {
   // description) — every other caller can omit it, defaulting to
   // "content". Only matters for annotation anchoring; unused otherwise.
   fieldKey?: string;
+  // Opt-in, defaults to false/unchanged for every existing caller.
+  // autoEdit starts the field already in its editing state (skipping
+  // the click-to-start preview) — for a surface like My Handbook where
+  // there's no separate view mode to begin with, requiring a click
+  // before the toolbar even appears is pure friction. compact swaps
+  // the always-visible toolbar for a shorter primary row (Bold/Italic/
+  // Underline, lists, quote, link) with the rest of the exact same
+  // controls tucked behind a "More" flyout, instead of one long row —
+  // same capabilities, just less visually noisy for a plain notes
+  // editor. Disease-page block editing omits both and keeps its
+  // current full inline toolbar untouched.
+  autoEdit?: boolean;
+  compact?: boolean;
 }
 
 // Raw <ul>/<ol>/<blockquote> tags (inserted via execCommand, so they
@@ -142,10 +156,13 @@ export function RichEditableText({
   block,
   diseaseSlug,
   fieldKey,
+  autoEdit = false,
+  compact = false,
 }: RichEditableTextProps) {
   const { editing: editModeOn } = useEditMode();
-  const [isEditing, setIsEditing] = useState(false);
+  const [isEditing, setIsEditing] = useState(autoEdit);
   const [popover, setPopover] = useState<"size" | "color" | "bg" | "symbols" | null>(null);
+  const [moreOpen, setMoreOpen] = useState(false);
   const [frozenHtml, setFrozenHtml] = useState(value);
   const editableRef = useRef<HTMLElement>(null);
 
@@ -409,6 +426,224 @@ export function RichEditableText({
 
   return (
     <div className="relative">
+      {compact && (
+        <div
+          onMouseDown={preventBlur}
+          className="mb-1 flex flex-wrap items-center gap-0.5 rounded-lg border border-border bg-surface-raised p-1 shadow-sm"
+        >
+          <button
+            type="button"
+            aria-label="Bold"
+            onClick={() => toggleFormat(BOLD_CLASS)}
+            className="flex size-7 items-center justify-center rounded text-secondary hover:bg-border/40 hover:text-primary"
+          >
+            <Bold className="size-3.5" aria-hidden="true" />
+          </button>
+          <button
+            type="button"
+            aria-label="Italic"
+            onClick={() => toggleFormat(ITALIC_CLASS)}
+            className="flex size-7 items-center justify-center rounded text-secondary hover:bg-border/40 hover:text-primary"
+          >
+            <Italic className="size-3.5" aria-hidden="true" />
+          </button>
+          <button
+            type="button"
+            aria-label="Underline"
+            onClick={() => toggleFormat(UNDERLINE_CLASS)}
+            className="flex size-7 items-center justify-center rounded text-secondary hover:bg-border/40 hover:text-primary"
+          >
+            <UnderlineIcon className="size-3.5" aria-hidden="true" />
+          </button>
+
+          <div className="mx-0.5 h-5 w-px shrink-0 bg-border" />
+
+          <button
+            type="button"
+            aria-label="Bulleted list"
+            onClick={() => document.execCommand("insertUnorderedList")}
+            className="flex size-7 items-center justify-center rounded text-secondary hover:bg-border/40 hover:text-primary"
+          >
+            <List className="size-3.5" aria-hidden="true" />
+          </button>
+          <button
+            type="button"
+            aria-label="Numbered list"
+            onClick={() => document.execCommand("insertOrderedList")}
+            className="flex size-7 items-center justify-center rounded text-secondary hover:bg-border/40 hover:text-primary"
+          >
+            <ListOrdered className="size-3.5" aria-hidden="true" />
+          </button>
+          <button
+            type="button"
+            aria-label="Quote"
+            onClick={() => document.execCommand("formatBlock", false, "blockquote")}
+            className="flex size-7 items-center justify-center rounded text-secondary hover:bg-border/40 hover:text-primary"
+          >
+            <Quote className="size-3.5" aria-hidden="true" />
+          </button>
+
+          <div className="mx-0.5 h-5 w-px shrink-0 bg-border" />
+
+          <button
+            type="button"
+            aria-label="Link"
+            onClick={applyLink}
+            className="flex size-7 items-center justify-center rounded text-secondary hover:bg-border/40 hover:text-primary"
+          >
+            <LinkIcon className="size-3.5" aria-hidden="true" />
+          </button>
+
+          <div className="mx-0.5 h-5 w-px shrink-0 bg-border" />
+
+          <div className="relative">
+            <button
+              type="button"
+              aria-label="More formatting"
+              onClick={() => setMoreOpen((o) => !o)}
+              className={`flex size-7 items-center justify-center rounded ${
+                moreOpen ? "bg-accent/10 text-accent" : "text-secondary hover:bg-border/40 hover:text-primary"
+              }`}
+            >
+              <MoreHorizontal className="size-3.5" aria-hidden="true" />
+            </button>
+            {moreOpen && (
+              <div
+                onMouseDown={preventBlur}
+                className="absolute top-8 right-0 z-10 flex w-max flex-wrap items-center gap-0.5 rounded-lg border border-border bg-surface-raised p-1 shadow-md"
+              >
+                <button
+                  type="button"
+                  aria-label="Strikethrough"
+                  onClick={() => toggleFormat(STRIKETHROUGH_CLASS)}
+                  className="flex size-7 items-center justify-center rounded text-secondary hover:bg-border/40 hover:text-primary"
+                >
+                  <Strikethrough className="size-3.5" aria-hidden="true" />
+                </button>
+
+                <div className="mx-0.5 h-5 w-px shrink-0 bg-border" />
+
+                <div className="relative">
+                  <button
+                    type="button"
+                    aria-label="Font size"
+                    onClick={() => setPopover((p) => (p === "size" ? null : "size"))}
+                    className="flex size-7 items-center justify-center rounded text-secondary hover:bg-border/40 hover:text-primary"
+                  >
+                    <Type className="size-3.5" aria-hidden="true" />
+                  </button>
+                  {popover === "size" && (
+                    <div className="absolute top-8 left-0 z-20 flex gap-1 rounded-lg border border-border bg-surface-raised p-1.5 shadow-md">
+                      {FONT_SIZE_ORDER.map((size) => (
+                        <button
+                          key={size}
+                          type="button"
+                          onClick={() => {
+                            wrapSelection(FONT_SIZE_CLASS[size]);
+                            setPopover(null);
+                          }}
+                          className="rounded px-2 py-1 font-ui text-xs text-secondary hover:bg-border/40 hover:text-primary"
+                        >
+                          {FONT_SIZE_LABEL[size]}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                <div className="relative">
+                  <button
+                    type="button"
+                    aria-label="Text color"
+                    onClick={() => setPopover((p) => (p === "color" ? null : "color"))}
+                    className="flex size-7 items-center justify-center rounded text-secondary hover:bg-border/40 hover:text-primary"
+                  >
+                    <Palette className="size-3.5" aria-hidden="true" />
+                  </button>
+                  {popover === "color" && (
+                    <ColorSwatchPicker
+                      className="absolute top-8 left-0 z-20 w-48"
+                      onPick={(color) => {
+                        toggleFormat(TEXT_COLOR_CLASS[color]);
+                        setPopover(null);
+                      }}
+                    />
+                  )}
+                </div>
+
+                <div className="relative">
+                  <button
+                    type="button"
+                    aria-label="Highlight color"
+                    onClick={() => setPopover((p) => (p === "bg" ? null : "bg"))}
+                    className="flex size-7 items-center justify-center rounded text-secondary hover:bg-border/40 hover:text-primary"
+                  >
+                    <Highlighter className="size-3.5" aria-hidden="true" />
+                  </button>
+                  {popover === "bg" && (
+                    <ColorSwatchPicker
+                      className="absolute top-8 left-0 z-20 w-48"
+                      onPick={(color) => {
+                        toggleFormat(TEXT_BG_CLASS[color]);
+                        setPopover(null);
+                      }}
+                    />
+                  )}
+                </div>
+
+                <button
+                  type="button"
+                  aria-label="Clear formatting"
+                  onClick={clearFormatting}
+                  className="flex size-7 items-center justify-center rounded text-secondary hover:bg-border/40 hover:text-warning"
+                >
+                  <Eraser className="size-3.5" aria-hidden="true" />
+                </button>
+
+                <div className="mx-0.5 h-5 w-px shrink-0 bg-border" />
+
+                <button
+                  type="button"
+                  aria-label="Remove link"
+                  onClick={removeLink}
+                  className="flex size-7 items-center justify-center rounded text-secondary hover:bg-border/40 hover:text-primary"
+                >
+                  <Unlink className="size-3.5" aria-hidden="true" />
+                </button>
+
+                <div className="relative">
+                  <button
+                    type="button"
+                    aria-label="Insert symbol"
+                    onClick={() => setPopover((p) => (p === "symbols" ? null : "symbols"))}
+                    className="flex size-7 items-center justify-center rounded text-secondary hover:bg-border/40 hover:text-primary"
+                  >
+                    <Sigma className="size-3.5" aria-hidden="true" />
+                  </button>
+                  {popover === "symbols" && (
+                    <div className="absolute top-8 right-0 z-20 grid w-56 grid-cols-8 gap-0.5 rounded-lg border border-border bg-surface-raised p-1.5 shadow-md">
+                      {SYMBOLS.map((symbol) => (
+                        <button
+                          key={symbol}
+                          type="button"
+                          onClick={() => {
+                            insertSymbol(symbol);
+                            setPopover(null);
+                          }}
+                          className="flex size-6 items-center justify-center rounded font-reading text-sm text-primary hover:bg-border/40"
+                        >
+                          {symbol}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+      {!compact && (
       <div
         onMouseDown={preventBlur}
         className="mb-1 flex flex-wrap items-center gap-0.5 rounded-lg border border-border bg-surface-raised p-1 shadow-sm"
@@ -621,6 +856,7 @@ export function RichEditableText({
           </>
         )}
       </div>
+      )}
       {createElement(resolveTag(Tag, frozenHtml), {
         ref: editableRef,
         contentEditable: true,

@@ -93,6 +93,8 @@ export function AtlasEditor({
             }}
             placeholder={t("emptyPagePlaceholder")}
             className="min-h-[50vh] font-reading text-base leading-relaxed text-primary"
+            autoEdit
+            compact
           />
         </ForceEditingOn>
       </EditModeProvider>
