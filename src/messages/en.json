@@ -132,6 +132,8 @@
     "reviewQueue": "Review Queue",
     "betaBadge": "Beta",
     "aiDescription": "Instant, evidence-based answers with references you can trust — coming soon.",
+    "newBadge": "New",
+    "myHandbookDescription": "Write and keep your own notes, protocols and templates — now preloaded with sample pages to show you how.",
     "today": "Today,",
     "yesterday": "Yesterday,"
   },

@@ -5,6 +5,7 @@ import {
   UserCog,
   ClipboardCheck,
   BookMarked,
+  BookOpen,
   Sparkles,
   NotebookPen,
   Highlighter,
@@ -459,6 +460,26 @@ export async function MemberDashboard({
                 )}
               </div>
             </section>
+
+            <Link
+              href="/my-atlas"
+              className="flex flex-col gap-2 rounded-xl border border-accent/30 bg-accent/5 p-4 transition-colors duration-base hover:bg-accent/10"
+            >
+              <span className="flex items-center gap-2">
+                <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-accent/10 text-accent">
+                  <BookOpen className="size-4" aria-hidden="true" />
+                </span>
+                <span className="flex items-center gap-2 font-ui text-sm font-medium text-primary">
+                  {tNav("myAtlas")}
+                  <span className="rounded-full bg-accent/15 px-1.5 py-0.5 font-ui text-[10px] font-medium tracking-wide text-accent uppercase">
+                    {t("newBadge")}
+                  </span>
+                </span>
+              </span>
+              <p className="font-ui text-xs text-secondary">
+                {t("myHandbookDescription")}
+              </p>
+            </Link>
 
             <section
               id="saved-pearls"

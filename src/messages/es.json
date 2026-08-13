@@ -132,6 +132,8 @@
     "reviewQueue": "Cola de Revisión",
     "betaBadge": "Beta",
     "aiDescription": "Respuestas instantáneas basadas en evidencia, con referencias fiables — próximamente.",
+    "newBadge": "Nuevo",
+    "myHandbookDescription": "Escribe y guarda tus propias notas, protocolos y plantillas — ahora con páginas de ejemplo para empezar.",
     "today": "Hoy,",
     "yesterday": "Ayer,"
   },
