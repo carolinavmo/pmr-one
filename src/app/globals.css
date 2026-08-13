@@ -307,6 +307,7 @@
   --font-ui: var(--font-ui);
   --font-reading: var(--font-reading);
   --font-heading: var(--font-heading);
+  --font-brand: var(--font-brand);
 
   /* Main content font size — PM&R Atlas Design System doc's "Body"
      spec (14px/22px), overriding Tailwind's default 16px/24px

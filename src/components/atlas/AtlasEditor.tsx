@@ -167,7 +167,7 @@ function PageEditorHeader({
           onChange={(e) => setTitle(e.target.value)}
           onBlur={commitTitle}
           placeholder={t("untitledPage")}
-          className="w-full bg-transparent font-heading text-2xl font-bold text-primary outline-none placeholder:font-normal placeholder:text-secondary"
+          className="w-full bg-transparent font-heading text-2xl font-bold text-accent outline-none placeholder:font-normal placeholder:text-secondary"
         />
         <div className="flex shrink-0 items-center gap-1.5">
           <button

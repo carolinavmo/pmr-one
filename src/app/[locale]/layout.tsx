@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter, Poppins } from "next/font/google";
+import { Inter, Poppins, Staatliches } from "next/font/google";
 import { notFound } from "next/navigation";
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages } from "next-intl/server";
@@ -41,6 +41,15 @@ const fontHeading = Poppins({
   weight: ["600", "700"],
 });
 
+// Brand wordmark only ("PM&R Atlas" in TopBar.tsx) — Staatliches is a
+// single-weight display face, not a general-purpose typeface, so it's
+// scoped to that one span rather than added as a third body/heading role.
+const fontBrand = Staatliches({
+  variable: "--font-brand",
+  subsets: ["latin"],
+  weight: "400",
+});
+
 export const metadata: Metadata = {
   title: "PM&R Atlas",
   description:
@@ -66,7 +75,7 @@ export default async function RootLayout({ children, params }: LayoutProps<"/[lo
   return (
     <html
       lang={LOCALE_META[locale].bcp47}
-      className={`${fontUI.variable} ${fontReading.variable} ${fontHeading.variable} h-full scroll-smooth antialiased`}
+      className={`${fontUI.variable} ${fontReading.variable} ${fontHeading.variable} ${fontBrand.variable} h-full scroll-smooth antialiased`}
       suppressHydrationWarning
     >
       <head>
