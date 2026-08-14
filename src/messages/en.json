@@ -356,8 +356,11 @@
     "removeFromFolder": "Remove from folder",
     "selectDeckToAdd": "Select a deck to add…",
     "addToFolder": "Add",
-    "noAssignableDecks": "All preset decks are already in this folder.",
-    "noDecksInFolder": "This folder doesn't have any decks yet."
+    "noAssignableDecks": "There are no more decks to add.",
+    "noDecksInFolder": "This folder doesn't have any decks yet.",
+    "myFolders": "My Folders",
+    "favourites": "Favourites",
+    "noFavourites": "You haven't added any decks to your favourites yet."
   },
   "clinicalTools": {
     "pageTitle": "Clinical Tools",

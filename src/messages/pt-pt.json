@@ -356,8 +356,11 @@
     "removeFromFolder": "Remover da pasta",
     "selectDeckToAdd": "Selecionar um baralho para adicionar…",
     "addToFolder": "Adicionar",
-    "noAssignableDecks": "Todos os baralhos predefinidos já estão nesta pasta.",
-    "noDecksInFolder": "Esta pasta ainda não tem baralhos."
+    "noAssignableDecks": "Não há mais baralhos para adicionar.",
+    "noDecksInFolder": "Esta pasta ainda não tem baralhos.",
+    "myFolders": "As Minhas Pastas",
+    "favourites": "Favoritos",
+    "noFavourites": "Ainda não há baralhos nos favoritos."
   },
   "clinicalTools": {
     "pageTitle": "Ferramentas Clínicas",

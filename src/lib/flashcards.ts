@@ -10,13 +10,16 @@ import type { CardIconName } from "@/components/ui/cardIcons";
 
 export type DeckOwnerType = "system" | "user";
 
-// Editor-managed folders that group preset decks (db/migrations/0044) —
-// a deck's icon/topicLabel below is now read off its assigned category
-// (name/icon/color), replacing the earlier region-keyword-derived
-// version. User decks never carry a category (folders organize preset
-// content only; see FlashcardsBrowser's "+ New Folder" gating).
+// Folders that group decks (db/migrations/0044, ownership split added in
+// 0045) — a deck's icon/topicLabel below is read off its assigned
+// category (name/icon/color), replacing the earlier region-keyword-
+// derived version. A "system" folder is editor/admin-curated and
+// organizes preset decks, shown to everyone; a "user" folder is a
+// member's own, private, and only ever holds that member's own decks
+// (see setDeckCategory's ownership-matching WHERE clause below).
 export interface FlashcardCategory {
   id: string;
+  ownerType: DeckOwnerType;
   name: string;
   color: CardColor;
   icon: CardIconName | undefined;
@@ -116,7 +119,7 @@ export async function getDeckSummaries(
 
   const { rows: userRows } = await pool.query(
     `SELECT d.id, d.owner_type, d.name, d.description, d.color, d.icon_url,
-       NULL::uuid AS category_id, NULL::text AS category_name, NULL::text AS category_icon,
+       d.category_id, c.name AS category_name, c.icon AS category_icon,
        (SELECT COUNT(*) FROM flashcard f WHERE f.deck_id = d.id) AS card_count,
        (
          SELECT COUNT(*) FROM flashcard f
@@ -124,6 +127,7 @@ export async function getDeckSummaries(
          WHERE f.deck_id = d.id AND p.box >= ${MASTERY_BOX}
        ) AS mastered_count
      FROM flashcard_deck d
+     LEFT JOIN flashcard_category c ON c.id = d.category_id
      WHERE d.owner_type = 'user' AND d.user_id = $1
      ORDER BY d.position, d.created_at`,
     [userId]
@@ -385,6 +389,30 @@ export async function getFavoritedDeckIds(userId: string): Promise<Set<string>> 
   return new Set(rows.map((r) => r.deck_id as string));
 }
 
+// Not a real category — a computed view over flashcard_deck_favorite,
+// surfaced as a "Favourites" folder tile in FlashcardsBrowser (its own
+// /flashcards/favourites route, not /flashcards/category/[id]) since
+// it has no id, no owner row, and nothing to rename/recolor/delete.
+export async function getFavoritedDecks(userId: string): Promise<DeckSummary[]> {
+  const { rows } = await pool.query(
+    `SELECT d.id, d.owner_type, d.name, d.description, d.color, d.icon_url,
+       d.category_id, c.name AS category_name, c.icon AS category_icon,
+       (SELECT COUNT(*) FROM flashcard f WHERE f.deck_id = d.id) AS card_count,
+       (
+         SELECT COUNT(*) FROM flashcard f
+         JOIN flashcard_progress p ON p.flashcard_id = f.id AND p.user_id = $1
+         WHERE f.deck_id = d.id AND p.box >= ${MASTERY_BOX}
+       ) AS mastered_count
+     FROM flashcard_deck_favorite fav
+     JOIN flashcard_deck d ON d.id = fav.deck_id
+     LEFT JOIN flashcard_category c ON c.id = d.category_id
+     WHERE fav.user_id = $1
+     ORDER BY fav.created_at DESC`,
+    [userId]
+  );
+  return rows.map(mapDeckSummaryRow);
+}
+
 export async function toggleDeckFavorite(userId: string, deckId: string): Promise<boolean> {
   const { rows } = await pool.query(
     `DELETE FROM flashcard_deck_favorite WHERE user_id = $1 AND deck_id = $2 RETURNING 1`,
@@ -399,28 +427,64 @@ export async function toggleDeckFavorite(userId: string, deckId: string): Promis
   return true;
 }
 
-export async function getCategories(): Promise<FlashcardCategory[]> {
-  const { rows } = await pool.query(
-    `SELECT c.id, c.name, c.color, c.icon,
-       (SELECT COUNT(*) FROM flashcard_deck d WHERE d.category_id = c.id) AS deck_count
-     FROM flashcard_category c
-     ORDER BY c.position, c.name`
-  );
-  return rows.map((r) => ({
+function mapCategoryRow(r: {
+  id: string;
+  owner_type: DeckOwnerType;
+  name: string;
+  color: CardColor;
+  icon: string | null;
+  deck_count: string;
+}): FlashcardCategory {
+  return {
     id: r.id,
+    ownerType: r.owner_type,
     name: r.name,
     color: r.color,
     icon: (r.icon as CardIconName | null) ?? undefined,
     deckCount: Number(r.deck_count),
-  }));
+  };
 }
 
+export async function getCategories(
+  userId: string | null
+): Promise<{ systemCategories: FlashcardCategory[]; userCategories: FlashcardCategory[] }> {
+  const { rows: systemRows } = await pool.query(
+    `SELECT c.id, c.owner_type, c.name, c.color, c.icon,
+       (SELECT COUNT(*) FROM flashcard_deck d WHERE d.category_id = c.id) AS deck_count
+     FROM flashcard_category c
+     WHERE c.owner_type = 'system'
+     ORDER BY c.position, c.name`
+  );
+
+  if (!userId) {
+    return { systemCategories: systemRows.map(mapCategoryRow), userCategories: [] };
+  }
+
+  const { rows: userRows } = await pool.query(
+    `SELECT c.id, c.owner_type, c.name, c.color, c.icon,
+       (SELECT COUNT(*) FROM flashcard_deck d WHERE d.category_id = c.id) AS deck_count
+     FROM flashcard_category c
+     WHERE c.owner_type = 'user' AND c.user_id = $1
+     ORDER BY c.position, c.name`,
+    [userId]
+  );
+
+  return {
+    systemCategories: systemRows.map(mapCategoryRow),
+    userCategories: userRows.map(mapCategoryRow),
+  };
+}
+
+// A "user" folder 404s (returns null) for anyone but its owner — same
+// ownership-checked idiom as getDeckWithCards, so a forged id from
+// another member's private folder leaks nothing. A "system" folder
+// always resolves.
 export async function getCategoryWithDecks(
   categoryId: string,
   userId: string | null
 ): Promise<{ category: FlashcardCategory; decks: DeckSummary[] } | null> {
   const { rows: categoryRows } = await pool.query(
-    `SELECT c.id, c.name, c.color, c.icon,
+    `SELECT c.id, c.owner_type, c.user_id, c.name, c.color, c.icon,
        (SELECT COUNT(*) FROM flashcard_deck d WHERE d.category_id = c.id) AS deck_count
      FROM flashcard_category c
      WHERE c.id = $1`,
@@ -428,6 +492,7 @@ export async function getCategoryWithDecks(
   );
   const categoryRow = categoryRows[0];
   if (!categoryRow) return null;
+  if (categoryRow.owner_type === "user" && categoryRow.user_id !== userId) return null;
 
   const masteredSelect = userId
     ? `, (
@@ -450,56 +515,95 @@ export async function getCategoryWithDecks(
   );
 
   return {
-    category: {
-      id: categoryRow.id,
-      name: categoryRow.name,
-      color: categoryRow.color,
-      icon: (categoryRow.icon as CardIconName | null) ?? undefined,
-      deckCount: Number(categoryRow.deck_count),
-    },
+    category: mapCategoryRow(categoryRow),
     decks: deckRows.map(mapDeckSummaryRow),
   };
 }
 
-export async function createCategory(name: string, color: CardColor): Promise<FlashcardCategory> {
-  const { rows: countRows } = await pool.query(`SELECT COUNT(*)::int AS count FROM flashcard_category`);
-  const { rows } = await pool.query(
-    `INSERT INTO flashcard_category (name, color, position)
-     VALUES ($1, $2, $3)
-     RETURNING id, name, color, icon`,
-    [name, color, countRows[0].count]
+export async function createCategory(
+  ownerType: DeckOwnerType,
+  userId: string | null,
+  name: string,
+  color: CardColor
+): Promise<FlashcardCategory> {
+  const { rows: countRows } = await pool.query(
+    `SELECT COUNT(*)::int AS count FROM flashcard_category
+     WHERE owner_type = $1 AND ($1 = 'system' OR user_id = $2)`,
+    [ownerType, userId]
   );
-  const row = rows[0];
-  return {
-    id: row.id,
-    name: row.name,
-    color: row.color,
-    icon: (row.icon as CardIconName | null) ?? undefined,
-    deckCount: 0,
-  };
+  const { rows } = await pool.query(
+    `INSERT INTO flashcard_category (owner_type, user_id, name, color, position)
+     VALUES ($1, $2, $3, $4, $5)
+     RETURNING id, owner_type, name, color, icon`,
+    [ownerType, userId, name, color, countRows[0].count]
+  );
+  return mapCategoryRow({ ...rows[0], deck_count: "0" });
 }
 
-export async function renameCategory(categoryId: string, name: string): Promise<void> {
-  await pool.query(`UPDATE flashcard_category SET name = $1 WHERE id = $2`, [name, categoryId]);
+// isEditor widens the ownership check to also match any system folder
+// — same idiom as renameDeck. A member who isn't an editor only ever
+// matches their own user-owned folders.
+export async function renameCategory(
+  userId: string,
+  categoryId: string,
+  name: string,
+  isEditor: boolean
+): Promise<void> {
+  await pool.query(
+    `UPDATE flashcard_category SET name = $1
+     WHERE id = $2 AND ((owner_type = 'user' AND user_id = $3) OR (owner_type = 'system' AND $4))`,
+    [name, categoryId, userId, isEditor]
+  );
 }
 
-export async function updateCategoryColor(categoryId: string, color: CardColor): Promise<void> {
-  await pool.query(`UPDATE flashcard_category SET color = $1 WHERE id = $2`, [color, categoryId]);
+export async function updateCategoryColor(
+  userId: string,
+  categoryId: string,
+  color: CardColor,
+  isEditor: boolean
+): Promise<void> {
+  await pool.query(
+    `UPDATE flashcard_category SET color = $1
+     WHERE id = $2 AND ((owner_type = 'user' AND user_id = $3) OR (owner_type = 'system' AND $4))`,
+    [color, categoryId, userId, isEditor]
+  );
 }
 
 // Decks in this folder aren't deleted — category_id just falls back to
 // NULL (ON DELETE SET NULL) and they keep showing up in the plain
 // deck grid below the folder row, uncategorized.
-export async function deleteCategory(categoryId: string): Promise<void> {
-  await pool.query(`DELETE FROM flashcard_category WHERE id = $1`, [categoryId]);
+export async function deleteCategory(userId: string, categoryId: string, isEditor: boolean): Promise<void> {
+  await pool.query(
+    `DELETE FROM flashcard_category
+     WHERE id = $1 AND ((owner_type = 'user' AND user_id = $2) OR (owner_type = 'system' AND $3))`,
+    [categoryId, userId, isEditor]
+  );
 }
 
-// Preset-only by design — folders organize admin-curated content, not
-// member decks, so this only ever matches a system-owned row. Passing
-// categoryId: null removes the deck from whatever folder it's in.
-export async function setDeckCategory(deckId: string, categoryId: string | null): Promise<void> {
-  await pool.query(`UPDATE flashcard_deck SET category_id = $1 WHERE id = $2 AND owner_type = 'system'`, [
-    categoryId,
-    deckId,
-  ]);
+// Both the deck and the target category must belong to the same owner
+// (a member's own deck can only go in that same member's own folder;
+// a preset deck can only go in a system folder, editor/admin-only) —
+// enforced in one WHERE clause rather than two round-trips, so a
+// forged pairing (someone else's deck into your folder, or vice
+// versa) simply matches no row instead of needing a separate check.
+// categoryId: null removes the deck from whatever folder it's in,
+// gated only by the deck's own ownership.
+export async function setDeckCategory(
+  userId: string,
+  deckId: string,
+  categoryId: string | null,
+  isEditor: boolean
+): Promise<void> {
+  await pool.query(
+    `UPDATE flashcard_deck d SET category_id = $1::uuid
+     WHERE d.id = $2
+       AND ((d.owner_type = 'user' AND d.user_id = $3) OR (d.owner_type = 'system' AND $4))
+       AND ($1::uuid IS NULL OR EXISTS (
+         SELECT 1 FROM flashcard_category c
+         WHERE c.id = $1::uuid
+           AND ((c.owner_type = 'user' AND c.user_id = $3 AND d.owner_type = 'user')
+             OR (c.owner_type = 'system' AND $4 AND d.owner_type = 'system'))
+       ))`,
+    [categoryId, deckId, userId, isEditor]
+  );
 }

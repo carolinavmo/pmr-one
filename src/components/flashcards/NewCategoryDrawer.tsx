@@ -6,13 +6,25 @@ import { X } from "lucide-react";
 import { createCategoryAction } from "@/lib/actions/flashcards";
 import { CARD_COLOR_SWATCH } from "@/lib/card-colors";
 import type { CardColor } from "@/lib/editorial-blocks";
+import type { DeckOwnerType } from "@/lib/flashcards";
 import { ColorSwatchPicker } from "@/components/ui/ColorSwatchPicker";
 import { Button } from "@/components/ui/Button";
 
-// Same drawer shape as NewDeckDrawer.tsx (name + color, plain form) —
-// editor/admin only, enforced server-side by createCategoryAction's
-// requireEditor(), not just by who can see the "+ New Folder" trigger.
-export function NewCategoryDrawer({ open, onClose }: { open: boolean; onClose: () => void }) {
+// Same drawer shape as NewDeckDrawer.tsx (name + color, plain form).
+// One shared component for both entry points: FlashcardsBrowser's
+// editor-only "Folders" row passes ownerType="system", its signed-in-
+// member "My Folders" row passes ownerType="user" — either way the
+// real gate is server-side in createCategoryAction, this prop just
+// picks which kind gets created.
+export function NewCategoryDrawer({
+  open,
+  onClose,
+  ownerType,
+}: {
+  open: boolean;
+  onClose: () => void;
+  ownerType: DeckOwnerType;
+}) {
   const t = useTranslations("flashcards");
   const [name, setName] = useState("");
   const [color, setColor] = useState<CardColor>("accent");
@@ -41,7 +53,7 @@ export function NewCategoryDrawer({ open, onClose }: { open: boolean; onClose: (
   function handleSubmit() {
     if (!name.trim()) return;
     startTransition(async () => {
-      await createCategoryAction(name, color);
+      await createCategoryAction(name, color, ownerType);
       onClose();
     });
   }

@@ -24,6 +24,7 @@ import {
   updateCategoryColor,
   deleteCategory,
   setDeckCategory,
+  type DeckOwnerType,
   type DeckSummary,
   type FlashcardCard,
   type FlashcardCategory,
@@ -42,14 +43,6 @@ async function requireUserId(): Promise<{ userId: string; isEditor: boolean }> {
   if (!session) throw new Error("Unauthorized");
   const isEditor = session.user.role === "editor" || session.user.role === "admin";
   return { userId: session.user.id, isEditor };
-}
-
-// Folders have no owner to check against (unlike a deck), so there's
-// no SQL-level widening needed — the role check here is the entire
-// gate.
-async function requireEditor(): Promise<void> {
-  const { isEditor } = await requireUserId();
-  if (!isEditor) throw new Error("Unauthorized");
 }
 
 const MAX_UPLOAD_BYTES = 8 * 1024 * 1024;
@@ -170,33 +163,46 @@ export async function toggleDeckFavoriteAction(deckId: string): Promise<void> {
   revalidateFlashcardSurfaces();
 }
 
-export async function createCategoryAction(name: string, color: CardColor): Promise<FlashcardCategory> {
-  await requireEditor();
-  const category = await createCategory(name.trim() || "Untitled folder", color);
+// A "system" folder is admin-curated content — creating one still
+// needs isEditor. A "user" folder is a member's own personal
+// organization, so any signed-in member can create one.
+export async function createCategoryAction(
+  name: string,
+  color: CardColor,
+  ownerType: DeckOwnerType
+): Promise<FlashcardCategory> {
+  const { userId, isEditor } = await requireUserId();
+  if (ownerType === "system" && !isEditor) throw new Error("Unauthorized");
+  const category = await createCategory(
+    ownerType,
+    ownerType === "user" ? userId : null,
+    name.trim() || "Untitled folder",
+    color
+  );
   revalidateFlashcardSurfaces();
   return category;
 }
 
 export async function renameCategoryAction(categoryId: string, name: string): Promise<void> {
-  await requireEditor();
-  await renameCategory(categoryId, name.trim() || "Untitled folder");
+  const { userId, isEditor } = await requireUserId();
+  await renameCategory(userId, categoryId, name.trim() || "Untitled folder", isEditor);
   revalidateFlashcardSurfaces();
 }
 
 export async function updateCategoryColorAction(categoryId: string, color: CardColor): Promise<void> {
-  await requireEditor();
-  await updateCategoryColor(categoryId, color);
+  const { userId, isEditor } = await requireUserId();
+  await updateCategoryColor(userId, categoryId, color, isEditor);
   revalidateFlashcardSurfaces();
 }
 
 export async function deleteCategoryAction(categoryId: string): Promise<void> {
-  await requireEditor();
-  await deleteCategory(categoryId);
+  const { userId, isEditor } = await requireUserId();
+  await deleteCategory(userId, categoryId, isEditor);
   revalidateFlashcardSurfaces();
 }
 
 export async function setDeckCategoryAction(deckId: string, categoryId: string | null): Promise<void> {
-  await requireEditor();
-  await setDeckCategory(deckId, categoryId);
+  const { userId, isEditor } = await requireUserId();
+  await setDeckCategory(userId, deckId, categoryId, isEditor);
   revalidateFlashcardSurfaces();
 }

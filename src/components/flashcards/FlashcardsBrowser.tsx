@@ -19,20 +19,24 @@ type ViewMode = "grid" | "list";
 // ClinicalToolsBrowser.tsx already uses) — search/view state is small
 // and client-only, no separate search API route. Preset and user decks
 // are merged into one browsable list, searched together; folders
-// (categories) are a separate server-fetched entity now (db/migrations
-// /0044_flashcard_categories.sql) rather than derived from presetDecks,
-// so an editor-created empty folder still shows up here.
+// (categories) are a separate server-fetched entity (db/migrations
+// /0044_flashcard_categories.sql, ownership split in 0045) rather than
+// derived from presetDecks, so an empty folder still shows up here.
 export function FlashcardsBrowser({
   presetDecks,
   userDecks,
-  categories,
+  systemCategories,
+  userCategories,
+  favoritedCount,
   favoritedDeckIds,
   isSignedIn,
   isEditor,
 }: {
   presetDecks: DeckSummary[];
   userDecks: DeckSummary[];
-  categories: FlashcardCategory[];
+  systemCategories: FlashcardCategory[];
+  userCategories: FlashcardCategory[];
+  favoritedCount: number;
   favoritedDeckIds: Set<string>;
   isSignedIn: boolean;
   isEditor: boolean;
@@ -41,7 +45,8 @@ export function FlashcardsBrowser({
   const [query, setQuery] = useState("");
   const [view, setView] = useState<ViewMode>("grid");
   const [drawerOpen, setDrawerOpen] = useState(false);
-  const [folderDrawerOpen, setFolderDrawerOpen] = useState(false);
+  const [systemFolderDrawerOpen, setSystemFolderDrawerOpen] = useState(false);
+  const [userFolderDrawerOpen, setUserFolderDrawerOpen] = useState(false);
 
   const allDecks = useMemo(() => [...presetDecks, ...userDecks], [presetDecks, userDecks]);
 
@@ -116,14 +121,14 @@ export function FlashcardsBrowser({
         </div>
       </div>
 
-      {(categories.length > 0 || isEditor) && (
+      {(systemCategories.length > 0 || isEditor) && (
         <div className="flex flex-col gap-3">
           <div className="flex items-center justify-between">
             <span className="font-ui text-xs font-medium text-secondary">{t("folders")}</span>
             {isEditor && (
               <button
                 type="button"
-                onClick={() => setFolderDrawerOpen(true)}
+                onClick={() => setSystemFolderDrawerOpen(true)}
                 className="flex items-center gap-1.5 font-ui text-xs font-medium text-accent hover:text-accent-hover"
               >
                 <FolderPlus className="size-3.5" aria-hidden="true" />
@@ -132,7 +137,29 @@ export function FlashcardsBrowser({
             )}
           </div>
           <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
-            {categories.map((cat) => (
+            {systemCategories.map((cat) => (
+              <CategoryCard key={cat.id} id={cat.id} label={cat.name} icon={cat.icon} color={cat.color} count={cat.deckCount} />
+            ))}
+          </div>
+        </div>
+      )}
+
+      {isSignedIn && (
+        <div className="flex flex-col gap-3">
+          <div className="flex items-center justify-between">
+            <span className="font-ui text-xs font-medium text-secondary">{t("myFolders")}</span>
+            <button
+              type="button"
+              onClick={() => setUserFolderDrawerOpen(true)}
+              className="flex items-center gap-1.5 font-ui text-xs font-medium text-accent hover:text-accent-hover"
+            >
+              <FolderPlus className="size-3.5" aria-hidden="true" />
+              {t("newFolder")}
+            </button>
+          </div>
+          <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+            <FavouritesFolderCard count={favoritedCount} />
+            {userCategories.map((cat) => (
               <CategoryCard key={cat.id} id={cat.id} label={cat.name} icon={cat.icon} color={cat.color} count={cat.deckCount} />
             ))}
           </div>
@@ -169,8 +196,44 @@ export function FlashcardsBrowser({
       )}
 
       <NewDeckDrawer open={drawerOpen} onClose={() => setDrawerOpen(false)} />
-      <NewCategoryDrawer open={folderDrawerOpen} onClose={() => setFolderDrawerOpen(false)} />
+      <NewCategoryDrawer
+        open={systemFolderDrawerOpen}
+        onClose={() => setSystemFolderDrawerOpen(false)}
+        ownerType="system"
+      />
+      <NewCategoryDrawer
+        open={userFolderDrawerOpen}
+        onClose={() => setUserFolderDrawerOpen(false)}
+        ownerType="user"
+      />
     </div>
+  );
+}
+
+// Not a real folder — a computed view over the signed-in member's own
+// favorited decks (src/lib/flashcards.ts's getFavoritedDecks), always
+// shown first in "My Folders" once signed in, count 0 included (same
+// honesty-over-hiding-empty-state reasoning the stats row already
+// uses). Its own /flashcards/favourites route, not /category/[id].
+function FavouritesFolderCard({ count }: { count: number }) {
+  const t = useTranslations("flashcards");
+
+  return (
+    <Link
+      href="/flashcards/favourites"
+      className="group relative flex flex-col pt-2 text-left transition-transform duration-base hover:-translate-y-0.5"
+    >
+      <span aria-hidden="true" className="absolute top-0 left-4 h-4 w-14 rounded-t-lg bg-card-yellow opacity-90" />
+      <span className="relative flex h-28 flex-col justify-between rounded-2xl bg-card-yellow p-3.5 shadow-sm transition-shadow duration-base group-hover:shadow-md sm:h-32">
+        <span className="flex size-8 items-center justify-center rounded-full bg-white/20 text-white">
+          <Star className="size-4" aria-hidden="true" />
+        </span>
+        <span className="flex flex-col gap-0.5">
+          <span className="line-clamp-1 font-ui text-sm font-semibold text-white">{t("favourites")}</span>
+          <span className="font-ui text-xs text-white/75">{t("deckCount", { count })}</span>
+        </span>
+      </span>
+    </Link>
   );
 }
 

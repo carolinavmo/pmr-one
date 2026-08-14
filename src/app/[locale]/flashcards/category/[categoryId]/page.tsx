@@ -11,9 +11,11 @@ interface CategoryPageProps {
   params: Promise<{ categoryId: string }>;
 }
 
-// Folders are public browsing (same idiom as the deck grid itself) —
-// only the management controls (rename/recolor/delete/assign) are
-// editor-gated, not the page's visibility.
+// System folders are public browsing (same idiom as the deck grid
+// itself); a user folder 404s for anyone but its owner (enforced in
+// getCategoryWithDecks) — so if this page resolved a "user" category
+// at all, the caller already IS its owner, same reasoning the deck
+// detail page's canManage comment uses.
 export default async function FlashcardCategoryPage({ params }: CategoryPageProps) {
   const { categoryId } = await params;
   const session = await auth();
@@ -22,15 +24,19 @@ export default async function FlashcardCategoryPage({ params }: CategoryPageProp
   const { category, decks } = result;
 
   const isEditor = session?.user.role === "editor" || session?.user.role === "admin";
+  const canManage = category.ownerType === "user" || isEditor;
   const favoritedDeckIds = session ? await getFavoritedDeckIds(session.user.id) : new Set<string>();
   const t = await getTranslations("flashcards");
 
-  // Only fetched for an editor building the "add deck to folder"
-  // picker — a plain visitor never needs the full preset-deck list.
+  // Only fetched when the caller can manage this folder, to build the
+  // "add deck to folder" picker — a plain visitor never needs it. A
+  // system folder draws assignable decks from all preset decks; a
+  // user folder draws from that same member's own decks only.
   let assignableDecks: typeof decks = [];
-  if (isEditor) {
-    const { presetDecks } = await getDeckSummaries(session?.user.id ?? null);
-    assignableDecks = presetDecks.filter((deck) => deck.categoryId !== category.id);
+  if (canManage) {
+    const { presetDecks, userDecks } = await getDeckSummaries(session?.user.id ?? null);
+    const pool = category.ownerType === "system" ? presetDecks : userDecks;
+    assignableDecks = pool.filter((deck) => deck.categoryId !== category.id);
   }
 
   return (
@@ -39,9 +45,9 @@ export default async function FlashcardCategoryPage({ params }: CategoryPageProp
         {t("backToDecks")}
       </Link>
 
-      <CategoryHeader category={category} canManage={isEditor} />
+      <CategoryHeader category={category} canManage={canManage} />
 
-      {isEditor && (
+      {canManage && (
         <CategoryDeckManager categoryId={category.id} decksInFolder={decks} assignableDecks={assignableDecks} />
       )}
 

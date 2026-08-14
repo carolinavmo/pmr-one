@@ -356,8 +356,11 @@
     "removeFromFolder": "Quitar de la carpeta",
     "selectDeckToAdd": "Selecciona un mazo para añadir…",
     "addToFolder": "Añadir",
-    "noAssignableDecks": "Todos los mazos predefinidos ya están en esta carpeta.",
-    "noDecksInFolder": "Esta carpeta todavía no tiene mazos."
+    "noAssignableDecks": "No hay más mazos para añadir.",
+    "noDecksInFolder": "Esta carpeta todavía no tiene mazos.",
+    "myFolders": "Mis Carpetas",
+    "favourites": "Favoritos",
+    "noFavourites": "Todavía no hay mazos en favoritos."
   },
   "clinicalTools": {
     "pageTitle": "Herramientas Clínicas",
