@@ -35,7 +35,7 @@ export default async function FlashcardsPage() {
           <Layers className="size-5" aria-hidden="true" />
         </span>
         <div>
-          <h1 className="font-reading text-3xl text-primary">{t("pageTitle")}</h1>
+          <h1 className="font-heading text-3xl text-primary">{t("pageTitle")}</h1>
           <p className="mt-1 font-ui text-sm text-secondary">{t("pageSubtitle")}</p>
         </div>
       </div>
@@ -75,7 +75,7 @@ function StatTile({
   label: string;
 }) {
   return (
-    <div className="flex flex-col gap-2 rounded-xl border border-border bg-surface-raised p-4">
+    <div className="flex items-center gap-3 rounded-xl border border-border bg-surface-raised p-3">
       <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-accent/10 text-accent">
         <Icon className="size-4.5" aria-hidden="true" />
       </span>
