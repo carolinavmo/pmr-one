@@ -21,6 +21,7 @@ export interface DeckSummary {
   masteredCount: number | null; // null when there's no session to score against
   icon: CardIconName | undefined; // region-derived from the source disease's illustrations; undefined for user decks (no disease link)
   topicLabel: string | undefined; // ditto — the same region label used elsewhere (e.g. /conditions cards)
+  iconUrl: string | null; // uploaded image, overrides `icon` when set (editor-uploaded on a preset deck, or a member's own deck)
 }
 
 export interface FlashcardCard {
@@ -38,6 +39,8 @@ export interface DeckDetail {
   name: string;
   description: string;
   color: CardColor;
+  icon: CardIconName | undefined;
+  iconUrl: string | null;
   sourceDiseaseName: string | null;
   sourceDiseaseSlug: string | null;
   cards: FlashcardCard[];
@@ -52,6 +55,7 @@ function mapDeckSummaryRow(r: {
   card_count: string;
   mastered_count: string | null;
   regions: (string | null)[] | null;
+  icon_url: string | null;
 }): DeckSummary {
   return {
     id: r.id,
@@ -63,6 +67,7 @@ function mapDeckSummaryRow(r: {
     masteredCount: r.mastered_count === null ? null : Number(r.mastered_count),
     icon: iconForRegions(r.regions ?? []),
     topicLabel: categoryForRegions(r.regions ?? []),
+    iconUrl: r.icon_url,
   };
 }
 
@@ -78,7 +83,7 @@ export async function getDeckSummaries(
     : `, NULL::bigint AS mastered_count`;
 
   const { rows: presetRows } = await pool.query(
-    `SELECT d.id, d.owner_type, d.name, d.description, d.color,
+    `SELECT d.id, d.owner_type, d.name, d.description, d.color, d.icon_url,
        (SELECT COUNT(*) FROM flashcard f WHERE f.deck_id = d.id) AS card_count,
        (
          SELECT array_agg(DISTINCT a.region)
@@ -99,7 +104,7 @@ export async function getDeckSummaries(
   }
 
   const { rows: userRows } = await pool.query(
-    `SELECT d.id, d.owner_type, d.name, d.description, d.color,
+    `SELECT d.id, d.owner_type, d.name, d.description, d.color, d.icon_url,
        (SELECT COUNT(*) FROM flashcard f WHERE f.deck_id = d.id) AS card_count,
        NULL::text[] AS regions,
        (
@@ -124,8 +129,15 @@ export async function getDeckWithCards(
   userId: string | null
 ): Promise<DeckDetail | null> {
   const { rows: deckRows } = await pool.query(
-    `SELECT d.id, d.owner_type, d.name, d.description, d.color,
-       dis.canonical_name AS source_disease_name, dis.slug AS source_disease_slug
+    `SELECT d.id, d.owner_type, d.name, d.description, d.color, d.icon_url,
+       dis.canonical_name AS source_disease_name, dis.slug AS source_disease_slug,
+       (
+         SELECT array_agg(DISTINCT a.region)
+         FROM illustration_usage iu
+         JOIN illustration_depicts_anatomy ida ON ida.medical_illustration_id = iu.medical_illustration_id
+         JOIN anatomy_structure a ON a.id = ida.anatomy_structure_id
+         WHERE iu.target_type = 'disease' AND iu.target_id = d.source_disease_id
+       ) AS regions
      FROM flashcard_deck d
      LEFT JOIN disease dis ON dis.id = d.source_disease_id
      WHERE d.id = $1`,
@@ -163,6 +175,8 @@ export async function getDeckWithCards(
     name: deck.name,
     description: deck.description,
     color: deck.color,
+    icon: iconForRegions(deck.regions ?? []),
+    iconUrl: deck.icon_url,
     sourceDiseaseName: deck.source_disease_name,
     sourceDiseaseSlug: deck.source_disease_slug,
     cards: cardRows.map((r) => ({
@@ -187,28 +201,63 @@ export async function createDeck(userId: string, name: string, color: CardColor)
      RETURNING id, owner_type, name, description, color`,
     [userId, name, color, countRows[0].count]
   );
-  return { ...mapDeckSummaryRow({ ...rows[0], card_count: "0", mastered_count: "0" }) };
+  return {
+    ...mapDeckSummaryRow({ ...rows[0], card_count: "0", mastered_count: "0", regions: null, icon_url: null }),
+  };
 }
 
-export async function renameDeck(userId: string, deckId: string, name: string): Promise<void> {
+// isEditor widens the ownership check to also match any system
+// (preset) deck, regardless of the caller's own user_id — an editor
+// managing preset content isn't the deck's "owner" in the user_id
+// sense, so this can't be expressed as a plain owner match. A member
+// who isn't an editor only ever matches the user_type branch, exactly
+// as before.
+export async function renameDeck(
+  userId: string,
+  deckId: string,
+  name: string,
+  isEditor: boolean
+): Promise<void> {
   await pool.query(
-    `UPDATE flashcard_deck SET name = $1 WHERE id = $2 AND owner_type = 'user' AND user_id = $3`,
-    [name, deckId, userId]
+    `UPDATE flashcard_deck SET name = $1
+     WHERE id = $2 AND ((owner_type = 'user' AND user_id = $3) OR (owner_type = 'system' AND $4))`,
+    [name, deckId, userId, isEditor]
   );
 }
 
-export async function updateDeckColor(userId: string, deckId: string, color: CardColor): Promise<void> {
+export async function updateDeckColor(
+  userId: string,
+  deckId: string,
+  color: CardColor,
+  isEditor: boolean
+): Promise<void> {
   await pool.query(
-    `UPDATE flashcard_deck SET color = $1 WHERE id = $2 AND owner_type = 'user' AND user_id = $3`,
-    [color, deckId, userId]
+    `UPDATE flashcard_deck SET color = $1
+     WHERE id = $2 AND ((owner_type = 'user' AND user_id = $3) OR (owner_type = 'system' AND $4))`,
+    [color, deckId, userId, isEditor]
   );
 }
 
-export async function deleteDeck(userId: string, deckId: string): Promise<void> {
-  await pool.query(`DELETE FROM flashcard_deck WHERE id = $1 AND owner_type = 'user' AND user_id = $2`, [
-    deckId,
-    userId,
-  ]);
+// iconUrl: null clears back to the region-derived default icon.
+export async function updateDeckIcon(
+  userId: string,
+  deckId: string,
+  iconUrl: string | null,
+  isEditor: boolean
+): Promise<void> {
+  await pool.query(
+    `UPDATE flashcard_deck SET icon_url = $1
+     WHERE id = $2 AND ((owner_type = 'user' AND user_id = $3) OR (owner_type = 'system' AND $4))`,
+    [iconUrl, deckId, userId, isEditor]
+  );
+}
+
+export async function deleteDeck(userId: string, deckId: string, isEditor: boolean): Promise<void> {
+  await pool.query(
+    `DELETE FROM flashcard_deck
+     WHERE id = $1 AND ((owner_type = 'user' AND user_id = $2) OR (owner_type = 'system' AND $3))`,
+    [deckId, userId, isEditor]
+  );
 }
 
 export async function reorderDecks(userId: string, orderedIds: string[]): Promise<void> {
@@ -224,14 +273,18 @@ export async function createCard(
   userId: string,
   deckId: string,
   question: string,
-  answer: string
+  answer: string,
+  isEditor: boolean
 ): Promise<FlashcardCard | null> {
   const { rows } = await pool.query(
     `INSERT INTO flashcard (deck_id, question, answer, position)
      SELECT $2, $3, $4, COALESCE((SELECT COUNT(*) FROM flashcard WHERE deck_id = $2), 0)
-     WHERE EXISTS (SELECT 1 FROM flashcard_deck WHERE id = $2 AND owner_type = 'user' AND user_id = $1)
+     WHERE EXISTS (
+       SELECT 1 FROM flashcard_deck
+       WHERE id = $2 AND ((owner_type = 'user' AND user_id = $1) OR (owner_type = 'system' AND $5))
+     )
      RETURNING id, question, answer, position`,
-    [userId, deckId, question, answer]
+    [userId, deckId, question, answer, isEditor]
   );
   const row = rows[0];
   if (!row) return null;
@@ -242,22 +295,25 @@ export async function updateCard(
   userId: string,
   cardId: string,
   question: string,
-  answer: string
+  answer: string,
+  isEditor: boolean
 ): Promise<void> {
   await pool.query(
     `UPDATE flashcard f SET question = $1, answer = $2
      FROM flashcard_deck d
-     WHERE f.id = $3 AND f.deck_id = d.id AND d.owner_type = 'user' AND d.user_id = $4`,
-    [question, answer, cardId, userId]
+     WHERE f.id = $3 AND f.deck_id = d.id
+       AND ((d.owner_type = 'user' AND d.user_id = $4) OR (d.owner_type = 'system' AND $5))`,
+    [question, answer, cardId, userId, isEditor]
   );
 }
 
-export async function deleteCard(userId: string, cardId: string): Promise<void> {
+export async function deleteCard(userId: string, cardId: string, isEditor: boolean): Promise<void> {
   await pool.query(
     `DELETE FROM flashcard f
      USING flashcard_deck d
-     WHERE f.id = $1 AND f.deck_id = d.id AND d.owner_type = 'user' AND d.user_id = $2`,
-    [cardId, userId]
+     WHERE f.id = $1 AND f.deck_id = d.id
+       AND ((d.owner_type = 'user' AND d.user_id = $2) OR (d.owner_type = 'system' AND $3))`,
+    [cardId, userId, isEditor]
   );
 }
 

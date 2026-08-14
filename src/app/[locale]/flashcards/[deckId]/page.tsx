@@ -1,12 +1,12 @@
 import { notFound } from "next/navigation";
 import { getTranslations } from "next-intl/server";
-import { Layers } from "lucide-react";
 import { auth } from "@/auth";
 import { Link } from "@/i18n/navigation";
 import { getDeckWithCards } from "@/lib/flashcards";
-import { CARD_COLOR_CHIP } from "@/lib/card-colors";
 import { FlashcardReviewer } from "@/components/flashcards/FlashcardReviewer";
 import { DeckWorkspace } from "@/components/flashcards/DeckWorkspace";
+import { DeckIconEditor } from "@/components/flashcards/DeckIconEditor";
+import { EditableDeckName } from "@/components/flashcards/EditableDeckName";
 
 interface DeckPageProps {
   params: Promise<{ deckId: string }>;
@@ -23,6 +23,12 @@ export default async function FlashcardDeckPage({ params }: DeckPageProps) {
   if (!deck) notFound();
 
   const t = await getTranslations("flashcards");
+  const isEditor = session?.user.role === "editor" || session?.user.role === "admin";
+  // If a "user" deck resolved at all, getDeckWithCards already proved
+  // the caller is its owner (a non-owner gets null/404 above) — so
+  // management access only needs an extra role check for the "system"
+  // (preset) branch, where the deck itself has no single owning user.
+  const canManage = deck.ownerType === "user" || isEditor;
 
   return (
     <main className="mx-auto flex w-full max-w-3xl flex-col gap-6 px-6 py-16">
@@ -31,16 +37,26 @@ export default async function FlashcardDeckPage({ params }: DeckPageProps) {
       </Link>
 
       <div className="flex items-center gap-3">
-        <span className={`flex size-11 shrink-0 items-center justify-center rounded-full ${CARD_COLOR_CHIP[deck.color]}`}>
-          <Layers className="size-5" aria-hidden="true" />
-        </span>
+        <DeckIconEditor
+          deckId={deck.id}
+          icon={deck.icon}
+          iconUrl={deck.iconUrl}
+          color={deck.color}
+          canEdit={canManage}
+          sizeClass="size-11"
+          iconSizeClass="size-5"
+        />
         <div>
-          <h1 className="font-reading text-2xl text-primary">{deck.name}</h1>
+          {canManage ? (
+            <EditableDeckName deckId={deck.id} initialName={deck.name} />
+          ) : (
+            <h1 className="font-reading text-2xl text-primary">{deck.name}</h1>
+          )}
           {deck.description && <p className="font-ui text-sm text-secondary">{deck.description}</p>}
         </div>
       </div>
 
-      {deck.ownerType === "user" ? (
+      {canManage ? (
         <DeckWorkspace
           deckId={deck.id}
           initialCards={deck.cards}

@@ -12,6 +12,7 @@ export default async function FlashcardsPage() {
   const session = await auth();
   const { presetDecks, userDecks } = await getDeckSummaries(session?.user.id ?? null);
   const favoritedDeckIds = session ? await getFavoritedDeckIds(session.user.id) : new Set<string>();
+  const isEditor = session?.user.role === "editor" || session?.user.role === "admin";
   const t = await getTranslations("flashcards");
 
   const allDecks = [...presetDecks, ...userDecks];
@@ -54,6 +55,7 @@ export default async function FlashcardsPage() {
         userDecks={userDecks}
         favoritedDeckIds={favoritedDeckIds}
         isSignedIn={Boolean(session)}
+        isEditor={isEditor}
       />
     </main>
   );

@@ -24,11 +24,13 @@ export function FlashcardsBrowser({
   userDecks,
   favoritedDeckIds,
   isSignedIn,
+  isEditor,
 }: {
   presetDecks: DeckSummary[];
   userDecks: DeckSummary[];
   favoritedDeckIds: Set<string>;
   isSignedIn: boolean;
+  isEditor: boolean;
 }) {
   const t = useTranslations("flashcards");
   const [query, setQuery] = useState("");
@@ -145,6 +147,7 @@ export function FlashcardsBrowser({
               deck={deck}
               isFavorited={favoritedDeckIds.has(deck.id)}
               isSignedIn={isSignedIn}
+              canEdit={deck.ownerType === "user" || isEditor}
             />
           ))}
         </div>
@@ -197,9 +200,13 @@ function DeckListRow({
         href={`/flashcards/${deck.id}`}
         className="flex min-w-0 flex-1 items-center gap-3 transition-colors duration-base hover:opacity-80"
       >
-        <span className={`flex size-10 shrink-0 items-center justify-center rounded-full ${CARD_COLOR_CHIP[deck.color]}`}>
-          <Icon className="size-4.5" aria-hidden="true" />
-        </span>
+        {deck.iconUrl ? (
+          <img src={deck.iconUrl} alt="" className="size-10 shrink-0 rounded-full object-cover" />
+        ) : (
+          <span className={`flex size-10 shrink-0 items-center justify-center rounded-full ${CARD_COLOR_CHIP[deck.color]}`}>
+            <Icon className="size-4.5" aria-hidden="true" />
+          </span>
+        )}
         <div className="flex min-w-0 flex-1 flex-col gap-0.5">
           <span className="truncate font-ui text-sm font-semibold text-primary">{deck.name}</span>
           <span className="font-ui text-xs text-secondary">
