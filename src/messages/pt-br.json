@@ -360,7 +360,8 @@
     "noDecksInFolder": "Esta pasta ainda não tem baralhos.",
     "myFolders": "Minhas Pastas",
     "favourites": "Favoritos",
-    "noFavourites": "Ainda não há baralhos nos favoritos."
+    "noFavourites": "Ainda não há baralhos nos favoritos.",
+    "allDecksInFolders": "Todos os baralhos estão organizados em pastas."
   },
   "clinicalTools": {
     "pageTitle": "Ferramentas Clínicas",

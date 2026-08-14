@@ -48,15 +48,21 @@ export function FlashcardsBrowser({
   const [systemFolderDrawerOpen, setSystemFolderDrawerOpen] = useState(false);
   const [userFolderDrawerOpen, setUserFolderDrawerOpen] = useState(false);
 
-  const allDecks = useMemo(() => [...presetDecks, ...userDecks], [presetDecks, userDecks]);
+  // A deck already filed into a folder only shows up there, not
+  // duplicated on the main dashboard grid below — the folder tiles
+  // above are the way into it now.
+  const unfiledDecks = useMemo(
+    () => [...presetDecks, ...userDecks].filter((deck) => deck.categoryId === null),
+    [presetDecks, userDecks]
+  );
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
-    if (!q) return allDecks;
-    return allDecks.filter(
+    if (!q) return unfiledDecks;
+    return unfiledDecks.filter(
       (deck) => deck.name.toLowerCase().includes(q) || deck.description.toLowerCase().includes(q)
     );
-  }, [allDecks, query]);
+  }, [unfiledDecks, query]);
 
   return (
     <div className="flex flex-col gap-5">
@@ -168,7 +174,7 @@ export function FlashcardsBrowser({
 
       {filtered.length === 0 ? (
         <p className="rounded-xl border border-dashed border-border p-6 text-center font-ui text-sm text-secondary">
-          {t("noDecksMatch")}
+          {query.trim() ? t("noDecksMatch") : t("allDecksInFolders")}
         </p>
       ) : view === "grid" ? (
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">

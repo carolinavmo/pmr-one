@@ -360,7 +360,8 @@
     "noDecksInFolder": "Esta carpeta todavía no tiene mazos.",
     "myFolders": "Mis Carpetas",
     "favourites": "Favoritos",
-    "noFavourites": "Todavía no hay mazos en favoritos."
+    "noFavourites": "Todavía no hay mazos en favoritos.",
+    "allDecksInFolders": "Todos los mazos están organizados en carpetas."
   },
   "clinicalTools": {
     "pageTitle": "Herramientas Clínicas",
