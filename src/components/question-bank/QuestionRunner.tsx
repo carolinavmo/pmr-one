@@ -166,7 +166,7 @@ export function QuestionRunner({ set, isSignedIn }: { set: QuestionSetDetail; is
                     <X className="size-3.5" aria-hidden="true" />
                   )}
                 </span>
-                <span className="font-ui text-sm font-semibold text-primary">
+                <span className={`font-ui text-sm font-semibold ${reveal.isCorrect ? "text-trust" : "text-card-red"}`}>
                   {reveal.isCorrect ? t("correct") : t("incorrect")}
                 </span>
               </div>
@@ -190,7 +190,9 @@ export function QuestionRunner({ set, isSignedIn }: { set: QuestionSetDetail; is
                           <span className="flex size-5 shrink-0 items-center justify-center rounded-md bg-card-red/15 font-ui text-xs font-semibold text-card-red">
                             {String.fromCharCode(65 + i)}
                           </span>
-                          <span>{rationale}</span>
+                          <span>
+                            <span className="font-medium text-primary">{option.label}</span> — {rationale}
+                          </span>
                         </li>
                       );
                     })}
