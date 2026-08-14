@@ -28,7 +28,7 @@ export default async function FlashcardsPage() {
   ).length;
 
   return (
-    <main className="mx-auto flex w-full max-w-5xl flex-col gap-8 px-6 py-16">
+    <main className="mx-auto flex w-full max-w-6xl flex-col gap-8 px-6 py-16">
       <div className="flex items-center gap-3">
         <span className="flex size-11 shrink-0 items-center justify-center rounded-full bg-accent/10 text-accent">
           <Layers className="size-5" aria-hidden="true" />
