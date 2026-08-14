@@ -1,6 +1,8 @@
 import { pool } from "@/lib/db";
 import type { CardColor } from "@/lib/editorial-blocks";
 import { nextBox, computeDueAt, MASTERY_BOX } from "@/lib/flashcard-scoring";
+import { iconForRegions, categoryForRegions } from "@/lib/disease-icons";
+import type { CardIconName } from "@/components/ui/cardIcons";
 
 // Preset ("system") decks + member-created ("user") decks, sharing one
 // table set — see db/migrations/0041_flashcards.sql for why this is a
@@ -17,6 +19,8 @@ export interface DeckSummary {
   color: CardColor;
   cardCount: number;
   masteredCount: number | null; // null when there's no session to score against
+  icon: CardIconName | undefined; // region-derived from the source disease's illustrations; undefined for user decks (no disease link)
+  topicLabel: string | undefined; // ditto — the same region label used elsewhere (e.g. /conditions cards)
 }
 
 export interface FlashcardCard {
@@ -47,6 +51,7 @@ function mapDeckSummaryRow(r: {
   color: CardColor;
   card_count: string;
   mastered_count: string | null;
+  regions: (string | null)[] | null;
 }): DeckSummary {
   return {
     id: r.id,
@@ -56,6 +61,8 @@ function mapDeckSummaryRow(r: {
     color: r.color,
     cardCount: Number(r.card_count),
     masteredCount: r.mastered_count === null ? null : Number(r.mastered_count),
+    icon: iconForRegions(r.regions ?? []),
+    topicLabel: categoryForRegions(r.regions ?? []),
   };
 }
 
@@ -72,7 +79,14 @@ export async function getDeckSummaries(
 
   const { rows: presetRows } = await pool.query(
     `SELECT d.id, d.owner_type, d.name, d.description, d.color,
-       (SELECT COUNT(*) FROM flashcard f WHERE f.deck_id = d.id) AS card_count
+       (SELECT COUNT(*) FROM flashcard f WHERE f.deck_id = d.id) AS card_count,
+       (
+         SELECT array_agg(DISTINCT a.region)
+         FROM illustration_usage iu
+         JOIN illustration_depicts_anatomy ida ON ida.medical_illustration_id = iu.medical_illustration_id
+         JOIN anatomy_structure a ON a.id = ida.anatomy_structure_id
+         WHERE iu.target_type = 'disease' AND iu.target_id = d.source_disease_id
+       ) AS regions
        ${masteredSelect}
      FROM flashcard_deck d
      WHERE d.owner_type = 'system'
@@ -87,6 +101,7 @@ export async function getDeckSummaries(
   const { rows: userRows } = await pool.query(
     `SELECT d.id, d.owner_type, d.name, d.description, d.color,
        (SELECT COUNT(*) FROM flashcard f WHERE f.deck_id = d.id) AS card_count,
+       NULL::text[] AS regions,
        (
          SELECT COUNT(*) FROM flashcard f
          JOIN flashcard_progress p ON p.flashcard_id = f.id AND p.user_id = $1
@@ -287,4 +302,29 @@ export async function recordReview(
   );
 
   return { box, dueAt };
+}
+
+// Mirrors clinical_calculator_favorite / getFavoritedCalculatorIds
+// exactly (workspace.ts) — a personal star toggle, unrelated to deck
+// ownership, so it works the same for a preset deck or a user's own.
+export async function getFavoritedDeckIds(userId: string): Promise<Set<string>> {
+  const { rows } = await pool.query(
+    `SELECT deck_id FROM flashcard_deck_favorite WHERE user_id = $1`,
+    [userId]
+  );
+  return new Set(rows.map((r) => r.deck_id as string));
+}
+
+export async function toggleDeckFavorite(userId: string, deckId: string): Promise<boolean> {
+  const { rows } = await pool.query(
+    `DELETE FROM flashcard_deck_favorite WHERE user_id = $1 AND deck_id = $2 RETURNING 1`,
+    [userId, deckId]
+  );
+  if (rows.length > 0) return false;
+
+  await pool.query(`INSERT INTO flashcard_deck_favorite (user_id, deck_id) VALUES ($1, $2)`, [
+    userId,
+    deckId,
+  ]);
+  return true;
 }

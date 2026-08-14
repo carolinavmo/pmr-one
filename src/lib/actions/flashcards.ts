@@ -14,6 +14,7 @@ import {
   deleteCard,
   reorderCards,
   recordReview,
+  toggleDeckFavorite,
   type DeckSummary,
   type FlashcardCard,
 } from "@/lib/flashcards";
@@ -95,5 +96,13 @@ export async function reorderCardsAction(deckId: string, orderedIds: string[]): 
 export async function recordReviewAction(flashcardId: string, knew: boolean): Promise<void> {
   const userId = await requireUserId();
   await recordReview(userId, flashcardId, knew);
+  revalidateFlashcardSurfaces();
+}
+
+// Fire-and-forget from the client, same idiom as recordReviewAction —
+// the star already flips optimistically in local state.
+export async function toggleDeckFavoriteAction(deckId: string): Promise<void> {
+  const userId = await requireUserId();
+  await toggleDeckFavorite(userId, deckId);
   revalidateFlashcardSurfaces();
 }
