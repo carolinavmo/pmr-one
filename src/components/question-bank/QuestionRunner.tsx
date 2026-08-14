@@ -186,9 +186,11 @@ export function QuestionRunner({ set, isSignedIn }: { set: QuestionSetDetail; is
                       const rationale = reveal.optionRationales[option.id];
                       if (!rationale || option.id === reveal.correctOptionId) return null;
                       return (
-                        <li key={option.id} className="font-ui text-sm text-secondary">
-                          <span className="font-medium text-primary">{String.fromCharCode(65 + i)}</span> —{" "}
-                          {rationale}
+                        <li key={option.id} className="flex items-start gap-2 font-ui text-sm text-secondary">
+                          <span className="flex size-5 shrink-0 items-center justify-center rounded-md bg-card-red/15 font-ui text-xs font-semibold text-card-red">
+                            {String.fromCharCode(65 + i)}
+                          </span>
+                          <span>{rationale}</span>
                         </li>
                       );
                     })}
