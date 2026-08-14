@@ -2,7 +2,7 @@
 
 import { useMemo, useState, useTransition } from "react";
 import { useTranslations } from "next-intl";
-import { LayoutGrid, List, Layers, Plus, Search, ChevronRight, Star, FolderPlus } from "lucide-react";
+import { LayoutGrid, List, Layers, Plus, Search, ChevronRight, Star, FolderPlus, Folder } from "lucide-react";
 import { Link } from "@/i18n/navigation";
 import type { DeckSummary, FlashcardCategory } from "@/lib/flashcards";
 import { CARD_COLOR_CHIP, CARD_COLOR_SWATCH } from "@/lib/card-colors";
@@ -151,7 +151,7 @@ export function FlashcardsBrowser({
           ) : (
             <div className="flex flex-col divide-y divide-border rounded-xl border border-border bg-surface-raised">
               {systemCategories.map((cat) => (
-                <CategoryListRow key={cat.id} id={cat.id} label={cat.name} icon={cat.icon} color={cat.color} count={cat.deckCount} />
+                <CategoryListRow key={cat.id} id={cat.id} label={cat.name} color={cat.color} count={cat.deckCount} />
               ))}
             </div>
           )}
@@ -182,7 +182,7 @@ export function FlashcardsBrowser({
             <div className="flex flex-col divide-y divide-border rounded-xl border border-border bg-surface-raised">
               <FavouritesListRow count={favoritedCount} />
               {userCategories.map((cat) => (
-                <CategoryListRow key={cat.id} id={cat.id} label={cat.name} icon={cat.icon} color={cat.color} count={cat.deckCount} />
+                <CategoryListRow key={cat.id} id={cat.id} label={cat.name} color={cat.color} count={cat.deckCount} />
               ))}
             </div>
           )}
@@ -314,26 +314,23 @@ function CategoryCard({
 function CategoryListRow({
   id,
   label,
-  icon,
   color,
   count,
 }: {
   id: string;
   label: string;
-  icon: CardIconName | undefined;
   color: CardColor;
   count: number;
 }) {
   const t = useTranslations("flashcards");
-  const Icon = icon ? cardIcons[icon] : Layers;
 
   return (
     <Link
       href={`/flashcards/category/${id}`}
       className="flex items-center gap-3 p-3.5 transition-colors duration-base hover:opacity-80"
     >
-      <span className={`flex size-10 shrink-0 items-center justify-center rounded-full ${CARD_COLOR_CHIP[color]}`}>
-        <Icon className="size-4.5" aria-hidden="true" />
+      <span className={`flex size-10 shrink-0 items-center justify-center rounded-lg ${CARD_COLOR_CHIP[color]}`}>
+        <Folder className="size-4.5" aria-hidden="true" />
       </span>
       <div className="flex min-w-0 flex-1 flex-col gap-0.5">
         <span className="truncate font-ui text-sm font-semibold text-primary">{label}</span>
