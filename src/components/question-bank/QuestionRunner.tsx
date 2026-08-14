@@ -126,7 +126,7 @@ export function QuestionRunner({ set, isSignedIn }: { set: QuestionSetDetail; is
         </div>
 
         <div className="flex flex-col gap-4 rounded-2xl border border-border bg-surface-card p-5 shadow-sm sm:p-6">
-          <p className="font-heading text-lg font-semibold text-primary sm:text-xl">{current.prompt}</p>
+          <p className="font-ui text-lg font-semibold text-primary sm:text-xl">{current.prompt}</p>
 
           <div className="flex flex-col gap-2">
             {current.options.map((option, i) => {

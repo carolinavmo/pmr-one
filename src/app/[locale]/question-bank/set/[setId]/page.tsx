@@ -38,7 +38,7 @@ export default async function QuestionBankSetPage({ params }: SetPageProps) {
       </Link>
 
       <div>
-        <h1 className="font-reading text-2xl text-primary">{set.name}</h1>
+        <h1 className="font-heading text-2xl text-primary">{set.name}</h1>
         {set.description && <p className="mt-1 font-ui text-sm text-secondary">{set.description}</p>}
       </div>
 
