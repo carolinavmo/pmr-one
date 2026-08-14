@@ -80,9 +80,10 @@ export function QuestionRunner({ set, isSignedIn }: { set: QuestionSetDetail; is
 
   const attemptedCount = Object.keys(reveals).length;
   const correctCount = Object.values(reveals).filter((r) => r.isCorrect).length;
+  const isLastQuestion = index === total - 1;
 
   return (
-    <div className="flex flex-col gap-6 lg:flex-row">
+    <div className={`flex flex-col gap-6 ${isLastQuestion ? "lg:flex-row" : ""}`}>
       <div className="flex min-w-0 flex-1 flex-col gap-5">
         <div className="flex items-center justify-between">
           <span className="font-ui text-xs text-secondary tabular-nums">
@@ -222,48 +223,50 @@ export function QuestionRunner({ set, isSignedIn }: { set: QuestionSetDetail; is
         </button>
       </div>
 
-      <div className="flex w-full flex-col gap-4 lg:w-72 lg:shrink-0">
-        <PerformanceDonut correct={correctCount} attempted={attemptedCount} total={total} />
+      {isLastQuestion && (
+        <div className="flex w-full flex-col gap-4 lg:w-72 lg:shrink-0">
+          <PerformanceDonut correct={correctCount} attempted={attemptedCount} total={total} />
 
-        <div className="flex flex-col gap-2.5 rounded-xl border border-border bg-surface-raised p-4">
-          <h2 className="font-ui text-sm font-medium text-primary">{t("questionDetails")}</h2>
-          {current.topicLabel && (
+          <div className="flex flex-col gap-2.5 rounded-xl border border-border bg-surface-raised p-4">
+            <h2 className="font-ui text-sm font-medium text-primary">{t("questionDetails")}</h2>
+            {current.topicLabel && (
+              <div className="flex flex-col gap-0.5">
+                <span className="font-ui text-xs text-secondary">{t("topicArea")}</span>
+                <span className="font-ui text-sm text-primary">{current.topicLabel}</span>
+              </div>
+            )}
             <div className="flex flex-col gap-0.5">
-              <span className="font-ui text-xs text-secondary">{t("topicArea")}</span>
-              <span className="font-ui text-sm text-primary">{current.topicLabel}</span>
+              <span className="font-ui text-xs text-secondary">{t("difficultyLabel")}</span>
+              <span className="font-ui text-sm text-primary">{t(DIFFICULTY_LABEL_KEY[set.difficulty])}</span>
             </div>
-          )}
-          <div className="flex flex-col gap-0.5">
-            <span className="font-ui text-xs text-secondary">{t("difficultyLabel")}</span>
-            <span className="font-ui text-sm text-primary">{t(DIFFICULTY_LABEL_KEY[set.difficulty])}</span>
-          </div>
-          <div className="flex flex-col gap-0.5">
-            <span className="font-ui text-xs text-secondary">{t("questionType")}</span>
-            <span className="font-ui text-sm text-primary">{t("singleBestAnswer")}</span>
-          </div>
-          {current.yourAttempt && (
             <div className="flex flex-col gap-0.5">
-              <span className="font-ui text-xs text-secondary">{t("lastUsed")}</span>
-              <span className="font-ui text-sm text-primary">
-                {new Date(current.yourAttempt.answeredAt).toLocaleDateString()}
-              </span>
+              <span className="font-ui text-xs text-secondary">{t("questionType")}</span>
+              <span className="font-ui text-sm text-primary">{t("singleBestAnswer")}</span>
+            </div>
+            {current.yourAttempt && (
+              <div className="flex flex-col gap-0.5">
+                <span className="font-ui text-xs text-secondary">{t("lastUsed")}</span>
+                <span className="font-ui text-sm text-primary">
+                  {new Date(current.yourAttempt.answeredAt).toLocaleDateString()}
+                </span>
+              </div>
+            )}
+          </div>
+
+          {current.tags.length > 0 && (
+            <div className="flex flex-wrap gap-1.5">
+              {current.tags.map((tag) => (
+                <span
+                  key={tag}
+                  className="rounded-full bg-border/40 px-2.5 py-1 font-ui text-xs text-secondary"
+                >
+                  {tag}
+                </span>
+              ))}
             </div>
           )}
         </div>
-
-        {current.tags.length > 0 && (
-          <div className="flex flex-wrap gap-1.5">
-            {current.tags.map((tag) => (
-              <span
-                key={tag}
-                className="rounded-full bg-border/40 px-2.5 py-1 font-ui text-xs text-secondary"
-              >
-                {tag}
-              </span>
-            ))}
-          </div>
-        )}
-      </div>
+      )}
     </div>
   );
 }
