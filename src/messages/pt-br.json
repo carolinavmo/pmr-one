@@ -450,7 +450,13 @@
     "saving": "Salvando…",
     "columnQuestionSet": "Conjunto de perguntas",
     "columnQuestions": "Perguntas",
-    "never": "Nunca"
+    "never": "Nunca",
+    "viewResults": "Ver resultados",
+    "deckCompleteTitle": "Conjunto concluído!",
+    "deckCompleteScore": "Você acertou {correct} de {total} ({percent}%).",
+    "startAgain": "Começar de novo",
+    "goToFolder": "Voltar para a pasta",
+    "goToQuestionBank": "Voltar ao Banco de Questões"
   },
   "clinicalTools": {
     "pageTitle": "Ferramentas Clínicas",

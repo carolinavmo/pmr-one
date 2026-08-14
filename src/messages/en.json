@@ -450,7 +450,13 @@
     "saving": "Saving…",
     "columnQuestionSet": "Question Set",
     "columnQuestions": "Questions",
-    "never": "Never"
+    "never": "Never",
+    "viewResults": "See Results",
+    "deckCompleteTitle": "Set complete!",
+    "deckCompleteScore": "You got {correct} out of {total} correct ({percent}%).",
+    "startAgain": "Start Again",
+    "goToFolder": "Back to Folder",
+    "goToQuestionBank": "Back to Question Bank"
   },
   "clinicalTools": {
     "pageTitle": "Clinical Tools",

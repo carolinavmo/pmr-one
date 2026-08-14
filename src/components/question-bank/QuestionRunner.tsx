@@ -50,9 +50,25 @@ export function QuestionRunner({ set, isSignedIn }: { set: QuestionSetDetail; is
     return initial;
   });
   const [isPending, startTransition] = useTransition();
+  const [showResults, setShowResults] = useState(false);
 
   const total = set.questions.length;
   const current = set.questions[index];
+
+  if (showResults) {
+    return (
+      <DeckResults
+        set={set}
+        correctCount={Object.values(reveals).filter((r) => r.isCorrect).length}
+        onStartAgain={() => {
+          setReveals({});
+          setSelections({});
+          setIndex(0);
+          setShowResults(false);
+        }}
+      />
+    );
+  }
 
   if (!current) {
     return (
@@ -216,10 +232,16 @@ export function QuestionRunner({ set, isSignedIn }: { set: QuestionSetDetail; is
 
         <button
           type="button"
-          onClick={() => goTo(index + 1)}
+          onClick={() => {
+            if (isLastQuestion && attemptedCount === total) {
+              setShowResults(true);
+            } else {
+              goTo(index + 1);
+            }
+          }}
           className="self-end rounded-full bg-accent px-4 py-2 font-ui text-sm font-medium text-white hover:bg-accent-hover"
         >
-          {t("nextQuestion")}
+          {isLastQuestion && attemptedCount === total ? t("viewResults") : t("nextQuestion")}
         </button>
       </div>
 
@@ -267,6 +289,54 @@ export function QuestionRunner({ set, isSignedIn }: { set: QuestionSetDetail; is
           )}
         </div>
       )}
+    </div>
+  );
+}
+
+// Shown once every question in the set has been answered — a dead
+// end for the per-question view rather than silently wrapping back to
+// Q1 (the modulo behavior goTo still has for manual prev/next nav).
+function DeckResults({
+  set,
+  correctCount,
+  onStartAgain,
+}: {
+  set: QuestionSetDetail;
+  correctCount: number;
+  onStartAgain: () => void;
+}) {
+  const t = useTranslations("questionBank");
+  const total = set.questions.length;
+  const percent = total === 0 ? 0 : Math.round((correctCount / total) * 100);
+  const backHref = set.categoryId ? `/question-bank/category/${set.categoryId}` : "/question-bank";
+  const backLabel = set.categoryId ? t("goToFolder") : t("goToQuestionBank");
+
+  return (
+    <div className="mx-auto flex max-w-md flex-col items-center gap-5 rounded-2xl border border-border bg-surface-card p-8 text-center shadow-sm">
+      <PerformanceDonut correct={correctCount} attempted={total} total={total} />
+
+      <div className="flex flex-col gap-1">
+        <h2 className="font-heading text-xl font-semibold text-primary">{t("deckCompleteTitle")}</h2>
+        <p className="font-ui text-sm text-secondary">
+          {t("deckCompleteScore", { correct: correctCount, total, percent })}
+        </p>
+      </div>
+
+      <div className="flex flex-col gap-2 sm:flex-row">
+        <button
+          type="button"
+          onClick={onStartAgain}
+          className="rounded-full bg-accent px-4 py-2 font-ui text-sm font-medium text-white transition-colors duration-base hover:bg-accent-hover"
+        >
+          {t("startAgain")}
+        </button>
+        <Link
+          href={backHref}
+          className="rounded-full border border-border px-4 py-2 font-ui text-sm font-medium text-primary transition-colors duration-base hover:bg-border/40"
+        >
+          {backLabel}
+        </Link>
+      </div>
     </div>
   );
 }

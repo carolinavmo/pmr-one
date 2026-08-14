@@ -450,7 +450,13 @@
     "saving": "Guardando…",
     "columnQuestionSet": "Conjunto de preguntas",
     "columnQuestions": "Preguntas",
-    "never": "Nunca"
+    "never": "Nunca",
+    "viewResults": "Ver resultados",
+    "deckCompleteTitle": "¡Conjunto completado!",
+    "deckCompleteScore": "Acertaste {correct} de {total} ({percent}%).",
+    "startAgain": "Empezar de nuevo",
+    "goToFolder": "Volver a la carpeta",
+    "goToQuestionBank": "Volver al banco de preguntas"
   },
   "clinicalTools": {
     "pageTitle": "Herramientas Clínicas",
