@@ -9,6 +9,7 @@ import {
   Calendar,
   ChevronRight,
   Layers,
+  ListChecks,
   NotebookPen,
   PanelLeftClose,
   PanelLeftOpen,
@@ -154,6 +155,15 @@ export function SidebarFrame({ tree, userName, userEmail, userRole }: SidebarFra
             <Layers className="size-3.5" aria-hidden="true" />
           </span>
           <span className="font-ui text-xs font-medium text-primary">{t("flashcards")}</span>
+        </Link>
+        <Link
+          href="/question-bank"
+          className="flex items-center gap-2 rounded-lg px-2 py-1.5 transition-colors duration-base hover:bg-border/40"
+        >
+          <span className="flex size-7 shrink-0 items-center justify-center rounded-full bg-accent/10 text-accent">
+            <ListChecks className="size-3.5" aria-hidden="true" />
+          </span>
+          <span className="font-ui text-xs font-medium text-primary">{t("questionBank")}</span>
         </Link>
       </div>
 

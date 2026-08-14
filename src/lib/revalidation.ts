@@ -41,6 +41,16 @@ export function revalidateFlashcardSurfaces() {
   revalidatePath("/[locale]/flashcards/category/[categoryId]", "page");
 }
 
+// Called after any write to a question-bank folder, set, or question —
+// covers the dashboard, folder detail, and question-set routes since
+// any of the three can show stale names/counts/scores after a mutation
+// on another (e.g. renaming a folder shown on the dashboard grid).
+export function revalidateQuestionBankSurfaces() {
+  revalidatePath("/[locale]/question-bank", "page");
+  revalidatePath("/[locale]/question-bank/category/[categoryId]", "page");
+  revalidatePath("/[locale]/question-bank/set/[setId]", "page");
+}
+
 export function revalidateShellSurfaces() {
   revalidatePath("/[locale]", "layout");
   revalidatePath("/[locale]", "page");
