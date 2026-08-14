@@ -2,60 +2,56 @@
 
 import { useMemo, useState, useTransition } from "react";
 import { useTranslations } from "next-intl";
-import { LayoutGrid, List, Layers, Plus, Search, ChevronRight, Star } from "lucide-react";
+import { LayoutGrid, List, Layers, Plus, Search, ChevronRight, Star, FolderPlus } from "lucide-react";
 import { Link } from "@/i18n/navigation";
-import type { DeckSummary } from "@/lib/flashcards";
-import { CARD_COLOR_CHIP } from "@/lib/card-colors";
-import { cardIcons } from "@/components/ui/cardIcons";
+import type { DeckSummary, FlashcardCategory } from "@/lib/flashcards";
+import { CARD_COLOR_CHIP, CARD_COLOR_SWATCH } from "@/lib/card-colors";
+import { cardIcons, type CardIconName } from "@/components/ui/cardIcons";
+import type { CardColor } from "@/lib/editorial-blocks";
 import { toggleDeckFavoriteAction } from "@/lib/actions/flashcards";
 import { DeckCard } from "./DeckCard";
 import { NewDeckDrawer } from "./NewDeckDrawer";
+import { NewCategoryDrawer } from "./NewCategoryDrawer";
 
 type ViewMode = "grid" | "list";
 
 // Server-fetched preset + user decks handed down as props (same split
-// ClinicalToolsBrowser.tsx already uses) — search/topic-filter/view
-// state is small and client-only, no separate search API route.
-// Preset and user decks are merged into one browsable list rather than
-// two separately-headed sections, since the topic filter and search
-// need to run across both.
+// ClinicalToolsBrowser.tsx already uses) — search/view state is small
+// and client-only, no separate search API route. Preset and user decks
+// are merged into one browsable list, searched together; folders
+// (categories) are a separate server-fetched entity now (db/migrations
+// /0044_flashcard_categories.sql) rather than derived from presetDecks,
+// so an editor-created empty folder still shows up here.
 export function FlashcardsBrowser({
   presetDecks,
   userDecks,
+  categories,
   favoritedDeckIds,
   isSignedIn,
   isEditor,
 }: {
   presetDecks: DeckSummary[];
   userDecks: DeckSummary[];
+  categories: FlashcardCategory[];
   favoritedDeckIds: Set<string>;
   isSignedIn: boolean;
   isEditor: boolean;
 }) {
   const t = useTranslations("flashcards");
   const [query, setQuery] = useState("");
-  const [topicFilter, setTopicFilter] = useState("all");
   const [view, setView] = useState<ViewMode>("grid");
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [folderDrawerOpen, setFolderDrawerOpen] = useState(false);
 
   const allDecks = useMemo(() => [...presetDecks, ...userDecks], [presetDecks, userDecks]);
 
-  // Only preset decks carry a region-derived topic label today (user
-  // decks have no source disease to derive one from) — the filter
-  // options are exactly the labels actually present, never invented.
-  const topics = useMemo(() => {
-    const labels = new Set(presetDecks.map((d) => d.topicLabel).filter((v): v is string => Boolean(v)));
-    return [...labels].sort();
-  }, [presetDecks]);
-
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
-    return allDecks.filter((deck) => {
-      if (topicFilter !== "all" && deck.topicLabel !== topicFilter) return false;
-      if (!q) return true;
-      return deck.name.toLowerCase().includes(q) || deck.description.toLowerCase().includes(q);
-    });
-  }, [allDecks, query, topicFilter]);
+    if (!q) return allDecks;
+    return allDecks.filter(
+      (deck) => deck.name.toLowerCase().includes(q) || deck.description.toLowerCase().includes(q)
+    );
+  }, [allDecks, query]);
 
   return (
     <div className="flex flex-col gap-5">
@@ -75,21 +71,6 @@ export function FlashcardsBrowser({
         </div>
 
         <div className="flex items-center gap-2">
-          {topics.length > 0 && (
-            <select
-              value={topicFilter}
-              onChange={(e) => setTopicFilter(e.target.value)}
-              className="rounded-full border border-border bg-surface-raised px-3 py-2 font-ui text-sm text-primary outline-none focus:border-accent"
-            >
-              <option value="all">{t("allTopics")}</option>
-              {topics.map((topic) => (
-                <option key={topic} value={topic}>
-                  {topic}
-                </option>
-              ))}
-            </select>
-          )}
-
           <div className="flex items-center rounded-full border border-border p-0.5">
             <button
               type="button"
@@ -135,6 +116,29 @@ export function FlashcardsBrowser({
         </div>
       </div>
 
+      {(categories.length > 0 || isEditor) && (
+        <div className="flex flex-col gap-3">
+          <div className="flex items-center justify-between">
+            <span className="font-ui text-xs font-medium text-secondary">{t("folders")}</span>
+            {isEditor && (
+              <button
+                type="button"
+                onClick={() => setFolderDrawerOpen(true)}
+                className="flex items-center gap-1.5 font-ui text-xs font-medium text-accent hover:text-accent-hover"
+              >
+                <FolderPlus className="size-3.5" aria-hidden="true" />
+                {t("newFolder")}
+              </button>
+            )}
+          </div>
+          <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+            {categories.map((cat) => (
+              <CategoryCard key={cat.id} id={cat.id} label={cat.name} icon={cat.icon} color={cat.color} count={cat.deckCount} />
+            ))}
+          </div>
+        </div>
+      )}
+
       {filtered.length === 0 ? (
         <p className="rounded-xl border border-dashed border-border p-6 text-center font-ui text-sm text-secondary">
           {t("noDecksMatch")}
@@ -165,7 +169,56 @@ export function FlashcardsBrowser({
       )}
 
       <NewDeckDrawer open={drawerOpen} onClose={() => setDrawerOpen(false)} />
+      <NewCategoryDrawer open={folderDrawerOpen} onClose={() => setFolderDrawerOpen(false)} />
     </div>
+  );
+}
+
+// A big colored "folder" tile (founder reference: a bold rounded card
+// with a small tab peeking out above it) — the tab is a second,
+// slightly smaller same-color rectangle stacked behind the main face
+// via z-index, not an actual clipped folder silhouette, which keeps
+// this a plain two-div shape instead of hand-drawn SVG path data.
+// Clicking navigates to the folder's own page (src/app/[locale]
+// /flashcards/category/[categoryId]/page.tsx) rather than filtering
+// in place.
+function CategoryCard({
+  id,
+  label,
+  icon,
+  color,
+  count,
+}: {
+  id: string;
+  label: string;
+  icon: CardIconName | undefined;
+  color: CardColor;
+  count: number;
+}) {
+  const t = useTranslations("flashcards");
+  const Icon = icon ? cardIcons[icon] : Layers;
+
+  return (
+    <Link
+      href={`/flashcards/category/${id}`}
+      className="group relative flex flex-col pt-2 text-left transition-transform duration-base hover:-translate-y-0.5"
+    >
+      <span
+        aria-hidden="true"
+        className={`absolute top-0 left-4 h-4 w-14 rounded-t-lg ${CARD_COLOR_SWATCH[color]} opacity-90`}
+      />
+      <span
+        className={`relative flex h-28 flex-col justify-between rounded-2xl p-3.5 shadow-sm transition-shadow duration-base group-hover:shadow-md sm:h-32 ${CARD_COLOR_SWATCH[color]}`}
+      >
+        <span className="flex size-8 items-center justify-center rounded-full bg-white/20 text-white">
+          <Icon className="size-4" aria-hidden="true" />
+        </span>
+        <span className="flex flex-col gap-0.5">
+          <span className="line-clamp-1 font-ui text-sm font-semibold text-white">{label}</span>
+          <span className="font-ui text-xs text-white/75">{t("deckCount", { count })}</span>
+        </span>
+      </span>
+    </Link>
   );
 }
 

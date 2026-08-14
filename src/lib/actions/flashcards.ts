@@ -19,8 +19,14 @@ import {
   reorderCards,
   recordReview,
   toggleDeckFavorite,
+  createCategory,
+  renameCategory,
+  updateCategoryColor,
+  deleteCategory,
+  setDeckCategory,
   type DeckSummary,
   type FlashcardCard,
+  type FlashcardCategory,
 } from "@/lib/flashcards";
 
 // Every signed-in member can create/edit their own decks — no role
@@ -36,6 +42,14 @@ async function requireUserId(): Promise<{ userId: string; isEditor: boolean }> {
   if (!session) throw new Error("Unauthorized");
   const isEditor = session.user.role === "editor" || session.user.role === "admin";
   return { userId: session.user.id, isEditor };
+}
+
+// Folders have no owner to check against (unlike a deck), so there's
+// no SQL-level widening needed — the role check here is the entire
+// gate.
+async function requireEditor(): Promise<void> {
+  const { isEditor } = await requireUserId();
+  if (!isEditor) throw new Error("Unauthorized");
 }
 
 const MAX_UPLOAD_BYTES = 8 * 1024 * 1024;
@@ -153,5 +167,36 @@ export async function recordReviewAction(flashcardId: string, knew: boolean): Pr
 export async function toggleDeckFavoriteAction(deckId: string): Promise<void> {
   const { userId } = await requireUserId();
   await toggleDeckFavorite(userId, deckId);
+  revalidateFlashcardSurfaces();
+}
+
+export async function createCategoryAction(name: string, color: CardColor): Promise<FlashcardCategory> {
+  await requireEditor();
+  const category = await createCategory(name.trim() || "Untitled folder", color);
+  revalidateFlashcardSurfaces();
+  return category;
+}
+
+export async function renameCategoryAction(categoryId: string, name: string): Promise<void> {
+  await requireEditor();
+  await renameCategory(categoryId, name.trim() || "Untitled folder");
+  revalidateFlashcardSurfaces();
+}
+
+export async function updateCategoryColorAction(categoryId: string, color: CardColor): Promise<void> {
+  await requireEditor();
+  await updateCategoryColor(categoryId, color);
+  revalidateFlashcardSurfaces();
+}
+
+export async function deleteCategoryAction(categoryId: string): Promise<void> {
+  await requireEditor();
+  await deleteCategory(categoryId);
+  revalidateFlashcardSurfaces();
+}
+
+export async function setDeckCategoryAction(deckId: string, categoryId: string | null): Promise<void> {
+  await requireEditor();
+  await setDeckCategory(deckId, categoryId);
   revalidateFlashcardSurfaces();
 }

@@ -38,6 +38,7 @@ export function revalidateAtlasSurfaces() {
 export function revalidateFlashcardSurfaces() {
   revalidatePath("/[locale]/flashcards", "page");
   revalidatePath("/[locale]/flashcards/[deckId]", "page");
+  revalidatePath("/[locale]/flashcards/category/[categoryId]", "page");
 }
 
 export function revalidateShellSurfaces() {

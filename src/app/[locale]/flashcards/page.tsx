@@ -1,7 +1,7 @@
 import { getTranslations } from "next-intl/server";
 import { Layers, BookOpen, Repeat, CheckCircle2 } from "lucide-react";
 import { auth } from "@/auth";
-import { getDeckSummaries, getFavoritedDeckIds } from "@/lib/flashcards";
+import { getDeckSummaries, getFavoritedDeckIds, getCategories } from "@/lib/flashcards";
 import { FlashcardsBrowser } from "@/components/flashcards/FlashcardsBrowser";
 
 // Public browse (Clinical-Tools idiom, not Study-Planner's hard
@@ -12,6 +12,7 @@ export default async function FlashcardsPage() {
   const session = await auth();
   const { presetDecks, userDecks } = await getDeckSummaries(session?.user.id ?? null);
   const favoritedDeckIds = session ? await getFavoritedDeckIds(session.user.id) : new Set<string>();
+  const categories = await getCategories();
   const isEditor = session?.user.role === "editor" || session?.user.role === "admin";
   const t = await getTranslations("flashcards");
 
@@ -53,6 +54,7 @@ export default async function FlashcardsPage() {
       <FlashcardsBrowser
         presetDecks={presetDecks}
         userDecks={userDecks}
+        categories={categories}
         favoritedDeckIds={favoritedDeckIds}
         isSignedIn={Boolean(session)}
         isEditor={isEditor}
