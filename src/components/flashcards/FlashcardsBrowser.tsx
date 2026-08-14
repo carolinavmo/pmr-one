@@ -142,11 +142,19 @@ export function FlashcardsBrowser({
               </button>
             )}
           </div>
-          <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
-            {systemCategories.map((cat) => (
-              <CategoryCard key={cat.id} id={cat.id} label={cat.name} icon={cat.icon} color={cat.color} count={cat.deckCount} />
-            ))}
-          </div>
+          {view === "grid" ? (
+            <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+              {systemCategories.map((cat) => (
+                <CategoryCard key={cat.id} id={cat.id} label={cat.name} icon={cat.icon} color={cat.color} count={cat.deckCount} />
+              ))}
+            </div>
+          ) : (
+            <div className="flex flex-col divide-y divide-border rounded-xl border border-border bg-surface-raised">
+              {systemCategories.map((cat) => (
+                <CategoryListRow key={cat.id} id={cat.id} label={cat.name} icon={cat.icon} color={cat.color} count={cat.deckCount} />
+              ))}
+            </div>
+          )}
         </div>
       )}
 
@@ -163,12 +171,21 @@ export function FlashcardsBrowser({
               {t("newFolder")}
             </button>
           </div>
-          <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
-            <FavouritesFolderCard count={favoritedCount} />
-            {userCategories.map((cat) => (
-              <CategoryCard key={cat.id} id={cat.id} label={cat.name} icon={cat.icon} color={cat.color} count={cat.deckCount} />
-            ))}
-          </div>
+          {view === "grid" ? (
+            <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+              <FavouritesFolderCard count={favoritedCount} />
+              {userCategories.map((cat) => (
+                <CategoryCard key={cat.id} id={cat.id} label={cat.name} icon={cat.icon} color={cat.color} count={cat.deckCount} />
+              ))}
+            </div>
+          ) : (
+            <div className="flex flex-col divide-y divide-border rounded-xl border border-border bg-surface-raised">
+              <FavouritesListRow count={favoritedCount} />
+              {userCategories.map((cat) => (
+                <CategoryListRow key={cat.id} id={cat.id} label={cat.name} icon={cat.icon} color={cat.color} count={cat.deckCount} />
+              ))}
+            </div>
+          )}
         </div>
       )}
 
@@ -287,6 +304,63 @@ function CategoryCard({
           <span className="font-ui text-xs text-white/75">{t("deckCount", { count })}</span>
         </span>
       </span>
+    </Link>
+  );
+}
+
+// List-view counterpart to CategoryCard — same folder tiles, same
+// navigation target, just the compact row treatment DeckListRow
+// already established for the deck grid's own list view.
+function CategoryListRow({
+  id,
+  label,
+  icon,
+  color,
+  count,
+}: {
+  id: string;
+  label: string;
+  icon: CardIconName | undefined;
+  color: CardColor;
+  count: number;
+}) {
+  const t = useTranslations("flashcards");
+  const Icon = icon ? cardIcons[icon] : Layers;
+
+  return (
+    <Link
+      href={`/flashcards/category/${id}`}
+      className="flex items-center gap-3 p-3.5 transition-colors duration-base hover:opacity-80"
+    >
+      <span className={`flex size-10 shrink-0 items-center justify-center rounded-full ${CARD_COLOR_CHIP[color]}`}>
+        <Icon className="size-4.5" aria-hidden="true" />
+      </span>
+      <div className="flex min-w-0 flex-1 flex-col gap-0.5">
+        <span className="truncate font-ui text-sm font-semibold text-primary">{label}</span>
+        <span className="font-ui text-xs text-secondary">{t("deckCount", { count })}</span>
+      </div>
+      <ChevronRight className="size-4 shrink-0 text-secondary" aria-hidden="true" />
+    </Link>
+  );
+}
+
+// List-view counterpart to FavouritesFolderCard.
+function FavouritesListRow({ count }: { count: number }) {
+  const t = useTranslations("flashcards");
+
+  return (
+    <Link
+      href="/flashcards/favourites"
+      className="flex items-center gap-3 p-3.5 transition-colors duration-base hover:opacity-80"
+    >
+      <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-card-yellow/15 text-card-yellow">
+        <Star className="size-4.5" aria-hidden="true" />
+      </span>
+      <div className="flex min-w-0 flex-1 flex-col gap-0.5">
+        <span className="truncate font-ui text-sm font-semibold text-primary">{t("favourites")}</span>
+        <span className="font-ui text-xs text-secondary">{t("deckCount", { count })}</span>
+      </div>
+      <ChevronRight className="size-4 shrink-0 text-secondary" aria-hidden="true" />
     </Link>
   );
 }
