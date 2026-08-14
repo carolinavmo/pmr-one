@@ -253,7 +253,7 @@ function FavouritesFolderCard({ count }: { count: number }) {
           <Star className="size-4" aria-hidden="true" />
         </span>
         <span className="flex flex-col gap-0.5">
-          <span className="line-clamp-1 font-ui text-base font-semibold text-white">{t("favourites")}</span>
+          <span className="line-clamp-1 font-ui text-lg font-semibold text-white">{t("favourites")}</span>
           <span className="font-ui text-xs text-white/75">{t("deckCount", { count })}</span>
         </span>
       </span>
@@ -295,7 +295,7 @@ function CategoryCard({
         className={`relative flex h-28 flex-col justify-end rounded-2xl p-3.5 shadow-sm transition-shadow duration-base group-hover:shadow-md sm:h-32 ${CARD_COLOR_SWATCH[color]}`}
       >
         <span className="flex flex-col gap-0.5">
-          <span className="line-clamp-1 font-ui text-base font-semibold text-white">{label}</span>
+          <span className="line-clamp-1 font-ui text-lg font-semibold text-white">{label}</span>
           <span className="font-ui text-xs text-white/75">{t("deckCount", { count })}</span>
         </span>
       </span>
