@@ -1,12 +1,13 @@
 // Preset Question Bank content — 3 folders (same names/colors already
 // established by db/seed/flashcards/seed-categories.mjs, since it's
-// the same underlying clinical taxonomy), one question set per folder,
-// 3 real MCQs per set. Every question is written from the same real
-// clinical facts already verified in db/seed/flashcards/seed-preset-decks.mjs
-// (itself copied from the self_check blocks on the real disease pages)
-// — reformatted as multiple-choice with genuine clinical distractors,
-// not invented trivia. Small and honest, same precedent as the preset
-// flashcard decks: 3 sets, 3 questions each, not a fabricated bank size.
+// the same underlying clinical taxonomy). Most sets are 3 real MCQs
+// written from the same real clinical facts already verified in
+// db/seed/flashcards/seed-preset-decks.mjs (itself copied from the
+// self_check blocks on the real disease pages) — reformatted as
+// multiple-choice with genuine clinical distractors, not invented
+// trivia. The Plantar Fasciopathy set is a larger, user-supplied
+// 10-question set with 5 options each, kept as-authored rather than
+// trimmed to match the others' size.
 //
 // Usage: node db/seed/question-bank/seed-question-bank.mjs
 import { Pool } from "pg";
@@ -70,6 +71,159 @@ const SETS = [
           { label: "It carries a well-recognized risk of tendon rupture", isCorrect: true, rationale: "Correct — this real risk is why eccentric loading is preferred as first-line management instead." },
           { label: "It is contraindicated in all lower-limb tendons", isCorrect: false, rationale: "The concern is specific to the Achilles, not a blanket contraindication across all lower-limb tendons." },
           { label: "It significantly delays diagnosis", isCorrect: false, rationale: "The concern is a structural rupture risk, not a diagnostic delay." },
+        ],
+      },
+    ],
+  },
+  {
+    categoryName: "Foot & Ankle",
+    name: "Plantar Fasciopathy — Key Concepts",
+    description: "Multiple-choice questions on plantar fasciopathy.",
+    color: "accent",
+    difficulty: "medium",
+    questions: [
+      {
+        prompt:
+          "A 46-year-old recreational runner reports plantar heel pain that is most severe during the first few steps after getting out of bed. The pain initially improves with walking but returns after prolonged standing. What is the most likely diagnosis?",
+        explanation:
+          "Plantar fasciopathy classically presents with plantar-medial heel pain and pronounced first-step pain after waking or after prolonged inactivity. Symptoms often ease temporarily as the tissue warms up but return after sustained standing, walking or running.",
+        topicLabel: "Plantar Fasciopathy",
+        tags: ["Plantar Fasciopathy", "Foot & Ankle", "Diagnosis"],
+        options: [
+          { label: "Calcaneal stress fracture", isCorrect: false, rationale: "Usually produces progressively worsening pain with weight-bearing. In more advanced cases, pain may occur at rest. A calcaneal squeeze test is often positive, whereas first-step pain is less characteristic." },
+          { label: "Plantar fasciopathy", isCorrect: true, rationale: "Correct — plantar fasciopathy causes plantar-medial heel pain with pronounced first-step pain that eases with movement but returns after prolonged standing." },
+          { label: "Tarsal tunnel syndrome", isCorrect: false, rationale: "More likely to cause burning, tingling, numbness or radiating pain along the plantar foot. Tinel's sign may be present over the posterior tibial nerve." },
+          { label: "S1 radiculopathy", isCorrect: false, rationale: "May cause radiating leg pain, sensory disturbance, plantar-flexion weakness or a reduced Achilles reflex. Isolated focal plantar-medial heel pain would be unusual." },
+          { label: "Heel-fat-pad syndrome", isCorrect: false, rationale: "Typically causes deep, bruise-like pain beneath the centre of the heel, particularly when walking barefoot or on hard surfaces." },
+        ],
+      },
+      {
+        prompt: "Where is tenderness most commonly found in plantar fasciopathy?",
+        explanation:
+          "The plantar fascia originates proximally from the plantar aspect of the calcaneus. Plantar fasciopathy most commonly affects its proximal attachment near the medial calcaneal tubercle, where focal tenderness is usually found.",
+        topicLabel: "Plantar Fasciopathy",
+        tags: ["Plantar Fasciopathy", "Physical Exam", "Anatomy"],
+        options: [
+          { label: "Posterior calcaneal tuberosity", isCorrect: false, rationale: "Pain here is more consistent with insertional Achilles tendinopathy, retrocalcaneal bursitis or Haglund-related pathology." },
+          { label: "Central heel fat pad", isCorrect: false, rationale: "Central plantar heel tenderness suggests heel-fat-pad irritation or atrophy rather than plantar fasciopathy." },
+          { label: "Medial calcaneal tubercle", isCorrect: true, rationale: "Correct — the plantar fascia originates near the medial calcaneal tubercle, where focal tenderness is usually found in plantar fasciopathy." },
+          { label: "Navicular tuberosity", isCorrect: false, rationale: "Tenderness in this location may indicate posterior tibial tendon pathology, an accessory navicular or a navicular stress injury." },
+          { label: "Base of the fifth metatarsal", isCorrect: false, rationale: "This is the insertion of the fibularis brevis tendon and a potential site of an avulsion or Jones fracture." },
+        ],
+      },
+      {
+        prompt: "Which examination maneuver most directly reproduces symptoms by increasing tension in the plantar fascia?",
+        explanation:
+          "Extending the great toe winds the plantar fascia around the first metatarsal head. This shortens the distance between the calcaneus and forefoot, tightens the fascia and elevates the medial longitudinal arch. Reproduction of plantar-medial heel pain is considered a positive windlass test.",
+        topicLabel: "Plantar Fasciopathy",
+        tags: ["Plantar Fasciopathy", "Physical Exam", "Windlass Test"],
+        options: [
+          { label: "Passive ankle plantarflexion", isCorrect: false, rationale: "Does not directly engage the windlass mechanism and generally reduces tension through the calf–Achilles complex." },
+          { label: "Passive great-toe extension", isCorrect: true, rationale: "Correct — extending the great toe winds the plantar fascia around the first metatarsal head, tightening it and reproducing symptoms — the windlass test." },
+          { label: "Resisted great-toe flexion", isCorrect: false, rationale: "Primarily assesses the flexor hallucis longus and intrinsic toe flexors rather than directly tensioning the plantar fascia." },
+          { label: "Calcaneal squeeze test", isCorrect: false, rationale: "Compresses the calcaneus from side to side and is mainly used when a calcaneal stress fracture is suspected." },
+          { label: "Tinel's sign at the tarsal tunnel", isCorrect: false, rationale: "Assesses irritation of the posterior tibial nerve and may reproduce paresthesia in tarsal tunnel syndrome." },
+        ],
+      },
+      {
+        prompt: "What is the principal biomechanical function of the windlass mechanism during late stance?",
+        explanation:
+          "During terminal stance, extension of the metatarsophalangeal joints—particularly the great toe—tightens the plantar fascia. This elevates the longitudinal arch, draws the calcaneus and forefoot closer together and helps stabilize the foot. The foot therefore becomes a more effective lever for propulsion.",
+        topicLabel: "Plantar Fasciopathy",
+        tags: ["Plantar Fasciopathy", "Biomechanics", "Windlass Mechanism"],
+        options: [
+          { label: "Increasing flexibility of the midfoot", isCorrect: false, rationale: "The mechanism increases arch tension and foot stability rather than making the midfoot more flexible." },
+          { label: "Pronating the subtalar joint", isCorrect: false, rationale: "Windlass activation is associated with arch elevation and contributes to a more supinated, stable foot configuration." },
+          { label: "Converting the foot into a more rigid lever for push-off", isCorrect: true, rationale: "Correct — tightening the plantar fascia elevates the arch and stabilizes the foot into a more rigid lever for propulsion." },
+          { label: "Relaxing the plantar fascia", isCorrect: false, rationale: "Great-toe extension tightens rather than relaxes the plantar fascia." },
+          { label: "Increasing ankle dorsiflexion", isCorrect: false, rationale: "Ankle dorsiflexion occurs during stance, but it is not the primary function of the windlass mechanism." },
+        ],
+      },
+      {
+        prompt:
+          "A patient has a classic clinical presentation of plantar fasciopathy without trauma, neurological findings or systemic symptoms. What is the most appropriate initial imaging strategy?",
+        explanation:
+          "Plantar fasciopathy is usually a clinical diagnosis, based on the characteristic history and examination. Routine imaging rarely changes initial management. Imaging becomes appropriate when the presentation is atypical, red flags are present, an alternative diagnosis is suspected or symptoms persist despite an adequate treatment programme.",
+        topicLabel: "Plantar Fasciopathy",
+        tags: ["Plantar Fasciopathy", "Imaging", "Diagnosis"],
+        options: [
+          { label: "Obtain a weight-bearing radiograph", isCorrect: false, rationale: "May be useful when fracture, arthritis, structural deformity or another bony disorder is suspected, but is not routinely required. A calcaneal spur may be present in people with or without pain and does not confirm the diagnosis." },
+          { label: "Obtain diagnostic ultrasonography", isCorrect: false, rationale: "Can demonstrate fascial thickening, altered echogenicity or tears, but is generally reserved for diagnostic uncertainty, procedural guidance or refractory symptoms." },
+          { label: "Obtain an MRI", isCorrect: false, rationale: "Provides detailed evaluation of soft tissue and bone but is unnecessarily expensive for a typical initial presentation. It may be considered when stress fracture, tumour, infection or fascial rupture is suspected." },
+          { label: "Obtain a CT scan", isCorrect: false, rationale: "Is mainly useful for detailed assessment of bone and is not a first-line test for uncomplicated plantar fasciopathy." },
+          { label: "No imaging is routinely required", isCorrect: true, rationale: "Correct — plantar fasciopathy is usually a clinical diagnosis; routine imaging rarely changes initial management for a classic presentation." },
+        ],
+      },
+      {
+        prompt:
+          "A runner reports progressively worsening heel pain that now occurs at rest. Examination demonstrates diffuse calcaneal tenderness and pain when the calcaneus is compressed from both sides. Which diagnosis should be suspected?",
+        explanation:
+          "A calcaneal stress fracture should be suspected when heel pain progressively worsens after increased loading, becomes present at rest and is reproduced by mediolateral compression of the calcaneus—the calcaneal squeeze test. Early radiographs may be normal, so MRI may be required if clinical suspicion remains high.",
+        topicLabel: "Plantar Fasciopathy",
+        tags: ["Plantar Fasciopathy", "Differential Diagnosis", "Red Flags"],
+        options: [
+          { label: "Plantar fasciopathy", isCorrect: false, rationale: "Usually produces focal plantar-medial tenderness and first-step pain rather than diffuse calcaneal tenderness with a positive squeeze test." },
+          { label: "Calcaneal stress fracture", isCorrect: true, rationale: "Correct — progressively worsening pain at rest with a positive calcaneal squeeze test suggests a calcaneal stress fracture." },
+          { label: "Baxter nerve entrapment", isCorrect: false, rationale: "Entrapment of the first branch of the lateral plantar nerve may produce medial plantar heel pain, often with a burning quality. It does not typically cause pain with calcaneal compression." },
+          { label: "Achilles tendinopathy", isCorrect: false, rationale: "Causes posterior heel or tendon pain associated with tendon loading. Tenderness is located at the Achilles insertion or within the tendon." },
+          { label: "First metatarsophalangeal osteoarthritis", isCorrect: false, rationale: "Produces pain and restricted movement at the great-toe joint, particularly during push-off, rather than diffuse heel pain." },
+        ],
+      },
+      {
+        prompt: "Which intervention is most appropriate as part of first-line management for plantar fasciopathy?",
+        explanation:
+          "Initial treatment should address the relationship between tissue load and tissue capacity. This generally includes education, temporary modification of aggravating activities, plantar-fascia-specific stretching, calf stretching and progressive strengthening. Footwear modification or taping may also provide short-term symptom relief.",
+        topicLabel: "Plantar Fasciopathy",
+        tags: ["Plantar Fasciopathy", "Treatment", "Management"],
+        options: [
+          { label: "Complete avoidance of weight-bearing for six weeks", isCorrect: false, rationale: "Usually causes unnecessary deconditioning and does not progressively restore tissue capacity. Relative load modification is preferable to complete rest." },
+          { label: "Immediate surgical plantar fasciotomy", isCorrect: false, rationale: "Surgery is reserved for a small proportion of patients with persistent, function-limiting symptoms despite prolonged, well-structured conservative treatment." },
+          { label: "Load modification combined with plantar-fascia and calf stretching", isCorrect: true, rationale: "Correct — first-line treatment addresses tissue load and capacity through activity modification, stretching and progressive strengthening." },
+          { label: "Repeated corticosteroid injections", isCorrect: false, rationale: "May offer short-term relief but do not address loading capacity and carry risks such as plantar fascia rupture and heel-fat-pad atrophy." },
+          { label: "Long-term immobilization in a walking boot", isCorrect: false, rationale: "May occasionally be considered for severe pain or suspected tissue injury, but prolonged routine immobilization can lead to stiffness, weakness and loss of tissue capacity." },
+        ],
+      },
+      {
+        prompt: "Which exercise strategy most directly improves the plantar fascia's capacity to tolerate mechanical loading?",
+        explanation:
+          "Progressive resistance exercise exposes the plantar fascia and its supporting structures to controlled, gradually increasing loads. Heel-raise variations and exercises for the intrinsic foot muscles may improve calf–foot strength, load tolerance and function. Exercise dosage should be individualized and adjusted according to symptom response.",
+        topicLabel: "Plantar Fasciopathy",
+        tags: ["Plantar Fasciopathy", "Treatment", "Exercise"],
+        options: [
+          { label: "Passive stretching alone", isCorrect: false, rationale: "Stretching may reduce symptoms and improve mobility but does not provide a sufficient progressive strengthening stimulus when used in isolation." },
+          { label: "Progressive resistance exercise targeting the calf–foot complex", isCorrect: true, rationale: "Correct — progressive resistance exercise exposes the plantar fascia and supporting structures to controlled, gradually increasing loads, improving load tolerance." },
+          { label: "Non-weight-bearing rest until all pain resolves", isCorrect: false, rationale: "May temporarily reduce pain but also reduces muscle and tissue capacity. A graded return to loading is generally required." },
+          { label: "Repeated toe-flexor stretching", isCorrect: false, rationale: "Does not provide the same strengthening stimulus and may place additional tension on irritable plantar tissues if performed aggressively." },
+          { label: "Continuous use of rigid immobilization", isCorrect: false, rationale: "Prevents progressive tissue adaptation and can produce weakness and stiffness. It is not a routine long-term strategy." },
+        ],
+      },
+      {
+        prompt: "Which potential complication should be discussed before corticosteroid injection for plantar fasciopathy?",
+        explanation:
+          "Corticosteroid injection may provide short-term pain reduction, but it can weaken collagen-containing structures. Recognized complications include plantar fascia rupture, heel-fat-pad atrophy, skin depigmentation, infection and transient post-injection pain. The decision should therefore consider the expected short-term benefit, alternatives and individual risk.",
+        topicLabel: "Plantar Fasciopathy",
+        tags: ["Plantar Fasciopathy", "Treatment", "Injections"],
+        options: [
+          { label: "Achilles tendon elongation", isCorrect: false, rationale: "This is not a typical complication of an appropriately placed plantar fascia injection." },
+          { label: "Plantar fascia rupture and heel-fat-pad atrophy", isCorrect: true, rationale: "Correct — corticosteroid injection can weaken collagen-containing structures, with recognized risks of plantar fascia rupture and heel-fat-pad atrophy." },
+          { label: "Tarsal coalition", isCorrect: false, rationale: "A coalition is a congenital or developmental connection between tarsal bones and is not caused by corticosteroid injection." },
+          { label: "Calcaneonavicular arthritis", isCorrect: false, rationale: "Arthritis is not a recognized direct complication of plantar fascia injection." },
+          { label: "Hallux rigidus", isCorrect: false, rationale: "This is degenerative osteoarthritis of the first metatarsophalangeal joint and is unrelated to plantar fascia injection." },
+        ],
+      },
+      {
+        prompt:
+          "A patient continues to experience plantar heel pain after six weeks of treatment but reports modest functional improvement. What is the most appropriate next step?",
+        explanation:
+          "Plantar fasciopathy often improves gradually over several months rather than resolving within a few weeks. Modest functional improvement at six weeks suggests that conservative management may be working. Adherence, activity load, exercise dosage, ankle mobility, strength, footwear and recovery should be reassessed before escalating treatment.",
+        topicLabel: "Plantar Fasciopathy",
+        tags: ["Plantar Fasciopathy", "Prognosis", "Treatment"],
+        options: [
+          { label: "Declare conservative treatment unsuccessful and perform surgery", isCorrect: false, rationale: "This is far too early. Surgery is generally considered only after prolonged, well-conducted non-operative management has failed." },
+          { label: "Continue and progressively adjust the rehabilitation programme", isCorrect: true, rationale: "Correct — modest improvement at six weeks suggests conservative management may be working; reassess and adjust before escalating." },
+          { label: "Recommend permanent cessation of running", isCorrect: false, rationale: "Most patients can return to running through appropriate load modification and gradual progression. Permanent avoidance is rarely necessary." },
+          { label: "Administer serial corticosteroid injections", isCorrect: false, rationale: "Repeated injections increase the risk of tissue damage and should not replace a structured rehabilitation programme." },
+          { label: "Prescribe indefinite immobilization", isCorrect: false, rationale: "Prolonged immobilization promotes weakness and loss of load tolerance and does not address the underlying rehabilitation goals." },
         ],
       },
     ],
