@@ -330,7 +330,7 @@ function CategoryListRow({
       className="flex items-center gap-3 p-3.5 transition-colors duration-base hover:opacity-80"
     >
       <span className={`flex size-10 shrink-0 items-center justify-center rounded-lg ${CARD_COLOR_CHIP[color]}`}>
-        <Folder className="size-4.5" aria-hidden="true" />
+        <Folder className="size-4.5" fill="currentColor" strokeWidth={1.5} aria-hidden="true" />
       </span>
       <div className="flex min-w-0 flex-1 flex-col gap-0.5">
         <span className="truncate font-ui text-sm font-semibold text-primary">{label}</span>
