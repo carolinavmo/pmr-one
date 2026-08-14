@@ -241,29 +241,27 @@ export function FlashcardsBrowser({
 // uses). Its own /flashcards/favourites route, not /category/[id].
 // Deliberately kept as a rounded square (not the MacFolderIcon shape)
 // so it still reads as "not a real folder" — but sized to match
-// CategoryCard's icon footprint so the two sit evenly in the grid.
+// CategoryCard's icon footprint, label overlaid the same way, so the
+// two sit evenly in the grid.
 function FavouritesFolderCard({ count }: { count: number }) {
   const t = useTranslations("flashcards");
 
   return (
     <Link
       href="/flashcards/favourites"
-      className="group flex flex-col items-center gap-2 rounded-2xl p-3 text-center transition-transform duration-base hover:-translate-y-0.5"
+      className="group relative flex h-20 w-24 flex-col items-center justify-center rounded-2xl bg-card-yellow p-2 text-center shadow-sm drop-shadow-md transition-transform duration-base hover:-translate-y-0.5 hover:scale-[1.03] sm:h-24 sm:w-28"
     >
-      <span className="flex h-20 w-24 items-center justify-center rounded-2xl bg-card-yellow shadow-sm drop-shadow-md transition-transform duration-base group-hover:scale-[1.03] sm:h-24 sm:w-28">
-        <Star className="size-8 text-white sm:size-9" aria-hidden="true" />
-      </span>
-      <span className="flex min-w-0 flex-col items-center gap-0.5">
-        <span className="line-clamp-1 font-ui text-sm font-semibold text-primary">{t("favourites")}</span>
-        <span className="font-ui text-xs text-secondary">{t("deckCount", { count })}</span>
-      </span>
+      <Star className="mb-1 size-5 text-white/90 sm:size-6" aria-hidden="true" />
+      <span className="line-clamp-2 font-ui text-xs font-semibold text-white drop-shadow-sm">{t("favourites")}</span>
+      <span className="font-ui text-[10px] text-white/80">{t("deckCount", { count })}</span>
     </Link>
   );
 }
 
 // A macOS Finder-style folder tile — the glossy MacFolderIcon glyph
-// (same one CategoryListRow uses) rendered large, name and count
-// underneath rather than overlaid in white text on a color fill.
+// (same one CategoryListRow uses) rendered large, with the name and
+// count stamped on the folder's face (founder request) rather than
+// sitting below it as a separate caption.
 // Clicking navigates to the folder's own page (src/app/[locale]
 // /flashcards/category/[categoryId]/page.tsx) rather than filtering
 // in place.
@@ -283,15 +281,15 @@ function CategoryCard({
   return (
     <Link
       href={`/flashcards/category/${id}`}
-      className="group flex flex-col items-center gap-2 rounded-2xl p-3 text-center transition-transform duration-base hover:-translate-y-0.5"
+      className="group relative flex h-20 w-24 items-center justify-center transition-transform duration-base hover:-translate-y-0.5 sm:h-24 sm:w-28"
     >
       <MacFolderIcon
         color={color}
-        className="h-20 w-24 drop-shadow-md transition-transform duration-base group-hover:scale-[1.03] sm:h-24 sm:w-28"
+        className="absolute inset-0 size-full drop-shadow-md transition-transform duration-base group-hover:scale-[1.03]"
       />
-      <span className="flex min-w-0 flex-col items-center gap-0.5">
-        <span className="line-clamp-1 font-ui text-sm font-semibold text-primary">{label}</span>
-        <span className="font-ui text-xs text-secondary">{t("deckCount", { count })}</span>
+      <span className="relative flex max-w-full flex-col items-center gap-0.5 px-3 pt-3 text-center">
+        <span className="line-clamp-2 font-ui text-xs font-semibold text-white drop-shadow-sm">{label}</span>
+        <span className="font-ui text-[10px] text-white/80">{t("deckCount", { count })}</span>
       </span>
     </Link>
   );
