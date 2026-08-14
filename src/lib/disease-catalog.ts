@@ -34,6 +34,13 @@ const CATALOG_QUERY = `
   FROM disease d
 `;
 
+// The stored paragraph body is rich-text HTML (RichEditableText) —
+// every catalog-card consumer just wants a plain-text teaser line, so
+// tags are stripped here once rather than in each card component.
+function stripHtmlTags(html: string): string {
+  return html.replace(/<[^>]*>/g, "");
+}
+
 function mapRow(row: {
   id: string;
   canonical_name: string;
@@ -49,7 +56,7 @@ function mapRow(row: {
     slug: row.slug,
     status: row.status,
     reviewedAt: row.reviewed_at,
-    snippet: row.snippet ? row.snippet.slice(0, 140) : "Disease Page",
+    snippet: row.snippet ? stripHtmlTags(row.snippet).slice(0, 140) : "Disease Page",
     icon: iconForRegions(row.regions ?? []),
   };
 }

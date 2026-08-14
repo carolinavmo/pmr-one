@@ -13,10 +13,11 @@ export async function Footer() {
   const tNav = await getTranslations("nav");
   const year = new Date().getFullYear();
 
-  const links: { key: string; href: "/conditions" | "/clinical-tools" | "/study-planner" }[] = [
+  const links: { key: string; href: "/conditions" | "/clinical-tools" | "/study-planner" | "/flashcards" }[] = [
     { key: "conditions", href: "/conditions" },
     { key: "clinicalTools", href: "/clinical-tools" },
     { key: "studyPlanner", href: "/study-planner" },
+    { key: "flashcards", href: "/flashcards" },
   ];
 
   return (

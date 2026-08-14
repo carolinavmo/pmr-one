@@ -101,7 +101,7 @@ export function HomeHero({
           </div>
         </div>
         <div className="flex flex-wrap justify-center gap-3">
-          <LinkButton href="/conditions" variant="primary">
+          <LinkButton href="/explore" variant="primary">
             {ctaPrimaryLabel}
           </LinkButton>
           <LinkButton href="/register" variant="secondary">

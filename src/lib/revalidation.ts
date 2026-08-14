@@ -31,6 +31,15 @@ export function revalidateAtlasSurfaces() {
   revalidatePath("/[locale]/my-atlas", "page");
 }
 
+// Called after any write to a deck or card (create/rename/recolor/
+// delete/reorder) or a review (box/due-date change) — covers both the
+// deck-list index and the detail route since either can show stale
+// names, counts, or progress after a mutation on the other.
+export function revalidateFlashcardSurfaces() {
+  revalidatePath("/[locale]/flashcards", "page");
+  revalidatePath("/[locale]/flashcards/[deckId]", "page");
+}
+
 export function revalidateShellSurfaces() {
   revalidatePath("/[locale]", "layout");
   revalidatePath("/[locale]", "page");

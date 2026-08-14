@@ -8,6 +8,7 @@ import {
   Calculator,
   Calendar,
   ChevronRight,
+  Layers,
   NotebookPen,
   PanelLeftClose,
   PanelLeftOpen,
@@ -144,6 +145,15 @@ export function SidebarFrame({ tree, userName, userEmail, userRole }: SidebarFra
             <NotebookPen className="size-3.5" aria-hidden="true" />
           </span>
           <span className="font-ui text-xs font-medium text-primary">{t("myAtlas")}</span>
+        </Link>
+        <Link
+          href="/flashcards"
+          className="flex items-center gap-2 rounded-lg px-2 py-1.5 transition-colors duration-base hover:bg-border/40"
+        >
+          <span className="flex size-7 shrink-0 items-center justify-center rounded-full bg-accent/10 text-accent">
+            <Layers className="size-3.5" aria-hidden="true" />
+          </span>
+          <span className="font-ui text-xs font-medium text-primary">{t("flashcards")}</span>
         </Link>
       </div>
 
