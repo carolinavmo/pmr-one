@@ -5,8 +5,8 @@ import { useTranslations } from "next-intl";
 import { LayoutGrid, List, Layers, Plus, Search, ChevronRight, Star, FolderPlus } from "lucide-react";
 import { Link } from "@/i18n/navigation";
 import type { DeckSummary, FlashcardCategory } from "@/lib/flashcards";
-import { CARD_COLOR_CHIP, CARD_COLOR_SWATCH } from "@/lib/card-colors";
-import { cardIcons, type CardIconName } from "@/components/ui/cardIcons";
+import { CARD_COLOR_CHIP } from "@/lib/card-colors";
+import { cardIcons } from "@/components/ui/cardIcons";
 import { MacFolderIcon } from "@/components/ui/MacFolderIcon";
 import type { CardColor } from "@/lib/editorial-blocks";
 import { toggleDeckFavoriteAction } from "@/lib/actions/flashcards";
@@ -146,7 +146,7 @@ export function FlashcardsBrowser({
           {view === "grid" ? (
             <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
               {systemCategories.map((cat) => (
-                <CategoryCard key={cat.id} id={cat.id} label={cat.name} icon={cat.icon} color={cat.color} count={cat.deckCount} />
+                <CategoryCard key={cat.id} id={cat.id} label={cat.name} color={cat.color} count={cat.deckCount} />
               ))}
             </div>
           ) : (
@@ -176,7 +176,7 @@ export function FlashcardsBrowser({
             <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
               <FavouritesFolderCard count={favoritedCount} />
               {userCategories.map((cat) => (
-                <CategoryCard key={cat.id} id={cat.id} label={cat.name} icon={cat.icon} color={cat.color} count={cat.deckCount} />
+                <CategoryCard key={cat.id} id={cat.id} label={cat.name} color={cat.color} count={cat.deckCount} />
               ))}
             </div>
           ) : (
@@ -239,71 +239,59 @@ export function FlashcardsBrowser({
 // shown first in "My Folders" once signed in, count 0 included (same
 // honesty-over-hiding-empty-state reasoning the stats row already
 // uses). Its own /flashcards/favourites route, not /category/[id].
+// Deliberately kept as a rounded square (not the MacFolderIcon shape)
+// so it still reads as "not a real folder" — but sized to match
+// CategoryCard's icon footprint so the two sit evenly in the grid.
 function FavouritesFolderCard({ count }: { count: number }) {
   const t = useTranslations("flashcards");
 
   return (
     <Link
       href="/flashcards/favourites"
-      className="group relative flex flex-col pt-2 text-left transition-transform duration-base hover:-translate-y-0.5"
+      className="group flex flex-col items-center gap-2 rounded-2xl p-3 text-center transition-transform duration-base hover:-translate-y-0.5"
     >
-      <span aria-hidden="true" className="absolute top-0 left-4 h-4 w-14 rounded-t-lg bg-card-yellow opacity-90" />
-      <span className="relative flex h-28 flex-col justify-between rounded-2xl bg-card-yellow p-3.5 shadow-sm transition-shadow duration-base group-hover:shadow-md sm:h-32">
-        <span className="flex size-8 items-center justify-center rounded-full bg-white/20 text-white">
-          <Star className="size-4" aria-hidden="true" />
-        </span>
-        <span className="flex flex-col gap-0.5">
-          <span className="line-clamp-1 font-ui text-sm font-semibold text-white">{t("favourites")}</span>
-          <span className="font-ui text-xs text-white/75">{t("deckCount", { count })}</span>
-        </span>
+      <span className="flex h-20 w-24 items-center justify-center rounded-2xl bg-card-yellow shadow-sm drop-shadow-md transition-transform duration-base group-hover:scale-[1.03] sm:h-24 sm:w-28">
+        <Star className="size-8 text-white sm:size-9" aria-hidden="true" />
+      </span>
+      <span className="flex min-w-0 flex-col items-center gap-0.5">
+        <span className="line-clamp-1 font-ui text-sm font-semibold text-primary">{t("favourites")}</span>
+        <span className="font-ui text-xs text-secondary">{t("deckCount", { count })}</span>
       </span>
     </Link>
   );
 }
 
-// A big colored "folder" tile (founder reference: a bold rounded card
-// with a small tab peeking out above it) — the tab is a second,
-// slightly smaller same-color rectangle stacked behind the main face
-// via z-index, not an actual clipped folder silhouette, which keeps
-// this a plain two-div shape instead of hand-drawn SVG path data.
+// A macOS Finder-style folder tile — the glossy MacFolderIcon glyph
+// (same one CategoryListRow uses) rendered large, name and count
+// underneath rather than overlaid in white text on a color fill.
 // Clicking navigates to the folder's own page (src/app/[locale]
 // /flashcards/category/[categoryId]/page.tsx) rather than filtering
 // in place.
 function CategoryCard({
   id,
   label,
-  icon,
   color,
   count,
 }: {
   id: string;
   label: string;
-  icon: CardIconName | undefined;
   color: CardColor;
   count: number;
 }) {
   const t = useTranslations("flashcards");
-  const Icon = icon ? cardIcons[icon] : Layers;
 
   return (
     <Link
       href={`/flashcards/category/${id}`}
-      className="group relative flex flex-col pt-2 text-left transition-transform duration-base hover:-translate-y-0.5"
+      className="group flex flex-col items-center gap-2 rounded-2xl p-3 text-center transition-transform duration-base hover:-translate-y-0.5"
     >
-      <span
-        aria-hidden="true"
-        className={`absolute top-0 left-4 h-4 w-14 rounded-t-lg ${CARD_COLOR_SWATCH[color]} opacity-90`}
+      <MacFolderIcon
+        color={color}
+        className="h-20 w-24 drop-shadow-md transition-transform duration-base group-hover:scale-[1.03] sm:h-24 sm:w-28"
       />
-      <span
-        className={`relative flex h-28 flex-col justify-between rounded-2xl p-3.5 shadow-sm transition-shadow duration-base group-hover:shadow-md sm:h-32 ${CARD_COLOR_SWATCH[color]}`}
-      >
-        <span className="flex size-8 items-center justify-center rounded-full bg-white/20 text-white">
-          <Icon className="size-4" aria-hidden="true" />
-        </span>
-        <span className="flex flex-col gap-0.5">
-          <span className="line-clamp-1 font-ui text-sm font-semibold text-white">{label}</span>
-          <span className="font-ui text-xs text-white/75">{t("deckCount", { count })}</span>
-        </span>
+      <span className="flex min-w-0 flex-col items-center gap-0.5">
+        <span className="line-clamp-1 font-ui text-sm font-semibold text-primary">{label}</span>
+        <span className="font-ui text-xs text-secondary">{t("deckCount", { count })}</span>
       </span>
     </Link>
   );
