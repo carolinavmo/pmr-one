@@ -132,10 +132,20 @@ export function QuestionRunner({ set, isSignedIn }: { set: QuestionSetDetail; is
                         : "border-border hover:border-accent/40 hover:bg-border/20"
                   } ${!isSignedIn || reveal ? "cursor-default" : "cursor-pointer"}`}
                 >
-                  <span className="flex size-6 shrink-0 items-center justify-center rounded-full border border-border font-ui text-xs font-medium text-secondary">
+                  <span
+                    className={`flex size-6 shrink-0 items-center justify-center rounded-full border font-ui text-xs font-medium ${
+                      isCorrectOption
+                        ? "border-trust bg-trust/15 text-trust"
+                        : showWrong
+                          ? "border-card-red bg-card-red/15 text-card-red"
+                          : "border-border text-secondary"
+                    }`}
+                  >
                     {letter}
                   </span>
-                  <span className="min-w-0 flex-1 text-primary">{option.label}</span>
+                  <span className={`min-w-0 flex-1 ${isCorrectOption ? "font-medium text-trust" : "text-primary"}`}>
+                    {option.label}
+                  </span>
                   {isCorrectOption && <Check className="size-4 shrink-0 text-trust" aria-hidden="true" />}
                   {showWrong && <X className="size-4 shrink-0 text-card-red" aria-hidden="true" />}
                 </button>
