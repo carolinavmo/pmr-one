@@ -75,7 +75,7 @@ function StatTile({
   label: string;
 }) {
   return (
-    <div className="flex items-center gap-3 rounded-xl border border-border bg-surface-raised p-3">
+    <div className="flex items-center gap-3 rounded-xl border border-border bg-surface-card p-3">
       <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-accent/10 text-accent">
         <Icon className="size-4.5" aria-hidden="true" />
       </span>
