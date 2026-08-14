@@ -207,7 +207,7 @@ export function QuestionRunner({ set, isSignedIn }: { set: QuestionSetDetail; is
 
               {Object.values(reveal.optionRationales).some(Boolean) && (
                 <div>
-                  <p className="font-ui text-xs font-semibold text-secondary">{t("whyOthersIncorrect")}</p>
+                  <p className="mt-4 font-ui text-sm font-semibold text-card-red">{t("whyOthersIncorrect")}</p>
                   <ul className="mt-1 flex flex-col gap-1">
                     {current.options.map((option, i) => {
                       const rationale = reveal.optionRationales[option.id];
