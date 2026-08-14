@@ -6,7 +6,7 @@ import { LayoutGrid, List, Layers, Plus, Search, ChevronRight, Star, FolderPlus 
 import { Link } from "@/i18n/navigation";
 import type { DeckSummary, FlashcardCategory } from "@/lib/flashcards";
 import { CARD_COLOR_CHIP, CARD_COLOR_SWATCH } from "@/lib/card-colors";
-import { cardIcons, type CardIconName } from "@/components/ui/cardIcons";
+import { cardIcons } from "@/components/ui/cardIcons";
 import { MacFolderIcon } from "@/components/ui/MacFolderIcon";
 import type { CardColor } from "@/lib/editorial-blocks";
 import { toggleDeckFavoriteAction } from "@/lib/actions/flashcards";
@@ -146,7 +146,7 @@ export function FlashcardsBrowser({
           {view === "grid" ? (
             <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
               {systemCategories.map((cat) => (
-                <CategoryCard key={cat.id} id={cat.id} label={cat.name} icon={cat.icon} color={cat.color} count={cat.deckCount} />
+                <CategoryCard key={cat.id} id={cat.id} label={cat.name} color={cat.color} count={cat.deckCount} />
               ))}
             </div>
           ) : (
@@ -176,7 +176,7 @@ export function FlashcardsBrowser({
             <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
               <FavouritesFolderCard count={favoritedCount} />
               {userCategories.map((cat) => (
-                <CategoryCard key={cat.id} id={cat.id} label={cat.name} icon={cat.icon} color={cat.color} count={cat.deckCount} />
+                <CategoryCard key={cat.id} id={cat.id} label={cat.name} color={cat.color} count={cat.deckCount} />
               ))}
             </div>
           ) : (
@@ -272,18 +272,15 @@ function FavouritesFolderCard({ count }: { count: number }) {
 function CategoryCard({
   id,
   label,
-  icon,
   color,
   count,
 }: {
   id: string;
   label: string;
-  icon: CardIconName | undefined;
   color: CardColor;
   count: number;
 }) {
   const t = useTranslations("flashcards");
-  const Icon = icon ? cardIcons[icon] : Layers;
 
   return (
     <Link
@@ -295,11 +292,8 @@ function CategoryCard({
         className={`absolute top-0 left-4 h-4 w-14 rounded-t-lg ${CARD_COLOR_SWATCH[color]} opacity-90`}
       />
       <span
-        className={`relative flex h-28 flex-col justify-between rounded-2xl p-3.5 shadow-sm transition-shadow duration-base group-hover:shadow-md sm:h-32 ${CARD_COLOR_SWATCH[color]}`}
+        className={`relative flex h-28 flex-col justify-end rounded-2xl p-3.5 shadow-sm transition-shadow duration-base group-hover:shadow-md sm:h-32 ${CARD_COLOR_SWATCH[color]}`}
       >
-        <span className="flex size-8 items-center justify-center rounded-full bg-white/20 text-white">
-          <Icon className="size-4" aria-hidden="true" />
-        </span>
         <span className="flex flex-col gap-0.5">
           <span className="line-clamp-1 font-ui text-sm font-semibold text-white">{label}</span>
           <span className="font-ui text-xs text-white/75">{t("deckCount", { count })}</span>
