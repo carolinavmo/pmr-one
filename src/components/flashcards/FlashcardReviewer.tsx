@@ -5,6 +5,8 @@ import { useTranslations } from "next-intl";
 import { Check, MousePointerClick, RotateCcw, Shuffle } from "lucide-react";
 import { Link } from "@/i18n/navigation";
 import type { FlashcardCard } from "@/lib/flashcards";
+import type { CardColor } from "@/lib/editorial-blocks";
+import { CARD_COLOR_CARD } from "@/lib/card-colors";
 import { MASTERY_BOX } from "@/lib/flashcard-scoring";
 import { recordReviewAction, saveReviewPositionAction } from "@/lib/actions/flashcards";
 
@@ -31,13 +33,16 @@ export function FlashcardReviewer({
   isSignedIn,
   deckId,
   lastCardId,
+  categoryColor,
 }: {
   cards: FlashcardCard[];
   isSignedIn: boolean;
   deckId: string;
   lastCardId: string | null;
+  categoryColor: CardColor | null;
 }) {
   const t = useTranslations("flashcards");
+  const cardColorClass = CARD_COLOR_CARD[categoryColor ?? "neutral"];
   const [order, setOrder] = useState(() => cards.map((c) => c.id));
   // "Continue" is a plain navigation back to this page (StartDeckButton)
   // — resume at the card flashcard_deck_position last recorded for this
@@ -201,7 +206,7 @@ export function FlashcardReviewer({
         >
           {/* Front face — question */}
           <div
-            className="absolute inset-0 flex flex-col gap-6 overflow-y-auto rounded-2xl border border-border bg-surface-card p-6 shadow-sm sm:p-8"
+            className={`absolute inset-0 flex flex-col gap-6 overflow-y-auto rounded-2xl border p-6 shadow-sm sm:p-8 ${cardColorClass}`}
             aria-hidden={revealed}
             inert={revealed}
             style={{
@@ -241,7 +246,7 @@ export function FlashcardReviewer({
 
           {/* Back face — answer */}
           <div
-            className="absolute inset-0 flex flex-col gap-6 overflow-y-auto rounded-2xl border border-border bg-surface-card p-6 shadow-sm sm:p-8"
+            className={`absolute inset-0 flex flex-col gap-6 overflow-y-auto rounded-2xl border p-6 shadow-sm sm:p-8 ${cardColorClass}`}
             aria-hidden={!revealed}
             inert={!revealed}
             style={{

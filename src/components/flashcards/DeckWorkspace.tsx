@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import type { FlashcardCard } from "@/lib/flashcards";
+import type { CardColor } from "@/lib/editorial-blocks";
 import { FlashcardReviewer } from "./FlashcardReviewer";
 import { CardManager } from "./CardManager";
 
@@ -15,17 +16,25 @@ export function DeckWorkspace({
   initialCards,
   isSignedIn,
   lastCardId,
+  categoryColor,
 }: {
   deckId: string;
   initialCards: FlashcardCard[];
   isSignedIn: boolean;
   lastCardId: string | null;
+  categoryColor: CardColor | null;
 }) {
   const [cards, setCards] = useState(initialCards);
 
   return (
     <>
-      <FlashcardReviewer cards={cards} isSignedIn={isSignedIn} deckId={deckId} lastCardId={lastCardId} />
+      <FlashcardReviewer
+        cards={cards}
+        isSignedIn={isSignedIn}
+        deckId={deckId}
+        lastCardId={lastCardId}
+        categoryColor={categoryColor}
+      />
       <CardManager deckId={deckId} cards={cards} onCardsChange={setCards} />
     </>
   );

@@ -65,6 +65,7 @@ export default async function FlashcardDeckPage({ params }: DeckPageProps) {
           initialCards={deck.cards}
           isSignedIn={Boolean(session)}
           lastCardId={deck.lastCardId}
+          categoryColor={deck.categoryColor}
         />
       ) : (
         <FlashcardReviewer
@@ -72,6 +73,7 @@ export default async function FlashcardDeckPage({ params }: DeckPageProps) {
           isSignedIn={Boolean(session)}
           deckId={deck.id}
           lastCardId={deck.lastCardId}
+          categoryColor={deck.categoryColor}
         />
       )}
     </main>

@@ -59,6 +59,7 @@ export interface DeckDetail {
   icon: CardIconName | undefined;
   iconUrl: string | null;
   categoryId: string | null;
+  categoryColor: CardColor | null;
   lastCardId: string | null;
   sourceDiseaseName: string | null;
   sourceDiseaseSlug: string | null;
@@ -160,7 +161,7 @@ export async function getDeckWithCards(
 ): Promise<DeckDetail | null> {
   const { rows: deckRows } = await pool.query(
     `SELECT d.id, d.owner_type, d.name, d.description, d.color, d.icon_url, d.category_id,
-       c.icon AS category_icon,
+       c.icon AS category_icon, c.color AS category_color,
        dis.canonical_name AS source_disease_name, dis.slug AS source_disease_slug
      FROM flashcard_deck d
      LEFT JOIN disease dis ON dis.id = d.source_disease_id
@@ -217,6 +218,7 @@ export async function getDeckWithCards(
     icon: (deck.category_icon as CardIconName | null) ?? undefined,
     iconUrl: deck.icon_url,
     categoryId: deck.category_id,
+    categoryColor: (deck.category_color as CardColor | null) ?? null,
     lastCardId,
     sourceDiseaseName: deck.source_disease_name,
     sourceDiseaseSlug: deck.source_disease_slug,
