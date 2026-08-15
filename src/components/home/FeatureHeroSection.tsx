@@ -46,7 +46,7 @@ export function FeatureHeroSection({
       <div className="mx-auto grid w-full max-w-6xl grid-cols-1 gap-10 px-6 py-16 lg:grid-cols-2 lg:items-center lg:py-20">
         <ScrollReveal>
           <div className={reverse ? "flex flex-col gap-5 lg:order-2" : "flex flex-col gap-5"}>
-            <span className={`flex w-fit items-center gap-2.5 rounded-full px-4 py-2 ${CARD_COLOR_CHIP[color]}`}>
+            <span className={`flex w-fit items-center gap-2.5 rounded-full px-6 py-2 ${CARD_COLOR_CHIP[color]}`}>
               <EyebrowIcon className="size-5 shrink-0" aria-hidden="true" />
               <span className={`font-ui text-lg font-semibold tracking-wide uppercase ${CARD_COLOR_TEXT[color]}`}>
                 {eyebrowLabel}
