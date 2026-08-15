@@ -182,7 +182,7 @@ export default async function Home({ searchParams }: HomeProps) {
           bullets/copy instead. */}
       {sampleDisease && (
         <FeatureHeroSection
-          band="surface"
+          band="tint"
           reverse={false}
           color="accent"
           eyebrowIcon={objectIcons.disease}

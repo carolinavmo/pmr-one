@@ -4,7 +4,7 @@ import { ArrowRight, Check } from "lucide-react";
 import { Link } from "@/i18n/navigation";
 import { buttonBaseClasses } from "@/components/ui/button-styles";
 import { StatTile } from "@/components/ui/StatTile";
-import { CARD_COLOR_BADGE, CARD_COLOR_CARD, CARD_COLOR_CHIP, CARD_COLOR_TEXT } from "@/lib/card-colors";
+import { CARD_COLOR_BADGE, CARD_COLOR_CARD, CARD_COLOR_CHIP, CARD_COLOR_TEXT, CARD_COLOR_TINT } from "@/lib/card-colors";
 import type { CardColor } from "@/lib/editorial-blocks";
 import { ScrollReveal } from "@/components/home/ScrollReveal";
 
@@ -38,11 +38,13 @@ export function FeatureHeroSection({
   ctaHref: string;
   color: CardColor;
   reverse: boolean;
-  band: "surface" | "surface-raised";
+  band: "surface" | "surface-raised" | "tint";
   visual: ReactNode;
 }) {
   return (
-    <section className={band === "surface" ? "w-full bg-surface" : "w-full bg-surface-raised"}>
+    <section
+      className={`w-full ${band === "tint" ? CARD_COLOR_TINT[color] : band === "surface" ? "bg-surface" : "bg-surface-raised"}`}
+    >
       <div className="mx-auto grid w-full max-w-6xl grid-cols-1 gap-10 px-6 py-16 lg:grid-cols-2 lg:items-center lg:py-20">
         <ScrollReveal>
           <div className={reverse ? "flex flex-col gap-5 lg:order-2" : "flex flex-col gap-5"}>
