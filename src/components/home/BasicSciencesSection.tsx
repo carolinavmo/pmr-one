@@ -60,7 +60,7 @@ export function BasicSciencesSection({
               <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-[#1ba7b7]/15">
                 <Bone className="size-4.5 text-[#1ba7b7]" aria-hidden="true" />
               </span>
-              <span className="font-sans text-sm font-semibold tracking-wide text-[#1ba7b7] uppercase">{eyebrow}</span>
+              <span className="font-sans text-lg font-semibold tracking-wide text-[#1ba7b7] uppercase">{eyebrow}</span>
             </span>
 
             <h2 className="font-sans text-3xl leading-tight font-bold text-slate-900 sm:text-4xl">

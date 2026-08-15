@@ -50,7 +50,7 @@ export function FeatureHeroSection({
               <span className={`flex size-9 shrink-0 items-center justify-center rounded-full ${CARD_COLOR_CHIP[color]}`}>
                 <EyebrowIcon className="size-4.5" aria-hidden="true" />
               </span>
-              <span className={`font-ui text-sm font-semibold tracking-wide uppercase ${CARD_COLOR_TEXT[color]}`}>
+              <span className={`font-ui text-lg font-semibold tracking-wide uppercase ${CARD_COLOR_TEXT[color]}`}>
                 {eyebrowLabel}
               </span>
             </span>
