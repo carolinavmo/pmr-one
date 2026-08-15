@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { useTranslations } from "next-intl";
-import { Check, RotateCcw, Shuffle } from "lucide-react";
+import { Check, MousePointerClick, RotateCcw, Shuffle } from "lucide-react";
 import { Link } from "@/i18n/navigation";
 import type { FlashcardCard } from "@/lib/flashcards";
 import { MASTERY_BOX } from "@/lib/flashcard-scoring";
@@ -225,9 +225,10 @@ export function FlashcardReviewer({
             <button
               type="button"
               onClick={() => setRevealed(true)}
-              className="inline-flex min-h-11 items-center rounded-full border border-border px-4 font-ui text-sm text-accent transition-colors duration-base hover:bg-border/40"
+              className="flex flex-col items-center gap-2 text-secondary transition-colors duration-base hover:text-accent"
             >
-              {t("showAnswer")}
+              <MousePointerClick className="size-8" aria-hidden="true" />
+              <span className="font-ui text-sm">{t("clickToReveal")}</span>
             </button>
             {sourceDiseaseName && sourceDiseaseSlug && (
               <Link
