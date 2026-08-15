@@ -152,7 +152,7 @@ export function BasicSciencesSection({
                     </div>
                   </div>
                   {i < STEPS.length - 1 && (
-                    <ArrowRight className="mt-4 hidden size-4 shrink-0 text-slate-300 lg:block" aria-hidden="true" />
+                    <ArrowRight className="mt-4 hidden size-6 shrink-0 text-slate-300 lg:block" aria-hidden="true" />
                   )}
                 </div>
               ))}
