@@ -147,7 +147,7 @@ export function BasicSciencesSection({
                       <Icon className={`size-5 ${iconColor}`} aria-hidden="true" />
                     </span>
                     <div className="flex flex-col gap-0.5">
-                      <span className="font-sans text-sm font-semibold text-slate-900">{steps[key].title}</span>
+                      <span className="font-sans text-sm font-semibold text-[#121729]">{steps[key].title}</span>
                       <span className="font-sans text-xs text-slate-500">{steps[key].body}</span>
                     </div>
                   </div>
