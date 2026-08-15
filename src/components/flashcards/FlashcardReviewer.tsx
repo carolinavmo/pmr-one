@@ -186,7 +186,24 @@ export function FlashcardReviewer({
           </span>
         </div>
 
-        <div className="flex flex-1 flex-col items-center justify-center gap-4 text-center">
+        <div
+          className={`flex flex-1 flex-col items-center justify-center gap-4 text-center ${
+            revealed ? "" : "cursor-pointer"
+          }`}
+          role={revealed ? undefined : "button"}
+          tabIndex={revealed ? undefined : 0}
+          onClick={revealed ? undefined : () => setRevealed(true)}
+          onKeyDown={
+            revealed
+              ? undefined
+              : (e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    setRevealed(true);
+                  }
+                }
+          }
+        >
           {revealed ? (
             <>
               <p className="font-heading text-xl font-semibold text-primary">{current.answer}</p>
@@ -194,6 +211,7 @@ export function FlashcardReviewer({
                 <Link
                   href={`/conditions/${sourceDiseaseSlug}`}
                   className="font-ui text-xs text-secondary hover:text-accent"
+                  onClick={(e) => e.stopPropagation()}
                 >
                   {t("fromDisease", { name: sourceDiseaseName })}
                 </Link>
@@ -202,14 +220,10 @@ export function FlashcardReviewer({
           ) : (
             <>
               <p className="font-heading text-xl font-semibold text-primary">{current.question}</p>
-              <button
-                type="button"
-                onClick={() => setRevealed(true)}
-                className="flex flex-col items-center gap-2 text-secondary transition-colors duration-base hover:text-accent"
-              >
+              <div className="flex flex-col items-center gap-2 text-secondary">
                 <MousePointerClick className="size-8" aria-hidden="true" />
                 <span className="font-ui text-sm">{t("clickToReveal")}</span>
-              </button>
+              </div>
             </>
           )}
         </div>
