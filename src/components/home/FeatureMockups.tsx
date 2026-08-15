@@ -34,9 +34,9 @@ export function ConditionsMockup({
   overviewLabel,
   sections,
   keyPointsLabel,
-  keyPoints,
+  keyPointsBody,
   clinicalPearlsLabel,
-  clinicalPearl,
+  clinicalPearlsBody,
 }: {
   diseaseName: string;
   snippet: string;
@@ -48,9 +48,9 @@ export function ConditionsMockup({
   overviewLabel: string;
   sections: { id: string; heading: string }[];
   keyPointsLabel: string;
-  keyPoints: string[];
+  keyPointsBody: string;
   clinicalPearlsLabel: string;
-  clinicalPearl: string | undefined;
+  clinicalPearlsBody: string;
 }) {
   return (
     <div className="overflow-hidden rounded-2xl border border-border bg-surface-raised shadow-lg">
@@ -108,35 +108,22 @@ export function ConditionsMockup({
               </span>
             ))}
           </div>
-          {(keyPoints.length > 0 || clinicalPearl) && (
-            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-              {keyPoints.length > 0 && (
-                <div className="flex flex-col gap-1.5 rounded-lg border border-border bg-surface p-3">
-                  <span className="flex items-center gap-1.5 font-ui text-[11px] font-semibold text-secondary">
-                    <Bookmark className="size-3.5 shrink-0" aria-hidden="true" />
-                    {keyPointsLabel}
-                  </span>
-                  <ul className="flex flex-col gap-1">
-                    {keyPoints.map((point) => (
-                      <li key={point} className="flex gap-1.5 font-ui text-[11px] text-secondary">
-                        <span aria-hidden="true">&bull;</span>
-                        <span className="line-clamp-2">{point}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-              {clinicalPearl && (
-                <div className="flex flex-col gap-1.5 rounded-lg border border-accent/20 bg-accent/5 p-3">
-                  <span className="flex items-center gap-1.5 font-ui text-[11px] font-semibold text-accent">
-                    <Gem className="size-3.5 shrink-0" aria-hidden="true" />
-                    {clinicalPearlsLabel}
-                  </span>
-                  <p className="line-clamp-3 font-ui text-[11px] text-secondary">{clinicalPearl}</p>
-                </div>
-              )}
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+            <div className="flex flex-col gap-1.5 rounded-lg border border-accent/20 bg-accent/5 p-3">
+              <span className="flex items-center gap-1.5 font-ui text-[11px] font-semibold text-accent">
+                <Bookmark className="size-3.5 shrink-0" aria-hidden="true" />
+                {keyPointsLabel}
+              </span>
+              <p className="font-ui text-[11px] text-secondary">{keyPointsBody}</p>
             </div>
-          )}
+            <div className="flex flex-col gap-1.5 rounded-lg border border-card-yellow/30 bg-card-yellow/5 p-3">
+              <span className="flex items-center gap-1.5 font-ui text-[11px] font-semibold text-card-yellow">
+                <Gem className="size-3.5 shrink-0" aria-hidden="true" />
+                {clinicalPearlsLabel}
+              </span>
+              <p className="font-ui text-[11px] text-secondary">{clinicalPearlsBody}</p>
+            </div>
+          </div>
         </div>
       </div>
     </div>

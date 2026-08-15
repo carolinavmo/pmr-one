@@ -3,7 +3,7 @@ import { BookOpen, Calendar, Check, X, Layers, ListChecks } from "lucide-react";
 import { Link, redirect } from "@/i18n/navigation";
 import { auth } from "@/auth";
 import { getPlatformStats, getRecentlyPublishedDiseases } from "@/lib/disease-catalog";
-import { getSectionIndex, getDiseaseHighlights } from "@/lib/disease-loader";
+import { getSectionIndex } from "@/lib/disease-loader";
 import { getAllCalculators } from "@/lib/clinical-tools";
 import { getDeckSummaries, getDeckWithCards } from "@/lib/flashcards";
 import { getDashboardStats, getSampleQuestion } from "@/lib/question-bank";
@@ -63,9 +63,7 @@ export default async function ExplorePage() {
   const totalFlashcards = deckSummaries.presetDecks.reduce((sum, d) => sum + d.cardCount, 0);
   const firstCalculator = publicCalculators[0] ?? calculators[0];
   const mockupDisease = sampleDiseases[0];
-  const [mockupSectionIndex, mockupHighlights] = mockupDisease
-    ? await Promise.all([getSectionIndex(mockupDisease.slug), getDiseaseHighlights(mockupDisease.slug)])
-    : [null, null];
+  const mockupSectionIndex = mockupDisease ? await getSectionIndex(mockupDisease.slug) : null;
 
   const t = await getTranslations("explore");
   const tHome = await getTranslations("home");
@@ -109,9 +107,9 @@ export default async function ExplorePage() {
           overviewLabel={tHome("featureConditionsOverviewLabel")}
           sections={mockupSectionIndex?.sections ?? []}
           keyPointsLabel={tHome("featureConditionsKeyPointsLabel")}
-          keyPoints={mockupHighlights?.keyPoints ?? []}
+          keyPointsBody={tHome("featureConditionsKeyPointsBody")}
           clinicalPearlsLabel={tHome("featureConditionsClinicalPearlsLabel")}
-          clinicalPearl={mockupHighlights?.clinicalPearls[0]}
+          clinicalPearlsBody={tHome("featureConditionsClinicalPearlsBody")}
         />
       ),
     });
