@@ -364,7 +364,10 @@
     "myFolders": "Minhas Pastas",
     "favourites": "Favoritos",
     "noFavourites": "Ainda não há baralhos nos favoritos.",
-    "allDecksInFolders": "Todos os baralhos estão organizados em pastas."
+    "allDecksInFolders": "Todos os baralhos estão organizados em pastas.",
+    "columnDeck": "Baralho",
+    "columnCards": "Cartas",
+    "columnMastered": "Dominado"
   },
   "questionBank": {
     "pageTitle": "Banco de Questões",

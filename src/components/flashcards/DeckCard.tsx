@@ -3,11 +3,12 @@
 import { useState, useTransition } from "react";
 import { Star } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { Link, useRouter } from "@/i18n/navigation";
+import { Link } from "@/i18n/navigation";
 import type { DeckSummary } from "@/lib/flashcards";
 import { CARD_COLOR_CHIP } from "@/lib/card-colors";
-import { startDeckAction, toggleDeckFavoriteAction } from "@/lib/actions/flashcards";
+import { toggleDeckFavoriteAction } from "@/lib/actions/flashcards";
 import { DeckIconEditor } from "./DeckIconEditor";
+import { StartDeckButton } from "./StartDeckButton";
 
 export function DeckCard({
   deck,
@@ -21,10 +22,8 @@ export function DeckCard({
   canEdit: boolean;
 }) {
   const t = useTranslations("flashcards");
-  const router = useRouter();
   const [favorited, setFavorited] = useState(isFavorited);
   const [, startTransition] = useTransition();
-  const [isStarting, startStartTransition] = useTransition();
   const masteredPct =
     deck.masteredCount !== null && deck.cardCount > 0
       ? Math.round((deck.masteredCount / deck.cardCount) * 100)
@@ -34,25 +33,6 @@ export function DeckCard({
     setFavorited((v) => !v);
     startTransition(() => {
       toggleDeckFavoriteAction(deck.id);
-    });
-  }
-
-  const hasProgress = isSignedIn && deck.startedCount !== null && deck.startedCount > 0;
-
-  // "Continue" is a plain navigation — box/due-date progress is
-  // per-card, not per-session, so there's nothing to resume beyond
-  // what's already stored. "Start over" wipes that progress first so
-  // the deck genuinely restarts instead of resuming mastered cards.
-  function handleContinue() {
-    startStartTransition(async () => {
-      router.push(`/flashcards/${deck.id}`);
-    });
-  }
-
-  function handleStartOver() {
-    startStartTransition(async () => {
-      await startDeckAction(deck.id);
-      router.push(`/flashcards/${deck.id}`);
     });
   }
 
@@ -102,35 +82,7 @@ export function DeckCard({
         </div>
       )}
 
-      {hasProgress ? (
-        <div className="mt-auto flex gap-2">
-          <button
-            type="button"
-            onClick={handleContinue}
-            disabled={isStarting}
-            className="flex-1 rounded-lg bg-accent px-3 py-2 text-center font-ui text-sm font-medium text-white transition-colors duration-base hover:bg-accent-hover disabled:opacity-70"
-          >
-            {t("continue")}
-          </button>
-          <button
-            type="button"
-            onClick={handleStartOver}
-            disabled={isStarting}
-            className="flex-1 rounded-lg border border-border px-3 py-2 text-center font-ui text-sm font-medium text-primary transition-colors duration-base hover:bg-surface-sunken disabled:opacity-70"
-          >
-            {t("startOver")}
-          </button>
-        </div>
-      ) : (
-        <button
-          type="button"
-          onClick={handleContinue}
-          disabled={isStarting}
-          className="mt-auto rounded-lg bg-accent px-3 py-2 text-center font-ui text-sm font-medium text-white transition-colors duration-base hover:bg-accent-hover disabled:opacity-70"
-        >
-          {t("studyDeck")}
-        </button>
-      )}
+      <StartDeckButton deck={deck} isSignedIn={isSignedIn} variant="card" />
     </div>
   );
 }

@@ -364,7 +364,10 @@
     "myFolders": "Mis Carpetas",
     "favourites": "Favoritos",
     "noFavourites": "Todavía no hay mazos en favoritos.",
-    "allDecksInFolders": "Todos los mazos están organizados en carpetas."
+    "allDecksInFolders": "Todos los mazos están organizados en carpetas.",
+    "columnDeck": "Mazo",
+    "columnCards": "Tarjetas",
+    "columnMastered": "Dominado"
   },
   "questionBank": {
     "pageTitle": "Banco de Preguntas",

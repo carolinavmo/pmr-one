@@ -364,7 +364,10 @@
     "myFolders": "My Folders",
     "favourites": "Favourites",
     "noFavourites": "You haven't added any decks to your favourites yet.",
-    "allDecksInFolders": "All decks are organized into folders — open one above to see its decks."
+    "allDecksInFolders": "All decks are organized into folders — open one above to see its decks.",
+    "columnDeck": "Deck",
+    "columnCards": "Cards",
+    "columnMastered": "Mastered"
   },
   "questionBank": {
     "pageTitle": "Question Bank",

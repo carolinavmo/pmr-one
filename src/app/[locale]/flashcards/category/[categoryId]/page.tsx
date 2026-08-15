@@ -3,7 +3,7 @@ import { getTranslations } from "next-intl/server";
 import { auth } from "@/auth";
 import { Link } from "@/i18n/navigation";
 import { getCategoryWithDecks, getDeckSummaries, getFavoritedDeckIds } from "@/lib/flashcards";
-import { DeckCard } from "@/components/flashcards/DeckCard";
+import { DeckTable } from "@/components/flashcards/DeckTable";
 import { CategoryHeader } from "@/components/flashcards/CategoryHeader";
 import { CategoryDeckManager } from "@/components/flashcards/CategoryDeckManager";
 
@@ -56,17 +56,7 @@ export default async function FlashcardCategoryPage({ params }: CategoryPageProp
           {t("noDecksInFolder")}
         </p>
       ) : (
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-          {decks.map((deck) => (
-            <DeckCard
-              key={deck.id}
-              deck={deck}
-              isFavorited={favoritedDeckIds.has(deck.id)}
-              isSignedIn={Boolean(session)}
-              canEdit={deck.ownerType === "user" || isEditor}
-            />
-          ))}
-        </div>
+        <DeckTable decks={decks} isSignedIn={Boolean(session)} favoritedDeckIds={favoritedDeckIds} />
       )}
     </main>
   );
