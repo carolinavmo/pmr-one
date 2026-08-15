@@ -129,7 +129,7 @@ export function BasicSciencesSection({
             single row to the right, connected by straight arrows. Matches
             the reference layout (not stacked/numbered like a first pass
             at this had it). */}
-        <div className="mt-14 rounded-2xl border border-slate-100 bg-white p-8 shadow-sm">
+        <div className="mt-14 rounded-2xl border border-slate-100 bg-white p-8 shadow-[0_0_10px_rgba(0,0,0,0.08)]">
           <div className="flex flex-col gap-8 lg:flex-row lg:items-center lg:gap-10">
             <div className="flex flex-col gap-1.5 lg:w-64 lg:shrink-0">
               <h3 className="font-sans text-xl leading-tight font-bold text-[#121729]">
