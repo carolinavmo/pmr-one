@@ -213,7 +213,7 @@ export function FlashcardReviewer({
                 }
               }}
             >
-              <p className="font-heading text-xl font-semibold text-primary">{current.question}</p>
+              <p className="font-reading text-xl font-semibold text-primary">{current.question}</p>
               <div className="flex flex-col items-center gap-2 text-secondary">
                 <MousePointerClick className="size-8" aria-hidden="true" />
                 <span className="font-ui text-sm">{t("clickToReveal")}</span>
@@ -243,7 +243,7 @@ export function FlashcardReviewer({
             </div>
 
             <div className="flex flex-1 flex-col items-center justify-center gap-4 text-center">
-              <p className="font-heading text-xl font-semibold text-primary">{current.answer}</p>
+              <p className="font-reading text-xl font-semibold text-primary">{current.answer}</p>
               {sourceDiseaseName && sourceDiseaseSlug && (
                 <Link
                   href={`/conditions/${sourceDiseaseSlug}`}
