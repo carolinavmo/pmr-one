@@ -204,12 +204,9 @@ export function FlashcardReviewer({
         <div className="flex flex-1 flex-col items-center justify-center gap-4 text-center">
           {revealed ? (
             <>
-              <div className="flex flex-col items-center gap-1.5">
-                <span className="flex size-10 items-center justify-center rounded-full border-2 border-trust text-trust">
-                  <Check className="size-5" aria-hidden="true" />
-                </span>
-                <span className="font-ui text-sm font-semibold text-trust">{t("answerLabel")}</span>
-              </div>
+              <span className="rounded-full bg-trust/10 px-3 py-1 font-ui text-xs font-semibold tracking-wide text-trust uppercase">
+                {t("backLabel")}
+              </span>
               <p className="font-heading text-xl font-semibold text-primary">{current.answer}</p>
               {sourceDiseaseName && sourceDiseaseSlug && (
                 <Link
@@ -222,6 +219,9 @@ export function FlashcardReviewer({
             </>
           ) : (
             <>
+              <span className="rounded-full bg-border/30 px-3 py-1 font-ui text-xs font-semibold tracking-wide text-secondary uppercase">
+                {t("frontLabel")}
+              </span>
               <p className="font-heading text-xl font-semibold text-primary">{current.question}</p>
               <button
                 type="button"
