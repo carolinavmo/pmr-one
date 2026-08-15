@@ -97,7 +97,7 @@ export function BasicSciencesSection({
               topic card in that card's own accent color */}
           <div className="relative flex items-center">
             <div
-              className="relative -mr-10 h-80 w-44 shrink-0 sm:h-96 sm:w-52"
+              className="relative -mr-10 h-80 shrink-0 sm:h-96"
               style={{
                 maskImage: "linear-gradient(to right, black 45%, transparent 92%)",
                 WebkitMaskImage: "linear-gradient(to right, black 45%, transparent 92%)",
@@ -106,9 +106,10 @@ export function BasicSciencesSection({
               <Image
                 src="/basic-sciences-anatomy.png"
                 alt=""
-                fill
-                sizes="220px"
-                className="object-contain object-bottom"
+                width={532}
+                height={800}
+                unoptimized
+                className="h-full w-auto object-contain"
               />
             </div>
 
