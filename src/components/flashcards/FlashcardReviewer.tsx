@@ -178,7 +178,7 @@ export function FlashcardReviewer({
         </div>
       )}
 
-      <div className="flex flex-col gap-6 rounded-2xl border border-border bg-surface-card p-6 shadow-sm sm:p-8">
+      <div className="flex min-h-[28rem] flex-col gap-6 rounded-2xl border border-border bg-surface-card p-6 shadow-sm sm:min-h-[32rem] sm:p-8">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <button
@@ -201,45 +201,39 @@ export function FlashcardReviewer({
           </span>
         </div>
 
-        {revealed ? (
-          <div className="flex flex-col items-center gap-4 text-center">
-            <div className="flex flex-col items-center gap-1.5">
-              <span className="flex size-10 items-center justify-center rounded-full border-2 border-trust text-trust">
-                <Check className="size-5" aria-hidden="true" />
-              </span>
-              <span className="font-ui text-sm font-semibold text-trust">{t("answerLabel")}</span>
-            </div>
-            <p className="font-heading text-xl font-semibold text-primary">{current.answer}</p>
-            {sourceDiseaseName && sourceDiseaseSlug && (
-              <Link
-                href={`/conditions/${sourceDiseaseSlug}`}
-                className="font-ui text-xs text-secondary hover:text-accent"
+        <div className="flex flex-1 flex-col items-center justify-center gap-4 text-center">
+          {revealed ? (
+            <>
+              <div className="flex flex-col items-center gap-1.5">
+                <span className="flex size-10 items-center justify-center rounded-full border-2 border-trust text-trust">
+                  <Check className="size-5" aria-hidden="true" />
+                </span>
+                <span className="font-ui text-sm font-semibold text-trust">{t("answerLabel")}</span>
+              </div>
+              <p className="font-heading text-xl font-semibold text-primary">{current.answer}</p>
+            </>
+          ) : (
+            <>
+              <p className="font-heading text-xl font-semibold text-primary">{current.question}</p>
+              <button
+                type="button"
+                onClick={() => setRevealed(true)}
+                className="flex flex-col items-center gap-2 text-secondary transition-colors duration-base hover:text-accent"
               >
-                {t("fromDisease", { name: sourceDiseaseName })}
-              </Link>
-            )}
-          </div>
-        ) : (
-          <div className="flex flex-col items-center gap-4 py-6 text-center">
-            <p className="font-heading text-xl font-semibold text-primary">{current.question}</p>
-            <button
-              type="button"
-              onClick={() => setRevealed(true)}
-              className="flex flex-col items-center gap-2 text-secondary transition-colors duration-base hover:text-accent"
+                <MousePointerClick className="size-8" aria-hidden="true" />
+                <span className="font-ui text-sm">{t("clickToReveal")}</span>
+              </button>
+            </>
+          )}
+          {sourceDiseaseName && sourceDiseaseSlug && (
+            <Link
+              href={`/conditions/${sourceDiseaseSlug}`}
+              className="font-ui text-xs text-secondary hover:text-accent"
             >
-              <MousePointerClick className="size-8" aria-hidden="true" />
-              <span className="font-ui text-sm">{t("clickToReveal")}</span>
-            </button>
-            {sourceDiseaseName && sourceDiseaseSlug && (
-              <Link
-                href={`/conditions/${sourceDiseaseSlug}`}
-                className="font-ui text-xs text-secondary hover:text-accent"
-              >
-                {t("fromDisease", { name: sourceDiseaseName })}
-              </Link>
-            )}
-          </div>
-        )}
+              {t("fromDisease", { name: sourceDiseaseName })}
+            </Link>
+          )}
+        </div>
 
         {revealed &&
           (isSignedIn ? (
@@ -321,7 +315,7 @@ function DeckResults({
   const percent = totalReviewed > 0 ? Math.round((knowCount / totalReviewed) * 100) : 0;
 
   return (
-    <div className="mx-auto flex max-w-md flex-col items-center gap-5 rounded-2xl border border-border bg-surface-card p-8 text-center shadow-sm">
+    <div className="flex min-h-[28rem] flex-col items-center justify-center gap-5 rounded-2xl border border-border bg-surface-card p-6 text-center shadow-sm sm:min-h-[32rem] sm:p-8">
       <span className="flex size-14 items-center justify-center rounded-full border-2 border-trust text-trust">
         <Check className="size-7" aria-hidden="true" />
       </span>
@@ -331,7 +325,7 @@ function DeckResults({
           {t("deckCompleteScore", { known: knowCount, total: totalReviewed, percent })}
         </p>
       </div>
-      <div className="h-2 w-full overflow-hidden rounded-full bg-border/40">
+      <div className="h-2 w-full max-w-sm overflow-hidden rounded-full bg-border/40">
         <div className="h-full rounded-full bg-trust transition-all duration-base" style={{ width: `${percent}%` }} />
       </div>
       <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:justify-center">
