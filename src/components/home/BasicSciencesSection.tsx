@@ -56,10 +56,8 @@ export function BasicSciencesSection({
         <div className="grid grid-cols-1 gap-12 lg:grid-cols-2 lg:items-center">
           {/* Text column */}
           <div className="flex flex-col gap-5">
-            <span className="flex w-fit items-center gap-2.5">
-              <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-[#1ba7b7]/15">
-                <Bone className="size-4.5 text-[#1ba7b7]" aria-hidden="true" />
-              </span>
+            <span className="flex w-fit items-center gap-2.5 rounded-full bg-[#1ba7b7]/15 px-4 py-2">
+              <Bone className="size-5 shrink-0 text-[#1ba7b7]" aria-hidden="true" />
               <span className="font-sans text-lg font-semibold tracking-wide text-[#1ba7b7] uppercase">{eyebrow}</span>
             </span>
 
