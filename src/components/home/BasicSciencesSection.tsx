@@ -118,12 +118,8 @@ export function BasicSciencesSection({
             </div>
 
             <div className="flex flex-1 flex-col gap-4">
-              {TOPICS.map(({ key, icon: Icon, iconBg, iconColor, lineColor, dotColor }) => (
+              {TOPICS.map(({ key, icon: Icon, iconBg, iconColor }) => (
                 <div key={key} className="flex items-center gap-3">
-                  <span className="hidden items-center lg:flex" aria-hidden="true">
-                    <span className={`h-px w-8 border-t-2 border-dashed ${lineColor}`} />
-                    <span className={`-ml-1 size-1.5 shrink-0 rounded-full ${dotColor}`} />
-                  </span>
                   <div className="flex flex-1 items-start gap-3 rounded-xl border border-slate-100 bg-white p-4 shadow-sm">
                     <span className={`flex size-10 shrink-0 items-center justify-center rounded-full ${iconBg}`}>
                       <Icon className={`size-5 ${iconColor}`} aria-hidden="true" />
