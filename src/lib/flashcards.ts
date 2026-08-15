@@ -378,6 +378,19 @@ export async function recordReview(
   return { box, dueAt };
 }
 
+// Clicking "Study deck" always starts a fresh session — deletes this
+// user's box/due-date progress for every card in the deck so mastery
+// doesn't carry over between study sessions. A plain DELETE with no
+// matching rows is a harmless no-op, so this is safe to call
+// unconditionally rather than checking for prior progress first.
+export async function resetDeckProgress(userId: string, deckId: string): Promise<void> {
+  await pool.query(
+    `DELETE FROM flashcard_progress
+     WHERE user_id = $1 AND flashcard_id IN (SELECT id FROM flashcard WHERE deck_id = $2)`,
+    [userId, deckId]
+  );
+}
+
 // Mirrors clinical_calculator_favorite / getFavoritedCalculatorIds
 // exactly (workspace.ts) — a personal star toggle, unrelated to deck
 // ownership, so it works the same for a preset deck or a user's own.

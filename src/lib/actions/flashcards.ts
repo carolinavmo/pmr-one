@@ -18,6 +18,7 @@ import {
   deleteCard,
   reorderCards,
   recordReview,
+  resetDeckProgress,
   toggleDeckFavorite,
   createCategory,
   renameCategory,
@@ -152,6 +153,16 @@ export async function reorderCardsAction(deckId: string, orderedIds: string[]): 
 export async function recordReviewAction(flashcardId: string, knew: boolean): Promise<void> {
   const { userId } = await requireUserId();
   await recordReview(userId, flashcardId, knew);
+  revalidateFlashcardSurfaces();
+}
+
+// Called from DeckCard's "Study deck" button before navigating —
+// unlike recordReviewAction this one is awaited, not fire-and-forget,
+// so the reset has landed before the reviewer page loads and reads
+// progress for the first card.
+export async function startDeckAction(deckId: string): Promise<void> {
+  const { userId } = await requireUserId();
+  await resetDeckProgress(userId, deckId);
   revalidateFlashcardSurfaces();
 }
 

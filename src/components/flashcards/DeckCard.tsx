@@ -3,10 +3,10 @@
 import { useState, useTransition } from "react";
 import { Star } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { Link } from "@/i18n/navigation";
+import { Link, useRouter } from "@/i18n/navigation";
 import type { DeckSummary } from "@/lib/flashcards";
 import { CARD_COLOR_CHIP } from "@/lib/card-colors";
-import { toggleDeckFavoriteAction } from "@/lib/actions/flashcards";
+import { startDeckAction, toggleDeckFavoriteAction } from "@/lib/actions/flashcards";
 import { DeckIconEditor } from "./DeckIconEditor";
 
 export function DeckCard({
@@ -21,8 +21,10 @@ export function DeckCard({
   canEdit: boolean;
 }) {
   const t = useTranslations("flashcards");
+  const router = useRouter();
   const [favorited, setFavorited] = useState(isFavorited);
   const [, startTransition] = useTransition();
+  const [isStarting, startStartTransition] = useTransition();
   const masteredPct =
     deck.masteredCount !== null && deck.cardCount > 0
       ? Math.round((deck.masteredCount / deck.cardCount) * 100)
@@ -32,6 +34,17 @@ export function DeckCard({
     setFavorited((v) => !v);
     startTransition(() => {
       toggleDeckFavoriteAction(deck.id);
+    });
+  }
+
+  // Every "Study deck" click starts a fresh session — reset progress
+  // for this deck before navigating, so a deck studied before doesn't
+  // silently resume mid-way through. Awaited (not fire-and-forget)
+  // so the reset lands before the reviewer page loads.
+  function handleStudyDeck() {
+    startStartTransition(async () => {
+      if (isSignedIn) await startDeckAction(deck.id);
+      router.push(`/flashcards/${deck.id}`);
     });
   }
 
@@ -81,12 +94,14 @@ export function DeckCard({
         </div>
       )}
 
-      <Link
-        href={`/flashcards/${deck.id}`}
-        className="mt-auto rounded-lg bg-accent px-3 py-2 text-center font-ui text-sm font-medium text-white transition-colors duration-base hover:bg-accent-hover"
+      <button
+        type="button"
+        onClick={handleStudyDeck}
+        disabled={isStarting}
+        className="mt-auto rounded-lg bg-accent px-3 py-2 text-center font-ui text-sm font-medium text-white transition-colors duration-base hover:bg-accent-hover disabled:opacity-70"
       >
         {t("studyDeck")}
-      </Link>
+      </button>
     </div>
   );
 }
