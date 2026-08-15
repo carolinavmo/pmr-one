@@ -39,7 +39,7 @@ export function EditableDeckName({ deckId, initialName }: { deckId: string; init
           onChange={(e) => setDraft(e.target.value)}
           autoFocus
           disabled={isPending}
-          className="font-reading text-2xl text-primary outline-none border-b border-accent bg-transparent"
+          className="font-heading text-2xl text-primary outline-none border-b border-accent bg-transparent"
         />
         <button
           type="button"
@@ -63,7 +63,7 @@ export function EditableDeckName({ deckId, initialName }: { deckId: string; init
 
   return (
     <div className="flex items-center gap-2">
-      <h1 className="font-reading text-2xl text-primary">{name}</h1>
+      <h1 className="font-heading text-2xl text-primary">{name}</h1>
       <button
         type="button"
         onClick={startEdit}

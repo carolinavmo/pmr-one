@@ -53,7 +53,7 @@ export default async function FlashcardDeckPage({ params }: DeckPageProps) {
           {canManage ? (
             <EditableDeckName deckId={deck.id} initialName={deck.name} />
           ) : (
-            <h1 className="font-reading text-2xl text-primary">{deck.name}</h1>
+            <h1 className="font-heading text-2xl text-primary">{deck.name}</h1>
           )}
           {deck.description && <p className="font-ui text-sm text-secondary">{deck.description}</p>}
         </div>
