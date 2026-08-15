@@ -216,7 +216,7 @@ export function QuestionBankMockup({
   options: { label: string; isCorrect: boolean }[];
 }) {
   return (
-    <div className="flex flex-col gap-3 rounded-2xl border border-card-indigo/30 bg-card-indigo/5 p-5">
+    <div className="flex flex-col gap-3 rounded-2xl border border-[#E4E4EE] bg-[#FCFCFE] p-5">
       <p className="font-ui text-sm font-medium text-primary">{prompt}</p>
       <div className="flex flex-col gap-2">
         {options.map((option, i) => (
