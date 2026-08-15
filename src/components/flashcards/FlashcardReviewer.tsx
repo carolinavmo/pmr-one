@@ -239,7 +239,7 @@ export function FlashcardReviewer({
             </div>
 
             <div className="flex flex-1 flex-col items-center justify-center gap-4 text-center">
-              <p className="font-reading text-xl font-semibold text-primary">{current.answer}</p>
+              <p className="font-reading text-xl font-normal text-primary">{current.answer}</p>
             </div>
 
             {isSignedIn ? (
