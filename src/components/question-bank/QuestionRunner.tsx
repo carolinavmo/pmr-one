@@ -27,7 +27,16 @@ const DIFFICULTY_LABEL_KEY: Record<Difficulty, "difficultyEasy" | "difficultyMed
 // yourAttempt/reveal (safe: it already happened before this page load).
 export function QuestionRunner({ set, isSignedIn }: { set: QuestionSetDetail; isSignedIn: boolean }) {
   const t = useTranslations("questionBank");
-  const [index, setIndex] = useState(0);
+  // "Continue" (StartSetButton) is a plain navigation back to this page
+  // — resume at the first unanswered question rather than always
+  // reopening Q1. No separate position table needed: each question's
+  // own yourAttempt (from getSetWithQuestions) already says whether
+  // it's been answered. Falls back to 0 when every question already
+  // has an attempt (nothing left to resume to).
+  const [index, setIndex] = useState(() => {
+    const firstUnanswered = set.questions.findIndex((q) => !q.yourAttempt);
+    return firstUnanswered === -1 ? 0 : firstUnanswered;
+  });
   const [reveals, setReveals] = useState<Record<string, QuestionAttemptResult>>(() => {
     const initial: Record<string, QuestionAttemptResult> = {};
     for (const q of set.questions) {
