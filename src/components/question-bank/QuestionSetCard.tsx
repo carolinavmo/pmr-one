@@ -5,6 +5,7 @@ import { ChevronRight } from "lucide-react";
 import { Link } from "@/i18n/navigation";
 import type { Difficulty, QuestionSetSummary } from "@/lib/question-bank";
 import { CARD_COLOR_CHIP } from "@/lib/card-colors";
+import { StartSetButton } from "./StartSetButton";
 
 const DIFFICULTY_LEVEL: Record<Difficulty, number> = { easy: 1, medium: 2, hard: 3 };
 const DIFFICULTY_LABEL_KEY: Record<Difficulty, "difficultyEasy" | "difficultyMedium" | "difficultyHard"> = {
@@ -65,12 +66,7 @@ export function QuestionSetCard({ set }: { set: QuestionSetSummary }) {
         </div>
       )}
 
-      <Link
-        href={`/question-bank/set/${set.id}`}
-        className="mt-auto rounded-lg bg-accent px-3 py-2 text-center font-ui text-sm font-medium text-white transition-colors duration-base hover:bg-accent-hover"
-      >
-        {t("start")}
-      </Link>
+      <StartSetButton set={set} variant="card" />
     </div>
   );
 }

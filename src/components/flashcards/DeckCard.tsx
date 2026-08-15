@@ -37,13 +37,21 @@ export function DeckCard({
     });
   }
 
-  // Every "Study deck" click starts a fresh session — reset progress
-  // for this deck before navigating, so a deck studied before doesn't
-  // silently resume mid-way through. Awaited (not fire-and-forget)
-  // so the reset lands before the reviewer page loads.
-  function handleStudyDeck() {
+  const hasProgress = isSignedIn && deck.startedCount !== null && deck.startedCount > 0;
+
+  // "Continue" is a plain navigation — box/due-date progress is
+  // per-card, not per-session, so there's nothing to resume beyond
+  // what's already stored. "Start over" wipes that progress first so
+  // the deck genuinely restarts instead of resuming mastered cards.
+  function handleContinue() {
     startStartTransition(async () => {
-      if (isSignedIn) await startDeckAction(deck.id);
+      router.push(`/flashcards/${deck.id}`);
+    });
+  }
+
+  function handleStartOver() {
+    startStartTransition(async () => {
+      await startDeckAction(deck.id);
       router.push(`/flashcards/${deck.id}`);
     });
   }
@@ -94,14 +102,35 @@ export function DeckCard({
         </div>
       )}
 
-      <button
-        type="button"
-        onClick={handleStudyDeck}
-        disabled={isStarting}
-        className="mt-auto rounded-lg bg-accent px-3 py-2 text-center font-ui text-sm font-medium text-white transition-colors duration-base hover:bg-accent-hover disabled:opacity-70"
-      >
-        {t("studyDeck")}
-      </button>
+      {hasProgress ? (
+        <div className="mt-auto flex gap-2">
+          <button
+            type="button"
+            onClick={handleContinue}
+            disabled={isStarting}
+            className="flex-1 rounded-lg bg-accent px-3 py-2 text-center font-ui text-sm font-medium text-white transition-colors duration-base hover:bg-accent-hover disabled:opacity-70"
+          >
+            {t("continue")}
+          </button>
+          <button
+            type="button"
+            onClick={handleStartOver}
+            disabled={isStarting}
+            className="flex-1 rounded-lg border border-border px-3 py-2 text-center font-ui text-sm font-medium text-primary transition-colors duration-base hover:bg-surface-sunken disabled:opacity-70"
+          >
+            {t("startOver")}
+          </button>
+        </div>
+      ) : (
+        <button
+          type="button"
+          onClick={handleContinue}
+          disabled={isStarting}
+          className="mt-auto rounded-lg bg-accent px-3 py-2 text-center font-ui text-sm font-medium text-white transition-colors duration-base hover:bg-accent-hover disabled:opacity-70"
+        >
+          {t("studyDeck")}
+        </button>
+      )}
     </div>
   );
 }

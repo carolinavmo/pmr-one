@@ -6,6 +6,7 @@ import { Link } from "@/i18n/navigation";
 import type { QuestionSetSummary } from "@/lib/question-bank";
 import { CARD_COLOR_CHIP } from "@/lib/card-colors";
 import { DifficultyDots } from "./QuestionSetCard";
+import { StartSetButton } from "./StartSetButton";
 
 // Table layout for a folder's question sets, mirroring the reference
 // screenshot's index table. Scoped to one folder already (this renders
@@ -73,12 +74,7 @@ export function QuestionSetTable({ sets }: { sets: QuestionSetSummary[] }) {
                   {set.lastAnsweredAt ? new Date(set.lastAnsweredAt).toLocaleDateString() : t("never")}
                 </td>
                 <td className="px-4 py-3 text-right">
-                  <Link
-                    href={`/question-bank/set/${set.id}`}
-                    className="inline-block rounded-lg bg-accent px-3 py-1.5 font-ui text-sm font-medium text-white transition-colors duration-base hover:bg-accent-hover"
-                  >
-                    {t("start")}
-                  </Link>
+                  <StartSetButton set={set} variant="table" />
                 </td>
               </tr>
             ))}

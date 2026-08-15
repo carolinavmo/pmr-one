@@ -34,6 +34,7 @@ export interface DeckSummary {
   color: CardColor;
   cardCount: number;
   masteredCount: number | null; // null when there's no session to score against
+  startedCount: number | null; // any card with progress at all (any box), not just mastered; null when signed out
   categoryId: string | null; // the folder this preset deck belongs to; always null for user decks
   icon: CardIconName | undefined; // the assigned category's icon; undefined for user decks or an uncategorized preset deck
   topicLabel: string | undefined; // the assigned category's name
@@ -70,6 +71,7 @@ function mapDeckSummaryRow(r: {
   color: CardColor;
   card_count: string;
   mastered_count: string | null;
+  started_count: string | null;
   category_id: string | null;
   category_name: string | null;
   category_icon: string | null;
@@ -83,6 +85,7 @@ function mapDeckSummaryRow(r: {
     color: r.color,
     cardCount: Number(r.card_count),
     masteredCount: r.mastered_count === null ? null : Number(r.mastered_count),
+    startedCount: r.started_count === null ? null : Number(r.started_count),
     categoryId: r.category_id,
     icon: (r.category_icon as CardIconName | null) ?? undefined,
     topicLabel: r.category_name ?? undefined,
@@ -98,8 +101,13 @@ export async function getDeckSummaries(
          SELECT COUNT(*) FROM flashcard f
          JOIN flashcard_progress p ON p.flashcard_id = f.id AND p.user_id = $1
          WHERE f.deck_id = d.id AND p.box >= ${MASTERY_BOX}
-       ) AS mastered_count`
-    : `, NULL::bigint AS mastered_count`;
+       ) AS mastered_count,
+       (
+         SELECT COUNT(*) FROM flashcard f
+         JOIN flashcard_progress p ON p.flashcard_id = f.id AND p.user_id = $1
+         WHERE f.deck_id = d.id
+       ) AS started_count`
+    : `, NULL::bigint AS mastered_count, NULL::bigint AS started_count`;
 
   const { rows: presetRows } = await pool.query(
     `SELECT d.id, d.owner_type, d.name, d.description, d.color, d.icon_url,
@@ -125,7 +133,12 @@ export async function getDeckSummaries(
          SELECT COUNT(*) FROM flashcard f
          JOIN flashcard_progress p ON p.flashcard_id = f.id AND p.user_id = $1
          WHERE f.deck_id = d.id AND p.box >= ${MASTERY_BOX}
-       ) AS mastered_count
+       ) AS mastered_count,
+       (
+         SELECT COUNT(*) FROM flashcard f
+         JOIN flashcard_progress p ON p.flashcard_id = f.id AND p.user_id = $1
+         WHERE f.deck_id = d.id
+       ) AS started_count
      FROM flashcard_deck d
      LEFT JOIN flashcard_category c ON c.id = d.category_id
      WHERE d.owner_type = 'user' AND d.user_id = $1
@@ -216,6 +229,7 @@ export async function createDeck(userId: string, name: string, color: CardColor)
       ...rows[0],
       card_count: "0",
       mastered_count: "0",
+      started_count: "0",
       category_id: null,
       category_name: null,
       category_icon: null,
@@ -415,7 +429,12 @@ export async function getFavoritedDecks(userId: string): Promise<DeckSummary[]> 
          SELECT COUNT(*) FROM flashcard f
          JOIN flashcard_progress p ON p.flashcard_id = f.id AND p.user_id = $1
          WHERE f.deck_id = d.id AND p.box >= ${MASTERY_BOX}
-       ) AS mastered_count
+       ) AS mastered_count,
+       (
+         SELECT COUNT(*) FROM flashcard f
+         JOIN flashcard_progress p ON p.flashcard_id = f.id AND p.user_id = $1
+         WHERE f.deck_id = d.id
+       ) AS started_count
      FROM flashcard_deck_favorite fav
      JOIN flashcard_deck d ON d.id = fav.deck_id
      LEFT JOIN flashcard_category c ON c.id = d.category_id
@@ -512,8 +531,13 @@ export async function getCategoryWithDecks(
          SELECT COUNT(*) FROM flashcard f
          JOIN flashcard_progress p ON p.flashcard_id = f.id AND p.user_id = $2
          WHERE f.deck_id = d.id AND p.box >= ${MASTERY_BOX}
-       ) AS mastered_count`
-    : `, NULL::bigint AS mastered_count`;
+       ) AS mastered_count,
+       (
+         SELECT COUNT(*) FROM flashcard f
+         JOIN flashcard_progress p ON p.flashcard_id = f.id AND p.user_id = $2
+         WHERE f.deck_id = d.id
+       ) AS started_count`
+    : `, NULL::bigint AS mastered_count, NULL::bigint AS started_count`;
 
   const { rows: deckRows } = await pool.query(
     `SELECT d.id, d.owner_type, d.name, d.description, d.color, d.icon_url,

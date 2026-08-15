@@ -19,6 +19,7 @@ import {
   deleteQuestion,
   reorderQuestions,
   recordAttempt,
+  resetSetAttempts,
   getQuestionsForManagement,
   type Difficulty,
   type QuestionCategory,
@@ -176,4 +177,14 @@ export async function recordAttemptAction(
   if (!result) throw new Error("Invalid question or option.");
   revalidateQuestionBankSurfaces();
   return result;
+}
+
+// Called from the "Start over" control on a set the member has already
+// attempted — any signed-in member, no editor check, same gating as
+// recordAttemptAction.
+export async function restartSetAction(setId: string): Promise<void> {
+  const session = await auth();
+  if (!session) throw new Error("Unauthorized");
+  await resetSetAttempts(session.user.id, setId);
+  revalidateQuestionBankSurfaces();
 }

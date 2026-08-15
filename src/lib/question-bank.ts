@@ -374,6 +374,18 @@ export async function recordAttempt(
   };
 }
 
+// Called from the "Start over" control — deletes this member's
+// question_attempt rows for every question in the set, same "wipe
+// progress outright" reset Flashcards uses for its own Start Over
+// control (see flashcards.ts's resetDeckProgress). A plain DELETE with
+// no matching rows is a harmless no-op.
+export async function resetSetAttempts(userId: string, setId: string): Promise<void> {
+  await pool.query(
+    `DELETE FROM question_attempt WHERE user_id = $1 AND question_id IN (SELECT id FROM question WHERE set_id = $2)`,
+    [userId, setId]
+  );
+}
+
 // ---- Editor-only authoring reads/writes below ----
 
 export async function getQuestionsForManagement(setId: string): Promise<QuestionEditable[]> {
