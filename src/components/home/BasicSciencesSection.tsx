@@ -72,7 +72,8 @@ export function BasicSciencesSection({
             <h2 className="font-sans text-3xl leading-tight font-bold text-slate-900 sm:text-4xl">
               {headingLine1}
               <br />
-              <span className="text-[#1ba7b7]">{headingLine2}</span>
+              <span className="text-[#1ba7b7]">{headingLine2.split(" ")[0]}</span>{" "}
+              {headingLine2.split(" ").slice(1).join(" ")}
             </h2>
 
             <p className="max-w-lg font-sans text-base leading-relaxed text-slate-600">{body}</p>
