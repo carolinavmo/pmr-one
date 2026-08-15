@@ -106,6 +106,8 @@
     "featureConditionsCta": "Browse conditions",
     "featureConditionsStatLabel": "Conditions available",
     "featureConditionsUrlLabel": "pmratlas.com/conditions/{slug}",
+    "featureConditionsIndexLabel": "On this page",
+    "featureConditionsOverviewLabel": "Overview",
     "featureHandbookEyebrow": "My Handbook",
     "featureHandbookHeading": "Your own notes, protocols, and templates",
     "featureHandbookBody": "Write and organize your own clinical notes and rehab protocols alongside the reference material — private to you, and preloaded with sample pages to show you how.",

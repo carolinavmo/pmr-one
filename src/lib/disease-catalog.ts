@@ -61,6 +61,16 @@ function mapRow(row: {
   };
 }
 
+// The homepage's Conditions mockup is a decorative "here's the shape
+// of a disease page" illustration (browser-chrome card, not a real
+// link) rather than a live catalog entry — it intentionally shows one
+// specific, curated disease regardless of publish status, the same
+// way it isn't gated by sign-in either. Not status-filtered.
+export async function getDiseaseBySlugForCatalog(slug: string): Promise<DiseaseCatalogEntry | null> {
+  const { rows } = await pool.query(`${CATALOG_QUERY} WHERE d.slug = $1`, [slug]);
+  return rows[0] ? mapRow(rows[0]) : null;
+}
+
 export async function getPublishedDiseases(): Promise<DiseaseCatalogEntry[]> {
   const { rows } = await pool.query(
     `${CATALOG_QUERY} WHERE d.status = 'published' ORDER BY d.canonical_name`

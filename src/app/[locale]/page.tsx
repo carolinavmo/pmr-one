@@ -2,7 +2,8 @@ import Image from "next/image";
 import { getLocale, getTranslations } from "next-intl/server";
 import { BookOpen, Calendar, Layers, ListChecks } from "lucide-react";
 import { auth } from "@/auth";
-import { getPlatformStats, getRecentlyPublishedDiseases } from "@/lib/disease-catalog";
+import { getPlatformStats, getRecentlyPublishedDiseases, getDiseaseBySlugForCatalog } from "@/lib/disease-catalog";
+import { getSectionIndex } from "@/lib/disease-loader";
 import {
   getRecentlyViewed,
   getFavoriteDiseases,
@@ -79,23 +80,35 @@ export default async function Home({ searchParams }: HomeProps) {
   const t = await getTranslations("home");
   const locale = await getLocale();
 
-  const [hero, platformStats, recentDiseases, deckSummaries, questionBankStats, sampleQuestion, calculators] =
+  const [hero, platformStats, sampleDisease, deckSummaries, questionBankStats, sampleQuestion, calculators] =
     await Promise.all([
       getHomepageHero(),
       getPlatformStats(),
-      getRecentlyPublishedDiseases(1),
+      // A specific, curated disease for the Conditions mockup below —
+      // not "most recently published" (that could later become any
+      // disease, and the mockup shows a hand-picked one deliberately).
+      // Independent of publish status, same as the mockup being
+      // unlinked/decorative rather than a real catalog entry.
+      getDiseaseBySlugForCatalog("rotator-cuff-tendinopathy"),
       getDeckSummaries(null),
       getDashboardStats(null),
       getSampleQuestion(),
       getAllCalculators(locale),
     ]);
 
-  const sampleDisease = recentDiseases[0];
   const firstPresetDeck = deckSummaries.presetDecks[0];
-  // A second, dependent fetch — needs the deck id from the query above,
-  // so it can't join the Promise.all. Only the front-of-card text is
-  // used (FlashcardsMockup), a small extra query for one homepage visual.
-  const sampleDeck = firstPresetDeck ? await getDeckWithCards(firstPresetDeck.id, null) : null;
+  // Two more dependent fetches — each needs an id from a query above, so
+  // neither can join the first Promise.all. getSectionIndex is the same
+  // cheap "heading text only" query the real disease page's own TOC
+  // uses, reused here so the homepage's Conditions mockup can show a
+  // real section index instead of inventing one.
+  const [sampleDeck, sampleSectionIndex] = await Promise.all([
+    firstPresetDeck ? getDeckWithCards(firstPresetDeck.id, null) : null,
+    // includeUnpublished: true — this mockup is intentionally
+    // independent of publish status (see getDiseaseBySlugForCatalog
+    // above), so its section index shouldn't be gated either.
+    sampleDisease ? getSectionIndex(sampleDisease.slug, true) : null,
+  ]);
   const flashcardFront = sampleDeck?.cards[0]?.question;
   const totalFlashcards = deckSummaries.presetDecks.reduce((sum, d) => sum + d.cardCount, 0);
   const firstCalculator = calculators[0];
@@ -187,6 +200,10 @@ export default async function Home({ searchParams }: HomeProps) {
               reviewedAt={sampleDisease.reviewedAt}
               tagLabels={[t("cardExaminationTitle"), t("cardTreatmentTitle"), t("cardRehabilitationTitle")]}
               urlLabel={t("featureConditionsUrlLabel", { slug: sampleDisease.slug })}
+              breadcrumbLabel={t("featureConditionsEyebrow")}
+              indexLabel={t("featureConditionsIndexLabel")}
+              overviewLabel={t("featureConditionsOverviewLabel")}
+              sections={sampleSectionIndex?.sections ?? []}
             />
           }
         />

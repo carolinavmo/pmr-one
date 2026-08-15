@@ -3,6 +3,7 @@ import { BookOpen, Calendar, Check, X, Layers, ListChecks } from "lucide-react";
 import { Link, redirect } from "@/i18n/navigation";
 import { auth } from "@/auth";
 import { getPlatformStats, getRecentlyPublishedDiseases } from "@/lib/disease-catalog";
+import { getSectionIndex } from "@/lib/disease-loader";
 import { getAllCalculators } from "@/lib/clinical-tools";
 import { getDeckSummaries, getDeckWithCards } from "@/lib/flashcards";
 import { getDashboardStats, getSampleQuestion } from "@/lib/question-bank";
@@ -62,6 +63,7 @@ export default async function ExplorePage() {
   const totalFlashcards = deckSummaries.presetDecks.reduce((sum, d) => sum + d.cardCount, 0);
   const firstCalculator = publicCalculators[0] ?? calculators[0];
   const mockupDisease = sampleDiseases[0];
+  const mockupSectionIndex = mockupDisease ? await getSectionIndex(mockupDisease.slug) : null;
 
   const t = await getTranslations("explore");
   const tHome = await getTranslations("home");
@@ -100,6 +102,10 @@ export default async function ExplorePage() {
           reviewedAt={mockupDisease.reviewedAt}
           tagLabels={[tHome("cardExaminationTitle"), tHome("cardTreatmentTitle"), tHome("cardRehabilitationTitle")]}
           urlLabel={tHome("featureConditionsUrlLabel", { slug: mockupDisease.slug })}
+          breadcrumbLabel={tHome("featureConditionsEyebrow")}
+          indexLabel={tHome("featureConditionsIndexLabel")}
+          overviewLabel={tHome("featureConditionsOverviewLabel")}
+          sections={mockupSectionIndex?.sections ?? []}
         />
       ),
     });

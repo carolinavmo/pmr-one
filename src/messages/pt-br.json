@@ -106,6 +106,8 @@
     "featureConditionsCta": "Ver patologias",
     "featureConditionsStatLabel": "Patologias disponíveis",
     "featureConditionsUrlLabel": "pmratlas.com/conditions/{slug}",
+    "featureConditionsIndexLabel": "Nesta página",
+    "featureConditionsOverviewLabel": "Visão geral",
     "featureHandbookEyebrow": "Meu Manual",
     "featureHandbookHeading": "Suas próprias notas, protocolos e modelos",
     "featureHandbookBody": "Escreva e organize suas próprias notas clínicas e protocolos de reabilitação junto do material de referência — privado, e pré-carregado com páginas de exemplo para mostrar como funciona.",

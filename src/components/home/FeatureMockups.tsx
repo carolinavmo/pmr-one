@@ -1,5 +1,6 @@
-import { Check, GripVertical, Layers, ListChecks, NotebookPen } from "lucide-react";
+import { Check, ChevronRight, GripVertical, Layers, ListChecks, NotebookPen } from "lucide-react";
 import { TrustIndicator } from "@/components/ui/TrustIndicator";
+import { iconForHeading } from "@/lib/section-icons";
 
 // Six small, hand-built visuals for the homepage's feature sections —
 // no external image assets. Conditions and Question Bank render real
@@ -28,12 +29,20 @@ export function ConditionsMockup({
   reviewedAt,
   tagLabels,
   urlLabel,
+  breadcrumbLabel,
+  indexLabel,
+  overviewLabel,
+  sections,
 }: {
   diseaseName: string;
   snippet: string;
   reviewedAt: string | null;
   tagLabels: string[];
   urlLabel: string;
+  breadcrumbLabel: string;
+  indexLabel: string;
+  overviewLabel: string;
+  sections: { id: string; heading: string }[];
 }) {
   return (
     <div className="overflow-hidden rounded-2xl border border-border bg-surface-raised shadow-lg">
@@ -43,18 +52,54 @@ export function ConditionsMockup({
           {urlLabel}
         </span>
       </div>
-      <div className="flex flex-col gap-3 p-5">
-        <div className="flex flex-wrap items-center justify-between gap-2">
-          <h3 className="font-heading text-lg font-semibold text-primary">{diseaseName}</h3>
-          <TrustIndicator reviewedAt={reviewedAt} />
-        </div>
-        <p className="line-clamp-2 font-ui text-sm text-secondary">{snippet}</p>
-        <div className="flex flex-wrap gap-1.5 border-t border-border pt-3">
-          {tagLabels.map((label) => (
-            <span key={label} className="rounded-full border border-border px-2.5 py-1 font-ui text-[11px] text-secondary">
-              {label}
+      <div className="flex flex-col gap-4 p-5 sm:flex-row">
+        {sections.length > 0 && (
+          <div className="flex shrink-0 flex-col gap-2 rounded-xl border border-border bg-surface p-3 sm:w-36">
+            <span className="px-1 font-ui text-[10px] font-semibold tracking-wide text-secondary uppercase">
+              {indexLabel}
             </span>
-          ))}
+            <div className="flex flex-col gap-0.5">
+              {sections.map((section, i) => {
+                const SectionIcon = iconForHeading(section.heading);
+                return (
+                  <span
+                    key={section.id}
+                    className={`flex items-center gap-1.5 rounded-lg px-1.5 py-1 font-ui text-[11px] ${
+                      i === 0 ? "bg-accent/10 text-accent" : "text-secondary"
+                    }`}
+                  >
+                    <SectionIcon className="size-3 shrink-0" aria-hidden="true" />
+                    <span className="truncate">{section.heading}</span>
+                  </span>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
+        <div className="flex min-w-0 flex-1 flex-col gap-3">
+          <div className="flex items-center gap-1 font-ui text-[11px] text-secondary">
+            <span>{breadcrumbLabel}</span>
+            <ChevronRight className="size-3 shrink-0" aria-hidden="true" />
+            <span className="truncate text-primary">{diseaseName}</span>
+          </div>
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <h3 className="font-heading text-lg font-semibold text-primary">{diseaseName}</h3>
+            <TrustIndicator reviewedAt={reviewedAt} />
+          </div>
+          <div className="flex flex-col gap-1.5">
+            <span className="font-ui text-[11px] font-semibold tracking-wide text-secondary uppercase">
+              {overviewLabel}
+            </span>
+            <p className="line-clamp-3 font-ui text-sm text-secondary">{snippet}</p>
+          </div>
+          <div className="flex flex-wrap gap-1.5 border-t border-border pt-3">
+            {tagLabels.map((label) => (
+              <span key={label} className="rounded-full border border-border px-2.5 py-1 font-ui text-[11px] text-secondary">
+                {label}
+              </span>
+            ))}
+          </div>
         </div>
       </div>
     </div>
