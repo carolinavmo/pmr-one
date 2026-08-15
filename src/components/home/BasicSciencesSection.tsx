@@ -17,9 +17,9 @@ import { Bone, PersonStanding, Waves, BookOpen, Link2, Layers, Target, Share2, B
 // specific unbuilt-feature promises (no "3D models", no counts).
 
 const TOPICS = [
-  { key: "anatomy", icon: Bone, iconBg: "bg-teal-50", iconColor: "text-[#1ba7b7]" },
-  { key: "biomechanics", icon: PersonStanding, iconBg: "bg-emerald-50", iconColor: "text-emerald-600" },
-  { key: "physicalAgents", icon: Waves, iconBg: "bg-violet-50", iconColor: "text-violet-600" },
+  { key: "anatomy", icon: Bone, iconBg: "bg-teal-50", iconColor: "text-[#1ba7b7]", lineColor: "border-[#1ba7b7]", dotColor: "bg-[#1ba7b7]" },
+  { key: "biomechanics", icon: PersonStanding, iconBg: "bg-emerald-50", iconColor: "text-emerald-600", lineColor: "border-emerald-400", dotColor: "bg-emerald-400" },
+  { key: "physicalAgents", icon: Waves, iconBg: "bg-violet-50", iconColor: "text-violet-600", lineColor: "border-violet-400", dotColor: "bg-violet-400" },
 ] as const;
 
 const FEATURES = [
@@ -92,28 +92,41 @@ export function BasicSciencesSection({
             </div>
           </div>
 
-          {/* Illustration column: anatomy illustration + connected topic cards */}
-          <div className="relative flex items-center gap-6">
-            <Image
-              src="/basic-sciences-anatomy.png"
-              alt=""
-              width={1023}
-              height={1537}
-              className="h-72 w-auto shrink-0 object-contain"
-            />
+          {/* Illustration column: anatomy illustration bleeding into a gradient
+              fade, dashed connector lines running from the fade to each
+              topic card in that card's own accent color */}
+          <div className="relative flex items-center">
+            <div
+              className="relative -mr-10 h-80 w-44 shrink-0 sm:h-96 sm:w-52"
+              style={{
+                maskImage: "linear-gradient(to right, black 45%, transparent 92%)",
+                WebkitMaskImage: "linear-gradient(to right, black 45%, transparent 92%)",
+              }}
+            >
+              <Image
+                src="/basic-sciences-anatomy.png"
+                alt=""
+                fill
+                sizes="220px"
+                className="object-contain object-bottom"
+              />
+            </div>
 
             <div className="flex flex-1 flex-col gap-4">
-              {TOPICS.map(({ key, icon: Icon, iconBg, iconColor }) => (
-                <div
-                  key={key}
-                  className="flex items-start gap-3 rounded-xl border border-slate-100 bg-white p-4 shadow-sm"
-                >
-                  <span className={`flex size-10 shrink-0 items-center justify-center rounded-full ${iconBg}`}>
-                    <Icon className={`size-5 ${iconColor}`} aria-hidden="true" />
+              {TOPICS.map(({ key, icon: Icon, iconBg, iconColor, lineColor, dotColor }) => (
+                <div key={key} className="flex items-center gap-3">
+                  <span className="hidden items-center lg:flex" aria-hidden="true">
+                    <span className={`h-px w-8 border-t-2 border-dashed ${lineColor}`} />
+                    <span className={`-ml-1 size-1.5 shrink-0 rounded-full ${dotColor}`} />
                   </span>
-                  <div className="flex flex-col gap-0.5">
-                    <span className="font-sans text-sm font-semibold text-slate-900">{topics[key].title}</span>
-                    <span className="font-sans text-xs leading-relaxed text-slate-500">{topics[key].body}</span>
+                  <div className="flex flex-1 items-start gap-3 rounded-xl border border-slate-100 bg-white p-4 shadow-sm">
+                    <span className={`flex size-10 shrink-0 items-center justify-center rounded-full ${iconBg}`}>
+                      <Icon className={`size-5 ${iconColor}`} aria-hidden="true" />
+                    </span>
+                    <div className="flex flex-col gap-0.5">
+                      <span className="font-sans text-sm font-semibold text-slate-900">{topics[key].title}</span>
+                      <span className="font-sans text-xs leading-relaxed text-slate-500">{topics[key].body}</span>
+                    </div>
                   </div>
                 </div>
               ))}
