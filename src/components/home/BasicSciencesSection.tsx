@@ -16,7 +16,7 @@ import { Bone, PersonStanding, Waves, BookOpen, Link2, Layers, Target, Share2, B
 // specific unbuilt-feature promises (no "3D models", no counts).
 
 const TOPICS = [
-  { key: "anatomy", icon: Bone, iconBg: "bg-teal-50", iconColor: "text-teal-600" },
+  { key: "anatomy", icon: Bone, iconBg: "bg-teal-50", iconColor: "text-[#1ba7b7]" },
   { key: "biomechanics", icon: PersonStanding, iconBg: "bg-emerald-50", iconColor: "text-emerald-600" },
   { key: "physicalAgents", icon: Waves, iconBg: "bg-violet-50", iconColor: "text-violet-600" },
 ] as const;
@@ -65,14 +65,14 @@ export function BasicSciencesSection({
           {/* Text column */}
           <div className="flex flex-col gap-5">
             <span className="flex w-fit items-center gap-2 rounded-full bg-teal-50 px-3 py-1.5">
-              <Bone className="size-3.5 text-teal-600" aria-hidden="true" />
-              <span className="font-sans text-xs font-semibold tracking-wide text-teal-700 uppercase">{eyebrow}</span>
+              <Bone className="size-3.5 text-[#1ba7b7]" aria-hidden="true" />
+              <span className="font-sans text-xs font-semibold tracking-wide text-[#1ba7b7] uppercase">{eyebrow}</span>
             </span>
 
             <h2 className="font-sans text-3xl leading-tight font-bold text-slate-900 sm:text-4xl">
               {headingLine1}
               <br />
-              <span className="text-teal-600">{headingLine2}</span>
+              <span className="text-[#1ba7b7]">{headingLine2}</span>
             </h2>
 
             <p className="max-w-lg font-sans text-base leading-relaxed text-slate-600">{body}</p>
@@ -80,7 +80,7 @@ export function BasicSciencesSection({
             <div className="mt-2 grid grid-cols-2 gap-x-6 gap-y-3">
               {FEATURES.map(({ key, icon: Icon }) => (
                 <div key={key} className="flex items-start gap-2.5">
-                  <Icon className="mt-0.5 size-4 shrink-0 text-teal-600" aria-hidden="true" />
+                  <Icon className="mt-0.5 size-4 shrink-0 text-[#1ba7b7]" aria-hidden="true" />
                   <div className="flex flex-col">
                     <span className="font-sans text-sm font-semibold text-slate-900">{features[key].title}</span>
                     <span className="font-sans text-xs text-slate-500">{features[key].body}</span>
