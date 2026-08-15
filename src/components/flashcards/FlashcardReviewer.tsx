@@ -220,7 +220,7 @@ export function FlashcardReviewer({
             >
               <p className="font-reading text-xl font-semibold text-primary">{current.question}</p>
               <div className="flex flex-col items-center gap-2 text-secondary">
-                <MousePointerClick className="size-8" aria-hidden="true" />
+                <MousePointerClick className="size-5" aria-hidden="true" />
                 <span className="font-ui text-sm">{t("clickToReveal")}</span>
               </div>
             </div>
