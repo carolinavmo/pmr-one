@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 import { Check, MousePointerClick, RotateCcw, Shuffle } from "lucide-react";
 import { Link } from "@/i18n/navigation";
@@ -57,7 +57,16 @@ export function FlashcardReviewer({
   // cardId -> knew, for THIS pass through `order` only — powers the
   // completion screen's stats and "Review weak cards" (Again/Hard ones
   // from this pass). Cleared on Start Over / Review Weak / a fresh pass.
+  // Object.keys() preserves insertion order for these UUID (non
+  // integer-like) string keys, which the completion screen relies on to
+  // reconstruct the pass's card-by-card sequence for its chart.
   const [sessionRatings, setSessionRatings] = useState<Record<string, boolean>>({});
+  // Real wall-clock timing for this pass, not a fabricated number — reset
+  // alongside sessionRatings any time a fresh pass starts, frozen into
+  // elapsedMs the moment the pass ends (goTo) so later re-renders of the
+  // results screen don't keep counting.
+  const [passStartedAt, setPassStartedAt] = useState(() => Date.now());
+  const [elapsedMs, setElapsedMs] = useState(0);
 
   // Resync whenever the card set itself changes (an add/edit/delete in
   // the sibling CardManager, which shares this list via DeckWorkspace)
@@ -75,6 +84,12 @@ export function FlashcardReviewer({
     setRevealed(false);
     setShowResults(false);
     setSessionRatings({});
+    // passStartedAt deliberately isn't reset here — Date.now() is an
+    // impure call React's rules forbid during render, and this resync
+    // only fires on a rare concurrent edit mid-review (CardManager
+    // changing the list while this pass is in progress), not on the
+    // ordinary Start Over / Review Weak paths (both event handlers,
+    // where resetting it is fine).
   }
 
   // Deck-level mastery, computed from the box each card already
@@ -111,6 +126,7 @@ export function FlashcardReviewer({
   // looping back to card 1.
   function goTo(nextIndex: number) {
     if (nextIndex >= order.length) {
+      setElapsedMs(Date.now() - passStartedAt);
       setShowResults(true);
       return;
     }
@@ -149,6 +165,8 @@ export function FlashcardReviewer({
     setRevealed(false);
     setShowResults(false);
     setSessionRatings({});
+    setPassStartedAt(Date.now());
+    setElapsedMs(0);
   }
 
   function handleReviewWeak() {
@@ -158,20 +176,15 @@ export function FlashcardReviewer({
     setRevealed(false);
     setShowResults(false);
     setSessionRatings({});
+    setPassStartedAt(Date.now());
+    setElapsedMs(0);
   }
 
   if (showResults) {
     const reviewedIds = Object.keys(sessionRatings);
-    const knowCount = reviewedIds.filter((id) => sessionRatings[id]).length;
-    const weakCount = reviewedIds.length - knowCount;
+    const ratings = reviewedIds.map((id) => sessionRatings[id]);
     return (
-      <DeckResults
-        totalReviewed={reviewedIds.length}
-        knowCount={knowCount}
-        weakCount={weakCount}
-        onStartOver={handleStartOverSession}
-        onReviewWeak={handleReviewWeak}
-      />
+      <DeckResults ratings={ratings} elapsedMs={elapsedMs} onStartOver={handleStartOverSession} onReviewWeak={handleReviewWeak} />
     );
   }
 
@@ -328,64 +341,304 @@ export function FlashcardReviewer({
   );
 }
 
+// Decorative confetti dots around the completion checkmark — purely
+// visual, so aria-hidden and drawn from the app's existing card-color
+// tokens rather than inventing new colors.
+const CONFETTI_DOTS = [
+  { top: "4%", left: "20%", size: "size-2", color: "bg-card-red/70" },
+  { top: "0%", left: "42%", size: "size-1.5", color: "bg-card-yellow/70" },
+  { top: "10%", left: "62%", size: "size-2", color: "bg-accent/60" },
+  { top: "2%", left: "78%", size: "size-1.5", color: "bg-card-green/70" },
+  { top: "22%", left: "8%", size: "size-1.5", color: "bg-card-orange/70" },
+  { top: "24%", left: "90%", size: "size-2", color: "bg-trust/60" },
+  { top: "36%", left: "2%", size: "size-1.5", color: "bg-card-yellow/70" },
+  { top: "38%", left: "96%", size: "size-1.5", color: "bg-card-red/60" },
+];
+
+function scoreLabelKey(percent: number): "scoreExcellent" | "scoreGood" | "scoreFair" | "scoreNeedsPractice" {
+  if (percent >= 85) return "scoreExcellent";
+  if (percent >= 70) return "scoreGood";
+  if (percent >= 50) return "scoreFair";
+  return "scoreNeedsPractice";
+}
+
+function formatElapsed(ms: number): string {
+  const totalSeconds = Math.round(ms / 1000);
+  const minutes = Math.floor(totalSeconds / 60);
+  const seconds = totalSeconds % 60;
+  return minutes > 0 ? `${minutes}m ${seconds}s` : `${seconds}s`;
+}
+
 // End-of-pass summary — mirrors Question Bank's DeckResults (same
 // "Start Again" idiom: local-only reset, persisted mastery untouched).
-// knowCount/weakCount come from this pass's own ratings, not from the
-// deck's overall (across-sessions) mastery, so the percentage reflects
-// "how did this pass go," not lifetime progress.
+// Every figure here (score, correct/incorrect, elapsed time, the chart)
+// comes from this pass's own ratings and a real wall-clock timer — none
+// of it is fabricated, matching this app's content-honesty convention.
+// The reference redesign also showed a 7-day study streak; that's
+// deliberately omitted since this app has no cross-session streak data
+// to back it (only per-pass state), and inventing a streak would
+// violate that same convention.
 function DeckResults({
-  totalReviewed,
-  knowCount,
-  weakCount,
+  ratings,
+  elapsedMs,
   onStartOver,
   onReviewWeak,
 }: {
-  totalReviewed: number;
-  knowCount: number;
-  weakCount: number;
+  ratings: boolean[];
+  elapsedMs: number;
   onStartOver: () => void;
   onReviewWeak: () => void;
 }) {
   const t = useTranslations("flashcards");
-  const percent = totalReviewed > 0 ? Math.round((knowCount / totalReviewed) * 100) : 0;
+  const total = ratings.length;
+  const correct = ratings.filter(Boolean).length;
+  const incorrect = total - correct;
+  const percent = total > 0 ? Math.round((correct / total) * 100) : 0;
+  const correctPct = percent;
+  const incorrectPct = total > 0 ? 100 - percent : 0;
+  const avgSeconds = total > 0 ? elapsedMs / 1000 / total : 0;
+
+  const SIZE = 128;
+  const RADIUS = 52;
+  const STROKE = 12;
+  const CIRCUMFERENCE = 2 * Math.PI * RADIUS;
+  const filledLength = (percent / 100) * CIRCUMFERENCE;
 
   return (
-    <div className="flex min-h-[28rem] flex-col items-center justify-center gap-5 rounded-2xl border border-border bg-surface-card p-6 text-center shadow-sm sm:min-h-[32rem] sm:p-8">
-      <span className="flex size-14 items-center justify-center rounded-full border-2 border-trust text-trust">
-        <Check className="size-7" aria-hidden="true" />
-      </span>
+    <div className="flex min-h-[28rem] flex-col items-center gap-6 rounded-2xl border border-border bg-surface-card p-6 text-center shadow-sm sm:min-h-[32rem] sm:p-8">
+      <div className="relative flex h-24 w-full max-w-xs items-center justify-center" aria-hidden="true">
+        {CONFETTI_DOTS.map((dot, i) => (
+          <span
+            key={i}
+            className={`absolute rounded-full ${dot.size} ${dot.color}`}
+            style={{ top: dot.top, left: dot.left }}
+          />
+        ))}
+        <span className="flex size-14 items-center justify-center rounded-full border-2 border-trust text-trust">
+          <Check className="size-7" aria-hidden="true" />
+        </span>
+      </div>
+
       <div className="flex flex-col gap-1">
         <h2 className="font-heading text-xl font-semibold text-primary">{t("deckCompleteTitle")}</h2>
-        <p className="font-ui text-sm text-secondary">
-          {t("deckCompleteScore", { known: knowCount, total: totalReviewed, percent })}
-        </p>
+        <p className="font-ui text-sm text-secondary">{t("deckCompleteSubtitle")}</p>
       </div>
-      <div className="h-2 w-full max-w-sm overflow-hidden rounded-full bg-border/40">
-        <div className="h-full rounded-full bg-trust transition-all duration-base" style={{ width: `${percent}%` }} />
+
+      <div className="grid w-full grid-cols-2 gap-3 sm:grid-cols-4">
+        <div className="flex flex-col items-center gap-2 rounded-xl border border-border/40 bg-surface-raised p-4">
+          <span className="font-ui text-xs font-medium text-secondary">{t("yourScore")}</span>
+          <svg viewBox={`0 0 ${SIZE} ${SIZE}`} className="size-20" role="img" aria-label={`${percent}%`}>
+            <circle cx={SIZE / 2} cy={SIZE / 2} r={RADIUS} fill="none" className="stroke-border/40" strokeWidth={STROKE} />
+            <circle
+              cx={SIZE / 2}
+              cy={SIZE / 2}
+              r={RADIUS}
+              fill="none"
+              className="stroke-trust"
+              strokeWidth={STROKE}
+              strokeDasharray={`${filledLength} ${CIRCUMFERENCE - filledLength}`}
+              strokeLinecap="round"
+              transform={`rotate(-90 ${SIZE / 2} ${SIZE / 2})`}
+            />
+            <text
+              x={SIZE / 2}
+              y={SIZE / 2}
+              textAnchor="middle"
+              dominantBaseline="central"
+              className="fill-primary font-heading text-[26px] font-semibold"
+            >
+              {percent}%
+            </text>
+          </svg>
+          <span className="font-ui text-xs text-secondary tabular-nums">({correct}/{total})</span>
+          <span className="font-ui text-xs font-medium text-trust">{t(scoreLabelKey(percent))}</span>
+        </div>
+
+        <div className="flex flex-col items-center justify-center gap-1 rounded-xl border border-border/40 bg-surface-raised p-4">
+          <span className="font-ui text-xs font-medium text-secondary">{t("correctLabel")}</span>
+          <span className="font-heading text-2xl font-semibold text-card-green tabular-nums">{correct}</span>
+          <span className="font-ui text-xs text-secondary tabular-nums">{correctPct}%</span>
+        </div>
+
+        <div className="flex flex-col items-center justify-center gap-1 rounded-xl border border-border/40 bg-surface-raised p-4">
+          <span className="font-ui text-xs font-medium text-secondary">{t("incorrectLabel")}</span>
+          <span className="font-heading text-2xl font-semibold text-card-red tabular-nums">{incorrect}</span>
+          <span className="font-ui text-xs text-secondary tabular-nums">{incorrectPct}%</span>
+        </div>
+
+        <div className="flex flex-col items-center justify-center gap-1 rounded-xl border border-border/40 bg-surface-raised p-4">
+          <span className="font-ui text-xs font-medium text-secondary">{t("timeElapsed")}</span>
+          <span className="font-heading text-2xl font-semibold text-primary tabular-nums">{formatElapsed(elapsedMs)}</span>
+          <span className="font-ui text-xs text-secondary tabular-nums">
+            {t("avgPerCard", { seconds: avgSeconds.toFixed(1) })}
+          </span>
+        </div>
       </div>
+
+      {total >= 2 && <PerformanceChart ratings={ratings} />}
+
       <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:justify-center">
         <button
           type="button"
           onClick={onStartOver}
-          className="rounded-full bg-accent px-4 py-2 font-ui text-sm font-medium text-white transition-colors duration-base hover:bg-accent-hover"
+          className="rounded-full border border-border px-4 py-2 font-ui text-sm font-medium text-secondary transition-colors duration-base hover:bg-surface-sunken hover:text-primary"
         >
           {t("startOver")}
         </button>
-        {weakCount > 0 && (
+        {incorrect > 0 && (
           <button
             type="button"
             onClick={onReviewWeak}
-            className="rounded-full border border-card-red/30 bg-card-red/5 px-4 py-2 font-ui text-sm font-medium text-card-red transition-colors duration-base hover:bg-card-red/10"
+            className="rounded-full border border-border px-4 py-2 font-ui text-sm font-medium text-primary transition-colors duration-base hover:bg-surface-sunken"
           >
-            {t("reviewWeak", { count: weakCount })}
+            {t("reviewWeak", { count: incorrect })}
           </button>
         )}
         <Link
           href="/flashcards"
-          className="rounded-full border border-border px-4 py-2 font-ui text-sm font-medium text-primary transition-colors duration-base hover:bg-surface-sunken"
+          className="rounded-full bg-trust px-4 py-2 font-ui text-sm font-medium text-white transition-colors duration-base hover:bg-trust/90"
         >
           {t("back")}
         </Link>
+      </div>
+    </div>
+  );
+}
+
+const CHART_VIEW_WIDTH = 600;
+const CHART_VIEW_HEIGHT = 160;
+const CHART_PAD_LEFT = 32;
+const CHART_PAD_RIGHT = 8;
+const CHART_PAD_TOP = 12;
+const CHART_PAD_BOTTOM = 22;
+
+// Cumulative accuracy after each card reviewed this pass — a hand-built
+// SVG line chart following this codebase's existing AnalyticsLineChart
+// pattern (no charting library for one chart), fixed to a 0-100% scale
+// since the series is inherently a percentage. Single series needs no
+// legend (the heading above already names it).
+function PerformanceChart({ ratings }: { ratings: boolean[] }) {
+  const t = useTranslations("flashcards");
+  const [hoverIndex, setHoverIndex] = useState<number | null>(null);
+  const svgRef = useRef<SVGSVGElement>(null);
+
+  const n = ratings.length;
+  const points = ratings.map((_, i) => {
+    const correctSoFar = ratings.slice(0, i + 1).filter(Boolean).length;
+    return Math.round((correctSoFar / (i + 1)) * 100);
+  });
+
+  const plotWidth = CHART_VIEW_WIDTH - CHART_PAD_LEFT - CHART_PAD_RIGHT;
+  const plotHeight = CHART_VIEW_HEIGHT - CHART_PAD_TOP - CHART_PAD_BOTTOM;
+  const xFor = (i: number) => CHART_PAD_LEFT + (n === 1 ? 0 : (i / (n - 1)) * plotWidth);
+  const yFor = (value: number) => CHART_PAD_TOP + plotHeight - (value / 100) * plotHeight;
+
+  const linePoints = points.map((v, i) => `${xFor(i)},${yFor(v)}`).join(" ");
+  const areaPoints = `${xFor(0)},${yFor(0)} ${linePoints} ${xFor(n - 1)},${yFor(0)}`;
+  const gridFractions = [0, 0.25, 0.5, 0.75, 1];
+
+  function handleMove(event: React.MouseEvent<SVGSVGElement>) {
+    const rect = svgRef.current?.getBoundingClientRect();
+    if (!rect) return;
+    const fraction = (event.clientX - rect.left) / rect.width;
+    const index = Math.round(fraction * (n - 1));
+    setHoverIndex(Math.min(n - 1, Math.max(0, index)));
+  }
+
+  const tooltipAnchorsLeft = hoverIndex !== null && hoverIndex > n / 2;
+
+  return (
+    <div className="flex w-full flex-col gap-2 rounded-xl border border-border/40 bg-surface-raised p-4 text-left">
+      <h3 className="font-ui text-sm font-medium text-primary">{t("performanceOverTime")}</h3>
+      <div className="relative">
+        <svg
+          ref={svgRef}
+          viewBox={`0 0 ${CHART_VIEW_WIDTH} ${CHART_VIEW_HEIGHT}`}
+          preserveAspectRatio="none"
+          className="h-[140px] w-full"
+          onMouseMove={handleMove}
+          onMouseLeave={() => setHoverIndex(null)}
+          role="img"
+          aria-label={t("performanceOverTime")}
+        >
+          {gridFractions.map((f) => (
+            <line
+              key={f}
+              x1={CHART_PAD_LEFT}
+              x2={CHART_VIEW_WIDTH - CHART_PAD_RIGHT}
+              y1={CHART_PAD_TOP + plotHeight * (1 - f)}
+              y2={CHART_PAD_TOP + plotHeight * (1 - f)}
+              className="stroke-border"
+              strokeWidth={1}
+              vectorEffect="non-scaling-stroke"
+            />
+          ))}
+          <text x={CHART_PAD_LEFT - 6} y={CHART_PAD_TOP + 4} textAnchor="end" className="fill-secondary font-ui text-[10px]">
+            100%
+          </text>
+          <text
+            x={CHART_PAD_LEFT - 6}
+            y={CHART_PAD_TOP + plotHeight}
+            textAnchor="end"
+            className="fill-secondary font-ui text-[10px]"
+          >
+            0%
+          </text>
+
+          <polygon points={areaPoints} className="fill-trust/10" />
+          <polyline
+            points={linePoints}
+            fill="none"
+            className="stroke-trust"
+            strokeWidth={2}
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            vectorEffect="non-scaling-stroke"
+          />
+
+          {hoverIndex !== null && (
+            <>
+              <line
+                x1={xFor(hoverIndex)}
+                x2={xFor(hoverIndex)}
+                y1={CHART_PAD_TOP}
+                y2={CHART_PAD_TOP + plotHeight}
+                className="stroke-secondary/40"
+                strokeWidth={1}
+                vectorEffect="non-scaling-stroke"
+              />
+              <circle cx={xFor(hoverIndex)} cy={yFor(points[hoverIndex])} r={4} className="fill-trust stroke-surface" strokeWidth={2} />
+            </>
+          )}
+
+          <text x={CHART_PAD_LEFT} y={CHART_VIEW_HEIGHT - 6} className="fill-secondary font-ui text-[10px]">
+            {t("cardOf", { current: 1, total: n })}
+          </text>
+          <text
+            x={CHART_VIEW_WIDTH - CHART_PAD_RIGHT}
+            y={CHART_VIEW_HEIGHT - 6}
+            textAnchor="end"
+            className="fill-secondary font-ui text-[10px]"
+          >
+            {t("cardOf", { current: n, total: n })}
+          </text>
+        </svg>
+
+        {hoverIndex !== null && (
+          <div
+            className={`pointer-events-none absolute top-0 flex flex-col gap-0.5 rounded-md border border-border bg-surface-card px-2.5 py-1.5 shadow-md ${
+              tooltipAnchorsLeft ? "right-0" : "left-0"
+            }`}
+            style={
+              tooltipAnchorsLeft
+                ? { right: `${100 - (xFor(hoverIndex) / CHART_VIEW_WIDTH) * 100}%`, marginRight: 8 }
+                : { left: `${(xFor(hoverIndex) / CHART_VIEW_WIDTH) * 100}%`, marginLeft: 8 }
+            }
+          >
+            <span className="font-ui text-xs font-medium text-primary">{t("cardOf", { current: hoverIndex + 1, total: n })}</span>
+            <span className="font-ui text-xs text-secondary">{points[hoverIndex]}%</span>
+          </div>
+        )}
       </div>
     </div>
   );
