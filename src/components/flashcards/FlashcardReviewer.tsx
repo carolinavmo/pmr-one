@@ -172,104 +172,133 @@ export function FlashcardReviewer({
         </div>
       )}
 
-      <div className="flex min-h-[28rem] flex-col gap-6 rounded-2xl border border-border bg-surface-card p-6 shadow-sm sm:min-h-[32rem] sm:p-8">
-        <div className="flex items-center justify-between">
-          <span
-            className={`rounded-full px-3 py-1 font-ui text-xs font-semibold tracking-wide uppercase ${
-              revealed ? "bg-trust/10 text-trust" : "bg-border/30 text-secondary"
-            }`}
-          >
-            {revealed ? t("backLabel") : t("frontLabel")}
-          </span>
-          <span className="rounded-full bg-border/30 px-3 py-1 font-ui text-xs font-medium text-secondary tabular-nums">
-            {t("cardOf", { current: index + 1, total: order.length })}
-          </span>
-        </div>
-
+      <div className="relative min-h-[28rem] sm:min-h-[32rem]" style={{ perspective: "1600px" }}>
         <div
-          className="flex flex-1 flex-col items-center justify-center gap-4 text-center"
-          role={revealed ? undefined : "button"}
-          tabIndex={revealed ? undefined : 0}
-          onClick={revealed ? undefined : () => setRevealed(true)}
-          onKeyDown={
-            revealed
-              ? undefined
-              : (e) => {
-                  if (e.key === "Enter" || e.key === " ") {
-                    e.preventDefault();
-                    setRevealed(true);
-                  }
-                }
-          }
+          className="relative h-full w-full transition-transform duration-500 motion-reduce:transition-none"
+          style={{
+            transformStyle: "preserve-3d",
+            WebkitTransformStyle: "preserve-3d",
+            transform: revealed ? "rotateY(180deg)" : "rotateY(0deg)",
+          }}
         >
-          {revealed ? (
-            <>
-              <p className="font-heading text-xl font-semibold text-primary">{current.answer}</p>
-              {sourceDiseaseName && sourceDiseaseSlug && (
-                <Link
-                  href={`/conditions/${sourceDiseaseSlug}`}
-                  className="font-ui text-xs text-secondary hover:text-accent"
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  {t("fromDisease", { name: sourceDiseaseName })}
-                </Link>
-              )}
-            </>
-          ) : (
-            <>
+          {/* Front face — question */}
+          <div
+            className="absolute inset-0 flex flex-col gap-6 overflow-y-auto rounded-2xl border border-border bg-surface-card p-6 shadow-sm sm:p-8"
+            aria-hidden={revealed}
+            inert={revealed}
+            style={{
+              backfaceVisibility: "hidden",
+              WebkitBackfaceVisibility: "hidden",
+              pointerEvents: revealed ? "none" : "auto",
+            }}
+          >
+            <div className="flex items-center justify-between">
+              <span className="rounded-full bg-border/30 px-3 py-1 font-ui text-xs font-semibold tracking-wide text-secondary uppercase">
+                {t("frontLabel")}
+              </span>
+              <span className="rounded-full bg-border/30 px-3 py-1 font-ui text-xs font-medium text-secondary tabular-nums">
+                {t("cardOf", { current: index + 1, total: order.length })}
+              </span>
+            </div>
+
+            <div
+              className="flex flex-1 flex-col items-center justify-center gap-4 text-center"
+              role="button"
+              tabIndex={0}
+              onClick={() => setRevealed(true)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  e.preventDefault();
+                  setRevealed(true);
+                }
+              }}
+            >
               <p className="font-heading text-xl font-semibold text-primary">{current.question}</p>
               <div className="flex flex-col items-center gap-2 text-secondary">
                 <MousePointerClick className="size-8" aria-hidden="true" />
                 <span className="font-ui text-sm">{t("clickToReveal")}</span>
               </div>
-            </>
-          )}
-        </div>
+            </div>
+          </div>
 
-        {revealed &&
-          (isSignedIn ? (
-            <div className="grid grid-cols-4 gap-2 border-t border-border pt-5 sm:gap-3">
-              <button
-                type="button"
-                onClick={() => handleReview(false)}
-                className="flex flex-col items-center gap-1.5 rounded-xl border border-card-red/30 bg-card-red/5 py-3 font-ui text-sm font-medium text-primary transition-colors duration-base hover:bg-card-red/10"
-              >
-                <RotateCcw className="size-4 text-card-red" aria-hidden="true" />
-                {t("again")}
-              </button>
-              <button
-                type="button"
-                onClick={() => handleReview(false)}
-                className="flex flex-col items-center gap-1.5 rounded-xl border border-card-orange/30 bg-card-orange/5 py-3 font-ui text-sm font-medium text-primary transition-colors duration-base hover:bg-card-orange/10"
-              >
-                <RotateCcw className="size-4 text-card-orange" aria-hidden="true" />
-                {t("hard")}
-              </button>
-              <button
-                type="button"
-                onClick={() => handleReview(true)}
-                className="flex flex-col items-center gap-1.5 rounded-xl border border-card-yellow/30 bg-card-yellow/5 py-3 font-ui text-sm font-medium text-primary transition-colors duration-base hover:bg-card-yellow/10"
-              >
-                <RotateCcw className="size-4 text-card-yellow" aria-hidden="true" />
-                {t("good")}
-              </button>
-              <button
-                type="button"
-                onClick={() => handleReview(true)}
-                className="flex flex-col items-center gap-1.5 rounded-xl border border-card-green/30 bg-card-green/5 py-3 font-ui text-sm font-medium text-primary transition-colors duration-base hover:bg-card-green/10"
-              >
-                <Check className="size-4 text-card-green" aria-hidden="true" />
-                {t("easy")}
-              </button>
+          {/* Back face — answer */}
+          <div
+            className="absolute inset-0 flex flex-col gap-6 overflow-y-auto rounded-2xl border border-border bg-surface-card p-6 shadow-sm sm:p-8"
+            aria-hidden={!revealed}
+            inert={!revealed}
+            style={{
+              backfaceVisibility: "hidden",
+              WebkitBackfaceVisibility: "hidden",
+              transform: "rotateY(180deg)",
+              pointerEvents: revealed ? "auto" : "none",
+            }}
+          >
+            <div className="flex items-center justify-between">
+              <span className="rounded-full bg-trust/10 px-3 py-1 font-ui text-xs font-semibold tracking-wide text-trust uppercase">
+                {t("backLabel")}
+              </span>
+              <span className="rounded-full bg-border/30 px-3 py-1 font-ui text-xs font-medium text-secondary tabular-nums">
+                {t("cardOf", { current: index + 1, total: order.length })}
+              </span>
             </div>
-          ) : (
-            <div className="flex w-full flex-col items-center gap-1.5 border-t border-border pt-5 text-center">
-              <p className="font-ui text-xs text-secondary">{t("signInToTrack")}</p>
-              <Link href="/login" className="font-ui text-xs font-medium text-accent hover:underline">
-                {t("signInLink")}
-              </Link>
+
+            <div className="flex flex-1 flex-col items-center justify-center gap-4 text-center">
+              <p className="font-heading text-xl font-semibold text-primary">{current.answer}</p>
+              {sourceDiseaseName && sourceDiseaseSlug && (
+                <Link
+                  href={`/conditions/${sourceDiseaseSlug}`}
+                  className="font-ui text-xs text-secondary hover:text-accent"
+                >
+                  {t("fromDisease", { name: sourceDiseaseName })}
+                </Link>
+              )}
             </div>
-          ))}
+
+            {isSignedIn ? (
+              <div className="grid grid-cols-4 gap-2 border-t border-border pt-5 sm:gap-3">
+                <button
+                  type="button"
+                  onClick={() => handleReview(false)}
+                  className="flex flex-col items-center gap-1.5 rounded-xl border border-card-red/30 bg-card-red/5 py-3 font-ui text-sm font-medium text-primary transition-colors duration-base hover:bg-card-red/10"
+                >
+                  <RotateCcw className="size-4 text-card-red" aria-hidden="true" />
+                  {t("again")}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleReview(false)}
+                  className="flex flex-col items-center gap-1.5 rounded-xl border border-card-orange/30 bg-card-orange/5 py-3 font-ui text-sm font-medium text-primary transition-colors duration-base hover:bg-card-orange/10"
+                >
+                  <RotateCcw className="size-4 text-card-orange" aria-hidden="true" />
+                  {t("hard")}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleReview(true)}
+                  className="flex flex-col items-center gap-1.5 rounded-xl border border-card-yellow/30 bg-card-yellow/5 py-3 font-ui text-sm font-medium text-primary transition-colors duration-base hover:bg-card-yellow/10"
+                >
+                  <RotateCcw className="size-4 text-card-yellow" aria-hidden="true" />
+                  {t("good")}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleReview(true)}
+                  className="flex flex-col items-center gap-1.5 rounded-xl border border-card-green/30 bg-card-green/5 py-3 font-ui text-sm font-medium text-primary transition-colors duration-base hover:bg-card-green/10"
+                >
+                  <Check className="size-4 text-card-green" aria-hidden="true" />
+                  {t("easy")}
+                </button>
+              </div>
+            ) : (
+              <div className="flex w-full flex-col items-center gap-1.5 border-t border-border pt-5 text-center">
+                <p className="font-ui text-xs text-secondary">{t("signInToTrack")}</p>
+                <Link href="/login" className="font-ui text-xs font-medium text-accent hover:underline">
+                  {t("signInLink")}
+                </Link>
+              </div>
+            )}
+          </div>
+        </div>
       </div>
 
       <button
