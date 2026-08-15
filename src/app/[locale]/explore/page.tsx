@@ -1,17 +1,30 @@
 import { getLocale, getTranslations } from "next-intl/server";
-import { BookOpen, Calendar, Check, X, ArrowRight, Star } from "lucide-react";
+import { BookOpen, Calendar, Check, X, Layers, ListChecks } from "lucide-react";
 import { Link, redirect } from "@/i18n/navigation";
 import { auth } from "@/auth";
 import { getPlatformStats, getRecentlyPublishedDiseases } from "@/lib/disease-catalog";
 import { getAllCalculators } from "@/lib/clinical-tools";
+import { getDeckSummaries, getDeckWithCards } from "@/lib/flashcards";
+import { getDashboardStats, getSampleQuestion } from "@/lib/question-bank";
 import { Eyebrow } from "@/components/ui/Eyebrow";
 import { StatTile } from "@/components/ui/StatTile";
-import { LinkButton } from "@/components/ui/LinkButton";
+import { buttonBaseClasses } from "@/components/ui/button-styles";
 import { KnowledgeObjectCard } from "@/components/ui/KnowledgeObjectCard";
-import { TrustIndicator } from "@/components/ui/TrustIndicator";
 import { objectIcons } from "@/components/ui/objectIcons";
-import { CARD_COLOR_CARD, CARD_COLOR_CHIP } from "@/lib/card-colors";
-import type { CardColor } from "@/lib/editorial-blocks";
+import { GuidedTour, type TourStop } from "@/components/explore/GuidedTour";
+import {
+  ConditionsMockup,
+  HandbookMockup,
+  FlashcardsMockup,
+  QuestionBankMockup,
+  ClinicalToolsMockup,
+  StudyPlannerMockup,
+} from "@/components/home/FeatureMockups";
+import {
+  SAMPLE_PAGE_TITLE,
+  SAMPLE_PROTOCOL_TITLE,
+  SAMPLE_TEMPLATE_TITLE,
+} from "@/lib/atlas-sample-content";
 
 interface ComparisonRow {
   label: string;
@@ -33,13 +46,23 @@ export default async function ExplorePage() {
   }
 
   const locale = await getLocale();
-  const [stats, sampleDiseases, calculators] = await Promise.all([
+  const [stats, sampleDiseases, calculators, deckSummaries, questionBankStats, sampleQuestion] = await Promise.all([
     getPlatformStats(),
     getRecentlyPublishedDiseases(3),
     getAllCalculators(locale),
+    getDeckSummaries(null),
+    getDashboardStats(null),
+    getSampleQuestion(),
   ]);
   const publicCalculators = calculators.filter((c) => c.isPublic);
   const lockedCalculatorCount = calculators.length - publicCalculators.length;
+
+  const firstPresetDeck = deckSummaries.presetDecks[0];
+  const sampleDeck = firstPresetDeck ? await getDeckWithCards(firstPresetDeck.id, null) : null;
+  const flashcardFront = sampleDeck?.cards[0]?.question;
+  const totalFlashcards = deckSummaries.presetDecks.reduce((sum, d) => sum + d.cardCount, 0);
+  const firstCalculator = publicCalculators[0] ?? calculators[0];
+  const mockupDisease = sampleDiseases[0];
 
   const t = await getTranslations("explore");
   const tHome = await getTranslations("home");
@@ -54,35 +77,141 @@ export default async function ExplorePage() {
     { label: t("comparisonRowHandbook"), guest: false, member: true },
   ];
 
-  const whyItems = [
-    t("whyItem1"),
-    t("whyItem2"),
-    t("whyItem3"),
-    t("whyItem4"),
-    t("whyItem5"),
-    t("whyItem6"),
-  ];
+  // The six tour stops, in the app's established feature order — same
+  // colors as the homepage's six sections (consistency across pages), but
+  // fresh tour-guide-voice copy and a lightweight text-link CTA instead of
+  // the homepage's filled pill button (see GuidedTour.tsx).
+  const tourStops: TourStop[] = [];
 
-  // A curated subset of Plantar Fasciopathy's real section headings
-  // (db/seed/plantar-fasciopathy.mjs), not the full 22-heading list —
-  // enough to read as "this is a real, structured page" without
-  // cramming the mockup. mockupDisease itself (below) is real data
-  // from the query above, not fabricated.
-  const mockupSections = [
-    t("mockupSectionOverview"),
-    t("mockupSectionAnatomy"),
-    t("mockupSectionEpidemiology"),
-    t("mockupSectionPresentation"),
-    t("mockupSectionExamination"),
-    t("mockupSectionRehab"),
-    t("mockupSectionReferences"),
-  ];
-  const mockupTypeTags: { Icon: typeof objectIcons.disease; label: string; color: CardColor }[] = [
-    { Icon: objectIcons.examination_maneuver, label: tHome("cardExaminationTitle"), color: "trust" },
-    { Icon: objectIcons.treatment_algorithm, label: tHome("cardTreatmentTitle"), color: "insight" },
-    { Icon: objectIcons.rehabilitation_protocol, label: tHome("cardRehabilitationTitle"), color: "blue" },
-  ];
-  const mockupDisease = sampleDiseases[0];
+  if (mockupDisease) {
+    tourStops.push({
+      color: "accent",
+      icon: objectIcons.disease,
+      eyebrow: tHome("featureConditionsEyebrow"),
+      heading: t("tourConditionsHeading"),
+      body: t("tourConditionsBody"),
+      bullets: [t("tourConditionsBullet1"), t("tourConditionsBullet2")],
+      stat: { value: stats.conditions, label: tHome("featureConditionsStatLabel") },
+      ctaLabel: t("tourConditionsCta"),
+      ctaHref: "/conditions",
+      visual: (
+        <ConditionsMockup
+          diseaseName={mockupDisease.canonicalName}
+          snippet={mockupDisease.snippet}
+          reviewedAt={mockupDisease.reviewedAt}
+          tagLabels={[tHome("cardExaminationTitle"), tHome("cardTreatmentTitle"), tHome("cardRehabilitationTitle")]}
+          urlLabel={tHome("featureConditionsUrlLabel", { slug: mockupDisease.slug })}
+        />
+      ),
+    });
+  }
+
+  tourStops.push({
+    color: "trust",
+    icon: BookOpen,
+    eyebrow: tHome("featureHandbookEyebrow"),
+    heading: t("tourHandbookHeading"),
+    body: t("tourHandbookBody"),
+    bullets: [t("tourHandbookBullet1"), t("tourHandbookBullet2")],
+    ctaLabel: t("tourHandbookCta"),
+    ctaHref: "/explore/handbook",
+    visual: <HandbookMockup pageTitles={[SAMPLE_PAGE_TITLE, SAMPLE_PROTOCOL_TITLE, SAMPLE_TEMPLATE_TITLE]} />,
+  });
+
+  tourStops.push({
+    color: "violet",
+    icon: Layers,
+    eyebrow: tHome("featureFlashcardsEyebrow"),
+    heading: t("tourFlashcardsHeading"),
+    body: t("tourFlashcardsBody"),
+    bullets: [t("tourFlashcardsBullet1"), t("tourFlashcardsBullet2")],
+    stat: totalFlashcards > 0 ? { value: totalFlashcards, label: tHome("featureFlashcardsStatLabel") } : undefined,
+    ctaLabel: t("tourFlashcardsCta"),
+    ctaHref: "/flashcards",
+    visual: <FlashcardsMockup front={flashcardFront ?? SAMPLE_PAGE_TITLE} />,
+  });
+
+  tourStops.push({
+    color: "indigo",
+    icon: ListChecks,
+    eyebrow: tHome("featureQuestionBankEyebrow"),
+    heading: t("tourQuestionBankHeading"),
+    body: t("tourQuestionBankBody"),
+    bullets: [t("tourQuestionBankBullet1"), t("tourQuestionBankBullet2")],
+    stat: { value: questionBankStats.totalQuestions, label: tHome("featureQuestionBankStatLabel") },
+    ctaLabel: t("tourQuestionBankCta"),
+    ctaHref: "/question-bank",
+    visual: sampleQuestion ? (
+      <QuestionBankMockup prompt={sampleQuestion.prompt} options={sampleQuestion.options} />
+    ) : (
+      <QuestionBankMockup
+        prompt={t("tourQuestionBankHeading")}
+        options={[{ label: t("tourQuestionBankBullet1"), isCorrect: true }]}
+      />
+    ),
+  });
+
+  if (firstCalculator) {
+    tourStops.push({
+      color: "orange",
+      icon: objectIcons.clinical_calculator,
+      eyebrow: tHome("featureClinicalToolsEyebrow"),
+      heading: t("tourClinicalToolsHeading"),
+      body: t("tourClinicalToolsBody"),
+      bullets: [t("tourClinicalToolsBullet1"), t("tourClinicalToolsBullet2")],
+      stat: { value: calculators.length, label: tHome("featureClinicalToolsStatLabel") },
+      ctaLabel: t("tourClinicalToolsCta"),
+      ctaHref: "/clinical-tools",
+      visual: (
+        <ClinicalToolsMockup
+          calculatorName={
+            firstCalculator.abbreviation ? `${firstCalculator.name} (${firstCalculator.abbreviation})` : firstCalculator.name
+          }
+          itemLabels={[tHome("featureClinicalToolsItem1"), tHome("featureClinicalToolsItem2")]}
+          resultLabel={tHome("featureClinicalToolsResultLabel")}
+        />
+      ),
+      extra:
+        publicCalculators.length > 0 ? (
+          <div className="flex flex-col gap-2">
+            <span className="font-ui text-xs font-medium text-secondary">{t("featureToolsTryNow")}</span>
+            <div className="flex flex-wrap gap-2">
+              {publicCalculators.map((calc) => (
+                <Link
+                  key={calc.id}
+                  href={`/clinical-tools/${calc.slug}`}
+                  className="rounded-full border border-border bg-surface px-3 py-1 font-ui text-xs text-secondary transition-colors duration-base hover:border-card-orange/40 hover:text-card-orange"
+                >
+                  {calc.abbreviation ? `${calc.name} (${calc.abbreviation})` : calc.name}
+                </Link>
+              ))}
+            </div>
+            {lockedCalculatorCount > 0 && (
+              <span className="font-ui text-xs text-secondary/80">
+                {t("featureToolsLockedNote", { count: lockedCalculatorCount })}
+              </span>
+            )}
+          </div>
+        ) : undefined,
+    });
+  }
+
+  tourStops.push({
+    color: "insight",
+    icon: Calendar,
+    eyebrow: tHome("featureStudyPlannerEyebrow"),
+    heading: t("tourStudyPlannerHeading"),
+    body: t("tourStudyPlannerBody"),
+    bullets: [t("tourStudyPlannerBullet1"), t("tourStudyPlannerBullet2")],
+    ctaLabel: t("tourStudyPlannerCta"),
+    ctaHref: "/register",
+    visual: (
+      <StudyPlannerMockup
+        dayLabels={["M", "T", "W", "T", "F", "S", "S"]}
+        taskLabel={tHome("featureStudyPlannerTaskLabel")}
+      />
+    ),
+  });
 
   return (
     <main className="flex flex-1 flex-col items-center px-6 py-12">
@@ -104,158 +233,7 @@ export default async function ExplorePage() {
           <StatTile icon={objectIcons.reference} label={tHome("statReferences")} value={stats.references} color="blue" />
         </div>
 
-        {mockupDisease && (
-          <div className="grid grid-cols-1 items-center gap-10 lg:grid-cols-2">
-            <div className="flex flex-col gap-4">
-              <h2 className="font-heading text-2xl font-semibold text-primary">
-                {t("whyHeading")}
-              </h2>
-              <ul className="flex flex-col gap-3">
-                {whyItems.map((item) => (
-                  <li key={item} className="flex items-start gap-2.5">
-                    <Check className="mt-0.5 size-4 shrink-0 text-accent" aria-hidden="true" />
-                    <span className="font-ui text-sm text-secondary">{item}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            <div className="overflow-hidden rounded-2xl border border-border bg-surface-raised shadow-lg">
-              <div className="flex items-center gap-3 border-b border-border bg-surface px-4 py-3">
-                <span className="flex shrink-0 gap-1.5">
-                  <span className="size-2.5 rounded-full bg-card-red/50" />
-                  <span className="size-2.5 rounded-full bg-card-yellow/50" />
-                  <span className="size-2.5 rounded-full bg-card-green/50" />
-                </span>
-                <span className="flex-1 truncate rounded-full bg-border/30 px-3 py-1 text-center font-ui text-[11px] text-secondary">
-                  pmratlas.com/conditions/{mockupDisease.slug}
-                </span>
-              </div>
-
-              <div className="flex flex-col gap-4 p-5">
-                <div className="flex flex-wrap items-center justify-between gap-2">
-                  <h3 className="font-heading text-lg font-semibold text-primary">
-                    {mockupDisease.canonicalName}
-                  </h3>
-                  <TrustIndicator reviewedAt={mockupDisease.reviewedAt} />
-                </div>
-
-                <div className="flex flex-wrap gap-1.5">
-                  {mockupSections.map((section) => (
-                    <span
-                      key={section}
-                      className="rounded-full border border-border px-2.5 py-1 font-ui text-[11px] text-secondary"
-                    >
-                      {section}
-                    </span>
-                  ))}
-                </div>
-
-                <p className="line-clamp-2 font-ui text-sm text-secondary">
-                  {mockupDisease.snippet}
-                </p>
-
-                <div className="flex items-start gap-2.5 rounded-xl border border-insight/30 bg-insight/5 px-4 py-3">
-                  <Star className="mt-0.5 size-4 shrink-0 text-insight" aria-hidden="true" />
-                  <div className="flex flex-col gap-0.5">
-                    <span className="font-ui text-xs font-semibold text-insight">
-                      {t("mockupKeyTakeawayLabel")}
-                    </span>
-                    <span className="font-ui text-xs text-secondary">
-                      {t("mockupKeyTakeawayBody")}
-                    </span>
-                  </div>
-                </div>
-
-                <div className="flex flex-wrap items-center gap-4 border-t border-border pt-3">
-                  {mockupTypeTags.map(({ Icon, label, color }) => (
-                    <span key={label} className="flex items-center gap-1.5 font-ui text-[11px] text-secondary">
-                      <span className={`flex size-6 items-center justify-center rounded-full ${CARD_COLOR_CHIP[color]}`}>
-                        <Icon className="size-3" aria-hidden="true" />
-                      </span>
-                      {label}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-
-        <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
-          <FeatureCard
-            icon={<objectIcons.disease className="size-5" aria-hidden="true" />}
-            color="accent"
-            title={t("featureConditionsTitle")}
-            body={t("featureConditionsBody")}
-            cta={{ label: t("featureConditionsCta"), href: "/conditions" }}
-          >
-            {sampleDiseases.length > 0 && (
-              <div className="flex flex-wrap gap-2">
-                {sampleDiseases.map((disease) => (
-                  <Link
-                    key={disease.slug}
-                    href={`/conditions/${disease.slug}`}
-                    className="rounded-full border border-border bg-surface px-3 py-1 font-ui text-xs text-secondary transition-colors duration-base hover:border-accent/40 hover:text-accent"
-                  >
-                    {disease.canonicalName}
-                  </Link>
-                ))}
-              </div>
-            )}
-          </FeatureCard>
-
-          <FeatureCard
-            icon={<objectIcons.clinical_calculator className="size-5" aria-hidden="true" />}
-            color="orange"
-            title={t("featureToolsTitle")}
-            body={t("featureToolsBody")}
-            cta={{ label: t("featureToolsCta"), href: "/clinical-tools" }}
-          >
-            {publicCalculators.length > 0 && (
-              <div className="flex flex-col gap-2">
-                <span className="font-ui text-xs font-medium text-secondary">
-                  {t("featureToolsTryNow")}
-                </span>
-                <div className="flex flex-wrap gap-2">
-                  {publicCalculators.map((calc) => (
-                    <Link
-                      key={calc.id}
-                      href={`/clinical-tools/${calc.slug}`}
-                      className="rounded-full border border-border bg-surface px-3 py-1 font-ui text-xs text-secondary transition-colors duration-base hover:border-accent/40 hover:text-accent"
-                    >
-                      {calc.abbreviation ? `${calc.name} (${calc.abbreviation})` : calc.name}
-                    </Link>
-                  ))}
-                </div>
-                {lockedCalculatorCount > 0 && (
-                  <span className="font-ui text-xs text-secondary/80">
-                    {t("featureToolsLockedNote", { count: lockedCalculatorCount })}
-                  </span>
-                )}
-              </div>
-            )}
-          </FeatureCard>
-
-          <FeatureCard
-            icon={<BookOpen className="size-5" aria-hidden="true" />}
-            color="trust"
-            title={t("featureHandbookTitle")}
-            body={t("featureHandbookBody")}
-            cta={{ label: t("featureHandbookCta"), href: "/explore/handbook" }}
-          >
-            <span className="font-ui text-xs text-secondary/80">{t("featureHandbookNote")}</span>
-          </FeatureCard>
-
-          <FeatureCard
-            icon={<Calendar className="size-5" aria-hidden="true" />}
-            color="insight"
-            title={t("featurePlannerTitle")}
-            body={t("featurePlannerBody")}
-          >
-            <span className="font-ui text-xs text-secondary/80">{t("featurePlannerNote")}</span>
-          </FeatureCard>
-        </div>
+        <GuidedTour stops={tourStops} />
 
         {sampleDiseases.length > 0 && (
           <div className="flex flex-col gap-4">
@@ -314,13 +292,9 @@ export default async function ExplorePage() {
             <p className="max-w-md font-ui text-sm text-white/85">{t("ctaBody")}</p>
           </div>
           <div className="flex shrink-0 flex-col items-center gap-2">
-            <LinkButton
-              href="/register"
-              variant="secondary"
-              className="!border-white !bg-white !text-accent hover:!bg-white/90"
-            >
+            <Link href="/register" className={`${buttonBaseClasses} bg-white text-accent hover:bg-white/90`}>
               {tHome("heroCtaSecondary")}
-            </LinkButton>
+            </Link>
             <Link href="/login" className="font-ui text-xs text-white/80 hover:text-white hover:underline">
               {t("alreadyHaveAccount")} {tCommon("signIn")}
             </Link>
@@ -336,45 +310,5 @@ function ComparisonMark({ available }: { available: boolean }) {
     <Check className="mx-auto size-4 text-accent" aria-hidden="true" />
   ) : (
     <X className="mx-auto size-4 text-secondary/40" aria-hidden="true" />
-  );
-}
-
-function FeatureCard({
-  icon,
-  color,
-  title,
-  body,
-  cta,
-  children,
-}: {
-  icon: React.ReactNode;
-  color: CardColor;
-  title: string;
-  body: string;
-  cta?: { label: string; href: string };
-  children?: React.ReactNode;
-}) {
-  return (
-    <div className={`flex flex-col gap-4 rounded-2xl border p-6 ${CARD_COLOR_CARD[color]}`}>
-      <div className="flex items-start gap-3">
-        <span className={`flex size-11 shrink-0 items-center justify-center rounded-full ${CARD_COLOR_CHIP[color]}`}>
-          {icon}
-        </span>
-        <div className="flex flex-col gap-1">
-          <h3 className="font-heading text-base font-semibold text-primary">{title}</h3>
-          <p className="font-ui text-sm text-secondary">{body}</p>
-        </div>
-      </div>
-      {children}
-      {cta && (
-        <Link
-          href={cta.href}
-          className="mt-auto flex items-center gap-1 font-ui text-sm font-medium text-accent hover:underline"
-        >
-          {cta.label}
-          <ArrowRight className="size-3.5" aria-hidden="true" />
-        </Link>
-      )}
-    </div>
   );
 }
