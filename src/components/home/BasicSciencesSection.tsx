@@ -120,9 +120,9 @@ export function BasicSciencesSection({
             <div className="flex flex-1 flex-col gap-4">
               {TOPICS.map(({ key, icon: Icon, iconBg, iconColor }) => (
                 <div key={key} className="flex items-center gap-3">
-                  <div className="flex flex-1 items-start gap-3 rounded-xl border border-slate-100 bg-white p-4 shadow-sm">
-                    <span className={`flex size-10 shrink-0 items-center justify-center rounded-full ${iconBg}`}>
-                      <Icon className={`size-5 ${iconColor}`} aria-hidden="true" />
+                  <div className="flex flex-1 items-center gap-3 rounded-xl border border-slate-100 bg-white p-4 shadow-sm">
+                    <span className={`flex size-12 shrink-0 items-center justify-center rounded-full ${iconBg}`}>
+                      <Icon className={`size-6 ${iconColor}`} aria-hidden="true" />
                     </span>
                     <div className="flex flex-col gap-0.5">
                       <span className="font-sans text-sm font-semibold text-slate-900">{topics[key].title}</span>
