@@ -245,6 +245,28 @@ export async function getDashboardStats(
   };
 }
 
+// One real question + its options, for the homepage's Question Bank
+// showcase mockup — unlike getSetWithQuestions this deliberately DOES
+// include is_correct, since this is marketing copy illustrating the
+// interaction pattern (not the live runner, where hiding the answer
+// pre-attempt is the whole point). Picks the very first question by
+// position/created_at so the result is stable rather than random.
+export async function getSampleQuestion(): Promise<{ prompt: string; options: { label: string; isCorrect: boolean }[] } | null> {
+  const { rows: questionRows } = await pool.query(
+    `SELECT id, prompt FROM question ORDER BY position, created_at LIMIT 1`
+  );
+  const question = questionRows[0];
+  if (!question) return null;
+  const { rows: optionRows } = await pool.query(
+    `SELECT label, is_correct FROM question_option WHERE question_id = $1 ORDER BY position LIMIT 4`,
+    [question.id]
+  );
+  return {
+    prompt: question.prompt,
+    options: optionRows.map((r) => ({ label: r.label, isCorrect: r.is_correct })),
+  };
+}
+
 // The answer-leak-safe fetch behind the member-facing question runner
 // — see the migration file's header comment and this session's plan
 // for why unanswered questions never carry isCorrect/rationale.
