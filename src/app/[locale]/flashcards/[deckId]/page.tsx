@@ -32,7 +32,10 @@ export default async function FlashcardDeckPage({ params }: DeckPageProps) {
 
   return (
     <main className="mx-auto flex w-full max-w-3xl flex-col gap-6 px-6 py-16">
-      <Link href="/flashcards" className="font-ui text-sm text-secondary hover:text-accent">
+      <Link
+        href={deck.categoryId ? `/flashcards/category/${deck.categoryId}` : "/flashcards"}
+        className="font-ui text-sm text-secondary hover:text-accent"
+      >
         {t("backToDecks")}
       </Link>
 

@@ -58,6 +58,7 @@ export interface DeckDetail {
   color: CardColor;
   icon: CardIconName | undefined;
   iconUrl: string | null;
+  categoryId: string | null;
   sourceDiseaseName: string | null;
   sourceDiseaseSlug: string | null;
   cards: FlashcardCard[];
@@ -157,7 +158,7 @@ export async function getDeckWithCards(
   userId: string | null
 ): Promise<DeckDetail | null> {
   const { rows: deckRows } = await pool.query(
-    `SELECT d.id, d.owner_type, d.name, d.description, d.color, d.icon_url,
+    `SELECT d.id, d.owner_type, d.name, d.description, d.color, d.icon_url, d.category_id,
        c.icon AS category_icon,
        dis.canonical_name AS source_disease_name, dis.slug AS source_disease_slug
      FROM flashcard_deck d
@@ -200,6 +201,7 @@ export async function getDeckWithCards(
     color: deck.color,
     icon: (deck.category_icon as CardIconName | null) ?? undefined,
     iconUrl: deck.icon_url,
+    categoryId: deck.category_id,
     sourceDiseaseName: deck.source_disease_name,
     sourceDiseaseSlug: deck.source_disease_slug,
     cards: cardRows.map((r) => ({
