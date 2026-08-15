@@ -109,6 +109,10 @@ export function BasicSciencesSection({
                 width={532}
                 height={800}
                 unoptimized
+                style={{
+                  maskImage: "linear-gradient(to bottom, black 65%, transparent 100%)",
+                  WebkitMaskImage: "linear-gradient(to bottom, black 65%, transparent 100%)",
+                }}
                 className="h-full w-auto object-contain"
               />
             </div>
