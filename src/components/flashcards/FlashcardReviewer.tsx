@@ -83,16 +83,10 @@ export function FlashcardReviewer({
     );
   }
 
-  // No more wraparound: running past the last card (by rating it or by
-  // clicking Next) ends the pass and shows the completion screen
-  // instead of silently looping back to card 1. Running past the first
-  // card with Back just clamps at 0.
+  // No more wraparound: running past the last card (by rating it) ends
+  // the pass and shows the completion screen instead of silently
+  // looping back to card 1.
   function goTo(nextIndex: number) {
-    if (nextIndex < 0) {
-      setIndex(0);
-      setRevealed(false);
-      return;
-    }
     if (nextIndex >= order.length) {
       setShowResults(true);
       return;
@@ -180,22 +174,13 @@ export function FlashcardReviewer({
 
       <div className="flex min-h-[28rem] flex-col gap-6 rounded-2xl border border-border bg-surface-card p-6 shadow-sm sm:min-h-[32rem] sm:p-8">
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <button
-              type="button"
-              onClick={() => goTo(index - 1)}
-              className="rounded-full bg-trust/10 px-3 py-1 font-ui text-xs font-semibold tracking-wide text-trust uppercase transition-colors duration-base hover:bg-trust/20"
-            >
-              {t("back")}
-            </button>
-            <button
-              type="button"
-              onClick={() => goTo(index + 1)}
-              className="rounded-full bg-border/30 px-3 py-1 font-ui text-xs font-semibold tracking-wide text-secondary uppercase transition-colors duration-base hover:bg-border/50"
-            >
-              {t("next")}
-            </button>
-          </div>
+          <span
+            className={`rounded-full px-3 py-1 font-ui text-xs font-semibold tracking-wide uppercase ${
+              revealed ? "bg-trust/10 text-trust" : "bg-border/30 text-secondary"
+            }`}
+          >
+            {revealed ? t("backLabel") : t("frontLabel")}
+          </span>
           <span className="rounded-full bg-border/30 px-3 py-1 font-ui text-xs font-medium text-secondary tabular-nums">
             {t("cardOf", { current: index + 1, total: order.length })}
           </span>
@@ -204,9 +189,6 @@ export function FlashcardReviewer({
         <div className="flex flex-1 flex-col items-center justify-center gap-4 text-center">
           {revealed ? (
             <>
-              <span className="rounded-full bg-trust/10 px-3 py-1 font-ui text-xs font-semibold tracking-wide text-trust uppercase">
-                {t("backLabel")}
-              </span>
               <p className="font-heading text-xl font-semibold text-primary">{current.answer}</p>
               {sourceDiseaseName && sourceDiseaseSlug && (
                 <Link
@@ -219,9 +201,6 @@ export function FlashcardReviewer({
             </>
           ) : (
             <>
-              <span className="rounded-full bg-border/30 px-3 py-1 font-ui text-xs font-semibold tracking-wide text-secondary uppercase">
-                {t("frontLabel")}
-              </span>
               <p className="font-heading text-xl font-semibold text-primary">{current.question}</p>
               <button
                 type="button"
