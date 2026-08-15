@@ -126,10 +126,9 @@ export function BasicSciencesSection({
         </div>
 
         {/* Connected-flow strip — text block on the left, four steps in a
-            single row to the right, connected by straight arrows plus one
-            decorative dashed arc spanning the icon tops. Matches the
-            reference layout exactly (not stacked/numbered like a first
-            pass at this had it). */}
+            single row to the right, connected by straight arrows. Matches
+            the reference layout (not stacked/numbered like a first pass
+            at this had it). */}
         <div className="mt-14 rounded-2xl border border-slate-100 bg-white p-8 shadow-sm">
           <div className="flex flex-col gap-8 lg:flex-row lg:items-center lg:gap-10">
             <div className="flex flex-col gap-1.5 lg:w-52 lg:shrink-0">
@@ -142,16 +141,6 @@ export function BasicSciencesSection({
             </div>
 
             <div className="relative flex flex-1 items-start">
-              <svg
-                className="pointer-events-none absolute inset-x-6 top-5 hidden h-8 lg:block"
-                style={{ width: "calc(100% - 3rem)" }}
-                viewBox="0 0 400 32"
-                preserveAspectRatio="none"
-                aria-hidden="true"
-              >
-                <path d="M 6 26 Q 200 -6 394 26" fill="none" stroke="#cbd5e1" strokeWidth="1.5" strokeDasharray="4 4" />
-              </svg>
-
               {STEPS.map(({ key, icon: Icon, iconBg, iconColor }, i) => (
                 <div key={key} className="flex flex-1 items-start">
                   <div className="flex flex-1 flex-col items-center gap-3 text-center">
