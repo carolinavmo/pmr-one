@@ -29,13 +29,9 @@ import { recordReviewAction } from "@/lib/actions/flashcards";
 export function FlashcardReviewer({
   cards,
   isSignedIn,
-  sourceDiseaseName,
-  sourceDiseaseSlug,
 }: {
   cards: FlashcardCard[];
   isSignedIn: boolean;
-  sourceDiseaseName?: string | null;
-  sourceDiseaseSlug?: string | null;
 }) {
   const t = useTranslations("flashcards");
   const [order, setOrder] = useState(() => cards.map((c) => c.id));
@@ -244,14 +240,6 @@ export function FlashcardReviewer({
 
             <div className="flex flex-1 flex-col items-center justify-center gap-4 text-center">
               <p className="font-reading text-xl font-semibold text-primary">{current.answer}</p>
-              {sourceDiseaseName && sourceDiseaseSlug && (
-                <Link
-                  href={`/conditions/${sourceDiseaseSlug}`}
-                  className="font-ui text-xs text-secondary hover:text-accent"
-                >
-                  {t("fromDisease", { name: sourceDiseaseName })}
-                </Link>
-              )}
             </div>
 
             {isSignedIn ? (

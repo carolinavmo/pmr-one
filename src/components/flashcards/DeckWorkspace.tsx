@@ -14,25 +14,16 @@ export function DeckWorkspace({
   deckId,
   initialCards,
   isSignedIn,
-  sourceDiseaseName,
-  sourceDiseaseSlug,
 }: {
   deckId: string;
   initialCards: FlashcardCard[];
   isSignedIn: boolean;
-  sourceDiseaseName?: string | null;
-  sourceDiseaseSlug?: string | null;
 }) {
   const [cards, setCards] = useState(initialCards);
 
   return (
     <>
-      <FlashcardReviewer
-        cards={cards}
-        isSignedIn={isSignedIn}
-        sourceDiseaseName={sourceDiseaseName}
-        sourceDiseaseSlug={sourceDiseaseSlug}
-      />
+      <FlashcardReviewer cards={cards} isSignedIn={isSignedIn} />
       <CardManager deckId={deckId} cards={cards} onCardsChange={setCards} />
     </>
   );
