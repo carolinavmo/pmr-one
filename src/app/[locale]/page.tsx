@@ -143,12 +143,6 @@ export default async function Home({ searchParams }: HomeProps) {
         headingLine1={t("basicSciencesHeadingLine1")}
         headingLine2={t("basicSciencesHeadingLine2")}
         body={t("basicSciencesBody")}
-        features={{
-          feature1: { title: t("basicSciencesFeature1Title"), body: t("basicSciencesFeature1Body") },
-          feature2: { title: t("basicSciencesFeature2Title"), body: t("basicSciencesFeature2Body") },
-          feature3: { title: t("basicSciencesFeature3Title"), body: t("basicSciencesFeature3Body") },
-          feature4: { title: t("basicSciencesFeature4Title"), body: t("basicSciencesFeature4Body") },
-        }}
         topics={{
           anatomy: { title: t("basicSciencesTopicAnatomyTitle"), body: t("basicSciencesTopicAnatomyBody") },
           biomechanics: { title: t("basicSciencesTopicBiomechanicsTitle"), body: t("basicSciencesTopicBiomechanicsBody") },

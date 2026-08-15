@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { Bone, PersonStanding, Waves, BookOpen, Link2, Layers, Target, Share2, Brain, ClipboardCheck, Trophy, ArrowRight } from "lucide-react";
+import { Bone, PersonStanding, Waves, Share2, Brain, ClipboardCheck, Trophy, ArrowRight } from "lucide-react";
 
 // A deliberate visual "island" — the user asked to match a reference
 // screenshot's exact light/teal look, distinct from the rest of this
@@ -22,13 +22,6 @@ const TOPICS = [
   { key: "physicalAgents", icon: Waves, iconBg: "bg-violet-50", iconColor: "text-violet-600", lineColor: "border-violet-400", dotColor: "bg-violet-400" },
 ] as const;
 
-const FEATURES = [
-  { key: "feature1", icon: BookOpen },
-  { key: "feature2", icon: Link2 },
-  { key: "feature3", icon: Layers },
-  { key: "feature4", icon: Target },
-] as const;
-
 const STEPS = [
   { key: "step1", icon: Share2, iconBg: "bg-indigo-50", iconColor: "text-indigo-600" },
   { key: "step2", icon: Brain, iconBg: "bg-emerald-50", iconColor: "text-emerald-600" },
@@ -41,7 +34,6 @@ export function BasicSciencesSection({
   headingLine1,
   headingLine2,
   body,
-  features,
   topics,
   flowHeadingLine1,
   flowHeadingLine2,
@@ -52,7 +44,6 @@ export function BasicSciencesSection({
   headingLine1: string;
   headingLine2: string;
   body: string;
-  features: Record<string, { title: string; body: string }>;
   topics: Record<string, { title: string; body: string }>;
   flowHeadingLine1: string;
   flowHeadingLine2: string;
@@ -78,18 +69,6 @@ export function BasicSciencesSection({
             </h2>
 
             <p className="max-w-lg font-sans text-base leading-relaxed text-slate-600">{body}</p>
-
-            <div className="mt-2 grid grid-cols-2 gap-x-6 gap-y-3">
-              {FEATURES.map(({ key, icon: Icon }) => (
-                <div key={key} className="flex items-start gap-2.5">
-                  <Icon className="mt-0.5 size-4 shrink-0 text-[#1ba7b7]" aria-hidden="true" />
-                  <div className="flex flex-col">
-                    <span className="font-sans text-sm font-semibold text-slate-900">{features[key].title}</span>
-                    <span className="font-sans text-xs text-slate-500">{features[key].body}</span>
-                  </div>
-                </div>
-              ))}
-            </div>
           </div>
 
           {/* Illustration column: anatomy illustration bleeding into a gradient
