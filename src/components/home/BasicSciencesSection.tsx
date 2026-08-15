@@ -131,11 +131,10 @@ export function BasicSciencesSection({
             at this had it). */}
         <div className="mt-14 rounded-2xl border border-slate-100 bg-white p-8 shadow-sm">
           <div className="flex flex-col gap-8 lg:flex-row lg:items-center lg:gap-10">
-            <div className="flex flex-col gap-1.5 lg:w-52 lg:shrink-0">
-              <h3 className="font-sans text-xl leading-tight font-bold text-slate-900">
-                {flowHeadingLine1}
-                <br />
-                {flowHeadingLine2}
+            <div className="flex flex-col gap-1.5 lg:w-64 lg:shrink-0">
+              <h3 className="font-sans text-xl leading-tight font-bold text-[#121729]">
+                <span className="block whitespace-nowrap">{flowHeadingLine1}</span>
+                <span className="block whitespace-nowrap">{flowHeadingLine2}</span>
               </h3>
               <p className="font-sans text-sm text-slate-500">{flowBody}</p>
             </div>
