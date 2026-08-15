@@ -108,6 +108,8 @@
     "featureConditionsUrlLabel": "pmratlas.com/conditions/{slug}",
     "featureConditionsIndexLabel": "En esta página",
     "featureConditionsOverviewLabel": "Resumen",
+    "featureConditionsKeyPointsLabel": "Puntos clave",
+    "featureConditionsClinicalPearlsLabel": "Perlas clínicas",
     "featureHandbookEyebrow": "Mi Manual",
     "featureHandbookHeading": "Tus propias notas, protocolos y plantillas",
     "featureHandbookBody": "Escribe y organiza tus propias notas clínicas y protocolos de rehabilitación junto al material de referencia — privado, y precargado con páginas de ejemplo para mostrarte cómo funciona.",

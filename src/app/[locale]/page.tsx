@@ -3,7 +3,7 @@ import { getLocale, getTranslations } from "next-intl/server";
 import { BookOpen, Calendar, Layers, ListChecks } from "lucide-react";
 import { auth } from "@/auth";
 import { getPlatformStats, getRecentlyPublishedDiseases, getDiseaseBySlugForCatalog } from "@/lib/disease-catalog";
-import { getSectionIndex } from "@/lib/disease-loader";
+import { getSectionIndex, getDiseaseHighlights } from "@/lib/disease-loader";
 import {
   getRecentlyViewed,
   getFavoriteDiseases,
@@ -102,12 +102,14 @@ export default async function Home({ searchParams }: HomeProps) {
   // cheap "heading text only" query the real disease page's own TOC
   // uses, reused here so the homepage's Conditions mockup can show a
   // real section index instead of inventing one.
-  const [sampleDeck, sampleSectionIndex] = await Promise.all([
+  const [sampleDeck, sampleSectionIndex, sampleHighlights] = await Promise.all([
     firstPresetDeck ? getDeckWithCards(firstPresetDeck.id, null) : null,
     // includeUnpublished: true — this mockup is intentionally
     // independent of publish status (see getDiseaseBySlugForCatalog
-    // above), so its section index shouldn't be gated either.
+    // above), so its section index and highlights shouldn't be gated
+    // either.
     sampleDisease ? getSectionIndex(sampleDisease.slug, true) : null,
+    sampleDisease ? getDiseaseHighlights(sampleDisease.slug, true) : null,
   ]);
   const flashcardFront = sampleDeck?.cards[0]?.question;
   const totalFlashcards = deckSummaries.presetDecks.reduce((sum, d) => sum + d.cardCount, 0);
@@ -204,6 +206,10 @@ export default async function Home({ searchParams }: HomeProps) {
               indexLabel={t("featureConditionsIndexLabel")}
               overviewLabel={t("featureConditionsOverviewLabel")}
               sections={sampleSectionIndex?.sections ?? []}
+              keyPointsLabel={t("featureConditionsKeyPointsLabel")}
+              keyPoints={sampleHighlights?.keyPoints ?? []}
+              clinicalPearlsLabel={t("featureConditionsClinicalPearlsLabel")}
+              clinicalPearl={sampleHighlights?.clinicalPearls[0]}
             />
           }
         />

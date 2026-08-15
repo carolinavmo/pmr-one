@@ -150,6 +150,50 @@ export async function getSectionIndex(
   };
 }
 
+export interface DiseaseHighlights {
+  keyPoints: string[];
+  clinicalPearls: string[];
+}
+
+// Same "cheap, heading/text-only, no resolveBlock" shape as
+// getSectionIndex above, for the same reason: the homepage's Conditions
+// mockup wants to show a real Key Points / Clinical Pearls preview
+// without paying for a full disease-page block resolution. key_point
+// text lives directly on the block; clinical_pearl only stores a
+// reference, so it needs the one extra join into
+// clinical_pearl_editorial for the body.
+export async function getDiseaseHighlights(
+  diseaseSlug: string,
+  includeUnpublished = false
+): Promise<DiseaseHighlights | null> {
+  const { rows: keyPointRows } = await pool.query<{ text: string }>(
+    `SELECT eb.content_config->>'text' AS text
+     FROM editorial_block eb
+     JOIN disease d ON d.id = eb.disease_id
+     WHERE d.slug = $1 AND eb.block_type = 'key_point'
+       AND (d.status = 'published' OR $2)
+     ORDER BY eb.position`,
+    [diseaseSlug, includeUnpublished]
+  );
+
+  const { rows: pearlRows } = await pool.query<{ body: string }>(
+    `SELECT cpe.body
+     FROM editorial_block eb
+     JOIN disease d ON d.id = eb.disease_id
+     JOIN clinical_pearl_editorial cpe ON cpe.id = eb.referenced_object_id
+     WHERE d.slug = $1 AND eb.block_type = 'clinical_pearl'
+       AND (d.status = 'published' OR $2)
+     ORDER BY eb.position`,
+    [diseaseSlug, includeUnpublished]
+  );
+
+  if (keyPointRows.length === 0 && pearlRows.length === 0) return null;
+  return {
+    keyPoints: keyPointRows.map((row) => row.text),
+    clinicalPearls: pearlRows.map((row) => row.body),
+  };
+}
+
 // Every object-embedding block type needs its own fetch-then-map case
 // here — there's no shared abstraction across them yet. Manageable for
 // 9 block types by hand; see LESSONS_LEARNED.md on whether that holds
