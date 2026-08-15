@@ -17,9 +17,9 @@ import { Bone, PersonStanding, Waves, Share2, Brain, ClipboardCheck, Trophy, Arr
 // specific unbuilt-feature promises (no "3D models", no counts).
 
 const TOPICS = [
-  { key: "anatomy", icon: Bone, iconBg: "bg-teal-50", iconColor: "text-[#1ba7b7]", lineColor: "border-[#1ba7b7]", dotColor: "bg-[#1ba7b7]" },
-  { key: "biomechanics", icon: PersonStanding, iconBg: "bg-emerald-50", iconColor: "text-emerald-600", lineColor: "border-emerald-400", dotColor: "bg-emerald-400" },
-  { key: "physicalAgents", icon: Waves, iconBg: "bg-violet-50", iconColor: "text-violet-600", lineColor: "border-violet-400", dotColor: "bg-violet-400" },
+  { key: "anatomy", icon: Bone },
+  { key: "biomechanics", icon: PersonStanding },
+  { key: "physicalAgents", icon: Waves },
 ] as const;
 
 const STEPS = [
@@ -97,11 +97,11 @@ export function BasicSciencesSection({
             </div>
 
             <div className="flex flex-1 flex-col gap-4">
-              {TOPICS.map(({ key, icon: Icon, iconBg, iconColor }) => (
+              {TOPICS.map(({ key, icon: Icon }) => (
                 <div key={key} className="flex items-center gap-3">
                   <div className="flex flex-1 items-center gap-3 rounded-xl border border-[#1ba7b7]/40 bg-white p-4">
-                    <span className={`flex size-12 shrink-0 items-center justify-center rounded-full ${iconBg}`}>
-                      <Icon className={`size-6 ${iconColor}`} aria-hidden="true" />
+                    <span className="flex size-12 shrink-0 items-center justify-center rounded-full bg-teal-50">
+                      <Icon className="size-6 text-[#1ba7b7]" aria-hidden="true" />
                     </span>
                     <span className="font-heading text-base font-normal text-slate-900">{topics[key].title}</span>
                   </div>
