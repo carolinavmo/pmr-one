@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { Bone, PersonStanding, Waves, BookOpen, Link2, Layers, Target, Share2, Brain, ClipboardCheck, Trophy, ArrowRight } from "lucide-react";
 
 // A deliberate visual "island" — the user asked to match a reference
@@ -91,21 +92,15 @@ export function BasicSciencesSection({
             </div>
           </div>
 
-          {/* Illustration column: abstract vertebral column + connected topic cards */}
+          {/* Illustration column: anatomy illustration + connected topic cards */}
           <div className="relative flex items-center gap-6">
-            <svg viewBox="0 0 140 320" className="h-72 w-28 shrink-0" aria-hidden="true">
-              <path
-                d="M70 10 C 40 60, 100 100, 70 150 C 40 200, 100 240, 70 310"
-                fill="none"
-                stroke="#99f6e4"
-                strokeWidth="3"
-              />
-              {Array.from({ length: 9 }).map((_, i) => {
-                const y = 20 + i * 33;
-                const x = 70 + Math.sin(i * 0.9) * 28;
-                return <circle key={i} cx={x} cy={y} r="9" fill="#0d9488" opacity={0.15 + (i % 3) * 0.15} />;
-              })}
-            </svg>
+            <Image
+              src="/basic-sciences-anatomy.png"
+              alt=""
+              width={1023}
+              height={1537}
+              className="h-72 w-auto shrink-0 object-contain"
+            />
 
             <div className="flex flex-1 flex-col gap-4">
               {TOPICS.map(({ key, icon: Icon, iconBg, iconColor }) => (
