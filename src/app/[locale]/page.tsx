@@ -122,7 +122,7 @@ export default async function Home({ searchParams }: HomeProps) {
           background image, light-mode only (it's a near-white PNG —
           dark mode keeps the plain ambient glow instead of showing a
           bright rectangle on a dark surface). */}
-      <section className="relative w-full overflow-hidden border-b border-border bg-surface-raised">
+      <section className="relative w-full overflow-hidden bg-surface-raised">
         <div className="pointer-events-none absolute inset-0" aria-hidden="true">
           <Image
             src="/homepage-hero-bg.png"
