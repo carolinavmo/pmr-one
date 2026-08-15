@@ -19,6 +19,7 @@ import {
   reorderCards,
   recordReview,
   resetDeckProgress,
+  saveReviewPosition,
   toggleDeckFavorite,
   createCategory,
   renameCategory,
@@ -153,6 +154,17 @@ export async function reorderCardsAction(deckId: string, orderedIds: string[]): 
 export async function recordReviewAction(flashcardId: string, knew: boolean): Promise<void> {
   const { userId } = await requireUserId();
   await recordReview(userId, flashcardId, knew);
+  revalidateFlashcardSurfaces();
+}
+
+// Fire-and-forget from the reviewer as the current card changes, same
+// idiom as recordReviewAction — cardId null clears the position (the
+// pass just reached the completion screen). Revalidates so a later
+// "Continue" click reads the fresh position instead of a cached
+// Router-Cache copy of this page from before the update.
+export async function saveReviewPositionAction(deckId: string, cardId: string | null): Promise<void> {
+  const { userId } = await requireUserId();
+  await saveReviewPosition(userId, deckId, cardId);
   revalidateFlashcardSurfaces();
 }
 

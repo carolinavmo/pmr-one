@@ -14,16 +14,18 @@ export function DeckWorkspace({
   deckId,
   initialCards,
   isSignedIn,
+  lastCardId,
 }: {
   deckId: string;
   initialCards: FlashcardCard[];
   isSignedIn: boolean;
+  lastCardId: string | null;
 }) {
   const [cards, setCards] = useState(initialCards);
 
   return (
     <>
-      <FlashcardReviewer cards={cards} isSignedIn={isSignedIn} />
+      <FlashcardReviewer cards={cards} isSignedIn={isSignedIn} deckId={deckId} lastCardId={lastCardId} />
       <CardManager deckId={deckId} cards={cards} onCardsChange={setCards} />
     </>
   );

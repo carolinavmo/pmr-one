@@ -1,12 +1,12 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useTranslations } from "next-intl";
 import { Check, MousePointerClick, RotateCcw, Shuffle } from "lucide-react";
 import { Link } from "@/i18n/navigation";
 import type { FlashcardCard } from "@/lib/flashcards";
 import { MASTERY_BOX } from "@/lib/flashcard-scoring";
-import { recordReviewAction } from "@/lib/actions/flashcards";
+import { recordReviewAction, saveReviewPositionAction } from "@/lib/actions/flashcards";
 
 // Question always visible, tap/click reveals the answer — same
 // click-to-reveal interaction SelfCheckBlockView/EvidenceBadge already
@@ -29,21 +29,23 @@ import { recordReviewAction } from "@/lib/actions/flashcards";
 export function FlashcardReviewer({
   cards,
   isSignedIn,
+  deckId,
+  lastCardId,
 }: {
   cards: FlashcardCard[];
   isSignedIn: boolean;
+  deckId: string;
+  lastCardId: string | null;
 }) {
   const t = useTranslations("flashcards");
   const [order, setOrder] = useState(() => cards.map((c) => c.id));
-  // "Continue" is a plain navigation back to this page (StartDeckButton),
-  // so resuming has to be derived here from the same box data the
-  // progress bar already reads — box is null exactly for cards this
-  // user has never rated, so the first null-box card in deck order is
-  // "where they left off." Signed-out visitors have box === null on
-  // every card, so this naturally resolves to 0 for them too.
+  // "Continue" is a plain navigation back to this page (StartDeckButton)
+  // — resume at the card flashcard_deck_position last recorded for this
+  // user, falling back to 0 when there's no stored position (a fresh
+  // deck, a signed-out visitor, or a pass that already finished).
   const [index, setIndex] = useState(() => {
-    const firstUnreviewed = cards.findIndex((c) => c.box === null);
-    return firstUnreviewed === -1 ? 0 : firstUnreviewed;
+    const savedIndex = lastCardId ? cards.findIndex((c) => c.id === lastCardId) : -1;
+    return savedIndex === -1 ? 0 : savedIndex;
   });
   const [revealed, setRevealed] = useState(false);
   const [showResults, setShowResults] = useState(false);
@@ -79,6 +81,17 @@ export function FlashcardReviewer({
 
   const cardsById = useMemo(() => new Map(cards.map((c) => [c.id, c])), [cards]);
   const current = cardsById.get(order[index]);
+
+  // Keep flashcard_deck_position in sync with whatever the member is
+  // actually looking at, so "Continue" (StartDeckButton) reopens here
+  // next time instead of always landing on card 1. Cleared (not just
+  // left stale) once a pass reaches the completion screen — there's no
+  // meaningful "stopped here" position for a finished pass, and card 1
+  // is the right place for the next "Continue" to land.
+  useEffect(() => {
+    if (!isSignedIn) return;
+    saveReviewPositionAction(deckId, showResults ? null : (current?.id ?? null));
+  }, [isSignedIn, deckId, showResults, current?.id]);
 
   if (!current && !showResults) {
     return (

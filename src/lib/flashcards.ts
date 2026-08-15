@@ -59,6 +59,7 @@ export interface DeckDetail {
   icon: CardIconName | undefined;
   iconUrl: string | null;
   categoryId: string | null;
+  lastCardId: string | null;
   sourceDiseaseName: string | null;
   sourceDiseaseSlug: string | null;
   cards: FlashcardCard[];
@@ -193,6 +194,20 @@ export async function getDeckWithCards(
     userId ? [deckId, userId] : [deckId]
   );
 
+  // Where "Continue" (StartDeckButton) should resume — the card this
+  // user was last looking at, not derivable from box/due_at alone
+  // (those track per-card mastery, not "where did I stop scrolling").
+  // null for signed-out visitors and for a deck no one has positioned
+  // in yet, both of which fall back to card 1 in the reviewer.
+  let lastCardId: string | null = null;
+  if (userId) {
+    const { rows: positionRows } = await pool.query(
+      `SELECT card_id FROM flashcard_deck_position WHERE user_id = $1 AND deck_id = $2`,
+      [userId, deckId]
+    );
+    lastCardId = positionRows[0]?.card_id ?? null;
+  }
+
   return {
     id: deck.id,
     ownerType: deck.owner_type,
@@ -202,6 +217,7 @@ export async function getDeckWithCards(
     icon: (deck.category_icon as CardIconName | null) ?? undefined,
     iconUrl: deck.icon_url,
     categoryId: deck.category_id,
+    lastCardId,
     sourceDiseaseName: deck.source_disease_name,
     sourceDiseaseSlug: deck.source_disease_slug,
     cards: cardRows.map((r) => ({
@@ -396,14 +412,45 @@ export async function recordReview(
 
 // Clicking "Study deck" always starts a fresh session — deletes this
 // user's box/due-date progress for every card in the deck so mastery
-// doesn't carry over between study sessions. A plain DELETE with no
-// matching rows is a harmless no-op, so this is safe to call
-// unconditionally rather than checking for prior progress first.
+// doesn't carry over between study sessions, and clears the resume
+// position alongside it so the reviewer actually reopens on card 1.
+// A plain DELETE with no matching rows is a harmless no-op, so this
+// is safe to call unconditionally rather than checking for prior
+// progress first.
 export async function resetDeckProgress(userId: string, deckId: string): Promise<void> {
   await pool.query(
     `DELETE FROM flashcard_progress
      WHERE user_id = $1 AND flashcard_id IN (SELECT id FROM flashcard WHERE deck_id = $2)`,
     [userId, deckId]
+  );
+  await pool.query(
+    `DELETE FROM flashcard_deck_position WHERE user_id = $1 AND deck_id = $2`,
+    [userId, deckId]
+  );
+}
+
+// Called as the reviewer's current card changes (and cleared once a
+// pass reaches the completion screen) — see getDeckWithCards's
+// lastCardId for how this is read back on the next visit. cardId null
+// clears the position (nothing to resume; "Continue" falls back to
+// card 1) rather than leaving a stale row pointing at a finished pass.
+export async function saveReviewPosition(
+  userId: string,
+  deckId: string,
+  cardId: string | null
+): Promise<void> {
+  if (cardId === null) {
+    await pool.query(`DELETE FROM flashcard_deck_position WHERE user_id = $1 AND deck_id = $2`, [
+      userId,
+      deckId,
+    ]);
+    return;
+  }
+  await pool.query(
+    `INSERT INTO flashcard_deck_position (user_id, deck_id, card_id, updated_at)
+     VALUES ($1, $2, $3, now())
+     ON CONFLICT (user_id, deck_id) DO UPDATE SET card_id = $3, updated_at = now()`,
+    [userId, deckId, cardId]
   );
 }
 

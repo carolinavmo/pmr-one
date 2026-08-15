@@ -60,9 +60,19 @@ export default async function FlashcardDeckPage({ params }: DeckPageProps) {
       </div>
 
       {canManage ? (
-        <DeckWorkspace deckId={deck.id} initialCards={deck.cards} isSignedIn={Boolean(session)} />
+        <DeckWorkspace
+          deckId={deck.id}
+          initialCards={deck.cards}
+          isSignedIn={Boolean(session)}
+          lastCardId={deck.lastCardId}
+        />
       ) : (
-        <FlashcardReviewer cards={deck.cards} isSignedIn={Boolean(session)} />
+        <FlashcardReviewer
+          cards={deck.cards}
+          isSignedIn={Boolean(session)}
+          deckId={deck.id}
+          lastCardId={deck.lastCardId}
+        />
       )}
     </main>
   );
