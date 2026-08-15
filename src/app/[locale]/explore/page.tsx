@@ -7,7 +7,6 @@ import { getAllCalculators } from "@/lib/clinical-tools";
 import { getDeckSummaries, getDeckWithCards } from "@/lib/flashcards";
 import { getDashboardStats, getSampleQuestion } from "@/lib/question-bank";
 import { Eyebrow } from "@/components/ui/Eyebrow";
-import { StatTile } from "@/components/ui/StatTile";
 import { buttonBaseClasses } from "@/components/ui/button-styles";
 import { KnowledgeObjectCard } from "@/components/ui/KnowledgeObjectCard";
 import { objectIcons } from "@/components/ui/objectIcons";
@@ -224,13 +223,6 @@ export default async function ExplorePage() {
           <p className="max-w-2xl font-ui text-base text-secondary">
             {t("pageSubtitle")}
           </p>
-        </div>
-
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-          <StatTile icon={objectIcons.disease} label={tHome("statConditions")} value={stats.conditions} color="accent" />
-          <StatTile icon={objectIcons.examination_maneuver} label={tHome("statExamManeuvers")} value={stats.examinationManeuvers} color="trust" />
-          <StatTile icon={objectIcons.clinical_pearl} label={tHome("statClinicalPearls")} value={stats.clinicalPearls} color="insight" />
-          <StatTile icon={objectIcons.reference} label={tHome("statReferences")} value={stats.references} color="blue" />
         </div>
 
         <GuidedTour stops={tourStops} />
