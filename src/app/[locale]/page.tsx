@@ -14,6 +14,7 @@ import { getDeckSummaries, getDeckWithCards } from "@/lib/flashcards";
 import { getDashboardStats, getSampleQuestion } from "@/lib/question-bank";
 import { getAllCalculators } from "@/lib/clinical-tools";
 import { HomeHero } from "@/components/home/HomeHero";
+import { BasicSciencesSection } from "@/components/home/BasicSciencesSection";
 import { FeatureHeroSection } from "@/components/home/FeatureHeroSection";
 import {
   ConditionsMockup,
@@ -129,6 +130,39 @@ export default async function Home({ searchParams }: HomeProps) {
           />
         </div>
       </section>
+
+      {/* Basic Sciences — a deliberate visual "island" ahead of the six
+          feature sections below: a fixed light/teal treatment (literal
+          Tailwind palette classes, never this app's own dark-aware
+          tokens) that doesn't shift with the site's own theme toggle,
+          matching a reference the user asked to follow closely. Teaser
+          only — Anatomy/Biomechanics/Physical Agents aren't real
+          content anywhere in this app yet, so nothing here is a link. */}
+      <BasicSciencesSection
+        eyebrow={t("basicSciencesEyebrow")}
+        headingLine1={t("basicSciencesHeadingLine1")}
+        headingLine2={t("basicSciencesHeadingLine2")}
+        body={t("basicSciencesBody")}
+        features={{
+          feature1: { title: t("basicSciencesFeature1Title"), body: t("basicSciencesFeature1Body") },
+          feature2: { title: t("basicSciencesFeature2Title"), body: t("basicSciencesFeature2Body") },
+          feature3: { title: t("basicSciencesFeature3Title"), body: t("basicSciencesFeature3Body") },
+          feature4: { title: t("basicSciencesFeature4Title"), body: t("basicSciencesFeature4Body") },
+        }}
+        topics={{
+          anatomy: { title: t("basicSciencesTopicAnatomyTitle"), body: t("basicSciencesTopicAnatomyBody") },
+          biomechanics: { title: t("basicSciencesTopicBiomechanicsTitle"), body: t("basicSciencesTopicBiomechanicsBody") },
+          physicalAgents: { title: t("basicSciencesTopicPhysicalAgentsTitle"), body: t("basicSciencesTopicPhysicalAgentsBody") },
+        }}
+        flowHeading={t("basicSciencesFlowHeading")}
+        flowBody={t("basicSciencesFlowBody")}
+        steps={{
+          step1: { title: t("basicSciencesStep1Title"), body: t("basicSciencesStep1Body") },
+          step2: { title: t("basicSciencesStep2Title"), body: t("basicSciencesStep2Body") },
+          step3: { title: t("basicSciencesStep3Title"), body: t("basicSciencesStep3Body") },
+          step4: { title: t("basicSciencesStep4Title"), body: t("basicSciencesStep4Body") },
+        }}
+      />
 
       {/* Six feature sections, one per platform feature, alternating
           band color and text/visual side as the visitor scrolls — see
