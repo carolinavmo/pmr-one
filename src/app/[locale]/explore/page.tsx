@@ -137,7 +137,15 @@ export default async function ExplorePage() {
     stat: totalFlashcards > 0 ? { value: totalFlashcards, label: tHome("featureFlashcardsStatLabel") } : undefined,
     ctaLabel: t("tourFlashcardsCta"),
     ctaHref: "/flashcards",
-    visual: <FlashcardsMockup front={flashcardFront ?? SAMPLE_PAGE_TITLE} />,
+    visual: (
+      <FlashcardsMockup
+        front={flashcardFront ?? SAMPLE_PAGE_TITLE}
+        categoryLabel={firstPresetDeck?.name ?? tHome("featureFlashcardsEyebrow")}
+        cardIndex={1}
+        cardTotal={sampleDeck?.cards.length ?? Math.max(totalFlashcards, 1)}
+        tapHint={tHome("featureFlashcardsTapHint")}
+      />
+    ),
   });
 
   tourStops.push({

@@ -1,6 +1,6 @@
 import Image from "next/image";
 import { getLocale, getTranslations } from "next-intl/server";
-import { BookOpen, Calendar, Layers, ListChecks } from "lucide-react";
+import { BookOpen, Calendar, Layers, ListChecks, RotateCw, Smartphone, Sparkles, TrendingUp } from "lucide-react";
 import { auth } from "@/auth";
 import { getPlatformStats, getRecentlyPublishedDiseases, getDiseaseBySlugForCatalog } from "@/lib/disease-catalog";
 import { getSectionIndex } from "@/lib/disease-loader";
@@ -11,16 +11,15 @@ import {
 } from "@/lib/workspace";
 import { getAllAnnotationsForUser } from "@/lib/annotations";
 import { getHomepageHero } from "@/lib/homepage-hero";
-import { getDeckSummaries, getDeckWithCards } from "@/lib/flashcards";
 import { getDashboardStats, getSampleQuestion } from "@/lib/question-bank";
 import { getAllCalculators } from "@/lib/clinical-tools";
 import { HomeHero } from "@/components/home/HomeHero";
 import { BasicSciencesSection } from "@/components/home/BasicSciencesSection";
 import { FeatureHeroSection } from "@/components/home/FeatureHeroSection";
+import { FlashcardsBackgroundSection } from "@/components/home/FlashcardsBackgroundSection";
 import {
   ConditionsMockup,
   HandbookMockup,
-  FlashcardsMockup,
   QuestionBankMockup,
   ClinicalToolsMockup,
   StudyPlannerMockup,
@@ -80,7 +79,7 @@ export default async function Home({ searchParams }: HomeProps) {
   const t = await getTranslations("home");
   const locale = await getLocale();
 
-  const [hero, platformStats, sampleDisease, deckSummaries, questionBankStats, sampleQuestion, calculators] =
+  const [hero, platformStats, sampleDisease, questionBankStats, sampleQuestion, calculators] =
     await Promise.all([
       getHomepageHero(),
       getPlatformStats(),
@@ -90,27 +89,18 @@ export default async function Home({ searchParams }: HomeProps) {
       // Independent of publish status, same as the mockup being
       // unlinked/decorative rather than a real catalog entry.
       getDiseaseBySlugForCatalog("rotator-cuff-tendinopathy"),
-      getDeckSummaries(null),
       getDashboardStats(null),
       getSampleQuestion(),
       getAllCalculators(locale),
     ]);
 
-  const firstPresetDeck = deckSummaries.presetDecks[0];
-  // Two more dependent fetches — each needs an id from a query above, so
-  // neither can join the first Promise.all. getSectionIndex is the same
-  // cheap "heading text only" query the real disease page's own TOC
-  // uses, reused here so the homepage's Conditions mockup can show a
-  // real section index instead of inventing one.
-  const [sampleDeck, sampleSectionIndex] = await Promise.all([
-    firstPresetDeck ? getDeckWithCards(firstPresetDeck.id, null) : null,
-    // includeUnpublished: true — this mockup is intentionally
-    // independent of publish status (see getDiseaseBySlugForCatalog
-    // above), so its section index shouldn't be gated either.
-    sampleDisease ? getSectionIndex(sampleDisease.slug, true) : null,
-  ]);
-  const flashcardFront = sampleDeck?.cards[0]?.question;
-  const totalFlashcards = deckSummaries.presetDecks.reduce((sum, d) => sum + d.cardCount, 0);
+  // getSectionIndex is the same cheap "heading text only" query the real
+  // disease page's own TOC uses, reused here so the homepage's Conditions
+  // mockup can show a real section index instead of inventing one.
+  // includeUnpublished: true — this mockup is intentionally independent
+  // of publish status (see getDiseaseBySlugForCatalog above), so its
+  // section index shouldn't be gated either.
+  const sampleSectionIndex = sampleDisease ? await getSectionIndex(sampleDisease.slug, true) : null;
   const firstCalculator = calculators[0];
 
   return (
@@ -188,6 +178,8 @@ export default async function Home({ searchParams }: HomeProps) {
           eyebrowIcon={objectIcons.disease}
           eyebrowLabel={t("featureConditionsEyebrow")}
           heading={t("featureConditionsHeading")}
+          headingHighlight="#5CA4B5"
+          headingClassName="font-sans text-3xl leading-tight font-bold text-primary sm:text-4xl"
           body={t("featureConditionsBody")}
           bullets={[t("featureConditionsBullet1"), t("featureConditionsBullet2"), t("featureConditionsBullet3")]}
           stat={{ value: platformStats.conditions, label: t("featureConditionsStatLabel") }}
@@ -213,42 +205,33 @@ export default async function Home({ searchParams }: HomeProps) {
         />
       )}
 
-      <FeatureHeroSection
-        band="surface-raised"
-        reverse={true}
-        color="trust"
-        eyebrowIcon={BookOpen}
-        eyebrowLabel={t("featureHandbookEyebrow")}
-        heading={t("featureHandbookHeading")}
-        body={t("featureHandbookBody")}
-        bullets={[t("featureHandbookBullet1"), t("featureHandbookBullet2"), t("featureHandbookBullet3")]}
-        ctaLabel={t("featureHandbookCta")}
-        ctaHref="/explore/handbook"
-        visual={<HandbookMockup pageTitles={[SAMPLE_PAGE_TITLE, SAMPLE_PROTOCOL_TITLE, SAMPLE_TEMPLATE_TITLE]} />}
-      />
-
-      <FeatureHeroSection
-        band="surface"
-        reverse={false}
-        color="violet"
+      <FlashcardsBackgroundSection
         eyebrowIcon={Layers}
         eyebrowLabel={t("featureFlashcardsEyebrow")}
-        heading={t("featureFlashcardsHeading")}
+        headingLine1={t("featureFlashcardsHeadingLine1")}
+        headingLine2={t("featureFlashcardsHeadingLine2")}
         body={t("featureFlashcardsBody")}
-        bullets={[t("featureFlashcardsBullet1"), t("featureFlashcardsBullet2"), t("featureFlashcardsBullet3")]}
-        stat={totalFlashcards > 0 ? { value: totalFlashcards, label: t("featureFlashcardsStatLabel") } : undefined}
+        iconGrid={[
+          { icon: Sparkles, title: t("featureFlashcardsIcon1Title"), body: t("featureFlashcardsIcon1Body") },
+          { icon: RotateCw, title: t("featureFlashcardsIcon2Title"), body: t("featureFlashcardsIcon2Body") },
+          { icon: TrendingUp, title: t("featureFlashcardsIcon3Title"), body: t("featureFlashcardsIcon3Body") },
+          { icon: Smartphone, title: t("featureFlashcardsIcon4Title"), body: t("featureFlashcardsIcon4Body") },
+        ]}
         ctaLabel={t("featureFlashcardsCta")}
         ctaHref="/flashcards"
-        visual={<FlashcardsMockup front={flashcardFront ?? SAMPLE_PAGE_TITLE} />}
+        ctaNote={t("featureFlashcardsCtaNote")}
       />
 
       <FeatureHeroSection
-        band="surface-raised"
-        reverse={true}
-        color="indigo"
+        band="tint"
+        reverse={false}
+        color="accent"
         eyebrowIcon={ListChecks}
         eyebrowLabel={t("featureQuestionBankEyebrow")}
-        heading={t("featureQuestionBankHeading")}
+        heading={`${t("featureQuestionBankHeadingLine1")}\n${t("featureQuestionBankHeadingLine2")}`}
+        headingHighlight="var(--color-accent)"
+        headingHighlightFullLastLine
+        headingClassName="font-sans text-3xl leading-tight font-bold text-primary sm:text-4xl"
         body={t("featureQuestionBankBody")}
         bullets={[t("featureQuestionBankBullet1"), t("featureQuestionBankBullet2"), t("featureQuestionBankBullet3")]}
         stat={{ value: questionBankStats.totalQuestions, label: t("featureQuestionBankStatLabel") }}
@@ -264,6 +247,20 @@ export default async function Home({ searchParams }: HomeProps) {
             />
           )
         }
+      />
+
+      <FeatureHeroSection
+        band="surface-raised"
+        reverse={true}
+        color="trust"
+        eyebrowIcon={BookOpen}
+        eyebrowLabel={t("featureHandbookEyebrow")}
+        heading={t("featureHandbookHeading")}
+        body={t("featureHandbookBody")}
+        bullets={[t("featureHandbookBullet1"), t("featureHandbookBullet2"), t("featureHandbookBullet3")]}
+        ctaLabel={t("featureHandbookCta")}
+        ctaHref="/explore/handbook"
+        visual={<HandbookMockup pageTitles={[SAMPLE_PAGE_TITLE, SAMPLE_PROTOCOL_TITLE, SAMPLE_TEMPLATE_TITLE]} />}
       />
 
       {firstCalculator && (

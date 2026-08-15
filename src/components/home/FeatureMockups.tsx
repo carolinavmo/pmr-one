@@ -1,4 +1,15 @@
-import { Bookmark, Check, ChevronRight, Gem, GripVertical, Layers, ListChecks, NotebookPen } from "lucide-react";
+import {
+  Bookmark,
+  Check,
+  ChevronLeft,
+  ChevronRight,
+  Gem,
+  GripVertical,
+  Layers,
+  ListChecks,
+  MousePointerClick,
+  NotebookPen,
+} from "lucide-react";
 import { TrustIndicator } from "@/components/ui/TrustIndicator";
 import { iconForHeading } from "@/lib/section-icons";
 
@@ -146,16 +157,52 @@ export function HandbookMockup({ pageTitles }: { pageTitles: string[] }) {
   );
 }
 
-export function FlashcardsMockup({ front }: { front: string }) {
+export function FlashcardsMockup({
+  front,
+  categoryLabel,
+  cardIndex,
+  cardTotal,
+  tapHint,
+}: {
+  front: string;
+  categoryLabel: string;
+  cardIndex: number;
+  cardTotal: number;
+  tapHint: string;
+}) {
   return (
-    <div className="relative px-4 py-6">
-      <div className="absolute inset-x-8 top-2 h-full rounded-2xl border border-card-violet/20 bg-card-violet/5" aria-hidden="true" />
-      <div className="relative flex min-h-36 flex-col items-center justify-center gap-3 rounded-2xl border border-card-violet/30 bg-surface p-6 text-center shadow-md">
-        <span className="flex items-center gap-1.5 rounded-full bg-card-violet/15 px-2.5 py-1 font-ui text-[11px] font-semibold text-card-violet">
+    <div className="relative px-5 py-8">
+      {/* A shallow stack of offset cards behind the real one, purely
+          decorative — no separate content, just depth. */}
+      <div
+        className="absolute inset-x-10 top-6 h-full -rotate-2 rounded-2xl border border-card-violet/15 bg-card-violet/5"
+        aria-hidden="true"
+      />
+      <div
+        className="absolute inset-x-6 top-3 h-full rotate-1 rounded-2xl border border-card-violet/20 bg-card-violet/5"
+        aria-hidden="true"
+      />
+      <div className="relative flex min-h-48 flex-col items-center justify-between gap-4 rounded-2xl border border-card-violet/30 bg-surface p-6 text-center shadow-md">
+        <span className="flex items-center gap-1.5 rounded-full bg-card-violet/15 px-2.5 py-1 font-ui text-[11px] font-semibold tracking-wide text-card-violet uppercase">
           <Layers className="size-3" aria-hidden="true" />
-          Front
+          {categoryLabel}
         </span>
-        <p className="font-reading text-sm font-medium text-primary">{front}</p>
+
+        <p className="font-reading text-base font-medium text-primary">{front}</p>
+
+        <div className="flex w-full flex-col items-center gap-3">
+          <span className="flex items-center gap-1.5 font-ui text-xs text-secondary">
+            <MousePointerClick className="size-3.5 shrink-0" aria-hidden="true" />
+            {tapHint}
+          </span>
+          <div className="flex w-full items-center justify-between border-t border-border pt-3">
+            <ChevronLeft className="size-4 text-secondary/40" aria-hidden="true" />
+            <span className="font-ui text-xs tabular-nums text-secondary">
+              {cardIndex} / {cardTotal}
+            </span>
+            <ChevronRight className="size-4 text-tertiary" aria-hidden="true" />
+          </div>
+        </div>
       </div>
     </div>
   );
