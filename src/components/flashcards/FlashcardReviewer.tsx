@@ -41,6 +41,11 @@ export function FlashcardReviewer({
   const [order, setOrder] = useState(() => cards.map((c) => c.id));
   const [index, setIndex] = useState(0);
   const [revealed, setRevealed] = useState(false);
+  const [showResults, setShowResults] = useState(false);
+  // cardId -> knew, for THIS pass through `order` only — powers the
+  // completion screen's stats and "Review weak cards" (Again/Hard ones
+  // from this pass). Cleared on Start Over / Review Weak / a fresh pass.
+  const [sessionRatings, setSessionRatings] = useState<Record<string, boolean>>({});
 
   // Resync whenever the card set itself changes (an add/edit/delete in
   // the sibling CardManager, which shares this list via DeckWorkspace)
@@ -56,6 +61,8 @@ export function FlashcardReviewer({
     setOrder(cards.map((c) => c.id));
     setIndex(0);
     setRevealed(false);
+    setShowResults(false);
+    setSessionRatings({});
   }
 
   // Deck-level mastery, computed from the box each card already
@@ -68,7 +75,7 @@ export function FlashcardReviewer({
   const cardsById = useMemo(() => new Map(cards.map((c) => [c.id, c])), [cards]);
   const current = cardsById.get(order[index]);
 
-  if (!current) {
+  if (!current && !showResults) {
     return (
       <div className="rounded-2xl border border-border bg-surface-raised p-8 text-center font-ui text-sm text-secondary">
         {t("emptyDeck")}
@@ -76,8 +83,21 @@ export function FlashcardReviewer({
     );
   }
 
+  // No more wraparound: running past the last card (by rating it or by
+  // clicking Next) ends the pass and shows the completion screen
+  // instead of silently looping back to card 1. Running past the first
+  // card with Back just clamps at 0.
   function goTo(nextIndex: number) {
-    setIndex((nextIndex + order.length) % order.length);
+    if (nextIndex < 0) {
+      setIndex(0);
+      setRevealed(false);
+      return;
+    }
+    if (nextIndex >= order.length) {
+      setShowResults(true);
+      return;
+    }
+    setIndex(nextIndex);
     setRevealed(false);
   }
 
@@ -96,7 +116,50 @@ export function FlashcardReviewer({
     if (isSignedIn && current) {
       recordReviewAction(current.id, knew);
     }
+    if (current) {
+      setSessionRatings((prev) => ({ ...prev, [current.id]: knew }));
+    }
     goTo(index + 1);
+  }
+
+  // Local reset only — same "restart the view, leave persisted mastery
+  // alone" idiom Question Bank's DeckResults "Start Again" uses.
+  // Deliberately distinct from DeckCard's "Start over", which wipes
+  // flashcard_progress in the DB before you even enter the reviewer.
+  function handleStartOverSession() {
+    setOrder(cards.map((c) => c.id));
+    setIndex(0);
+    setRevealed(false);
+    setShowResults(false);
+    setSessionRatings({});
+  }
+
+  function handleReviewWeak() {
+    const weakIds = order.filter((id) => sessionRatings[id] === false);
+    setOrder(weakIds);
+    setIndex(0);
+    setRevealed(false);
+    setShowResults(false);
+    setSessionRatings({});
+  }
+
+  if (showResults) {
+    const reviewedIds = Object.keys(sessionRatings);
+    const knowCount = reviewedIds.filter((id) => sessionRatings[id]).length;
+    const weakCount = reviewedIds.length - knowCount;
+    return (
+      <DeckResults
+        totalReviewed={reviewedIds.length}
+        knowCount={knowCount}
+        weakCount={weakCount}
+        onStartOver={handleStartOverSession}
+        onReviewWeak={handleReviewWeak}
+      />
+    );
+  }
+
+  if (!current) {
+    return null;
   }
 
   return (
@@ -231,6 +294,69 @@ export function FlashcardReviewer({
         <Shuffle className="size-4" aria-hidden="true" />
         {t("shuffle")}
       </button>
+    </div>
+  );
+}
+
+// End-of-pass summary — mirrors Question Bank's DeckResults (same
+// "Start Again" idiom: local-only reset, persisted mastery untouched).
+// knowCount/weakCount come from this pass's own ratings, not from the
+// deck's overall (across-sessions) mastery, so the percentage reflects
+// "how did this pass go," not lifetime progress.
+function DeckResults({
+  totalReviewed,
+  knowCount,
+  weakCount,
+  onStartOver,
+  onReviewWeak,
+}: {
+  totalReviewed: number;
+  knowCount: number;
+  weakCount: number;
+  onStartOver: () => void;
+  onReviewWeak: () => void;
+}) {
+  const t = useTranslations("flashcards");
+  const percent = totalReviewed > 0 ? Math.round((knowCount / totalReviewed) * 100) : 0;
+
+  return (
+    <div className="mx-auto flex max-w-md flex-col items-center gap-5 rounded-2xl border border-border bg-surface-card p-8 text-center shadow-sm">
+      <span className="flex size-14 items-center justify-center rounded-full border-2 border-trust text-trust">
+        <Check className="size-7" aria-hidden="true" />
+      </span>
+      <div className="flex flex-col gap-1">
+        <h2 className="font-heading text-xl font-semibold text-primary">{t("deckCompleteTitle")}</h2>
+        <p className="font-ui text-sm text-secondary">
+          {t("deckCompleteScore", { known: knowCount, total: totalReviewed, percent })}
+        </p>
+      </div>
+      <div className="h-2 w-full overflow-hidden rounded-full bg-border/40">
+        <div className="h-full rounded-full bg-trust transition-all duration-base" style={{ width: `${percent}%` }} />
+      </div>
+      <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:justify-center">
+        <button
+          type="button"
+          onClick={onStartOver}
+          className="rounded-full bg-accent px-4 py-2 font-ui text-sm font-medium text-white transition-colors duration-base hover:bg-accent-hover"
+        >
+          {t("startOver")}
+        </button>
+        {weakCount > 0 && (
+          <button
+            type="button"
+            onClick={onReviewWeak}
+            className="rounded-full border border-card-red/30 bg-card-red/5 px-4 py-2 font-ui text-sm font-medium text-card-red transition-colors duration-base hover:bg-card-red/10"
+          >
+            {t("reviewWeak", { count: weakCount })}
+          </button>
+        )}
+        <Link
+          href="/flashcards"
+          className="rounded-full border border-border px-4 py-2 font-ui text-sm font-medium text-primary transition-colors duration-base hover:bg-surface-sunken"
+        >
+          {t("back")}
+        </Link>
+      </div>
     </div>
   );
 }
