@@ -35,7 +35,16 @@ export function FlashcardReviewer({
 }) {
   const t = useTranslations("flashcards");
   const [order, setOrder] = useState(() => cards.map((c) => c.id));
-  const [index, setIndex] = useState(0);
+  // "Continue" is a plain navigation back to this page (StartDeckButton),
+  // so resuming has to be derived here from the same box data the
+  // progress bar already reads — box is null exactly for cards this
+  // user has never rated, so the first null-box card in deck order is
+  // "where they left off." Signed-out visitors have box === null on
+  // every card, so this naturally resolves to 0 for them too.
+  const [index, setIndex] = useState(() => {
+    const firstUnreviewed = cards.findIndex((c) => c.box === null);
+    return firstUnreviewed === -1 ? 0 : firstUnreviewed;
+  });
   const [revealed, setRevealed] = useState(false);
   const [showResults, setShowResults] = useState(false);
   // cardId -> knew, for THIS pass through `order` only — powers the
