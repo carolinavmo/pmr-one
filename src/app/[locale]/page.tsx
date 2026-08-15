@@ -154,7 +154,8 @@ export default async function Home({ searchParams }: HomeProps) {
           biomechanics: { title: t("basicSciencesTopicBiomechanicsTitle"), body: t("basicSciencesTopicBiomechanicsBody") },
           physicalAgents: { title: t("basicSciencesTopicPhysicalAgentsTitle"), body: t("basicSciencesTopicPhysicalAgentsBody") },
         }}
-        flowHeading={t("basicSciencesFlowHeading")}
+        flowHeadingLine1={t("basicSciencesFlowHeadingLine1")}
+        flowHeadingLine2={t("basicSciencesFlowHeadingLine2")}
         flowBody={t("basicSciencesFlowBody")}
         steps={{
           step1: { title: t("basicSciencesStep1Title"), body: t("basicSciencesStep1Body") },

@@ -1,4 +1,4 @@
-import { Bone, PersonStanding, Waves, BookOpen, Link2, Layers, Target, Share2, Brain, ClipboardCheck, Trophy } from "lucide-react";
+import { Bone, PersonStanding, Waves, BookOpen, Link2, Layers, Target, Share2, Brain, ClipboardCheck, Trophy, ArrowRight } from "lucide-react";
 
 // A deliberate visual "island" — the user asked to match a reference
 // screenshot's exact light/teal look, distinct from the rest of this
@@ -29,10 +29,10 @@ const FEATURES = [
 ] as const;
 
 const STEPS = [
-  { key: "step1", icon: Share2, dot: "bg-teal-500" },
-  { key: "step2", icon: Brain, dot: "bg-emerald-500" },
-  { key: "step3", icon: ClipboardCheck, dot: "bg-violet-500" },
-  { key: "step4", icon: Trophy, dot: "bg-amber-500" },
+  { key: "step1", icon: Share2, iconBg: "bg-indigo-50", iconColor: "text-indigo-600" },
+  { key: "step2", icon: Brain, iconBg: "bg-emerald-50", iconColor: "text-emerald-600" },
+  { key: "step3", icon: ClipboardCheck, iconBg: "bg-violet-50", iconColor: "text-violet-600" },
+  { key: "step4", icon: Trophy, iconBg: "bg-amber-50", iconColor: "text-amber-600" },
 ] as const;
 
 export function BasicSciencesSection({
@@ -42,7 +42,8 @@ export function BasicSciencesSection({
   body,
   features,
   topics,
-  flowHeading,
+  flowHeadingLine1,
+  flowHeadingLine2,
   flowBody,
   steps,
 }: {
@@ -52,7 +53,8 @@ export function BasicSciencesSection({
   body: string;
   features: Record<string, { title: string; body: string }>;
   topics: Record<string, { title: string; body: string }>;
-  flowHeading: string;
+  flowHeadingLine1: string;
+  flowHeadingLine2: string;
   flowBody: string;
   steps: Record<string, { title: string; body: string }>;
 }) {
@@ -123,27 +125,50 @@ export function BasicSciencesSection({
           </div>
         </div>
 
-        {/* Connected-flow strip */}
+        {/* Connected-flow strip — text block on the left, four steps in a
+            single row to the right, connected by straight arrows plus one
+            decorative dashed arc spanning the icon tops. Matches the
+            reference layout exactly (not stacked/numbered like a first
+            pass at this had it). */}
         <div className="mt-14 rounded-2xl border border-slate-100 bg-white p-8 shadow-sm">
-          <div className="mb-8 flex flex-col gap-1.5">
-            <h3 className="font-sans text-xl font-bold text-slate-900">{flowHeading}</h3>
-            <p className="max-w-xl font-sans text-sm text-slate-500">{flowBody}</p>
-          </div>
+          <div className="flex flex-col gap-8 lg:flex-row lg:items-center lg:gap-10">
+            <div className="flex flex-col gap-1.5 lg:w-52 lg:shrink-0">
+              <h3 className="font-sans text-xl leading-tight font-bold text-slate-900">
+                {flowHeadingLine1}
+                <br />
+                {flowHeadingLine2}
+              </h3>
+              <p className="font-sans text-sm text-slate-500">{flowBody}</p>
+            </div>
 
-          <div className="flex flex-col items-stretch gap-6 sm:flex-row sm:items-start sm:justify-between">
-            {STEPS.map(({ key, icon: Icon, dot }, i) => (
-              <div key={key} className="flex flex-1 items-start gap-3 sm:flex-col sm:items-center sm:text-center">
-                <span className={`flex size-12 shrink-0 items-center justify-center rounded-full ${dot}/10`}>
-                  <Icon className={`size-5 ${dot.replace("bg-", "text-")}`} aria-hidden="true" />
-                </span>
-                <div className="flex flex-col sm:mt-1">
-                  <span className="font-sans text-sm font-semibold text-slate-900">
-                    {i + 1}. {steps[key].title}
-                  </span>
-                  <span className="font-sans text-xs text-slate-500">{steps[key].body}</span>
+            <div className="relative flex flex-1 items-start">
+              <svg
+                className="pointer-events-none absolute inset-x-6 top-5 hidden h-8 lg:block"
+                style={{ width: "calc(100% - 3rem)" }}
+                viewBox="0 0 400 32"
+                preserveAspectRatio="none"
+                aria-hidden="true"
+              >
+                <path d="M 6 26 Q 200 -6 394 26" fill="none" stroke="#cbd5e1" strokeWidth="1.5" strokeDasharray="4 4" />
+              </svg>
+
+              {STEPS.map(({ key, icon: Icon, iconBg, iconColor }, i) => (
+                <div key={key} className="flex flex-1 items-start">
+                  <div className="flex flex-1 flex-col items-center gap-3 text-center">
+                    <span className={`relative z-10 flex size-11 shrink-0 items-center justify-center rounded-full ${iconBg}`}>
+                      <Icon className={`size-5 ${iconColor}`} aria-hidden="true" />
+                    </span>
+                    <div className="flex flex-col gap-0.5">
+                      <span className="font-sans text-sm font-semibold text-slate-900">{steps[key].title}</span>
+                      <span className="font-sans text-xs text-slate-500">{steps[key].body}</span>
+                    </div>
+                  </div>
+                  {i < STEPS.length - 1 && (
+                    <ArrowRight className="mt-4 hidden size-4 shrink-0 text-slate-300 lg:block" aria-hidden="true" />
+                  )}
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         </div>
       </div>
