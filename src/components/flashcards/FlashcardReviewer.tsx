@@ -211,6 +211,14 @@ export function FlashcardReviewer({
                 <span className="font-ui text-sm font-semibold text-trust">{t("answerLabel")}</span>
               </div>
               <p className="font-heading text-xl font-semibold text-primary">{current.answer}</p>
+              {sourceDiseaseName && sourceDiseaseSlug && (
+                <Link
+                  href={`/conditions/${sourceDiseaseSlug}`}
+                  className="font-ui text-xs text-secondary hover:text-accent"
+                >
+                  {t("fromDisease", { name: sourceDiseaseName })}
+                </Link>
+              )}
             </>
           ) : (
             <>
@@ -224,14 +232,6 @@ export function FlashcardReviewer({
                 <span className="font-ui text-sm">{t("clickToReveal")}</span>
               </button>
             </>
-          )}
-          {sourceDiseaseName && sourceDiseaseSlug && (
-            <Link
-              href={`/conditions/${sourceDiseaseSlug}`}
-              className="font-ui text-xs text-secondary hover:text-accent"
-            >
-              {t("fromDisease", { name: sourceDiseaseName })}
-            </Link>
           )}
         </div>
 
