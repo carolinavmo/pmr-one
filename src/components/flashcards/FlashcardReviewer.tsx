@@ -187,9 +187,7 @@ export function FlashcardReviewer({
         </div>
 
         <div
-          className={`flex flex-1 flex-col items-center justify-center gap-4 text-center ${
-            revealed ? "" : "cursor-pointer"
-          }`}
+          className="flex flex-1 flex-col items-center justify-center gap-4 text-center"
           role={revealed ? undefined : "button"}
           tabIndex={revealed ? undefined : 0}
           onClick={revealed ? undefined : () => setRevealed(true)}
