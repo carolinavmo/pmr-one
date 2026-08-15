@@ -103,7 +103,7 @@ export function BasicSciencesSection({
                     <span className="flex size-12 shrink-0 items-center justify-center rounded-full bg-teal-50">
                       <Icon className="size-6 text-[#1ba7b7]" aria-hidden="true" />
                     </span>
-                    <span className="font-heading text-base font-normal text-slate-900">{topics[key].title}</span>
+                    <span className="font-heading text-base font-normal text-slate-900 uppercase">{topics[key].title}</span>
                   </div>
                 </div>
               ))}
