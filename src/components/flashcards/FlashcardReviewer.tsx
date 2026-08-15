@@ -207,7 +207,7 @@ export function FlashcardReviewer({
             </div>
 
             <div
-              className="flex flex-1 flex-col items-center justify-center gap-4 text-center"
+              className="flex flex-1 flex-col items-center justify-center gap-8 text-center"
               role="button"
               tabIndex={0}
               onClick={() => setRevealed(true)}
