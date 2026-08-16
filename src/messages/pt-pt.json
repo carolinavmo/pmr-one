@@ -156,6 +156,7 @@
     "featureClinicalToolsItem1": "Intensidade da dor",
     "featureClinicalToolsItem2": "Limitação funcional",
     "featureClinicalToolsResultLabel": "Resultado",
+    "featureClinicalToolsMoreLabel": "+{count} mais",
     "featureStudyPlannerEyebrow": "Planeador de Estudo",
     "featureStudyPlannerHeading": "Planeie o seu estudo, não o improvise",
     "featureStudyPlannerBody": "Defina objetivos semanais, agende tarefas ligadas a patologias ou calculadoras reais, e veja a sua sequência de estudo crescer à medida que se mantém consistente.",

@@ -21,7 +21,7 @@ import {
   ConditionsMockup,
   HandbookMockup,
   QuestionBankMockup,
-  ClinicalToolsMockup,
+  ClinicalToolsGridMockup,
   StudyPlannerMockup,
 } from "@/components/home/FeatureMockups";
 import { Link } from "@/i18n/navigation";
@@ -273,9 +273,9 @@ export default async function Home({ searchParams }: HomeProps) {
 
       {firstCalculator && (
         <FeatureHeroSection
-          band="surface"
+          band="tint"
           reverse={false}
-          color="orange"
+          color="accent"
           eyebrowIcon={objectIcons.clinical_calculator}
           eyebrowLabel={t("featureClinicalToolsEyebrow")}
           heading={t("featureClinicalToolsHeading")}
@@ -285,12 +285,13 @@ export default async function Home({ searchParams }: HomeProps) {
           ctaLabel={t("featureClinicalToolsCta")}
           ctaHref="/clinical-tools"
           visual={
-            <ClinicalToolsMockup
-              calculatorName={
-                firstCalculator.abbreviation ? `${firstCalculator.name} (${firstCalculator.abbreviation})` : firstCalculator.name
-              }
-              itemLabels={[t("featureClinicalToolsItem1"), t("featureClinicalToolsItem2")]}
-              resultLabel={t("featureClinicalToolsResultLabel")}
+            <ClinicalToolsGridMockup
+              calculators={calculators.slice(0, 4).map((c) => ({
+                name: c.name,
+                abbreviation: c.abbreviation,
+                categoryName: c.categoryName,
+              }))}
+              moreLabel={calculators.length > 4 ? t("featureClinicalToolsMoreLabel", { count: calculators.length - 4 }) : null}
             />
           }
         />

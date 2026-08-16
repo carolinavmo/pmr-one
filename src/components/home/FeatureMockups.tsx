@@ -272,6 +272,37 @@ export function QuestionBankMockup({
   );
 }
 
+// A 2x2 grid of real calculator names (plus a "+N more" tally) instead
+// of one calculator's item breakdown — gives a browsable-catalog feel
+// that better matches the section's "42 calculators" stat than a
+// single worked example did. Names/categories/counts are all real
+// (calculators.slice(0, 4) from getAllCalculators), same honesty
+// convention as every other mockup in this file.
+export function ClinicalToolsGridMockup({
+  calculators,
+  moreLabel,
+}: {
+  calculators: { name: string; abbreviation: string | null; categoryName: string }[];
+  moreLabel: string | null;
+}) {
+  return (
+    <div className="flex flex-col gap-3 rounded-2xl border border-accent/30 bg-accent/5 p-5">
+      <div className="grid grid-cols-2 gap-3">
+        {calculators.map((calc) => (
+          <div key={calc.name} className="flex flex-col gap-1.5 rounded-xl bg-surface p-3 shadow-sm">
+            <span className="flex items-center gap-1.5 font-ui text-xs font-semibold text-primary">
+              <ListChecks className="size-3.5 shrink-0 text-accent" aria-hidden="true" />
+              <span className="truncate">{calc.abbreviation ?? calc.name}</span>
+            </span>
+            <span className="truncate font-ui text-[11px] text-secondary">{calc.categoryName}</span>
+          </div>
+        ))}
+      </div>
+      {moreLabel && <span className="text-center font-ui text-xs font-medium text-accent">{moreLabel}</span>}
+    </div>
+  );
+}
+
 export function ClinicalToolsMockup({
   calculatorName,
   itemLabels,
