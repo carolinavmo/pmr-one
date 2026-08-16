@@ -28,11 +28,7 @@ import { Link } from "@/i18n/navigation";
 import { buttonBaseClasses } from "@/components/ui/button-styles";
 import { objectIcons } from "@/components/ui/objectIcons";
 import { MemberDashboard } from "@/components/dashboard/MemberDashboard";
-import {
-  SAMPLE_PAGE_TITLE,
-  SAMPLE_PROTOCOL_TITLE,
-  SAMPLE_TEMPLATE_TITLE,
-} from "@/lib/atlas-sample-content";
+import { SAMPLE_PAGE_TITLE } from "@/lib/atlas-sample-content";
 
 interface HomeProps {
   searchParams: Promise<{ preview?: string }>;
@@ -262,7 +258,15 @@ export default async function Home({ searchParams }: HomeProps) {
         ctaHref="/explore/handbook"
         visual={
           <HandbookMockup
-            pageTitles={[SAMPLE_PAGE_TITLE, "Rotator Cuff Tendinopathy", "Post-Stroke Spasticity", SAMPLE_PROTOCOL_TITLE, SAMPLE_TEMPLATE_TITLE]}
+            pageTitles={[
+              SAMPLE_PAGE_TITLE,
+              "Plantar Fasciopathy",
+              "Achilles Tendinopathy",
+              "Bell's Palsy",
+              "Carpal Tunnel Syndrome",
+              "Knee Osteoarthritis",
+              "Rotator Cuff Tendinopathy",
+            ]}
           />
         }
       />
