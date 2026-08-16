@@ -248,7 +248,7 @@ export default async function Home({ searchParams }: HomeProps) {
       <FeatureHeroSection
         band="surface-raised"
         reverse={true}
-        color="trust"
+        color="accent"
         eyebrowIcon={BookOpen}
         eyebrowLabel={t("featureHandbookEyebrow")}
         heading={t("featureHandbookHeading")}

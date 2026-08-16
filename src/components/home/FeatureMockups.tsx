@@ -148,14 +148,14 @@ export function ConditionsMockup({
 // honesty convention as every other mockup in this file.
 export function HandbookMockup({ pageTitles }: { pageTitles: string[] }) {
   return (
-    <div className="flex overflow-hidden rounded-2xl border border-trust/30 bg-surface shadow-sm">
-      <div className="flex w-2/5 shrink-0 flex-col gap-1 border-r border-trust/20 bg-trust/5 p-3">
+    <div className="flex overflow-hidden rounded-2xl border border-accent/30 bg-surface shadow-sm">
+      <div className="flex w-2/5 shrink-0 flex-col gap-1 border-r border-accent/20 bg-accent/5 p-3">
         {pageTitles.map((title, i) => (
           <div
             key={title}
             className={`flex items-center gap-2 rounded-lg px-2.5 py-2 ${i === 0 ? "bg-surface shadow-sm" : ""}`}
           >
-            <NotebookPen className={`size-3.5 shrink-0 ${i === 0 ? "text-trust" : "text-secondary"}`} aria-hidden="true" />
+            <NotebookPen className={`size-3.5 shrink-0 ${i === 0 ? "text-accent" : "text-secondary"}`} aria-hidden="true" />
             <span className={`truncate font-ui text-xs ${i === 0 ? "font-medium text-primary" : "text-secondary"}`}>
               {title}
             </span>
