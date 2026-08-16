@@ -8,10 +8,10 @@ import { AtlasWorkspace } from "@/components/atlas/AtlasWorkspace";
 export default async function MyAtlasPage() {
   const session = await auth();
   if (!session) {
-    // See the matching comment in study-planner/page.tsx — the extra
-    // `return` works around a TS narrowing gap with destructured
-    // `never`-returning functions.
-    redirect({ href: "/login", locale: await getLocale() });
+    // Signed-out visitors get the full feature-spotlight page instead
+    // of a bare login wall — mirrors /explore/handbook's own redirect
+    // back here once signed in, so the two routes form a matched pair.
+    redirect({ href: "/explore/handbook", locale: await getLocale() });
     return;
   }
 
