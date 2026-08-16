@@ -173,7 +173,10 @@ export function SidebarFrame({ tree, userName, userEmail, userRole }: SidebarFra
 
       <div className="flex flex-col gap-3 border-t border-border p-3">
         {!(userEmail || userName) && (
-          <div className="flex items-center gap-3 rounded-lg bg-accent px-3 py-2.5">
+          <Link
+            href="/register"
+            className="flex items-center gap-3 rounded-lg bg-accent px-3 py-2.5 transition-colors duration-base hover:bg-accent-hover"
+          >
             <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-white/20 text-white">
               <Sparkles className="size-4" aria-hidden="true" />
             </span>
@@ -181,7 +184,7 @@ export function SidebarFrame({ tree, userName, userEmail, userRole }: SidebarFra
               <span className="font-ui text-sm font-medium text-white">{t("goPremium")}</span>
               <span className="font-ui text-xs text-white/80">{t("goPremiumSubtitle")}</span>
             </div>
-          </div>
+          </Link>
         )}
 
         {(userEmail || userName) && (
