@@ -197,21 +197,23 @@ function CategoryCard({
 }) {
   const t = useTranslations("questionBank");
   const isLocked = !isPublic && !isSignedIn;
+  // A locked folder shows as a neutral gray, not its own topic color —
+  // the color itself is part of what a signed-out visitor doesn't get
+  // to see yet.
+  const displayColor: CardColor = isLocked ? "slate" : color;
 
   return (
     <div className="relative">
       <Link
         href={`/question-bank/category/${id}`}
-        className={`group relative flex flex-col pt-2 text-left transition-transform duration-base hover:-translate-y-0.5 ${
-          isLocked ? "opacity-60" : ""
-        }`}
+        className="group relative flex flex-col pt-2 text-left transition-transform duration-base hover:-translate-y-0.5"
       >
         <span
           aria-hidden="true"
-          className={`absolute top-0 left-4 h-4 w-14 rounded-t-lg ${CARD_COLOR_SWATCH[color]} opacity-90`}
+          className={`absolute top-0 left-4 h-4 w-14 rounded-t-lg ${CARD_COLOR_SWATCH[displayColor]} opacity-90`}
         />
         <span
-          className={`relative flex h-28 flex-col justify-end rounded-2xl p-3.5 shadow-sm transition-shadow duration-base group-hover:shadow-md sm:h-32 ${CARD_COLOR_SWATCH[color]}`}
+          className={`relative flex h-28 flex-col justify-end rounded-2xl p-3.5 shadow-sm transition-shadow duration-base group-hover:shadow-md sm:h-32 ${CARD_COLOR_SWATCH[displayColor]}`}
         >
           <span className="flex flex-col gap-0.5">
             <span className="line-clamp-1 font-ui text-lg font-semibold text-white">{label}</span>
@@ -248,16 +250,15 @@ function CategoryListRow({
 }) {
   const t = useTranslations("questionBank");
   const isLocked = !isPublic && !isSignedIn;
+  const displayColor: CardColor = isLocked ? "slate" : color;
 
   return (
     <Link
       href={`/question-bank/category/${id}`}
-      className={`flex items-center gap-3 p-3.5 transition-colors duration-base hover:opacity-80 ${
-        isLocked ? "opacity-60" : ""
-      }`}
+      className="flex items-center gap-3 p-3.5 transition-colors duration-base hover:opacity-80"
     >
       <span className="flex size-10 shrink-0 items-center justify-center">
-        <MacFolderIcon color={color} className="size-8 drop-shadow-sm" />
+        <MacFolderIcon color={displayColor} className="size-8 drop-shadow-sm" />
       </span>
       <div className="flex min-w-0 flex-1 flex-col gap-0.5">
         <span className="truncate font-ui text-sm font-semibold text-primary">{label}</span>
