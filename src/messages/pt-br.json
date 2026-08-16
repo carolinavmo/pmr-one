@@ -157,6 +157,8 @@
     "featureClinicalToolsItem2": "Limitação funcional",
     "featureClinicalToolsResultLabel": "Resultado",
     "featureClinicalToolsMoreLabel": "+{count} mais",
+    "featureClinicalToolsScoreLabel": "Pontuação",
+    "featureClinicalToolsScoreCaption": "Interpretação colorida para cada resultado",
     "featureStudyPlannerEyebrow": "Planejador de Estudos",
     "featureStudyPlannerHeading": "Planeje seus estudos, não improvise",
     "featureStudyPlannerBody": "Defina metas semanais, agende tarefas ligadas a patologias ou calculadoras reais, e veja sua sequência de estudos crescer conforme você se mantém consistente.",

@@ -157,6 +157,8 @@
     "featureClinicalToolsItem2": "Functional limitation",
     "featureClinicalToolsResultLabel": "Result",
     "featureClinicalToolsMoreLabel": "+{count} more",
+    "featureClinicalToolsScoreLabel": "Score",
+    "featureClinicalToolsScoreCaption": "Color-coded interpretation for every result",
     "featureStudyPlannerEyebrow": "Study Planner",
     "featureStudyPlannerHeading": "Plan your study, don't just wing it",
     "featureStudyPlannerBody": "Set weekly goals, schedule tasks against real conditions or calculators, and see your streak build as you stay consistent.",

@@ -272,17 +272,23 @@ export function QuestionBankMockup({
   );
 }
 
-// A 2x2 grid of real calculator names (plus a "+N more" tally) instead
-// of one calculator's item breakdown — gives a browsable-catalog feel
-// that better matches the section's "42 calculators" stat than a
-// single worked example did. Names/categories/counts are all real
-// (calculators.slice(0, 4) from getAllCalculators), same honesty
-// convention as every other mockup in this file.
+// A 2x2 grid of real calculator names (plus a "+N more" tally) and a
+// color-coded score/interpretation strip — mirrors the real
+// CalculatorRunner result section's severity gradient (globals.css'
+// card-green/yellow/red tokens), but with no marker tied to a specific
+// value, since no single real calculator result applies across all 4
+// cards shown. Names/categories/counts are all real (calculators.slice(0, 4)
+// from getAllCalculators); the score strip is representative chrome only,
+// same honesty convention as every other mockup in this file.
 export function ClinicalToolsGridMockup({
   calculators,
+  scoreLabel,
+  scoreCaption,
   moreLabel,
 }: {
   calculators: { name: string; abbreviation: string | null; categoryName: string }[];
+  scoreLabel: string;
+  scoreCaption: string;
   moreLabel: string | null;
 }) {
   return (
@@ -297,6 +303,16 @@ export function ClinicalToolsGridMockup({
             <span className="truncate font-ui text-[11px] text-secondary">{calc.categoryName}</span>
           </div>
         ))}
+      </div>
+      <div className="flex flex-col gap-2 rounded-xl bg-surface p-3 shadow-sm">
+        <span className="font-ui text-xs font-semibold text-primary">{scoreLabel}</span>
+        <div
+          className="relative h-2 w-full rounded-full bg-gradient-to-r from-card-green via-card-yellow to-card-red"
+          aria-hidden="true"
+        >
+          <span className="absolute top-1/2 left-[38%] size-3 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-surface bg-accent shadow" />
+        </div>
+        <span className="font-ui text-[11px] text-secondary">{scoreCaption}</span>
       </div>
       {moreLabel && <span className="text-center font-ui text-xs font-medium text-accent">{moreLabel}</span>}
     </div>

@@ -291,6 +291,8 @@ export default async function Home({ searchParams }: HomeProps) {
                 abbreviation: c.abbreviation,
                 categoryName: c.categoryName,
               }))}
+              scoreLabel={t("featureClinicalToolsScoreLabel")}
+              scoreCaption={t("featureClinicalToolsScoreCaption")}
               moreLabel={calculators.length > 4 ? t("featureClinicalToolsMoreLabel", { count: calculators.length - 4 }) : null}
             />
           }
