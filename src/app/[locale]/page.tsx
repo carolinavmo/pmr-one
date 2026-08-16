@@ -300,9 +300,9 @@ export default async function Home({ searchParams }: HomeProps) {
       )}
 
       <FeatureHeroSection
-        band="surface-raised"
+        band="tint"
         reverse={true}
-        color="insight"
+        color="accent"
         eyebrowIcon={Calendar}
         eyebrowLabel={t("featureStudyPlannerEyebrow")}
         heading={t("featureStudyPlannerHeading")}

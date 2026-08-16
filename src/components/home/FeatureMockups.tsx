@@ -354,14 +354,14 @@ export function ClinicalToolsMockup({
 
 export function StudyPlannerMockup({ dayLabels, taskLabel }: { dayLabels: string[]; taskLabel: string }) {
   return (
-    <div className="flex flex-col gap-4 rounded-2xl border border-insight/30 bg-insight/5 p-5">
+    <div className="flex flex-col gap-4 rounded-2xl border border-accent/30 bg-accent/5 p-5">
       <div className="grid grid-cols-7 gap-1.5">
         {dayLabels.map((day, i) => (
           <div key={i} className="flex flex-col items-center gap-1">
             <span className="font-ui text-[10px] text-secondary">{day}</span>
             <span
               className={`flex size-7 items-center justify-center rounded-full font-ui text-xs ${
-                i === 2 || i === 4 ? "bg-insight text-white" : "bg-surface text-secondary"
+                i === 2 || i === 4 ? "bg-accent text-white" : "bg-surface text-secondary"
               }`}
             >
               {i + 1}
@@ -371,7 +371,7 @@ export function StudyPlannerMockup({ dayLabels, taskLabel }: { dayLabels: string
       </div>
       <div className="flex items-center gap-3 rounded-xl bg-surface px-3.5 py-3 shadow-sm">
         <GripVertical className="size-4 shrink-0 text-secondary/50" aria-hidden="true" />
-        <span className="flex size-4 shrink-0 items-center justify-center rounded-full border-2 border-insight" aria-hidden="true" />
+        <span className="flex size-4 shrink-0 items-center justify-center rounded-full border-2 border-accent" aria-hidden="true" />
         <span className="truncate font-ui text-sm text-primary">{taskLabel}</span>
       </div>
     </div>
