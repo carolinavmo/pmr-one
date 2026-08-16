@@ -300,7 +300,7 @@ export default async function Home({ searchParams }: HomeProps) {
       )}
 
       <FeatureHeroSection
-        band="tint"
+        band="surface"
         reverse={true}
         color="accent"
         eyebrowIcon={Calendar}
