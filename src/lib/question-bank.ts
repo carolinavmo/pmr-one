@@ -19,6 +19,11 @@ export interface QuestionCategory {
   color: CardColor;
   icon: CardIconName | undefined;
   setCount: number;
+  // True for the one open sample folder a signed-out visitor can fully
+  // browse (mirrors clinical_calculator.is_public / FlashcardCategory.isPublic)
+  // — every folder still shows its tile, but a locked one's set list is
+  // gated behind a session on its detail page.
+  isPublic: boolean;
 }
 
 export interface QuestionSetSummary {
@@ -113,6 +118,7 @@ function mapCategoryRow(r: {
   color: CardColor;
   icon: string | null;
   set_count: string;
+  is_public: boolean;
 }): QuestionCategory {
   return {
     id: r.id,
@@ -120,6 +126,7 @@ function mapCategoryRow(r: {
     color: r.color,
     icon: (r.icon as CardIconName | null) ?? undefined,
     setCount: Number(r.set_count),
+    isPublic: r.is_public,
   };
 }
 
@@ -154,7 +161,7 @@ function mapSetSummaryRow(r: {
 
 export async function getCategories(): Promise<QuestionCategory[]> {
   const { rows } = await pool.query(
-    `SELECT c.id, c.name, c.color, c.icon,
+    `SELECT c.id, c.name, c.color, c.icon, c.is_public,
        (SELECT COUNT(*) FROM question_set s WHERE s.category_id = c.id) AS set_count
      FROM question_category c
      ORDER BY c.position, c.name`
@@ -190,7 +197,7 @@ export async function getCategoryWithSets(
   userId: string | null
 ): Promise<{ category: QuestionCategory; sets: QuestionSetSummary[] } | null> {
   const { rows: categoryRows } = await pool.query(
-    `SELECT c.id, c.name, c.color, c.icon,
+    `SELECT c.id, c.name, c.color, c.icon, c.is_public,
        (SELECT COUNT(*) FROM question_set s WHERE s.category_id = c.id) AS set_count
      FROM question_category c
      WHERE c.id = $1`,

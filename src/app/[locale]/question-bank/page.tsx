@@ -39,7 +39,12 @@ export default async function QuestionBankPage() {
         )}
       </div>
 
-      <QuestionBankBrowser categories={categories} unfiledSets={unfiledSets} isEditor={isEditor} />
+      <QuestionBankBrowser
+        categories={categories}
+        unfiledSets={unfiledSets}
+        isEditor={isEditor}
+        isSignedIn={Boolean(session)}
+      />
     </main>
   );
 }

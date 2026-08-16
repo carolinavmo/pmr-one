@@ -24,6 +24,12 @@ export interface FlashcardCategory {
   color: CardColor;
   icon: CardIconName | undefined;
   deckCount: number;
+  // True for the one open sample folder a signed-out visitor can fully
+  // browse (mirrors clinical_calculator.is_public) — every other
+  // "system" folder still shows its tile (browsable, not hidden), but
+  // its detail page gates the deck list itself behind a session.
+  // Always true for a "user" folder (its owner is always signed in).
+  isPublic: boolean;
 }
 
 export interface DeckSummary {
@@ -517,6 +523,7 @@ function mapCategoryRow(r: {
   color: CardColor;
   icon: string | null;
   deck_count: string;
+  is_public?: boolean;
 }): FlashcardCategory {
   return {
     id: r.id,
@@ -525,6 +532,7 @@ function mapCategoryRow(r: {
     color: r.color,
     icon: (r.icon as CardIconName | null) ?? undefined,
     deckCount: Number(r.deck_count),
+    isPublic: r.owner_type === "user" ? true : Boolean(r.is_public),
   };
 }
 
@@ -532,7 +540,7 @@ export async function getCategories(
   userId: string | null
 ): Promise<{ systemCategories: FlashcardCategory[]; userCategories: FlashcardCategory[] }> {
   const { rows: systemRows } = await pool.query(
-    `SELECT c.id, c.owner_type, c.name, c.color, c.icon,
+    `SELECT c.id, c.owner_type, c.name, c.color, c.icon, c.is_public,
        (SELECT COUNT(*) FROM flashcard_deck d WHERE d.category_id = c.id) AS deck_count
      FROM flashcard_category c
      WHERE c.owner_type = 'system'
@@ -567,7 +575,7 @@ export async function getCategoryWithDecks(
   userId: string | null
 ): Promise<{ category: FlashcardCategory; decks: DeckSummary[] } | null> {
   const { rows: categoryRows } = await pool.query(
-    `SELECT c.id, c.owner_type, c.user_id, c.name, c.color, c.icon,
+    `SELECT c.id, c.owner_type, c.user_id, c.name, c.color, c.icon, c.is_public,
        (SELECT COUNT(*) FROM flashcard_deck d WHERE d.category_id = c.id) AS deck_count
      FROM flashcard_category c
      WHERE c.id = $1`,

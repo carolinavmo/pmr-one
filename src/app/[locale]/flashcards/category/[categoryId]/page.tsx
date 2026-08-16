@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import { getTranslations } from "next-intl/server";
+import { Lock } from "lucide-react";
 import { auth } from "@/auth";
 import { Link } from "@/i18n/navigation";
 import { getCategoryWithDecks, getDeckSummaries, getFavoritedDeckIds } from "@/lib/flashcards";
@@ -25,8 +26,11 @@ export default async function FlashcardCategoryPage({ params }: CategoryPageProp
 
   const isEditor = session?.user.role === "editor" || session?.user.role === "admin";
   const canManage = category.ownerType === "user" || isEditor;
+  const canBrowseFolder = category.isPublic || Boolean(session);
   const favoritedDeckIds = session ? await getFavoritedDeckIds(session.user.id) : new Set<string>();
   const t = await getTranslations("flashcards");
+  const tCommon = await getTranslations("common");
+  const tAuth = await getTranslations("auth");
 
   // Only fetched when the caller can manage this folder, to build the
   // "add deck to folder" picker — a plain visitor never needs it. A
@@ -51,7 +55,29 @@ export default async function FlashcardCategoryPage({ params }: CategoryPageProp
         <CategoryDeckManager categoryId={category.id} decksInFolder={decks} assignableDecks={assignableDecks} />
       )}
 
-      {decks.length === 0 ? (
+      {!canBrowseFolder ? (
+        <div className="flex items-start gap-3 rounded-xl border border-insight/30 bg-insight/5 p-4">
+          <Lock className="mt-0.5 size-5 shrink-0 text-insight" aria-hidden="true" />
+          <div className="flex flex-col gap-2">
+            <h3 className="font-ui text-sm font-semibold text-primary">{t("membersOnlyHeading")}</h3>
+            <p className="font-ui text-sm text-secondary">{t("membersOnlyBody")}</p>
+            <div className="mt-1 flex flex-wrap gap-3">
+              <Link
+                href="/login"
+                className="rounded-full bg-accent px-4 py-2 font-ui text-sm font-medium text-white transition-colors duration-base hover:bg-accent-hover"
+              >
+                {tCommon("signIn")}
+              </Link>
+              <Link
+                href="/register"
+                className="rounded-full border border-border px-4 py-2 font-ui text-sm font-medium text-primary transition-colors duration-base hover:bg-border/20"
+              >
+                {tAuth("createAccountButton")}
+              </Link>
+            </div>
+          </div>
+        </div>
+      ) : decks.length === 0 ? (
         <p className="rounded-xl border border-dashed border-border p-6 text-center font-ui text-sm text-secondary">
           {t("noDecksInFolder")}
         </p>
