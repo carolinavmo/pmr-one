@@ -60,7 +60,7 @@ export function WarningPitfallBlockView({
         <span className={`font-ui text-xs font-medium ${textClass}`}>Pitfall</span>
         <RichEditableText
           as="p"
-          className={`font-reading text-base text-primary ${TEXT_ALIGN_CLASS[textAlign]}`}
+          className={`font-reading text-base leading-5 text-primary ${TEXT_ALIGN_CLASS[textAlign]}`}
           value={block.text}
           onSave={async (html) => updateBlockRichTextAction(block.id, "text", html)}
           block={block}

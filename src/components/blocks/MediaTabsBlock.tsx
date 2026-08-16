@@ -243,7 +243,7 @@ export function MediaTabsBlockView({
             {hasBody && (
               <RichEditableText
                 as="div"
-                className="font-reading text-base text-primary"
+                className="font-reading text-base leading-5 text-primary"
                 value={active.body}
                 onSave={(html) => commit(tabs.map((t, i) => (i === clampedIndex ? { ...t, body: html } : t)))}
                 placeholder=""
@@ -515,7 +515,7 @@ export function MediaTabsBlockView({
               )}
               <RichEditableText
                 as="div"
-                className="font-reading text-base text-primary"
+                className="font-reading text-base leading-5 text-primary"
                 value={active.body}
                 onSave={(html) => commit(tabs.map((t, i) => (i === clampedIndex ? { ...t, body: html } : t)))}
                 placeholder="Tab content…"

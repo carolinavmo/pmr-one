@@ -244,7 +244,7 @@ export function OverviewBlockView({
       <div className={`flex min-w-0 flex-col gap-4 ${COLUMN_JUSTIFY_CLASS[textVerticalAlign]}`}>
         <RichEditableText
           as="p"
-          className={`font-reading text-base text-primary ${TEXT_ALIGN_CLASS[textAlign]}`}
+          className={`font-reading text-base leading-5 text-primary ${TEXT_ALIGN_CLASS[textAlign]}`}
           value={block.paragraph}
           onSave={(value) => updateBlockRichTextAction(block.id, "paragraph", value)}
           placeholder="Overview paragraph…"

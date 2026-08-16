@@ -93,7 +93,7 @@ export function ClinicalPearlBlockView({
       <Quote className="size-6 shrink-0 text-insight/70" aria-hidden="true" />
       <RichEditableText
         as="p"
-        className={`font-reading text-base text-primary italic ${TEXT_ALIGN_CLASS[textAlign]}`}
+        className={`font-reading text-base leading-5 text-primary italic ${TEXT_ALIGN_CLASS[textAlign]}`}
         value={block.pearl.body}
         onSave={(value) => updatePearlBodyAction(block.pearl.id, value)}
         block={block}
