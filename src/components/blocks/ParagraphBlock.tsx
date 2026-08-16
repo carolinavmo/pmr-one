@@ -46,7 +46,7 @@ export function ParagraphBlockView({
   const body = (
     <RichEditableText
       as="p"
-      className={`font-reading text-base leading-6 text-primary ${TEXT_ALIGN_CLASS[textAlign]} ${
+      className={`font-reading text-base text-primary ${TEXT_ALIGN_CLASS[textAlign]} ${
         collapsible ? "line-clamp-3" : ""
       }`}
       value={block.body}

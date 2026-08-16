@@ -45,7 +45,7 @@ export function SelfCheckBlockView({
           value={block.answer}
           onSave={(value) => updateBlockRichTextAction(block.id, "answer", value)}
           as="p"
-          className={`border-t border-border pt-3 font-reading text-base leading-6 text-primary ${TEXT_ALIGN_CLASS[textAlign]}`}
+          className={`border-t border-border pt-3 font-reading text-base text-primary ${TEXT_ALIGN_CLASS[textAlign]}`}
           placeholder="Click to add the answer"
           block={block}
           diseaseSlug={diseaseSlug}
