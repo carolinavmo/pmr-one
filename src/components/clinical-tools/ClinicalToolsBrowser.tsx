@@ -149,18 +149,19 @@ function CalculatorCard({
   t: ReturnType<typeof useTranslations<"clinicalTools">>;
 }) {
   const isLocked = !calculator.isPublic && !isSignedIn;
+  // A locked calculator shows as a neutral gray, not its own category
+  // color — same treatment as locked Flashcards/Question Bank folders.
+  const displayColor = isLocked ? "slate" : categoryColor;
 
   return (
     <div className="relative">
-      <div className={isLocked ? "opacity-60" : undefined}>
-        <KnowledgeObjectCard
-          type="clinical_calculator"
-          title={calculator.abbreviation ? `${calculator.abbreviation} - ${calculator.name}` : calculator.name}
-          context={calculator.description}
-          href={`/clinical-tools/${calculator.slug}`}
-          categoryColor={categoryColor}
-        />
-      </div>
+      <KnowledgeObjectCard
+        type="clinical_calculator"
+        title={calculator.abbreviation ? `${calculator.abbreviation} - ${calculator.name}` : calculator.name}
+        context={calculator.description}
+        href={`/clinical-tools/${calculator.slug}`}
+        categoryColor={displayColor}
+      />
       {isLocked && (
         <span
           className="absolute top-3 left-3 z-10 flex size-7 items-center justify-center rounded-full bg-surface/80 text-secondary backdrop-blur-sm"
