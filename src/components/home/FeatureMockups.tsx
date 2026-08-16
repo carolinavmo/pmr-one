@@ -352,23 +352,77 @@ export function ClinicalToolsMockup({
   );
 }
 
-export function StudyPlannerMockup({ dayLabels, taskLabel }: { dayLabels: string[]; taskLabel: string }) {
+// Generic 5-week decorative grid — no real dates, just enough shape (a
+// couple of muted lead/trail days, a highlighted "today", a few task dots)
+// to read as a real month view at a glance.
+const MONTH_GRID: { day: number; muted?: boolean; highlight?: boolean; dots?: number }[] = [
+  { day: 30, muted: true }, { day: 31, muted: true },
+  { day: 1 }, { day: 2 }, { day: 3, dots: 1 }, { day: 4 }, { day: 5, highlight: true, dots: 2 },
+  { day: 6 }, { day: 7 }, { day: 8 }, { day: 9 }, { day: 10, dots: 1 }, { day: 11 }, { day: 12 },
+  { day: 13 }, { day: 14 }, { day: 15, dots: 2 }, { day: 16 }, { day: 17 }, { day: 18 }, { day: 19 },
+  { day: 20 }, { day: 21, dots: 1 }, { day: 22 }, { day: 23 }, { day: 24 }, { day: 25 }, { day: 26 },
+  { day: 27 }, { day: 28 }, { day: 29 }, { day: 30 }, { day: 31 }, { day: 1, muted: true }, { day: 2, muted: true },
+];
+
+export function StudyPlannerMockup({
+  dayLabels,
+  taskLabel,
+  variant = "week",
+}: {
+  dayLabels: string[];
+  taskLabel: string;
+  variant?: "week" | "month";
+}) {
   return (
     <div className="flex flex-col gap-4 rounded-2xl border border-accent/30 bg-accent/5 p-5">
-      <div className="grid grid-cols-7 gap-1.5">
-        {dayLabels.map((day, i) => (
-          <div key={i} className="flex flex-col items-center gap-1">
-            <span className="font-ui text-[10px] text-secondary">{day}</span>
-            <span
-              className={`flex size-7 items-center justify-center rounded-full font-ui text-xs ${
-                i === 2 || i === 4 ? "bg-accent text-white" : "bg-surface text-secondary"
-              }`}
-            >
-              {i + 1}
-            </span>
+      {variant === "month" ? (
+        <>
+          <div className="grid grid-cols-7 gap-1 font-ui text-[10px] font-medium text-secondary uppercase">
+            {dayLabels.map((day, i) => (
+              <div key={i} className="text-center">
+                {day}
+              </div>
+            ))}
           </div>
-        ))}
-      </div>
+          <div className="grid grid-cols-7 gap-1">
+            {MONTH_GRID.map((cell, i) => (
+              <div
+                key={i}
+                className={`flex aspect-square flex-col items-center justify-start gap-1 rounded-lg pt-1 font-ui text-xs ${
+                  cell.highlight ? "bg-accent text-white font-semibold" : cell.muted ? "text-secondary/30" : "text-primary"
+                }`}
+              >
+                <span>{cell.day}</span>
+                {cell.dots ? (
+                  <span className="flex gap-0.5">
+                    {Array.from({ length: cell.dots }).map((_, d) => (
+                      <span
+                        key={d}
+                        className={`size-1 rounded-full ${cell.highlight ? "bg-white" : d === 0 ? "bg-trust" : "bg-insight"}`}
+                      />
+                    ))}
+                  </span>
+                ) : null}
+              </div>
+            ))}
+          </div>
+        </>
+      ) : (
+        <div className="grid grid-cols-7 gap-1.5">
+          {dayLabels.map((day, i) => (
+            <div key={i} className="flex flex-col items-center gap-1">
+              <span className="font-ui text-[10px] text-secondary">{day}</span>
+              <span
+                className={`flex size-7 items-center justify-center rounded-full font-ui text-xs ${
+                  i === 2 || i === 4 ? "bg-accent text-white" : "bg-surface text-secondary"
+                }`}
+              >
+                {i + 1}
+              </span>
+            </div>
+          ))}
+        </div>
+      )}
       <div className="flex items-center gap-3 rounded-xl bg-surface px-3.5 py-3 shadow-sm">
         <GripVertical className="size-4 shrink-0 text-secondary/50" aria-hidden="true" />
         <span className="flex size-4 shrink-0 items-center justify-center rounded-full border-2 border-accent" aria-hidden="true" />

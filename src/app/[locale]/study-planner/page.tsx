@@ -68,7 +68,7 @@ export default async function StudyPlannerPage({ searchParams }: StudyPlannerPag
           {header}
           <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
             <div className="lg:col-span-2">
-              <StudyPlannerMockup dayLabels={WEEK_DAY_LABELS} taskLabel={t("aboutTaskLabel")} />
+              <StudyPlannerMockup dayLabels={WEEK_DAY_LABELS} taskLabel={t("aboutTaskLabel")} variant="month" />
             </div>
             <div className="flex flex-col gap-4">
               <div className="flex flex-col gap-3 rounded-2xl border border-border bg-surface-raised p-5">
