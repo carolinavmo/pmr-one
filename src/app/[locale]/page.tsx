@@ -260,7 +260,11 @@ export default async function Home({ searchParams }: HomeProps) {
         bullets={[t("featureHandbookBullet1"), t("featureHandbookBullet2"), t("featureHandbookBullet3")]}
         ctaLabel={t("featureHandbookCta")}
         ctaHref="/explore/handbook"
-        visual={<HandbookMockup pageTitles={[SAMPLE_PAGE_TITLE, SAMPLE_PROTOCOL_TITLE, SAMPLE_TEMPLATE_TITLE]} />}
+        visual={
+          <HandbookMockup
+            pageTitles={[SAMPLE_PAGE_TITLE, "Rotator Cuff Tendinopathy", "Post-Stroke Spasticity", SAMPLE_PROTOCOL_TITLE, SAMPLE_TEMPLATE_TITLE]}
+          />
+        }
       />
 
       {firstCalculator && (
