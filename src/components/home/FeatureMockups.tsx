@@ -216,27 +216,40 @@ export function QuestionBankMockup({
   options: { label: string; isCorrect: boolean }[];
 }) {
   return (
-    <div className="flex flex-col gap-3 rounded-2xl border border-[#E4E4EE] bg-[#FCFCFE] p-5">
-      <p className="font-ui text-sm font-medium text-primary">{prompt}</p>
-      <div className="flex flex-col gap-2">
-        {options.map((option, i) => (
-          <div
-            key={option.label}
-            className={`flex items-center gap-3 rounded-lg border p-2.5 font-ui text-xs ${
-              option.isCorrect ? "border-trust bg-trust/10" : "border-border bg-surface"
-            }`}
-          >
-            <span
-              className={`flex size-5 shrink-0 items-center justify-center rounded-full border font-ui text-[10px] font-medium ${
-                option.isCorrect ? "border-trust bg-trust/15 text-trust" : "border-border text-secondary"
+    <div className="relative px-4 py-6">
+      {/* A shallow stack of offset cards behind the real one, purely
+          decorative — no separate content, just depth (same technique as
+          FlashcardsMockup's card stack). */}
+      <div
+        className="absolute inset-x-8 top-5 h-full -rotate-2 rounded-2xl border border-[#E4E4EE] bg-[#F6F6FA]"
+        aria-hidden="true"
+      />
+      <div
+        className="absolute inset-x-4 top-2.5 h-full rotate-1 rounded-2xl border border-[#E4E4EE] bg-[#F9F9FC]"
+        aria-hidden="true"
+      />
+      <div className="relative flex flex-col gap-3 rounded-2xl border border-[#E4E4EE] bg-[#FCFCFE] p-5 shadow-md">
+        <p className="font-ui text-sm font-medium text-primary">{prompt}</p>
+        <div className="flex flex-col gap-2">
+          {options.map((option, i) => (
+            <div
+              key={option.label}
+              className={`flex items-center gap-3 rounded-lg border p-2.5 font-ui text-xs ${
+                option.isCorrect ? "border-trust bg-trust/10" : "border-border bg-surface"
               }`}
             >
-              {String.fromCharCode(65 + i)}
-            </span>
-            <span className={option.isCorrect ? "font-medium text-trust" : "text-secondary"}>{option.label}</span>
-            {option.isCorrect && <Check className="ml-auto size-3.5 shrink-0 text-trust" aria-hidden="true" />}
-          </div>
-        ))}
+              <span
+                className={`flex size-5 shrink-0 items-center justify-center rounded-full border font-ui text-[10px] font-medium ${
+                  option.isCorrect ? "border-trust bg-trust/15 text-trust" : "border-border text-secondary"
+                }`}
+              >
+                {String.fromCharCode(65 + i)}
+              </span>
+              <span className={option.isCorrect ? "font-medium text-trust" : "text-secondary"}>{option.label}</span>
+              {option.isCorrect && <Check className="ml-auto size-3.5 shrink-0 text-trust" aria-hidden="true" />}
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );
