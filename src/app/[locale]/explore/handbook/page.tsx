@@ -17,6 +17,7 @@ import { Link, redirect } from "@/i18n/navigation";
 import { auth } from "@/auth";
 import { Eyebrow } from "@/components/ui/Eyebrow";
 import { LinkButton } from "@/components/ui/LinkButton";
+import { buttonBaseClasses } from "@/components/ui/button-styles";
 import { CARD_COLOR_CHIP } from "@/lib/card-colors";
 import type { CardColor } from "@/lib/editorial-blocks";
 import {
@@ -117,19 +118,6 @@ export default async function ExploreHandbookPage() {
             <LinkButton href="/register" variant="primary" className="self-start">
               {tHome("heroCtaSecondary")}
             </LinkButton>
-
-            <Link
-              href="/register"
-              className="flex items-center gap-3 rounded-xl bg-accent px-4 py-3.5 transition-colors duration-base hover:bg-accent-hover"
-            >
-              <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-white/20 text-white">
-                <Sparkles className="size-4" aria-hidden="true" />
-              </span>
-              <span className="flex flex-col">
-                <span className="font-ui text-sm font-medium text-white">{tNav("goPremium")}</span>
-                <span className="font-ui text-xs text-white/80">{tNav("goPremiumSubtitle")}</span>
-              </span>
-            </Link>
           </div>
 
           <div className="overflow-hidden rounded-2xl border border-border bg-surface-raised shadow-lg">
@@ -171,6 +159,24 @@ export default async function ExploreHandbookPage() {
               </div>
             </div>
           </div>
+        </div>
+
+        <div className="flex flex-col items-center gap-5 rounded-2xl bg-accent px-8 py-12 text-center text-white sm:flex-row sm:justify-between sm:text-left">
+          <div className="flex items-center gap-4">
+            <span className="flex size-12 shrink-0 items-center justify-center rounded-full bg-white/20 text-white">
+              <Sparkles className="size-6" aria-hidden="true" />
+            </span>
+            <div className="flex flex-col gap-1.5">
+              <h2 className="font-heading text-xl font-semibold">{tNav("goPremium")}</h2>
+              <p className="max-w-md font-ui text-sm text-white/85">{tNav("goPremiumSubtitle")}</p>
+            </div>
+          </div>
+          <Link
+            href="/register"
+            className={`${buttonBaseClasses} shrink-0 bg-white text-accent hover:bg-white/90`}
+          >
+            {tHome("heroCtaSecondary")}
+          </Link>
         </div>
       </div>
     </main>
