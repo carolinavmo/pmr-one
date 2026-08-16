@@ -10,6 +10,7 @@ import {
   Plus,
   Search,
   ShieldCheck,
+  Sparkles,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { Link, redirect } from "@/i18n/navigation";
@@ -45,6 +46,7 @@ export default async function ExploreHandbookPage() {
   const t = await getTranslations("explore");
   const tMyAtlas = await getTranslations("myAtlas");
   const tHome = await getTranslations("home");
+  const tNav = await getTranslations("nav");
 
   const whyItems = [
     t("handbookWhy1"),
@@ -115,6 +117,19 @@ export default async function ExploreHandbookPage() {
             <LinkButton href="/register" variant="primary" className="self-start">
               {tHome("heroCtaSecondary")}
             </LinkButton>
+
+            <Link
+              href="/register"
+              className="flex items-center gap-3 rounded-xl bg-accent px-4 py-3.5 transition-colors duration-base hover:bg-accent-hover"
+            >
+              <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-white/20 text-white">
+                <Sparkles className="size-4" aria-hidden="true" />
+              </span>
+              <span className="flex flex-col">
+                <span className="font-ui text-sm font-medium text-white">{tNav("goPremium")}</span>
+                <span className="font-ui text-xs text-white/80">{tNav("goPremiumSubtitle")}</span>
+              </span>
+            </Link>
           </div>
 
           <div className="overflow-hidden rounded-2xl border border-border bg-surface-raised shadow-lg">
