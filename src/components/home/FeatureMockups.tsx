@@ -141,18 +141,35 @@ export function ConditionsMockup({
   );
 }
 
+// An index-plus-editor split, mirroring the real My Handbook workspace's
+// own two-pane shape, instead of a flat list — the content pane has no
+// real body text to show (a visitor's own handbook is empty until they
+// write in it), so it's skeleton bars rather than invented prose, same
+// honesty convention as every other mockup in this file.
 export function HandbookMockup({ pageTitles }: { pageTitles: string[] }) {
   return (
-    <div className="flex flex-col gap-2 rounded-2xl border border-trust/30 bg-trust/5 p-5">
-      {pageTitles.map((title, i) => (
-        <div
-          key={title}
-          className={`flex items-center gap-3 rounded-xl bg-surface px-3.5 py-3 shadow-sm ${i === 0 ? "ring-1 ring-trust/40" : ""}`}
-        >
-          <NotebookPen className="size-4 shrink-0 text-trust" aria-hidden="true" />
-          <span className="truncate font-ui text-sm text-primary">{title}</span>
+    <div className="flex overflow-hidden rounded-2xl border border-trust/30 bg-surface shadow-sm">
+      <div className="flex w-2/5 shrink-0 flex-col gap-1 border-r border-trust/20 bg-trust/5 p-3">
+        {pageTitles.map((title, i) => (
+          <div
+            key={title}
+            className={`flex items-center gap-2 rounded-lg px-2.5 py-2 ${i === 0 ? "bg-surface shadow-sm" : ""}`}
+          >
+            <NotebookPen className={`size-3.5 shrink-0 ${i === 0 ? "text-trust" : "text-secondary"}`} aria-hidden="true" />
+            <span className={`truncate font-ui text-xs ${i === 0 ? "font-medium text-primary" : "text-secondary"}`}>
+              {title}
+            </span>
+          </div>
+        ))}
+      </div>
+      <div className="flex flex-1 flex-col gap-3 p-4">
+        <span className="truncate font-ui text-sm font-semibold text-primary">{pageTitles[0]}</span>
+        <div className="flex flex-col gap-2" aria-hidden="true">
+          <div className="h-2 w-full rounded-full bg-border" />
+          <div className="h-2 w-5/6 rounded-full bg-border" />
+          <div className="h-2 w-4/6 rounded-full bg-border" />
         </div>
-      ))}
+      </div>
     </div>
   );
 }
