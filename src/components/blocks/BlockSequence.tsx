@@ -1,4 +1,4 @@
-import type { CardColor, EditorialBlock } from "@/lib/editorial-blocks";
+import type { EditorialBlock } from "@/lib/editorial-blocks";
 import { BlockRenderer } from "./BlockRenderer";
 import { BlockControls } from "@/components/disease-page/BlockControls";
 import { ResizableRow } from "@/components/disease-page/ResizableRow";
@@ -202,14 +202,12 @@ export function BlockSequence({
   workspaceContext,
   diseaseId,
   diseaseSlug,
-  branchColor,
   canEdit,
 }: {
   blocks: EditorialBlock[];
   workspaceContext?: WorkspaceContext;
   diseaseId: string;
   diseaseSlug: string;
-  branchColor: CardColor | null;
   canEdit: boolean;
 }) {
   if (blocks.length === 0) {
@@ -260,7 +258,6 @@ export function BlockSequence({
             key={section.headingBlock.id ?? `section-${index}`}
             heading={heading}
             sectionNumber={sectionNumbers[index]}
-            branchColor={branchColor}
             canEdit={canEdit}
           >
             {renderGroups({

@@ -2,8 +2,6 @@
 
 import type { ReactNode } from "react";
 import { useEditMode, EditModeProvider, SectionEditToggle } from "@/components/disease-page/EditMode";
-import { CARD_COLOR_TINT } from "@/lib/card-colors";
-import type { CardColor } from "@/lib/editorial-blocks";
 
 interface SectionCardProps {
   heading: ReactNode;
@@ -15,11 +13,6 @@ interface SectionCardProps {
   // OnThisPage to match. Purely a render-time label, never persisted
   // or editable — reordering sections changes it for free.
   sectionNumber: number | null;
-  // The disease's resolved branch color (getDiseaseBranchColor) — the
-  // exact same color IndexSidebar.tsx tints this disease's immediate
-  // parent topic with while its page is open. `null` for a disease
-  // with no topic assigned yet, falling back to the old flat tint.
-  branchColor: CardColor | null;
   // Whether this reader can edit at all (server-computed permission,
   // distinct from `editing` — this section's own current toggle
   // state, read via useEditMode() below). Gates both whether a
@@ -44,9 +37,9 @@ interface SectionCardProps {
 // only ever renders once a block's own section is editing, so cross-
 // section drag is naturally available exactly when both ends are open
 // and naturally unavailable otherwise, with no extra bookkeeping.
-export function SectionCard({ heading, children, sectionNumber, branchColor, canEdit }: SectionCardProps) {
+export function SectionCard({ heading, children, sectionNumber, canEdit }: SectionCardProps) {
   const body = (
-    <SectionCardBody heading={heading} sectionNumber={sectionNumber} branchColor={branchColor} canEdit={canEdit}>
+    <SectionCardBody heading={heading} sectionNumber={sectionNumber} canEdit={canEdit}>
       {children}
     </SectionCardBody>
   );
@@ -57,13 +50,11 @@ function SectionCardBody({
   heading,
   children,
   sectionNumber,
-  branchColor,
   canEdit,
 }: {
   heading: ReactNode;
   children: ReactNode;
   sectionNumber: number | null;
-  branchColor: CardColor | null;
   canEdit: boolean;
 }) {
   const { editing } = useEditMode();
@@ -76,10 +67,10 @@ function SectionCardBody({
   // SectionHeadingBlockView's own className; 21px/28px inside the
   // display card's colored title bar, matching that bar's own [&>h2]
   // override).
-  function numberLabel(sizeClass: string, extraClass = "") {
+  function numberLabel(sizeClass: string, extraClass = "", colorClass = "text-primary") {
     if (sectionNumber == null) return null;
     return (
-      <span className={`shrink-0 font-heading font-semibold text-primary ${sizeClass} ${extraClass}`} aria-hidden="true">
+      <span className={`shrink-0 font-heading font-semibold ${colorClass} ${sizeClass} ${extraClass}`} aria-hidden="true">
         {sectionNumber}.
       </span>
     );
@@ -109,13 +100,16 @@ function SectionCardBody({
     );
   }
 
-  const headerTint = branchColor ? CARD_COLOR_TINT[branchColor] : "bg-surface-raised";
-
+  // Fixed brand color on every section header bar, on every page —
+  // deliberately not CARD_COLOR_TINT[branchColor] anymore. The
+  // per-topic branch tint (violet for Anatomy, teal for Foot & Ankle,
+  // etc.) stayed correct but read as inconsistent page-to-page; this
+  // is a flat, always-white-on-#128A99 header regardless of topic.
   return (
     <div className="mt-6 rounded-xl bg-surface-card first:mt-0">
-      <div className={`flex items-center gap-3 rounded-t-xl px-4 py-3.5 ${headerTint}`}>
-        <div className="flex min-w-0 flex-1 items-baseline gap-2 [&>h2]:!mt-0 [&>h2]:!text-[21px] [&>h2]:!leading-[28px]">
-          {numberLabel("text-[21px] leading-[28px]")}
+      <div className="flex items-center gap-3 rounded-t-xl bg-[#128A99] px-4 py-3.5">
+        <div className="flex min-w-0 flex-1 items-baseline gap-2 [&>h2]:!mt-0 [&>h2]:!text-[21px] [&>h2]:!leading-[28px] [&>h2]:!text-white">
+          {numberLabel("text-[21px] leading-[28px]", "", "text-white")}
           {heading}
         </div>
         {canEdit && <SectionEditToggle />}
