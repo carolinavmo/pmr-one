@@ -107,14 +107,14 @@ export function RichTableBlockView({
           />
         )}
         <div className="overflow-x-auto rounded-lg border border-border">
-          <table className="w-full min-w-max border-collapse font-ui text-sm">
+          <table className="w-full min-w-max border-collapse font-ui text-xs">
             <thead>
               <tr className="border-b border-border bg-surface-raised">
-                <th className="w-14 px-2 py-2 text-center font-medium text-primary">
+                <th className="w-12 px-2 py-1.5 text-center font-medium text-primary">
                   {badgeColumnTitle}
                 </th>
                 {columns.map((column, i) => (
-                  <th key={i} className="px-3 py-2 text-left font-medium text-primary">
+                  <th key={i} className="px-3 py-1.5 text-left font-medium text-primary">
                     {column.title}
                   </th>
                 ))}
@@ -126,13 +126,13 @@ export function RichTableBlockView({
                   row.badgeIcon && isCardIconName(row.badgeIcon) ? cardIcons[row.badgeIcon] : null;
                 return (
                   <tr key={rowIndex} className="border-b border-border last:border-0">
-                    <td className="px-2 py-3 text-center">
-                      <span className="mx-auto flex size-8 items-center justify-center rounded-full border-2 border-[#128A99] font-ui text-sm font-semibold text-[#128A99]">
-                        {BadgeIcon ? <BadgeIcon className="size-4" aria-hidden="true" /> : rowIndex + 1}
+                    <td className="px-2 py-2 text-center">
+                      <span className="mx-auto flex size-6 items-center justify-center rounded-full border-2 border-[#128A99] font-ui text-xs font-semibold text-[#128A99]">
+                        {BadgeIcon ? <BadgeIcon className="size-3.5" aria-hidden="true" /> : rowIndex + 1}
                       </span>
                     </td>
                     {columns.map((column, colIndex) => (
-                      <td key={colIndex} className="px-3 py-3 align-top text-secondary">
+                      <td key={colIndex} className="px-3 py-2 align-top text-secondary">
                         <RichTableCellView type={column.type} value={row.cells[colIndex]} />
                       </td>
                     ))}
