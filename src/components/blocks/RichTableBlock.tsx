@@ -127,7 +127,7 @@ export function RichTableBlockView({
                 return (
                   <tr key={rowIndex} className="border-b border-border last:border-0">
                     <td className="px-2 py-3 text-center">
-                      <span className="mx-auto flex size-8 items-center justify-center rounded-full border-2 border-trust font-ui text-sm font-semibold text-trust">
+                      <span className="mx-auto flex size-8 items-center justify-center rounded-full border-2 border-[#128A99] font-ui text-sm font-semibold text-[#128A99]">
                         {BadgeIcon ? <BadgeIcon className="size-4" aria-hidden="true" /> : rowIndex + 1}
                       </span>
                     </td>
