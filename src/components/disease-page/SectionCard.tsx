@@ -1,6 +1,7 @@
 "use client";
 
-import type { ReactNode } from "react";
+import { useState, type ReactNode } from "react";
+import { ChevronDown } from "lucide-react";
 import { useEditMode, EditModeProvider, SectionEditToggle } from "@/components/disease-page/EditMode";
 
 interface SectionCardProps {
@@ -20,6 +21,11 @@ interface SectionCardProps {
   // button itself renders — a visitor gets neither, same DOM as a
   // page that's never heard of edit mode.
   canEdit: boolean;
+  // Signed-in members get a collapse toggle on every section (each
+  // starts expanded, per-section local state — not persisted). Signed-
+  // out visitors never see the toggle at all, so a page they land on
+  // is never missing content behind an unfamiliar control.
+  isSignedIn: boolean;
 }
 
 // One section = one independent edit boundary (#136 — replaces the
@@ -37,9 +43,9 @@ interface SectionCardProps {
 // only ever renders once a block's own section is editing, so cross-
 // section drag is naturally available exactly when both ends are open
 // and naturally unavailable otherwise, with no extra bookkeeping.
-export function SectionCard({ heading, children, sectionNumber, canEdit }: SectionCardProps) {
+export function SectionCard({ heading, children, sectionNumber, canEdit, isSignedIn }: SectionCardProps) {
   const body = (
-    <SectionCardBody heading={heading} sectionNumber={sectionNumber} canEdit={canEdit}>
+    <SectionCardBody heading={heading} sectionNumber={sectionNumber} canEdit={canEdit} isSignedIn={isSignedIn}>
       {children}
     </SectionCardBody>
   );
@@ -51,13 +57,19 @@ function SectionCardBody({
   children,
   sectionNumber,
   canEdit,
+  isSignedIn,
 }: {
   heading: ReactNode;
   children: ReactNode;
   sectionNumber: number | null;
   canEdit: boolean;
+  isSignedIn: boolean;
 }) {
   const { editing } = useEditMode();
+  // Every section starts open, every page load — no persistence, no
+  // fetch, matches "by default I want all open" exactly. Only a
+  // signed-in member ever sees the control that can change it.
+  const [collapsed, setCollapsed] = useState(false);
 
   // Non-editable UI chrome, not part of the heading's own text — sits
   // beside it (never inside the EditableText h2) so it's never at risk
@@ -113,8 +125,24 @@ function SectionCardBody({
           {heading}
         </div>
         {canEdit && <SectionEditToggle />}
+        {isSignedIn && (
+          <button
+            type="button"
+            onClick={() => setCollapsed((current) => !current)}
+            aria-expanded={!collapsed}
+            aria-label={collapsed ? "Expand section" : "Collapse section"}
+            className="flex size-7 shrink-0 items-center justify-center rounded-full text-white/80 transition-colors duration-base hover:bg-white/15 hover:text-white"
+          >
+            <ChevronDown
+              className={`size-4 transition-transform duration-base ${collapsed ? "-rotate-90" : ""}`}
+              aria-hidden="true"
+            />
+          </button>
+        )}
       </div>
-      <div className="flex flex-col gap-4 border-t border-border/50 px-4 pt-4 pb-5">{children}</div>
+      {!collapsed && (
+        <div className="flex flex-col gap-4 border-t border-border/50 px-4 pt-4 pb-5">{children}</div>
+      )}
     </div>
   );
 }

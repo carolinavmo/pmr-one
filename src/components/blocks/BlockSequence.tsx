@@ -203,12 +203,14 @@ export function BlockSequence({
   diseaseId,
   diseaseSlug,
   canEdit,
+  isSignedIn,
 }: {
   blocks: EditorialBlock[];
   workspaceContext?: WorkspaceContext;
   diseaseId: string;
   diseaseSlug: string;
   canEdit: boolean;
+  isSignedIn: boolean;
 }) {
   if (blocks.length === 0) {
     return <EmptyBlockPrompt diseaseId={diseaseId} canEdit={canEdit} />;
@@ -259,6 +261,7 @@ export function BlockSequence({
             heading={heading}
             sectionNumber={sectionNumbers[index]}
             canEdit={canEdit}
+            isSignedIn={isSignedIn}
           >
             {renderGroups({
               blocks: section.blocks,

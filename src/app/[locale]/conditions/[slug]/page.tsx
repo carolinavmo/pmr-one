@@ -123,6 +123,7 @@ export default async function DiseasePage({ params }: DiseasePageProps) {
         diseaseId={disease.id}
         diseaseSlug={disease.slug}
         canEdit={canEdit}
+        isSignedIn={Boolean(session)}
       />
       <AdjacentDiseaseNav adjacent={adjacent} />
       <BackToTop />

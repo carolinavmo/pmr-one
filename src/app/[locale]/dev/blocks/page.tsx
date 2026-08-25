@@ -205,7 +205,7 @@ const blocks: EditorialBlock[] = [
 export default function BlockShowcase() {
   return (
     <main className="mx-auto flex max-w-reading flex-col gap-8 px-6 py-16">
-      <BlockSequence blocks={blocks} diseaseId="dev-mock" diseaseSlug="dev-mock" canEdit={false} />
+      <BlockSequence blocks={blocks} diseaseId="dev-mock" diseaseSlug="dev-mock" canEdit={false} isSignedIn={false} />
     </main>
   );
 }
