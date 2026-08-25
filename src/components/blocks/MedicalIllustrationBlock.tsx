@@ -108,7 +108,6 @@ export function MedicalIllustrationBlockView({
     if (!illustration) return null;
     return (
       <figure className="flex flex-col gap-2">
-        {heading}
         <div className={`relative overflow-hidden rounded-lg ${imageWidthClass[imageWidth]}`}>
           {/* eslint-disable-next-line @next/next/no-img-element -- asset_url is an arbitrary external URL (schema-v1.0.sql); no fixed remote-pattern domain to configure yet. */}
           <img src={illustration.assetUrl} alt={illustration.altText} className="w-full object-cover" />
@@ -123,8 +122,9 @@ export function MedicalIllustrationBlockView({
             </span>
           ))}
         </div>
+        {heading}
         {(caption || annotations.length > 0) && (
-          <figcaption className="flex flex-col gap-1 font-ui text-sm text-secondary">
+          <figcaption className="flex flex-col gap-1 font-ui text-xs text-secondary">
             {caption && <span>{caption}</span>}
             {annotations.map((annotation, index) => (
               <span key={index}>
