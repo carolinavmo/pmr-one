@@ -107,7 +107,7 @@ function SectionCardBody({
   // is a flat, always-white-on-#128A99 header regardless of topic.
   return (
     <div className="mt-6 rounded-xl bg-surface-card first:mt-0">
-      <div className="flex items-center gap-3 rounded-t-xl bg-[#128A99] px-4 py-3.5">
+      <div className="flex items-center gap-3 rounded-[4px] bg-[#128A99] px-4 py-3.5">
         <div className="flex min-w-0 flex-1 items-baseline gap-2 [&>h2]:!mt-0 [&>h2]:!text-[21px] [&>h2]:!leading-[28px] [&>h2]:!text-white">
           {numberLabel("text-[21px] leading-[28px]", "", "text-white")}
           {heading}
