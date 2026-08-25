@@ -109,7 +109,7 @@ export function MedicalIllustrationBlockView({
     return (
       <figure className="flex flex-col gap-2">
         {heading}
-        <div className={`relative overflow-hidden rounded-lg border border-border ${imageWidthClass[imageWidth]}`}>
+        <div className={`relative overflow-hidden rounded-lg ${imageWidthClass[imageWidth]}`}>
           {/* eslint-disable-next-line @next/next/no-img-element -- asset_url is an arbitrary external URL (schema-v1.0.sql); no fixed remote-pattern domain to configure yet. */}
           <img src={illustration.assetUrl} alt={illustration.altText} className="w-full object-cover" />
           {annotations.map((annotation, index) => (
@@ -289,7 +289,7 @@ export function MedicalIllustrationBlockView({
           const { x, y } = percentFromEvent(e);
           commit([...annotations, { label: "New label", x, y }]);
         }}
-        className={`relative cursor-crosshair overflow-hidden rounded-lg border border-border ${imageWidthClass[imageWidth]}`}
+        className={`relative cursor-crosshair overflow-hidden rounded-lg ${imageWidthClass[imageWidth]}`}
       >
         {/* eslint-disable-next-line @next/next/no-img-element -- asset_url is an arbitrary external URL (schema-v1.0.sql); no fixed remote-pattern domain to configure yet. */}
         <img
