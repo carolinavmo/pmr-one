@@ -697,6 +697,11 @@ export interface HighlightCardBlock extends BlockBase {
   color?: CardColor;
   imageUrl?: string;
   imageAlt?: string;
+  // Where the image sits relative to the label+text column. "top"
+  // (the default, matches pre-existing behavior) stacks it full-width
+  // above the text; "left"/"right" put it in a fixed-width column
+  // beside the text instead.
+  imagePosition?: "top" | "left" | "right";
 }
 
 // A single icon + label + description row — one item's worth of

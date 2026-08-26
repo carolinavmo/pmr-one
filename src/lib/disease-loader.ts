@@ -4,6 +4,7 @@ import type {
   BlockLayout,
   CardColor,
   EditorialBlock,
+  HighlightCardBlock,
   ManeuverRelationship,
   MedicalIllustrationBlock,
   OverviewBlock,
@@ -523,6 +524,7 @@ async function resolveBlock(diseaseId: string, row: BlockRow): Promise<Editorial
         color: cc.color as CardColor | undefined,
         imageUrl: cc.imageUrl as string | undefined,
         imageAlt: cc.imageAlt as string | undefined,
+        imagePosition: cc.imagePosition as HighlightCardBlock["imagePosition"],
       };
 
     case "icon_text":

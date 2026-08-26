@@ -861,6 +861,18 @@ export async function removeHighlightCardImageAction(blockId: string) {
   revalidateDiseaseSurfaces();
 }
 
+export async function setHighlightCardImagePositionAction(
+  blockId: string,
+  position: "top" | "left" | "right"
+) {
+  await requireEditor();
+  await pool.query(
+    `UPDATE editorial_block SET content_config = jsonb_set(content_config, ARRAY['imagePosition'], to_jsonb($2::text)) WHERE id = $1`,
+    [blockId, position]
+  );
+  revalidateDiseaseSurfaces();
+}
+
 // Same field name and 6-value scale as setIllustrationWidthAction —
 // the image's own size within its column, independent of the block's
 // row width (ResizableRow).
