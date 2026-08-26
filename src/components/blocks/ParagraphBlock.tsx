@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { Palette, Plus, X } from "lucide-react";
+import { useRef, useState } from "react";
+import { ImagePlus, Palette, Plus, X } from "lucide-react";
 import type { ParagraphBlock, CardColor } from "@/lib/editorial-blocks";
 import { ClinicalBadge } from "@/components/ui/ClinicalBadge";
 import { RichEditableText } from "@/components/ui/RichEditableText";
@@ -11,6 +11,8 @@ import {
   updateBlockRichTextAction,
   setCardStyleAction,
   updateParagraphBadgesAction,
+  uploadParagraphImageAction,
+  removeParagraphImageAction,
 } from "@/lib/actions/authoring";
 import { cardIcons, type CardIconName } from "@/components/ui/cardIcons";
 import { CARD_COLOR_CARD, CARD_COLOR_BADGE, CARD_COLOR_SWATCH } from "@/lib/card-colors";
@@ -32,12 +34,27 @@ export function ParagraphBlockView({
   const [stylePickerOpen, setStylePickerOpen] = useState(false);
   const [badgePickerIndex, setBadgePickerIndex] = useState<number | null>(null);
   const [badges, setBadges] = useState(block.badges ?? []);
+  const [imageUrl, setImageUrl] = useState(block.imageUrl);
+  const [uploadingImage, setUploadingImage] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const collapsible = block.expandable && !expanded;
   const cardStyle = block.cardStyle ?? "neutral";
 
   const commitBadges = (next: { text: string; color: CardColor }[]) => {
     setBadges(next);
     updateParagraphBadgesAction(block.id, next);
+  };
+
+  const handleImageFile = async (file: File) => {
+    setUploadingImage(true);
+    const formData = new FormData();
+    formData.set("file", file);
+    try {
+      await uploadParagraphImageAction(block.id, formData);
+      setImageUrl(URL.createObjectURL(file));
+    } finally {
+      setUploadingImage(false);
+    }
   };
 
   const textAlign = block.layout?.textAlign ?? "left";
@@ -123,16 +140,58 @@ export function ParagraphBlockView({
   );
 
   // Leading visual only applies to callout/card-style paragraphs —
-  // plain running text never gets a leading icon.
+  // plain running text never gets a leading icon. In edit mode this
+  // slot doubles as the image upload control (previously the imageUrl
+  // field rendered correctly once set, but nothing in the editor could
+  // set it — reusing SimpleImageBlock's own upload/remove actions).
   const Icon = block.icon && isCardIconName(block.icon) ? cardIcons[block.icon] : null;
-  const leadingVisual = block.callout && block.imageUrl ? (
+  const leadingVisual = !block.callout ? null : editing ? (
+    <div className="relative shrink-0">
+      <button
+        type="button"
+        disabled={uploadingImage}
+        onClick={() => fileInputRef.current?.click()}
+        aria-label={imageUrl ? "Replace image" : "Add image"}
+        className="flex size-9 items-center justify-center overflow-hidden rounded-md bg-surface text-secondary hover:text-accent disabled:opacity-50"
+      >
+        {imageUrl ? (
+          // eslint-disable-next-line @next/next/no-img-element -- arbitrary asset URL, no fixed remote-pattern domain configured yet (same reasoning as KnowledgeObjectCard).
+          <img src={imageUrl} alt="" className="size-full object-cover" />
+        ) : Icon ? (
+          <Icon className="size-4" aria-hidden="true" />
+        ) : (
+          <ImagePlus className="size-4" aria-hidden="true" />
+        )}
+      </button>
+      {imageUrl && (
+        <button
+          type="button"
+          aria-label="Remove image"
+          onClick={() => {
+            setImageUrl(undefined);
+            removeParagraphImageAction(block.id);
+          }}
+          className="absolute -top-1.5 -right-1.5 flex size-4 items-center justify-center rounded-full bg-surface-raised text-secondary shadow-sm hover:text-warning"
+        >
+          <X className="size-2.5" aria-hidden="true" />
+        </button>
+      )}
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="image/*"
+        className="hidden"
+        onChange={(e) => {
+          const file = e.target.files?.[0];
+          if (file) handleImageFile(file);
+          e.target.value = "";
+        }}
+      />
+    </div>
+  ) : imageUrl ? (
     // eslint-disable-next-line @next/next/no-img-element -- arbitrary asset URL, no fixed remote-pattern domain configured yet (same reasoning as KnowledgeObjectCard).
-    <img
-      src={block.imageUrl}
-      alt={block.imageAlt ?? ""}
-      className="size-9 shrink-0 rounded-md object-cover"
-    />
-  ) : block.callout && Icon ? (
+    <img src={imageUrl} alt={block.imageAlt ?? ""} className="size-9 shrink-0 rounded-md object-cover" />
+  ) : Icon ? (
     <span className="flex size-9 shrink-0 items-center justify-center rounded-md bg-surface text-secondary">
       <Icon className="size-4" aria-hidden="true" />
     </span>

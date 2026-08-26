@@ -810,6 +810,32 @@ export async function removeSimpleImageAction(blockId: string) {
   revalidateDiseaseSurfaces();
 }
 
+// Same local-disk upload path as Simple Image, applied to a callout
+// Paragraph's small leading-visual slot instead of a full-width figure
+// — the field (`imageUrl`) already existed on the type and rendered
+// correctly (ParagraphBlockView's `leadingVisual`); only the editor
+// control to set it was missing.
+export async function uploadParagraphImageAction(blockId: string, formData: FormData) {
+  await requireEditor();
+  const file = formData.get("file") as File | null;
+  if (!file) throw new Error("No file provided.");
+  const assetUrl = await saveUploadedIllustration(file);
+  await pool.query(
+    `UPDATE editorial_block SET content_config = jsonb_set(content_config, ARRAY['imageUrl'], to_jsonb($2::text)) WHERE id = $1`,
+    [blockId, assetUrl]
+  );
+  revalidateDiseaseSurfaces();
+}
+
+export async function removeParagraphImageAction(blockId: string) {
+  await requireEditor();
+  await pool.query(
+    `UPDATE editorial_block SET content_config = content_config - 'imageUrl' WHERE id = $1`,
+    [blockId]
+  );
+  revalidateDiseaseSurfaces();
+}
+
 // Same field name and 6-value scale as setIllustrationWidthAction —
 // the image's own size within its column, independent of the block's
 // row width (ResizableRow).
