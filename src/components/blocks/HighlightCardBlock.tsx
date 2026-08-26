@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { Star, Palette } from "lucide-react";
+import { useRef, useState } from "react";
+import { Star, Palette, ImagePlus, X } from "lucide-react";
 import type { HighlightCardBlock } from "@/lib/editorial-blocks";
 import { EditableText } from "@/components/ui/EditableText";
 import { RichEditableText } from "@/components/ui/RichEditableText";
@@ -11,6 +11,8 @@ import {
   updateBlockTextAction,
   updateBlockRichTextAction,
   setBlockCardColorAction,
+  uploadHighlightCardImageAction,
+  removeHighlightCardImageAction,
 } from "@/lib/actions/authoring";
 import { CARD_COLOR_CARD, CARD_COLOR_CHIP, CARD_COLOR_TEXT } from "@/lib/card-colors";
 import { TEXT_ALIGN_CLASS, ROW_ITEMS_CLASS } from "@/lib/block-alignment";
@@ -30,9 +32,24 @@ export function HighlightCardBlockView({
 }) {
   const { editing } = useEditMode();
   const [colorPickerOpen, setColorPickerOpen] = useState(false);
+  const [imageUrl, setImageUrl] = useState(block.imageUrl);
+  const [uploadingImage, setUploadingImage] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const color = block.color ?? "accent";
   const textAlign = block.layout?.textAlign ?? "left";
   const textVerticalAlign = block.layout?.textVerticalAlign ?? "top";
+
+  const handleImageFile = async (file: File) => {
+    setUploadingImage(true);
+    const formData = new FormData();
+    formData.set("file", file);
+    try {
+      await uploadHighlightCardImageAction(block.id, formData);
+      setImageUrl(URL.createObjectURL(file));
+    } finally {
+      setUploadingImage(false);
+    }
+  };
 
   return (
     <div
@@ -72,6 +89,55 @@ export function HighlightCardBlockView({
           onSave={(value) => updateBlockTextAction(block.id, "label", value)}
         />
       </div>
+      {editing ? (
+        <div>
+          {imageUrl ? (
+            <div className="relative overflow-hidden rounded-md">
+              {/* eslint-disable-next-line @next/next/no-img-element -- arbitrary asset URL, no fixed remote-pattern domain configured yet (same reasoning as KnowledgeObjectCard). */}
+              <img src={imageUrl} alt="" className="w-full object-cover" />
+              <button
+                type="button"
+                aria-label="Remove image"
+                onClick={() => {
+                  setImageUrl(undefined);
+                  removeHighlightCardImageAction(block.id);
+                }}
+                className="absolute top-1.5 right-1.5 flex size-6 items-center justify-center rounded-full bg-surface-raised text-secondary shadow-sm hover:text-warning"
+              >
+                <X className="size-3.5" aria-hidden="true" />
+              </button>
+            </div>
+          ) : (
+            <button
+              type="button"
+              disabled={uploadingImage}
+              onClick={() => fileInputRef.current?.click()}
+              className="inline-flex items-center gap-1 rounded-full border border-dashed border-border px-2.5 py-1 font-ui text-xs text-secondary hover:border-accent hover:text-accent disabled:opacity-50"
+            >
+              <ImagePlus className="size-3" aria-hidden="true" />
+              {uploadingImage ? "Uploading…" : "Add image"}
+            </button>
+          )}
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/*"
+            className="hidden"
+            onChange={(e) => {
+              const file = e.target.files?.[0];
+              if (file) handleImageFile(file);
+              e.target.value = "";
+            }}
+          />
+        </div>
+      ) : (
+        imageUrl && (
+          <div className="overflow-hidden rounded-md">
+            {/* eslint-disable-next-line @next/next/no-img-element -- arbitrary asset URL, no fixed remote-pattern domain configured yet (same reasoning as KnowledgeObjectCard). */}
+            <img src={imageUrl} alt={block.imageAlt ?? ""} className="w-full object-cover" />
+          </div>
+        )
+      )}
       <RichEditableText
         as="p"
         className={`font-reading text-base leading-5 text-primary ${TEXT_ALIGN_CLASS[textAlign]}`}

@@ -836,6 +836,31 @@ export async function removeParagraphImageAction(blockId: string) {
   revalidateDiseaseSurfaces();
 }
 
+// Same upload path again, for Highlight Card — the block editors
+// actually reach for via the "+" picker (Teaching Point / Clinical Box
+// cards), unlike the callout-Paragraph mode above which has no picker
+// entry of its own.
+export async function uploadHighlightCardImageAction(blockId: string, formData: FormData) {
+  await requireEditor();
+  const file = formData.get("file") as File | null;
+  if (!file) throw new Error("No file provided.");
+  const assetUrl = await saveUploadedIllustration(file);
+  await pool.query(
+    `UPDATE editorial_block SET content_config = jsonb_set(content_config, ARRAY['imageUrl'], to_jsonb($2::text)) WHERE id = $1`,
+    [blockId, assetUrl]
+  );
+  revalidateDiseaseSurfaces();
+}
+
+export async function removeHighlightCardImageAction(blockId: string) {
+  await requireEditor();
+  await pool.query(
+    `UPDATE editorial_block SET content_config = content_config - 'imageUrl' WHERE id = $1`,
+    [blockId]
+  );
+  revalidateDiseaseSurfaces();
+}
+
 // Same field name and 6-value scale as setIllustrationWidthAction —
 // the image's own size within its column, independent of the block's
 // row width (ResizableRow).

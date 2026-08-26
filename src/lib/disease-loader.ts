@@ -521,6 +521,8 @@ async function resolveBlock(diseaseId: string, row: BlockRow): Promise<Editorial
         label: (cc.label as string) ?? "Key Takeaway",
         text: (cc.text as string) ?? "",
         color: cc.color as CardColor | undefined,
+        imageUrl: cc.imageUrl as string | undefined,
+        imageAlt: cc.imageAlt as string | undefined,
       };
 
     case "icon_text":

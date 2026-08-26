@@ -695,6 +695,8 @@ export interface HighlightCardBlock extends BlockBase {
   label: string;
   text: string;
   color?: CardColor;
+  imageUrl?: string;
+  imageAlt?: string;
 }
 
 // A single icon + label + description row — one item's worth of
