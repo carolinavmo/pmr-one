@@ -873,6 +873,18 @@ export async function setHighlightCardImagePositionAction(
   revalidateDiseaseSurfaces();
 }
 
+export async function setHighlightCardImageWidthAction(
+  blockId: string,
+  width: "1/4" | "1/3" | "1/2" | "2/3" | "3/4" | "full"
+) {
+  await requireEditor();
+  await pool.query(
+    `UPDATE editorial_block SET content_config = jsonb_set(content_config, ARRAY['imageWidth'], to_jsonb($2::text)) WHERE id = $1`,
+    [blockId, width]
+  );
+  revalidateDiseaseSurfaces();
+}
+
 // Same field name and 6-value scale as setIllustrationWidthAction —
 // the image's own size within its column, independent of the block's
 // row width (ResizableRow).

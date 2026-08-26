@@ -525,6 +525,7 @@ async function resolveBlock(diseaseId: string, row: BlockRow): Promise<Editorial
         imageUrl: cc.imageUrl as string | undefined,
         imageAlt: cc.imageAlt as string | undefined,
         imagePosition: cc.imagePosition as HighlightCardBlock["imagePosition"],
+        imageWidth: cc.imageWidth as HighlightCardBlock["imageWidth"],
       };
 
     case "icon_text":

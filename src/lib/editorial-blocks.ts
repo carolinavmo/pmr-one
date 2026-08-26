@@ -702,6 +702,13 @@ export interface HighlightCardBlock extends BlockBase {
   // above the text; "left"/"right" put it in a fixed-width column
   // beside the text instead.
   imagePosition?: "top" | "left" | "right";
+  // Same 6-value scale as MedicalIllustrationBlock/OverviewBlock/
+  // SimpleImageBlock's own image width control. Unset falls back to a
+  // position-appropriate default at render time (full for "top", a
+  // quarter for "left"/"right") rather than a single stored default,
+  // so switching position alone still looks reasonable before an
+  // author ever touches this.
+  imageWidth?: "1/4" | "1/3" | "1/2" | "2/3" | "3/4" | "full";
 }
 
 // A single icon + label + description row — one item's worth of

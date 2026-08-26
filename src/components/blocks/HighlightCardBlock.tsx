@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { Star, Palette, ImagePlus, X, PanelTop, PanelLeft, PanelRight } from "lucide-react";
+import { Star, Palette, ImagePlus, X, PanelTop, PanelLeft, PanelRight, Maximize2 } from "lucide-react";
 import type { HighlightCardBlock } from "@/lib/editorial-blocks";
 import { EditableText } from "@/components/ui/EditableText";
 import { RichEditableText } from "@/components/ui/RichEditableText";
@@ -14,17 +14,39 @@ import {
   uploadHighlightCardImageAction,
   removeHighlightCardImageAction,
   setHighlightCardImagePositionAction,
+  setHighlightCardImageWidthAction,
 } from "@/lib/actions/authoring";
 import { CARD_COLOR_CARD, CARD_COLOR_CHIP, CARD_COLOR_TEXT } from "@/lib/card-colors";
 import { TEXT_ALIGN_CLASS, ROW_ITEMS_CLASS } from "@/lib/block-alignment";
 
 type ImagePosition = NonNullable<HighlightCardBlock["imagePosition"]>;
+type ImageWidth = NonNullable<HighlightCardBlock["imageWidth"]>;
 
 const POSITION_OPTIONS: { value: ImagePosition; label: string; icon: typeof PanelTop }[] = [
   { value: "top", label: "Image above text", icon: PanelTop },
   { value: "left", label: "Image left of text", icon: PanelLeft },
   { value: "right", label: "Image right of text", icon: PanelRight },
 ];
+
+// Same 6-value scale as MedicalIllustrationBlock/OverviewBlock/
+// SimpleImageBlock's own width control — one shared vocabulary.
+const WIDTH_OPTIONS: { value: ImageWidth; label: string }[] = [
+  { value: "1/4", label: "25%" },
+  { value: "1/3", label: "33%" },
+  { value: "1/2", label: "50%" },
+  { value: "2/3", label: "66%" },
+  { value: "3/4", label: "75%" },
+  { value: "full", label: "100%" },
+];
+
+const imageWidthClass: Record<ImageWidth, string> = {
+  "1/4": "w-1/4",
+  "1/3": "w-1/3",
+  "1/2": "w-1/2",
+  "2/3": "w-2/3",
+  "3/4": "w-3/4",
+  full: "w-full",
+};
 
 // The founder's own "Key Takeaway" reference (#133) generalized into a
 // standalone, insertable block — icon chip + editable eyebrow label +
@@ -44,11 +66,18 @@ export function HighlightCardBlockView({
   const [imageUrl, setImageUrl] = useState(block.imageUrl);
   const [uploadingImage, setUploadingImage] = useState(false);
   const [imagePosition, setImagePosition] = useState<ImagePosition>(block.imagePosition ?? "top");
+  const [imageWidth, setImageWidth] = useState<ImageWidth | undefined>(block.imageWidth);
+  const [widthOpen, setWidthOpen] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const color = block.color ?? "accent";
   const textAlign = block.layout?.textAlign ?? "left";
   const textVerticalAlign = block.layout?.textVerticalAlign ?? "top";
   const isSideBySide = imagePosition !== "top";
+  // No stored width yet → a position-appropriate default (full for a
+  // banner-style top image, a quarter for a side-by-side thumbnail) so
+  // switching position alone still looks right before an author ever
+  // opens the width picker.
+  const effectiveWidth: ImageWidth = imageWidth ?? (isSideBySide ? "1/4" : "full");
 
   const handleImageFile = async (file: File) => {
     setUploadingImage(true);
@@ -91,9 +120,9 @@ export function HighlightCardBlockView({
     />
   );
 
-  // Positioning only matters once an image exists — no point offering
-  // it on an empty upload prompt.
-  const positionPicker = editing && imageUrl && (
+  // Positioning/sizing only matter once an image exists — no point
+  // offering either on an empty upload prompt.
+  const imageControls = editing && imageUrl && (
     <div className="flex items-center gap-1">
       {POSITION_OPTIONS.map(({ value, label, icon: Icon }) => (
         <button
@@ -114,10 +143,47 @@ export function HighlightCardBlockView({
           <Icon className="size-3.5" aria-hidden="true" />
         </button>
       ))}
+      <div className="relative">
+        <button
+          type="button"
+          onClick={() => setWidthOpen((open) => !open)}
+          aria-label="Image width"
+          className="flex items-center gap-0.5 rounded px-1 py-0.5 font-ui text-xs text-secondary hover:bg-surface-raised hover:text-primary"
+        >
+          <Maximize2 className="size-3" aria-hidden="true" />
+          {WIDTH_OPTIONS.find((o) => o.value === effectiveWidth)?.label}
+        </button>
+        {widthOpen && (
+          <div className="absolute top-6 left-0 z-10 w-36 rounded-lg border border-border bg-surface-raised p-2 shadow-md">
+            <div className="flex flex-wrap gap-1">
+              {WIDTH_OPTIONS.map((option) => (
+                <button
+                  key={option.value}
+                  type="button"
+                  onClick={() => {
+                    setWidthOpen(false);
+                    setImageWidth(option.value);
+                    setHighlightCardImageWidthAction(block.id, option.value);
+                  }}
+                  className={`rounded border px-1.5 py-1 font-ui text-xs ${
+                    effectiveWidth === option.value
+                      ? "border-accent bg-accent/10 text-accent"
+                      : "border-border text-secondary hover:border-accent hover:text-accent"
+                  }`}
+                >
+                  {option.label}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   );
 
-  const imageSizeClass = isSideBySide ? "w-24 sm:w-32 shrink-0" : "w-full";
+  const imageSizeClass = `${imageWidthClass[effectiveWidth]} ${
+    isSideBySide ? "shrink-0" : effectiveWidth !== "full" ? "mx-auto" : ""
+  }`;
 
   const imageBlock = editing ? (
     <div className={`flex flex-col gap-1.5 ${isSideBySide ? "shrink-0" : ""}`}>
@@ -148,7 +214,7 @@ export function HighlightCardBlockView({
           {uploadingImage ? "Uploading…" : "Add image"}
         </button>
       )}
-      {positionPicker}
+      {imageControls}
       <input
         ref={fileInputRef}
         type="file"
