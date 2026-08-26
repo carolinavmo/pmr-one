@@ -1,7 +1,12 @@
 "use client";
 
-import { useEffect, useState, type ReactNode } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import { X } from "lucide-react";
+
+// Matches --duration-base (globals.css) — the close timer has to know
+// the transition's real length so it can wait for the fade/scale-out
+// to finish before unmounting.
+const TRANSITION_MS = 200;
 
 // Wraps an existing image (passed as `children`, unchanged) with a
 // click-to-zoom lightbox — a fixed, full-screen modal showing the
@@ -12,6 +17,12 @@ import { X } from "lucide-react";
 // duplicate its own <img> markup — signed-out visitors get `enabled=
 // false` and the exact same image renders inert, just like before
 // this component existed.
+//
+// `open` controls mounting, `visible` drives the transition classes —
+// split the same way ScrollReveal splits "in the DOM" from "revealed"
+// so the modal can animate BOTH in (mount at opacity-0/scale-95, flip
+// to visible next frame) and out (flip back to hidden, then unmount
+// once the transition has actually finished).
 export function ZoomableImage({
   src,
   alt,
@@ -24,15 +35,32 @@ export function ZoomableImage({
   children: ReactNode;
 }) {
   const [open, setOpen] = useState(false);
+  const [visible, setVisible] = useState(false);
+  const closeTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const close = () => {
+    setVisible(false);
+    closeTimeout.current = setTimeout(() => setOpen(false), TRANSITION_MS);
+  };
 
   useEffect(() => {
     if (!open) return;
+    const raf = requestAnimationFrame(() => setVisible(true));
     const onKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") setOpen(false);
+      if (e.key === "Escape") close();
     };
     document.addEventListener("keydown", onKeyDown);
-    return () => document.removeEventListener("keydown", onKeyDown);
+    return () => {
+      cancelAnimationFrame(raf);
+      document.removeEventListener("keydown", onKeyDown);
+    };
   }, [open]);
+
+  useEffect(() => {
+    return () => {
+      if (closeTimeout.current) clearTimeout(closeTimeout.current);
+    };
+  }, []);
 
   if (!enabled) return <>{children}</>;
 
@@ -55,16 +83,18 @@ export function ZoomableImage({
       </div>
       {open && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4"
+          className={`fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-6 transition-opacity duration-base ease-standard motion-reduce:transition-none sm:p-10 md:p-16 ${
+            visible ? "opacity-100" : "opacity-0"
+          }`}
           role="dialog"
           aria-modal="true"
           aria-label={alt || "Image"}
-          onClick={() => setOpen(false)}
+          onClick={close}
         >
           <button
             type="button"
             aria-label="Close"
-            onClick={() => setOpen(false)}
+            onClick={close}
             className="absolute top-4 right-4 flex size-10 items-center justify-center rounded-full bg-white/10 text-white hover:bg-white/20"
           >
             <X className="size-5" aria-hidden="true" />
@@ -73,7 +103,9 @@ export function ZoomableImage({
           <img
             src={src}
             alt={alt}
-            className="max-h-full max-w-full cursor-zoom-out rounded-lg object-contain shadow-2xl"
+            className={`max-h-full max-w-full cursor-zoom-out rounded-lg object-contain shadow-2xl transition-[opacity,transform] duration-base ease-standard motion-reduce:scale-100 motion-reduce:transition-none ${
+              visible ? "scale-100 opacity-100" : "scale-95 opacity-0"
+            }`}
             onClick={(e) => e.stopPropagation()}
           />
         </div>
