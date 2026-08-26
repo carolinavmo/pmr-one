@@ -168,7 +168,7 @@ export function MedicalIllustrationBlockView({
     return (
       <figure className="flex flex-col gap-2">
         {isSideBySide ? (
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-start">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
             {legendPosition === "left" && legend && <div className="sm:w-40 sm:shrink-0">{legend}</div>}
             <div className="flex min-w-0 flex-1 flex-col gap-2">
               {imageElement}
