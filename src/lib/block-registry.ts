@@ -2,6 +2,7 @@ import type { LucideIcon } from "lucide-react";
 import {
   AlignLeft,
   Heading2,
+  Heading3,
   Bookmark,
   Gem,
   Target,
@@ -85,6 +86,7 @@ export const BLOCK_REGISTRY: BlockRegistryEntry[] = [
   // Text
   { type: "paragraph", label: "Paragraph", group: "text", icon: AlignLeft, kind: "owns-content", status: "available" },
   { type: "section_heading", label: "Heading", group: "text", icon: Heading2, kind: "owns-content", status: "available" },
+  { type: "subsection_heading", label: "Subheading", group: "text", icon: Heading3, kind: "owns-content", status: "available" },
   { type: "key_point", label: "Key Point", group: "text", icon: Bookmark, kind: "owns-content", status: "available" },
   { type: "clinical_pearl", label: "Clinical Pearl", group: "text", icon: Gem, kind: "references-object", status: "available" },
   { type: "learning_objective", label: "Learning Objective", group: "text", icon: Target, kind: "owns-content", status: "available" },

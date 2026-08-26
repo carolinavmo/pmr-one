@@ -72,6 +72,17 @@ export interface SectionHeadingBlock extends BlockBase {
   text: string;
 }
 
+// A lighter-weight heading for dividing content *within* a section
+// without starting a new SectionCard — deliberately not indexed
+// (OnThisPage, the sidebar's per-page index, and BlockSequence's own
+// splitIntoSections all key strictly on "section_heading", so this
+// type is invisible to all three automatically).
+export interface SubsectionHeadingBlock extends BlockBase {
+  type: "subsection_heading";
+  id: string;
+  text: string;
+}
+
 // Decorative-only palette for card backgrounds and badges — deliberately
 // separate from the four *meaningful* colors (accent/trust/insight/
 // warning, DESIGN_SYSTEM.md's Color System). "neutral" plus those four
@@ -744,6 +755,7 @@ export interface IconTextBlock extends BlockBase {
 
 export type EditorialBlock =
   | SectionHeadingBlock
+  | SubsectionHeadingBlock
   | ParagraphBlock
   | KeyPointBlock
   | MedicalIllustrationBlock

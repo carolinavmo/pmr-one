@@ -162,6 +162,9 @@ async function resolveBlock(diseaseId: string, row: BlockRow): Promise<Editorial
     case "section_heading":
       return { type: "section_heading", id: row.id, text: cc.text as string };
 
+    case "subsection_heading":
+      return { type: "subsection_heading", id: row.id, text: cc.text as string };
+
     case "paragraph":
       return {
         type: "paragraph",

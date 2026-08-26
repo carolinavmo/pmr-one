@@ -14,6 +14,7 @@ type SampleContentConfig = Record<EditorialBlock["type"], unknown>;
 
 const SAMPLE_CONTENT: SampleContentConfig = {
   section_heading: { text: "Exam" },
+  subsection_heading: { text: "Special tests" },
   paragraph: {
     body: "Ask specifically about first-step pain.",
     learningObjective: "Recognize the classic presentation.",

@@ -32,6 +32,8 @@ const EMBEDS_KNOWLEDGE_GRAPH_ROW =
 export const TRANSLATABLE_FIELDS: Record<EditorialBlock["type"], TranslatableFieldsSpec> = {
   section_heading: { fields: ["text"] },
 
+  subsection_heading: { fields: ["text"] },
+
   paragraph: { fields: ["body", "learningObjective", "imageAlt", "badges[].text"] },
 
   self_check: { fields: ["question", "answer"] },
