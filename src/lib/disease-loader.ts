@@ -319,6 +319,7 @@ async function resolveBlock(diseaseId: string, row: BlockRow): Promise<Editorial
         caption: cc.caption as string | undefined,
         imageWidth: cc.imageWidth as MedicalIllustrationBlock["imageWidth"],
         annotations: cc.annotations as { label: string; x: number; y: number }[] | undefined,
+        legendPosition: cc.legendPosition as MedicalIllustrationBlock["legendPosition"],
       };
     }
 

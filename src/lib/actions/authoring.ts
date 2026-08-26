@@ -1633,6 +1633,23 @@ export async function setIllustrationWidthAction(
   revalidateDiseaseSurfaces();
 }
 
+// Where the annotation legend (caption + numbered label list) sits
+// relative to the image — independent of the image's own width above.
+// Same 3-value vocabulary as setHighlightCardImagePositionAction, with
+// "bottom" instead of "top" since the legend already renders below the
+// image by default here.
+export async function setIllustrationLegendPositionAction(
+  blockId: string,
+  position: "bottom" | "left" | "right"
+) {
+  await requireEditor();
+  await pool.query(
+    `UPDATE editorial_block SET content_config = jsonb_set(content_config, ARRAY['legendPosition'], to_jsonb($2::text)) WHERE id = $1`,
+    [blockId, position]
+  );
+  revalidateDiseaseSurfaces();
+}
+
 // Annotations (numbered markers + legend) live entirely in the
 // block's own content_config, not on the shared illustration row —
 // dragging a marker or relabeling it is per-placement, same as a

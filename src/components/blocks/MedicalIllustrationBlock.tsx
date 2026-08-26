@@ -1,7 +1,17 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { Image as ImageIcon, Trash2, X, ChevronUp, ChevronDown, Maximize2 } from "lucide-react";
+import {
+  Image as ImageIcon,
+  Trash2,
+  X,
+  ChevronUp,
+  ChevronDown,
+  Maximize2,
+  PanelBottom,
+  PanelLeft,
+  PanelRight,
+} from "lucide-react";
 import type { MedicalIllustrationBlock } from "@/lib/editorial-blocks";
 import { useEditMode } from "@/components/disease-page/EditMode";
 import { RichEditableText } from "@/components/ui/RichEditableText";
@@ -14,10 +24,12 @@ import {
   uploadReplacementIllustrationAction,
   removeIllustrationImageAction,
   setIllustrationWidthAction,
+  setIllustrationLegendPositionAction,
 } from "@/lib/actions/authoring";
 
 type Annotation = { label: string; x: number; y: number };
 type ImageWidth = NonNullable<MedicalIllustrationBlock["imageWidth"]>;
+type LegendPosition = NonNullable<MedicalIllustrationBlock["legendPosition"]>;
 
 const WIDTH_OPTIONS: { value: ImageWidth; label: string }[] = [
   { value: "1/4", label: "25%" },
@@ -26,6 +38,12 @@ const WIDTH_OPTIONS: { value: ImageWidth; label: string }[] = [
   { value: "2/3", label: "66%" },
   { value: "3/4", label: "75%" },
   { value: "full", label: "100%" },
+];
+
+const LEGEND_POSITION_OPTIONS: { value: LegendPosition; label: string; icon: typeof PanelBottom }[] = [
+  { value: "bottom", label: "Labels below image", icon: PanelBottom },
+  { value: "left", label: "Labels left of image", icon: PanelLeft },
+  { value: "right", label: "Labels right of image", icon: PanelRight },
 ];
 
 // The image's own size within its column — independent of the row
@@ -72,7 +90,14 @@ export function MedicalIllustrationBlockView({
   const [widthOpen, setWidthOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const draggingIndex = useRef<number | null>(null);
-  const imageWidth = block.imageWidth ?? "full";
+  const legendPosition = block.legendPosition ?? "bottom";
+  const isSideBySide = legendPosition !== "bottom";
+  // No stored width yet → a position-appropriate default (full edge-to-
+  // edge when the legend sits below, two-thirds when it shares a row
+  // with a legend column) so switching legend position alone still
+  // looks right before an author ever opens the width picker — same
+  // pattern as HighlightCardBlock's effectiveWidth.
+  const imageWidth = block.imageWidth ?? (isSideBySide ? "2/3" : "full");
 
   const heading = (block.title || block.subtitle) && (
     <div className="flex flex-col gap-0.5">
@@ -109,34 +134,54 @@ export function MedicalIllustrationBlockView({
     // text content does need, since there's no placeholder image to
     // fall back to.
     if (!illustration) return null;
+
+    const imageElement = (
+      <div className={`relative overflow-hidden rounded-lg ${imageWidthClass[imageWidth]}`}>
+        <ZoomableImage src={illustration.assetUrl} alt={illustration.altText} enabled={isSignedIn}>
+          {/* eslint-disable-next-line @next/next/no-img-element -- asset_url is an arbitrary external URL (schema-v1.0.sql); no fixed remote-pattern domain to configure yet. */}
+          <img src={illustration.assetUrl} alt={illustration.altText} className="w-full object-cover" />
+        </ZoomableImage>
+        {annotations.map((annotation, index) => (
+          <span
+            key={index}
+            style={{ left: `${annotation.x}%`, top: `${annotation.y}%` }}
+            className="absolute flex size-6 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-surface-raised font-ui text-xs font-medium text-primary shadow"
+            aria-hidden="true"
+          >
+            {index + 1}
+          </span>
+        ))}
+      </div>
+    );
+
+    const legend = (caption || annotations.length > 0) && (
+      <figcaption className="flex flex-col gap-1 font-ui text-xs text-secondary">
+        {caption && <span>{caption}</span>}
+        {annotations.map((annotation, index) => (
+          <span key={index}>
+            {index + 1}. {annotation.label}
+          </span>
+        ))}
+      </figcaption>
+    );
+
     return (
       <figure className="flex flex-col gap-2">
-        <div className={`relative overflow-hidden rounded-lg ${imageWidthClass[imageWidth]}`}>
-          <ZoomableImage src={illustration.assetUrl} alt={illustration.altText} enabled={isSignedIn}>
-            {/* eslint-disable-next-line @next/next/no-img-element -- asset_url is an arbitrary external URL (schema-v1.0.sql); no fixed remote-pattern domain to configure yet. */}
-            <img src={illustration.assetUrl} alt={illustration.altText} className="w-full object-cover" />
-          </ZoomableImage>
-          {annotations.map((annotation, index) => (
-            <span
-              key={index}
-              style={{ left: `${annotation.x}%`, top: `${annotation.y}%` }}
-              className="absolute flex size-6 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-surface-raised font-ui text-xs font-medium text-primary shadow"
-              aria-hidden="true"
-            >
-              {index + 1}
-            </span>
-          ))}
-        </div>
-        {heading}
-        {(caption || annotations.length > 0) && (
-          <figcaption className="flex flex-col gap-1 font-ui text-xs text-secondary">
-            {caption && <span>{caption}</span>}
-            {annotations.map((annotation, index) => (
-              <span key={index}>
-                {index + 1}. {annotation.label}
-              </span>
-            ))}
-          </figcaption>
+        {isSideBySide ? (
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-start">
+            {legendPosition === "left" && legend && <div className="sm:w-40 sm:shrink-0">{legend}</div>}
+            <div className="flex min-w-0 flex-1 flex-col gap-2">
+              {imageElement}
+              {heading}
+            </div>
+            {legendPosition === "right" && legend && <div className="sm:w-40 sm:shrink-0">{legend}</div>}
+          </div>
+        ) : (
+          <>
+            {imageElement}
+            {heading}
+            {legend}
+          </>
         )}
       </figure>
     );
@@ -233,6 +278,22 @@ export function MedicalIllustrationBlockView({
           Click the image to drop a new annotation marker.
         </span>
         <div className="relative flex items-center gap-1">
+          {LEGEND_POSITION_OPTIONS.map(({ value, label, icon: Icon }) => (
+            <button
+              key={value}
+              type="button"
+              aria-label={label}
+              aria-pressed={legendPosition === value}
+              onClick={() => setIllustrationLegendPositionAction(block.id, value)}
+              className={`flex size-6 items-center justify-center rounded transition-colors duration-base ${
+                legendPosition === value
+                  ? "bg-surface-raised text-primary"
+                  : "text-secondary hover:bg-surface-raised hover:text-primary"
+              }`}
+            >
+              <Icon className="size-3.5" aria-hidden="true" />
+            </button>
+          ))}
           <button
             type="button"
             onClick={() => setWidthOpen((open) => !open)}

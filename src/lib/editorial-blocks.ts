@@ -176,6 +176,11 @@ export interface MedicalIllustrationBlock extends BlockBase {
   caption?: string;
   imageWidth?: "1/4" | "1/3" | "1/2" | "2/3" | "3/4" | "full";
   annotations?: { label: string; x: number; y: number }[];
+  // Where the annotation legend (caption + numbered label list) sits
+  // relative to the image. "bottom" (the default, matches
+  // pre-existing behavior) stacks it full-width below the image;
+  // "left"/"right" put it in a narrow column beside the image instead.
+  legendPosition?: "bottom" | "left" | "right";
 }
 
 export interface ClinicalPearlBlock extends BlockBase {
