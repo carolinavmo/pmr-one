@@ -5,6 +5,7 @@ import { Star, Palette, ImagePlus, X, PanelTop, PanelLeft, PanelRight, Maximize2
 import type { HighlightCardBlock } from "@/lib/editorial-blocks";
 import { EditableText } from "@/components/ui/EditableText";
 import { RichEditableText } from "@/components/ui/RichEditableText";
+import { ZoomableImage } from "@/components/ui/ZoomableImage";
 import { ColorSwatchPicker } from "@/components/ui/ColorSwatchPicker";
 import { useEditMode } from "@/components/disease-page/EditMode";
 import {
@@ -57,9 +58,11 @@ const imageWidthClass: Record<ImageWidth, string> = {
 export function HighlightCardBlockView({
   block,
   diseaseSlug,
+  isSignedIn = false,
 }: {
   block: HighlightCardBlock;
   diseaseSlug: string;
+  isSignedIn?: boolean;
 }) {
   const { editing } = useEditMode();
   const [colorPickerOpen, setColorPickerOpen] = useState(false);
@@ -229,10 +232,12 @@ export function HighlightCardBlockView({
     </div>
   ) : (
     imageUrl && (
-      <div className={`overflow-hidden rounded-md ${imageSizeClass}`}>
-        {/* eslint-disable-next-line @next/next/no-img-element -- arbitrary asset URL, no fixed remote-pattern domain configured yet (same reasoning as KnowledgeObjectCard). */}
-        <img src={imageUrl} alt={block.imageAlt ?? ""} className="w-full object-cover" />
-      </div>
+      <ZoomableImage src={imageUrl} alt={block.imageAlt ?? ""} enabled={isSignedIn}>
+        <div className={`overflow-hidden rounded-md ${imageSizeClass}`}>
+          {/* eslint-disable-next-line @next/next/no-img-element -- arbitrary asset URL, no fixed remote-pattern domain configured yet (same reasoning as KnowledgeObjectCard). */}
+          <img src={imageUrl} alt={block.imageAlt ?? ""} className="w-full object-cover" />
+        </div>
+      </ZoomableImage>
     )
   );
 

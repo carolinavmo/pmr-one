@@ -5,6 +5,7 @@ import { ImagePlus, X, Maximize2 } from "lucide-react";
 import type { SimpleImageBlock } from "@/lib/editorial-blocks";
 import { useEditMode } from "@/components/disease-page/EditMode";
 import { RichEditableText } from "@/components/ui/RichEditableText";
+import { ZoomableImage } from "@/components/ui/ZoomableImage";
 import { TEXT_ALIGN_CLASS } from "@/lib/block-alignment";
 import {
   updateBlockRichTextAction,
@@ -47,9 +48,11 @@ const imageWidthClass: Record<ImageWidth, string> = {
 export function SimpleImageBlockView({
   block,
   diseaseSlug,
+  isSignedIn = false,
 }: {
   block: SimpleImageBlock;
   diseaseSlug: string;
+  isSignedIn?: boolean;
 }) {
   const { editing } = useEditMode();
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -84,10 +87,12 @@ export function SimpleImageBlockView({
     if (!imageUrl) return null;
     return (
       <figure className="flex flex-col gap-2">
-        <div className={`overflow-hidden rounded-lg ${imageWidthClass[imageWidth]}`}>
-          {/* eslint-disable-next-line @next/next/no-img-element -- block-owned upload (public/uploads/illustrations), same as OverviewBlock/ImageComparisonBlock; no fixed remote-pattern domain to configure. */}
-          <img src={imageUrl} alt="" className="w-full object-cover" />
-        </div>
+        <ZoomableImage src={imageUrl} alt={caption ?? ""} enabled={isSignedIn}>
+          <div className={`overflow-hidden rounded-lg ${imageWidthClass[imageWidth]}`}>
+            {/* eslint-disable-next-line @next/next/no-img-element -- block-owned upload (public/uploads/illustrations), same as OverviewBlock/ImageComparisonBlock; no fixed remote-pattern domain to configure. */}
+            <img src={imageUrl} alt="" className="w-full object-cover" />
+          </div>
+        </ZoomableImage>
         {caption && (
           <RichEditableText
             as="figcaption"

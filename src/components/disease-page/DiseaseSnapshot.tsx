@@ -88,7 +88,12 @@ export function DiseaseSnapshot({
         blockCount={blockCount}
       />
 
-      <MedicalIllustrationBlockView block={illustration} diseaseId={diseaseId} diseaseSlug={diseaseSlug} />
+      <MedicalIllustrationBlockView
+        block={illustration}
+        diseaseId={diseaseId}
+        diseaseSlug={diseaseSlug}
+        isSignedIn={isSignedIn}
+      />
     </div>
   );
 }

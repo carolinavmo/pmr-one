@@ -50,11 +50,13 @@ export function BlockRenderer({
   workspaceContext,
   diseaseId,
   diseaseSlug,
+  isSignedIn = false,
 }: {
   block: EditorialBlock;
   workspaceContext?: WorkspaceContext;
   diseaseId: string;
   diseaseSlug: string;
+  isSignedIn?: boolean;
 }) {
   switch (block.type) {
     case "section_heading":
@@ -66,7 +68,14 @@ export function BlockRenderer({
     case "key_point":
       return <KeyPointBlockView block={block} diseaseSlug={diseaseSlug} />;
     case "medical_illustration":
-      return <MedicalIllustrationBlockView block={block} diseaseId={diseaseId} diseaseSlug={diseaseSlug} />;
+      return (
+        <MedicalIllustrationBlockView
+          block={block}
+          diseaseId={diseaseId}
+          diseaseSlug={diseaseSlug}
+          isSignedIn={isSignedIn}
+        />
+      );
     case "clinical_pearl":
       return (
         <ClinicalPearlBlockView
@@ -124,9 +133,9 @@ export function BlockRenderer({
     case "overview":
       return <OverviewBlockView block={block} diseaseSlug={diseaseSlug} />;
     case "simple_image":
-      return <SimpleImageBlockView block={block} diseaseSlug={diseaseSlug} />;
+      return <SimpleImageBlockView block={block} diseaseSlug={diseaseSlug} isSignedIn={isSignedIn} />;
     case "highlight_card":
-      return <HighlightCardBlockView block={block} diseaseSlug={diseaseSlug} />;
+      return <HighlightCardBlockView block={block} diseaseSlug={diseaseSlug} isSignedIn={isSignedIn} />;
     case "icon_text":
       return <IconTextBlockView block={block} diseaseSlug={diseaseSlug} />;
   }

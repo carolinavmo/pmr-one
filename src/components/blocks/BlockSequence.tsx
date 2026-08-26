@@ -65,6 +65,7 @@ interface RenderGroupsArgs {
   diseaseId: string;
   diseaseSlug: string;
   contextHint?: string;
+  isSignedIn: boolean;
 }
 
 // Groups consecutive blocks that share a display_config.layout.row into
@@ -76,7 +77,7 @@ interface RenderGroupsArgs {
 // section_heading anyway (headings always start a fresh group, same as
 // they always start a fresh section), so grouping per-section slice
 // produces identical results to grouping the whole sequence at once.
-function renderGroups({ blocks, workspaceContext, diseaseId, diseaseSlug, contextHint }: RenderGroupsArgs) {
+function renderGroups({ blocks, workspaceContext, diseaseId, diseaseSlug, contextHint, isSignedIn }: RenderGroupsArgs) {
   const groups: BlockGroup[] = [];
   for (const block of blocks) {
     const row = block.layout?.row ?? null;
@@ -95,6 +96,7 @@ function renderGroups({ blocks, workspaceContext, diseaseId, diseaseSlug, contex
         workspaceContext={workspaceContext}
         diseaseId={diseaseId}
         diseaseSlug={diseaseSlug}
+        isSignedIn={isSignedIn}
       />
     </BlockControls>
   );
@@ -239,6 +241,7 @@ export function BlockSequence({
                 diseaseId,
                 diseaseSlug,
                 contextHint,
+                isSignedIn,
               })}
             </EditableSection>
           );
@@ -269,6 +272,7 @@ export function BlockSequence({
               diseaseId,
               diseaseSlug,
               contextHint,
+              isSignedIn,
             })}
           </SectionCard>
         );
