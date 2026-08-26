@@ -111,22 +111,22 @@ export function MedicalIllustrationBlockView({
     if (!illustration) return null;
     return (
       <figure className="flex flex-col gap-2">
-        <ZoomableImage src={illustration.assetUrl} alt={illustration.altText} enabled={isSignedIn}>
-          <div className={`relative overflow-hidden rounded-lg ${imageWidthClass[imageWidth]}`}>
+        <div className={`relative overflow-hidden rounded-lg ${imageWidthClass[imageWidth]}`}>
+          <ZoomableImage src={illustration.assetUrl} alt={illustration.altText} enabled={isSignedIn}>
             {/* eslint-disable-next-line @next/next/no-img-element -- asset_url is an arbitrary external URL (schema-v1.0.sql); no fixed remote-pattern domain to configure yet. */}
             <img src={illustration.assetUrl} alt={illustration.altText} className="w-full object-cover" />
-            {annotations.map((annotation, index) => (
-              <span
-                key={index}
-                style={{ left: `${annotation.x}%`, top: `${annotation.y}%` }}
-                className="absolute flex size-6 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-surface-raised font-ui text-xs font-medium text-primary shadow"
-                aria-hidden="true"
-              >
-                {index + 1}
-              </span>
-            ))}
-          </div>
-        </ZoomableImage>
+          </ZoomableImage>
+          {annotations.map((annotation, index) => (
+            <span
+              key={index}
+              style={{ left: `${annotation.x}%`, top: `${annotation.y}%` }}
+              className="absolute flex size-6 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-surface-raised font-ui text-xs font-medium text-primary shadow"
+              aria-hidden="true"
+            >
+              {index + 1}
+            </span>
+          ))}
+        </div>
         {heading}
         {(caption || annotations.length > 0) && (
           <figcaption className="flex flex-col gap-1 font-ui text-xs text-secondary">

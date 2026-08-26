@@ -87,12 +87,12 @@ export function SimpleImageBlockView({
     if (!imageUrl) return null;
     return (
       <figure className="flex flex-col gap-2">
-        <ZoomableImage src={imageUrl} alt={caption ?? ""} enabled={isSignedIn}>
-          <div className={`overflow-hidden rounded-lg ${imageWidthClass[imageWidth]}`}>
+        <div className={`overflow-hidden rounded-lg ${imageWidthClass[imageWidth]}`}>
+          <ZoomableImage src={imageUrl} alt={caption ?? ""} enabled={isSignedIn}>
             {/* eslint-disable-next-line @next/next/no-img-element -- block-owned upload (public/uploads/illustrations), same as OverviewBlock/ImageComparisonBlock; no fixed remote-pattern domain to configure. */}
             <img src={imageUrl} alt="" className="w-full object-cover" />
-          </div>
-        </ZoomableImage>
+          </ZoomableImage>
+        </div>
         {caption && (
           <RichEditableText
             as="figcaption"

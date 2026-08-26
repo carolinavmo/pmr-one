@@ -232,12 +232,12 @@ export function HighlightCardBlockView({
     </div>
   ) : (
     imageUrl && (
-      <ZoomableImage src={imageUrl} alt={block.imageAlt ?? ""} enabled={isSignedIn}>
-        <div className={`overflow-hidden rounded-md ${imageSizeClass}`}>
+      <div className={`overflow-hidden rounded-md ${imageSizeClass}`}>
+        <ZoomableImage src={imageUrl} alt={block.imageAlt ?? ""} enabled={isSignedIn}>
           {/* eslint-disable-next-line @next/next/no-img-element -- arbitrary asset URL, no fixed remote-pattern domain configured yet (same reasoning as KnowledgeObjectCard). */}
           <img src={imageUrl} alt={block.imageAlt ?? ""} className="w-full object-cover" />
-        </div>
-      </ZoomableImage>
+        </ZoomableImage>
+      </div>
     )
   );
 
