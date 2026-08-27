@@ -628,6 +628,43 @@ export function RichEditableText({
     return false;
   };
 
+  // Every inline tag this editor's own toolbar or a browser paste can
+  // produce (rich-text.ts's ALLOWED_TAGS, minus the block-level
+  // ul/ol/li/blockquote — clearing character formatting should never
+  // touch list/quote structure).
+  const INLINE_FORMATTING_TAGS = new Set(["SPAN", "A", "B", "STRONG", "U", "I", "EM", "S"]);
+
+  // Moves `node` outward past any inline formatting ancestor between it
+  // and the editable root, splitting each one around it —
+  // `<b>hello<node/>world</b>` becomes `<b>hello</b><node/><b>world</b>`.
+  // Needed after clearFormatting below inserts a fresh plain text node:
+  // Range.insertNode only ever drops the node into whatever container
+  // the (now-collapsed) range boundary already sits in, which for a
+  // selection that's a *sub-range* of a formatted span — the ordinary
+  // case, e.g. clearing one word out of a longer bold sentence — is
+  // still a child of that same span, so the "cleared" text silently
+  // kept rendering with the parent's formatting.
+  const escapeFormattingAncestors = (node: Node) => {
+    const current = node;
+    while (true) {
+      const parent = current.parentNode;
+      if (!parent || parent === editableRef.current || !(parent instanceof HTMLElement)) break;
+      if (!INLINE_FORMATTING_TAGS.has(parent.tagName)) break;
+      const grandparent = parent.parentNode;
+      if (!grandparent) break;
+      const after = parent.cloneNode(false) as HTMLElement;
+      let sibling = current.nextSibling;
+      while (sibling) {
+        const next = sibling.nextSibling;
+        after.appendChild(sibling);
+        sibling = next;
+      }
+      grandparent.insertBefore(current, parent.nextSibling);
+      if (after.hasChildNodes()) grandparent.insertBefore(after, current.nextSibling);
+      if (!parent.hasChildNodes()) parent.remove();
+    }
+  };
+
   // Strips all markup from the selection down to plain text — the one
   // "undo my styling" action, rather than trying to intelligently
   // toggle each individual attribute back off.
@@ -640,6 +677,7 @@ export function RichEditableText({
     range.deleteContents();
     const textNode = document.createTextNode(text);
     range.insertNode(textNode);
+    escapeFormattingAncestors(textNode);
     const newRange = document.createRange();
     newRange.selectNode(textNode);
     sel.removeAllRanges();
