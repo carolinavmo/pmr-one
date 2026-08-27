@@ -11,6 +11,7 @@ import { useEditMode } from "@/components/disease-page/EditMode";
 import { updateRichTableAction } from "@/lib/actions/authoring";
 import { cardIcons, type CardIconName } from "@/components/ui/cardIcons";
 import { RichEditableText } from "@/components/ui/RichEditableText";
+import { sanitizeRichText } from "@/lib/rich-text";
 
 type Column = RichTableBlock["columns"][number];
 type Row = RichTableBlock["rows"][number];
@@ -59,12 +60,15 @@ function asScale(value: RichTableCellValue | undefined): ScaleValue {
 // plain string grid. Columns/types are author-configured per table,
 // not hardcoded to any one domain (e.g. rehab), so the same block
 // works for a workup comparison, a severity grading table, etc.
-// `title` is the only RichEditableText field here — it sits outside
-// the grid. Column headers and cell values stay plain: they live
-// inside `<table>`/`<td>` cells narrow enough that a floating rich
-// toolbar would break the tabular layout, the same reasoning Tabs'
-// own checklist columns are excluded under (structured summary data,
-// not prose).
+// `title` and every "text"-type cell are RichEditableText, same as
+// Comparison Table's own cells — a text cell is still prose, and Enter
+// inside it inserts a line break rather than submitting/blurring
+// (RichEditableText's own "inside a list, fall through to the
+// browser's native Enter" carve-out applies here too, since <br> is
+// the same thing this component's own toggle toolbar can produce).
+// Column headers, badge column title, and icon-list/scale labels stay
+// plain single-line inputs — short structural labels, not content
+// worth formatting or wrapping across lines.
 export function RichTableBlockView({
   block,
   diseaseSlug,
@@ -89,6 +93,17 @@ export function RichTableBlockView({
     setColumns(nextColumns);
     setRows(nextRows);
     updateRichTableAction(block.id, nextTitle, nextBadgeColumnTitle, nextColumns, nextRows);
+  };
+
+  // A "text" cell's own RichEditableText reports its final HTML at
+  // blur, not per keystroke — same reasoning as Comparison Table's own
+  // saveCell, just reusing `commit` here since it already threads
+  // through the other three fields unchanged.
+  const saveCell = async (rowIndex: number, colIndex: number, html: string) => {
+    const nextRows = rows.map((r, i) =>
+      i === rowIndex ? { ...r, cells: r.cells.map((c, j) => (j === colIndex ? html : c)) } : r
+    );
+    commit(title, badgeColumnTitle, columns, nextRows);
   };
 
   if (!editing) {
@@ -245,18 +260,14 @@ export function RichTableBlockView({
                 {columns.map((column, colIndex) => (
                   <td key={colIndex} className="p-1 align-top">
                     {column.type === "text" && (
-                      <input
+                      <RichEditableText
+                        as="div"
                         value={typeof row.cells[colIndex] === "string" ? (row.cells[colIndex] as string) : ""}
-                        onChange={(e) => {
-                          const next = rows.map((r, i) =>
-                            i === rowIndex
-                              ? { ...r, cells: r.cells.map((c, j) => (j === colIndex ? e.target.value : c)) }
-                              : r
-                          );
-                          setRows(next);
-                        }}
-                        onBlur={() => commit(title, badgeColumnTitle, columns, rows)}
-                        className="w-full min-w-24 rounded border border-transparent bg-transparent px-1.5 py-1 text-secondary outline-none hover:border-border focus:border-accent"
+                        onSave={(html) => saveCell(rowIndex, colIndex, html)}
+                        className="min-w-24 text-secondary"
+                        block={block}
+                        diseaseSlug={diseaseSlug}
+                        fieldKey={`cell-${rowIndex}-${colIndex}`}
                       />
                     )}
 
@@ -503,7 +514,11 @@ function RichTableCellView({
     );
   }
 
-  return <>{typeof value === "string" ? value : ""}</>;
+  return (
+    <span
+      dangerouslySetInnerHTML={{ __html: sanitizeRichText(typeof value === "string" ? value : "") }}
+    />
+  );
 }
 
 function IconPickerButton({
