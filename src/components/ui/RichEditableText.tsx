@@ -14,6 +14,8 @@ import {
   Unlink,
   List,
   ListOrdered,
+  ListIndentIncrease,
+  ListIndentDecrease,
   Quote,
   AlignLeft,
   AlignCenter,
@@ -90,8 +92,13 @@ interface RichEditableTextProps {
 // Applied in all three render branches below (view-only, hover
 // preview, and the live editable field) so list/quote formatting
 // looks the same whether or not edit mode is on.
+// Nested [&_ul_ul]/[&_ul_ul_ul] overrides restore the browser's own
+// disc→circle→square cascade — [&_ul]:list-disc alone would otherwise
+// force every level (indent/outdent, execCommand("indent"), can nest
+// arbitrarily deep) to the same disc marker, which is how a plain
+// `list-style` reset normally reads as "flat" even once nesting works.
 const PROSE_CONTENT_CLASS =
-  "[&_ul]:list-disc [&_ul]:pl-5 [&_ol]:list-decimal [&_ol]:pl-5 [&_li]:my-0.5 [&_blockquote]:border-l-2 [&_blockquote]:border-border [&_blockquote]:pl-3 [&_blockquote]:italic [&_blockquote]:text-secondary";
+  "[&_ul]:list-disc [&_ul]:pl-5 [&_ul_ul]:list-[circle] [&_ul_ul_ul]:list-[square] [&_ol]:list-decimal [&_ol]:pl-5 [&_li]:my-0.5 [&_blockquote]:border-l-2 [&_blockquote]:border-border [&_blockquote]:pl-3 [&_blockquote]:italic [&_blockquote]:text-secondary";
 
 const SAFE_URL_PATTERN = /^https?:\/\//i;
 
@@ -650,6 +657,22 @@ export function RichEditableText({
           </button>
           <button
             type="button"
+            aria-label="Decrease indent"
+            onClick={() => document.execCommand("outdent")}
+            className="flex size-7 items-center justify-center rounded text-secondary hover:bg-border/40 hover:text-primary"
+          >
+            <ListIndentDecrease className="size-3.5" aria-hidden="true" />
+          </button>
+          <button
+            type="button"
+            aria-label="Increase indent"
+            onClick={() => document.execCommand("indent")}
+            className="flex size-7 items-center justify-center rounded text-secondary hover:bg-border/40 hover:text-primary"
+          >
+            <ListIndentIncrease className="size-3.5" aria-hidden="true" />
+          </button>
+          <button
+            type="button"
             aria-label="Quote"
             onClick={toggleQuote}
             className="flex size-7 items-center justify-center rounded text-secondary hover:bg-border/40 hover:text-primary"
@@ -972,6 +995,22 @@ export function RichEditableText({
           </button>
           <button
             type="button"
+            aria-label="Decrease indent"
+            onClick={() => document.execCommand("outdent")}
+            className="flex size-7 items-center justify-center rounded text-secondary hover:bg-border/40 hover:text-primary"
+          >
+            <ListIndentDecrease className="size-3.5" aria-hidden="true" />
+          </button>
+          <button
+            type="button"
+            aria-label="Increase indent"
+            onClick={() => document.execCommand("indent")}
+            className="flex size-7 items-center justify-center rounded text-secondary hover:bg-border/40 hover:text-primary"
+          >
+            <ListIndentIncrease className="size-3.5" aria-hidden="true" />
+          </button>
+          <button
+            type="button"
             aria-label="Quote"
             onClick={toggleQuote}
             className="flex size-7 items-center justify-center rounded text-secondary hover:bg-border/40 hover:text-primary"
@@ -1228,6 +1267,22 @@ export function RichEditableText({
         </button>
         <button
           type="button"
+          aria-label="Decrease indent"
+          onClick={() => document.execCommand("outdent")}
+          className="flex size-7 items-center justify-center rounded text-secondary hover:bg-border/40 hover:text-primary"
+        >
+          <ListIndentDecrease className="size-3.5" aria-hidden="true" />
+        </button>
+        <button
+          type="button"
+          aria-label="Increase indent"
+          onClick={() => document.execCommand("indent")}
+          className="flex size-7 items-center justify-center rounded text-secondary hover:bg-border/40 hover:text-primary"
+        >
+          <ListIndentIncrease className="size-3.5" aria-hidden="true" />
+        </button>
+        <button
+          type="button"
           aria-label="Quote"
           onClick={toggleQuote}
           className="flex size-7 items-center justify-center rounded text-secondary hover:bg-border/40 hover:text-primary"
@@ -1267,6 +1322,14 @@ export function RichEditableText({
           if (e.key === "Enter" && !isWithinList()) {
             e.preventDefault();
             document.execCommand("insertLineBreak");
+          } else if (e.key === "Tab" && isWithinList()) {
+            // Same shortcut every list editor (Docs, Notion) uses for
+            // nesting — without this, Tab would just move focus off the
+            // field (the browser's default for a contentEditable), and
+            // indent/outdent would only ever be reachable via the
+            // toolbar buttons below.
+            e.preventDefault();
+            document.execCommand(e.shiftKey ? "outdent" : "indent");
           }
         },
         dangerouslySetInnerHTML: { __html: frozenHtml },
