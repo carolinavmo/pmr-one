@@ -68,7 +68,14 @@ export function ZoomableImage({
     <>
       <div
         onClick={() => setOpen(true)}
-        className="cursor-zoom-in"
+        // size-full: a block div's height never auto-stretches to fill
+        // a definite-height parent the way its width does — without
+        // this, any caller sizing its image via a percentage height
+        // (h-full/size-full on an aspect-ratio or fixed-height box)
+        // silently collapses back to the image's own intrinsic size
+        // the moment it's wrapped here, since the percentage height
+        // has no definite box to resolve against.
+        className="size-full cursor-zoom-in"
         role="button"
         tabIndex={0}
         aria-label="View full-size image"

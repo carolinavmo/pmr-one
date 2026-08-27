@@ -551,24 +551,50 @@ export interface ImageComparisonBlock extends BlockBase {
   right: { assetUrl?: string; label: string };
 }
 
-// 2-4 images in one evenly-spaced row, each with its own label — the
-// variable-count sibling of ImageComparisonBlock's fixed left/right
-// pair, for "here are the anterior/posterior/lateral views" or
-// "here are the 3 grades of this finding" rather than a strict A-vs-B
-// comparison. Every slot shares the same fixed aspect-square box
-// (same reasoning as ImageComparisonBlock/PhotoCardGalleryBlock's own
-// image boxes), so images and labels line up with each other
-// regardless of each source photo's own proportions — the "row
+// 2-4 images in one row, each with its own label — the variable-count
+// sibling of ImageComparisonBlock's fixed left/right pair, for "here
+// are the anterior/posterior/lateral views" or "here are the 3 grades
+// of this finding" rather than a strict A-vs-B comparison. Every image
+// shares the block's own `rowHeight`, so labels line up with each
+// other regardless of each source photo's own proportions — the "row
 // alignment" problem MedicalIllustrationBlock/SimpleImageBlock had to
 // solve across *separate* blocks doesn't come up here, since every
-// slot lives inside one block with one shared grid. Owns-content,
-// same per-item id/array-with-add-remove shape as
-// PhotoCardGalleryBlock's `items`, just holding an image+label instead
-// of a title/description/metrics card.
+// slot lives inside one block with one shared height. Width is NOT
+// forced equal, unlike a CSS-grid row — a "cover" image gets a square
+// box at that height, a "contain" image keeps its own aspect ratio
+// scaled to that height, and the row centers the resulting group
+// (flex justify-center) rather than stretching each slot to fill an
+// equal column. Owns-content, same per-item id/array-with-add-remove
+// shape as PhotoCardGalleryBlock's `items`, just holding an
+// image+label(+fit) instead of a title/description/metrics card.
 export interface ImageRowBlock extends BlockBase {
   type: "image_row";
   id: string;
-  images: { id: string; assetUrl?: string; label: string }[];
+  images: {
+    id: string;
+    assetUrl?: string;
+    label: string;
+    // "cover" (default) crops into a square box at the row's height —
+    // the "consistent size" look. "contain" keeps the image's own
+    // aspect ratio, just scaled to that height, no crop — the "show
+    // the whole thing" look. Only "cover" has a meaningful focal
+    // point (there's no crop to aim in "contain").
+    imageFit?: "cover" | "contain";
+    imageFocalPoint?:
+      | "top-left"
+      | "top"
+      | "top-right"
+      | "left"
+      | "center"
+      | "right"
+      | "bottom-left"
+      | "bottom"
+      | "bottom-right";
+  }[];
+  // The one shared height every image in the row scales to. Unset
+  // falls back to "md" at render time (same "default at render, not
+  // storage" pattern as every other unset-width field in this file).
+  rowHeight?: "sm" | "md" | "lg" | "xl";
 }
 
 // A composite summary card for a disease's Overview section — a

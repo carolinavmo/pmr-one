@@ -5,6 +5,7 @@ import type {
   CardColor,
   EditorialBlock,
   HighlightCardBlock,
+  ImageRowBlock,
   ManeuverRelationship,
   MedicalIllustrationBlock,
   OverviewBlock,
@@ -634,7 +635,8 @@ async function resolveBlock(diseaseId: string, row: BlockRow): Promise<Editorial
       return {
         type: "image_row",
         id: row.id,
-        images: (cc.images as { id: string; assetUrl?: string; label: string }[]) ?? [],
+        images: (cc.images as ImageRowBlock["images"]) ?? [],
+        rowHeight: cc.rowHeight as ImageRowBlock["rowHeight"],
       };
 
     case "overview":

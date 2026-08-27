@@ -7,7 +7,7 @@ import { auth } from "@/auth";
 import { pool } from "@/lib/db";
 import { sanitizeRichText } from "@/lib/rich-text";
 import { revalidateDiseaseSurfaces } from "@/lib/revalidation";
-import type { BlockLayout } from "@/lib/editorial-blocks";
+import type { BlockLayout, ImageRowBlock } from "@/lib/editorial-blocks";
 
 const MAX_UPLOAD_BYTES = 8 * 1024 * 1024;
 
@@ -736,9 +736,7 @@ export async function removeImageComparisonSideAction(
 const IMAGE_ROW_MIN = 2;
 const IMAGE_ROW_MAX = 4;
 
-async function getImageRowItems(
-  blockId: string
-): Promise<{ id: string; assetUrl?: string; label: string }[]> {
+async function getImageRowItems(blockId: string): Promise<ImageRowBlock["images"]> {
   const { rows } = await pool.query(
     `SELECT content_config->'images' AS images FROM editorial_block WHERE id = $1`,
     [blockId]
@@ -819,6 +817,57 @@ export async function removeImageRowItemAction(blockId: string, itemId: string) 
     blockId,
     items.filter((item) => item.id !== itemId)
   );
+}
+
+// "cover" (default) crops into a square box at the row's shared
+// height; "contain" keeps the image's own aspect ratio, no crop.
+export async function setImageRowItemFitAction(
+  blockId: string,
+  itemId: string,
+  fit: "cover" | "contain"
+) {
+  await requireEditor();
+  const items = await getImageRowItems(blockId);
+  const updated = items.map((item) => (item.id === itemId ? { ...item, imageFit: fit } : item));
+  await writeImageRowItems(blockId, updated);
+}
+
+// Only meaningful in "cover" mode — same focal-point vocabulary as
+// setOverviewImagePositionAction.
+export async function setImageRowItemFocalPointAction(
+  blockId: string,
+  itemId: string,
+  focalPoint:
+    | "top-left"
+    | "top"
+    | "top-right"
+    | "left"
+    | "center"
+    | "right"
+    | "bottom-left"
+    | "bottom"
+    | "bottom-right"
+) {
+  await requireEditor();
+  const items = await getImageRowItems(blockId);
+  const updated = items.map((item) =>
+    item.id === itemId ? { ...item, imageFocalPoint: focalPoint } : item
+  );
+  await writeImageRowItems(blockId, updated);
+}
+
+// Block-level, not per-item — the one shared height every image in
+// the row scales to.
+export async function setImageRowHeightAction(
+  blockId: string,
+  rowHeight: "sm" | "md" | "lg" | "xl"
+) {
+  await requireEditor();
+  await pool.query(
+    `UPDATE editorial_block SET content_config = jsonb_set(content_config, ARRAY['rowHeight'], to_jsonb($2::text)) WHERE id = $1`,
+    [blockId, rowHeight]
+  );
+  revalidateDiseaseSurfaces();
 }
 
 // Same local-disk upload path as Image Comparison — an Overview
