@@ -166,7 +166,12 @@ export function MedicalIllustrationBlockView({
     );
 
     return (
-      <figure className="flex flex-col gap-2">
+      // h-full + the legend's mt-auto (bottom-legend case only): when
+      // this block sits beside others in a row (BlockSequence's grid
+      // stretches every cell to the tallest one), a shorter neighbor's
+      // legend would otherwise sit right under its own image instead
+      // of lining up with the rest of the row. A no-op outside a row.
+      <figure className="flex h-full flex-col gap-2">
         {isSideBySide ? (
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
             {legendPosition === "left" && legend && <div className="sm:w-40 sm:shrink-0">{legend}</div>}
@@ -180,7 +185,7 @@ export function MedicalIllustrationBlockView({
           <>
             {imageElement}
             {heading}
-            {legend}
+            {legend && <div className="mt-auto">{legend}</div>}
           </>
         )}
       </figure>

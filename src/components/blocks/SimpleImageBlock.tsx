@@ -119,7 +119,14 @@ export function SimpleImageBlockView({
     // transient state, not something a reader should ever land on.
     if (!imageUrl) return null;
     return (
-      <figure className="flex flex-col gap-2">
+      // h-full + the caption's mt-auto: when this block sits beside
+      // others in a row (BlockSequence's grid stretches every cell to
+      // the tallest one), a shorter or "original"-fit neighbor's
+      // caption would otherwise sit right under its own image instead
+      // of lining up with the rest of the row — mt-auto pins it to the
+      // bottom of the stretched cell regardless. A no-op outside a row
+      // (no stretched height to fill, so h-full resolves to auto).
+      <figure className="flex h-full flex-col gap-2">
         <div
           className={`${boxAspectClass} overflow-hidden rounded-lg bg-surface-raised ${imageWidthClass[imageWidth]}`}
         >
@@ -131,7 +138,7 @@ export function SimpleImageBlockView({
         {caption && (
           <RichEditableText
             as="figcaption"
-            className={`font-ui text-sm text-secondary ${TEXT_ALIGN_CLASS[captionAlign]}`}
+            className={`mt-auto font-ui text-sm text-secondary ${TEXT_ALIGN_CLASS[captionAlign]}`}
             value={caption}
             onSave={async (html) => updateBlockRichTextAction(block.id, "caption", html)}
             placeholder=""
