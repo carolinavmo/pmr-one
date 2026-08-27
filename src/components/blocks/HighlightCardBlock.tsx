@@ -11,6 +11,8 @@ import {
   PanelRight,
   Maximize2,
   Crosshair,
+  Crop,
+  Expand,
 } from "lucide-react";
 import type { HighlightCardBlock } from "@/lib/editorial-blocks";
 import { EditableText } from "@/components/ui/EditableText";
@@ -27,6 +29,7 @@ import {
   setHighlightCardImagePositionAction,
   setHighlightCardImageWidthAction,
   setHighlightCardImageFocalPointAction,
+  setHighlightCardImageFitAction,
 } from "@/lib/actions/authoring";
 import { CARD_COLOR_CARD, CARD_COLOR_CHIP, CARD_COLOR_TEXT } from "@/lib/card-colors";
 import { TEXT_ALIGN_CLASS, ROW_ITEMS_CLASS } from "@/lib/block-alignment";
@@ -34,6 +37,12 @@ import { FOCAL_POINT_OPTIONS, FOCAL_POINT_CLASS, type ImageFocalPoint } from "@/
 
 type ImagePosition = NonNullable<HighlightCardBlock["imagePosition"]>;
 type ImageWidth = NonNullable<HighlightCardBlock["imageWidth"]>;
+type ImageFit = NonNullable<HighlightCardBlock["imageFit"]>;
+
+const FIT_OPTIONS: { value: ImageFit; label: string; icon: typeof Crop }[] = [
+  { value: "crop", label: "Crop to fill", icon: Crop },
+  { value: "original", label: "Show full image, no crop", icon: Expand },
+];
 
 const POSITION_OPTIONS: { value: ImagePosition; label: string; icon: typeof PanelTop }[] = [
   { value: "top", label: "Image above text", icon: PanelTop },
@@ -85,11 +94,18 @@ export function HighlightCardBlockView({
   const [widthOpen, setWidthOpen] = useState(false);
   const [imageFocalPoint, setImageFocalPoint] = useState<ImageFocalPoint>(block.imageFocalPoint ?? "center");
   const [focalPointOpen, setFocalPointOpen] = useState(false);
+  const [imageFit, setImageFit] = useState<ImageFit>(block.imageFit ?? "crop");
   const fileInputRef = useRef<HTMLInputElement>(null);
   const color = block.color ?? "accent";
   const textAlign = block.layout?.textAlign ?? "left";
   const textVerticalAlign = block.layout?.textVerticalAlign ?? "top";
   const isSideBySide = imagePosition !== "top";
+  const isCropped = imageFit === "crop";
+  // "original" drops both the fixed aspect-ratio box and object-cover —
+  // the image renders at its own natural height, exactly like before
+  // this crop feature existed.
+  const boxAspectClass = isCropped ? "aspect-[4/3]" : "";
+  const imgFitClass = isCropped ? `size-full object-cover ${FOCAL_POINT_CLASS[imageFocalPoint]}` : "w-full";
   // No stored width yet → a position-appropriate default (full for a
   // banner-style top image, a quarter for a side-by-side thumbnail) so
   // switching position alone still looks right before an author ever
@@ -195,46 +211,70 @@ export function HighlightCardBlockView({
           </div>
         )}
       </div>
-      <div className="relative">
-        <button
-          type="button"
-          onClick={() => setFocalPointOpen((open) => !open)}
-          aria-label="Image focal point"
-          className="flex items-center gap-0.5 rounded px-1 py-0.5 font-ui text-xs text-secondary hover:bg-surface-raised hover:text-primary"
-        >
-          <Crosshair className="size-3" aria-hidden="true" />
-        </button>
-        {focalPointOpen && (
-          <div className="absolute top-6 left-0 z-10 w-36 rounded-lg border border-border bg-surface-raised p-2 shadow-md">
-            <div className="grid grid-cols-3 gap-1">
-              {FOCAL_POINT_OPTIONS.map((option) => (
-                <button
-                  key={option.value}
-                  type="button"
-                  title={option.label}
-                  aria-label={option.label}
-                  onClick={() => {
-                    setFocalPointOpen(false);
-                    setImageFocalPoint(option.value);
-                    setHighlightCardImageFocalPointAction(block.id, option.value);
-                  }}
-                  className={`flex size-8 items-center justify-center rounded border ${
-                    imageFocalPoint === option.value
-                      ? "border-accent bg-accent/10"
-                      : "border-border hover:border-accent"
-                  }`}
-                >
-                  <span
-                    className={`size-1.5 rounded-full ${
-                      imageFocalPoint === option.value ? "bg-accent" : "bg-secondary/50"
+      {isCropped && (
+        <div className="relative">
+          <button
+            type="button"
+            onClick={() => setFocalPointOpen((open) => !open)}
+            aria-label="Image focal point"
+            className="flex items-center gap-0.5 rounded px-1 py-0.5 font-ui text-xs text-secondary hover:bg-surface-raised hover:text-primary"
+          >
+            <Crosshair className="size-3" aria-hidden="true" />
+          </button>
+          {focalPointOpen && (
+            <div className="absolute top-6 left-0 z-10 w-36 rounded-lg border border-border bg-surface-raised p-2 shadow-md">
+              <div className="grid grid-cols-3 gap-1">
+                {FOCAL_POINT_OPTIONS.map((option) => (
+                  <button
+                    key={option.value}
+                    type="button"
+                    title={option.label}
+                    aria-label={option.label}
+                    onClick={() => {
+                      setFocalPointOpen(false);
+                      setImageFocalPoint(option.value);
+                      setHighlightCardImageFocalPointAction(block.id, option.value);
+                    }}
+                    className={`flex size-8 items-center justify-center rounded border ${
+                      imageFocalPoint === option.value
+                        ? "border-accent bg-accent/10"
+                        : "border-border hover:border-accent"
                     }`}
-                    aria-hidden="true"
-                  />
-                </button>
-              ))}
+                  >
+                    <span
+                      className={`size-1.5 rounded-full ${
+                        imageFocalPoint === option.value ? "bg-accent" : "bg-secondary/50"
+                      }`}
+                      aria-hidden="true"
+                    />
+                  </button>
+                ))}
+              </div>
             </div>
-          </div>
-        )}
+          )}
+        </div>
+      )}
+      <div className="flex items-center gap-0.5 rounded border border-border p-0.5">
+        {FIT_OPTIONS.map(({ value, label, icon: Icon }) => (
+          <button
+            key={value}
+            type="button"
+            aria-label={label}
+            title={label}
+            aria-pressed={imageFit === value}
+            onClick={() => {
+              setImageFit(value);
+              setHighlightCardImageFitAction(block.id, value);
+            }}
+            className={`flex size-6 items-center justify-center rounded transition-colors duration-base ${
+              imageFit === value
+                ? "bg-accent/10 text-accent"
+                : "text-secondary hover:bg-border/40 hover:text-primary"
+            }`}
+          >
+            <Icon className="size-3.5" aria-hidden="true" />
+          </button>
+        ))}
       </div>
     </div>
   );
@@ -246,13 +286,9 @@ export function HighlightCardBlockView({
   const imageBlock = editing ? (
     <div className={`flex flex-col gap-1.5 ${isSideBySide ? "shrink-0" : ""}`}>
       {imageUrl ? (
-        <div className={`relative aspect-[4/3] overflow-hidden rounded-md ${imageSizeClass}`}>
+        <div className={`relative ${boxAspectClass} overflow-hidden rounded-md ${imageSizeClass}`}>
           {/* eslint-disable-next-line @next/next/no-img-element -- arbitrary asset URL, no fixed remote-pattern domain configured yet (same reasoning as KnowledgeObjectCard). */}
-          <img
-            src={imageUrl}
-            alt=""
-            className={`size-full object-cover ${FOCAL_POINT_CLASS[imageFocalPoint]}`}
-          />
+          <img src={imageUrl} alt="" className={imgFitClass} />
           <button
             type="button"
             aria-label="Remove image"
@@ -291,14 +327,10 @@ export function HighlightCardBlockView({
     </div>
   ) : (
     imageUrl && (
-      <div className={`aspect-[4/3] overflow-hidden rounded-md ${imageSizeClass}`}>
+      <div className={`${boxAspectClass} overflow-hidden rounded-md ${imageSizeClass}`}>
         <ZoomableImage src={imageUrl} alt={block.imageAlt ?? ""} enabled={isSignedIn}>
           {/* eslint-disable-next-line @next/next/no-img-element -- arbitrary asset URL, no fixed remote-pattern domain configured yet (same reasoning as KnowledgeObjectCard). */}
-          <img
-            src={imageUrl}
-            alt={block.imageAlt ?? ""}
-            className={`size-full object-cover ${FOCAL_POINT_CLASS[imageFocalPoint]}`}
-          />
+          <img src={imageUrl} alt={block.imageAlt ?? ""} className={imgFitClass} />
         </ZoomableImage>
       </div>
     )

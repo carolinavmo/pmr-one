@@ -909,6 +909,18 @@ export async function setHighlightCardImageFocalPointAction(
   revalidateDiseaseSurfaces();
 }
 
+// "crop" (default) fits the fixed-aspect-ratio box; "original" opts
+// this one image back out to its own natural aspect ratio, no
+// cropping at all.
+export async function setHighlightCardImageFitAction(blockId: string, fit: "crop" | "original") {
+  await requireEditor();
+  await pool.query(
+    `UPDATE editorial_block SET content_config = jsonb_set(content_config, ARRAY['imageFit'], to_jsonb($2::text)) WHERE id = $1`,
+    [blockId, fit]
+  );
+  revalidateDiseaseSurfaces();
+}
+
 // Same field name and 6-value scale as setIllustrationWidthAction —
 // the image's own size within its column, independent of the block's
 // row width (ResizableRow).
@@ -943,6 +955,16 @@ export async function setSimpleImageFocalPointAction(
   await pool.query(
     `UPDATE editorial_block SET content_config = jsonb_set(content_config, ARRAY['imageFocalPoint'], to_jsonb($2::text)) WHERE id = $1`,
     [blockId, focalPoint]
+  );
+  revalidateDiseaseSurfaces();
+}
+
+// Same crop opt-out as setHighlightCardImageFitAction.
+export async function setSimpleImageFitAction(blockId: string, fit: "crop" | "original") {
+  await requireEditor();
+  await pool.query(
+    `UPDATE editorial_block SET content_config = jsonb_set(content_config, ARRAY['imageFit'], to_jsonb($2::text)) WHERE id = $1`,
+    [blockId, fit]
   );
   revalidateDiseaseSurfaces();
 }

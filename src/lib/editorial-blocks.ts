@@ -708,6 +708,12 @@ export interface SimpleImageBlock extends BlockBase {
     | "bottom-left"
     | "bottom"
     | "bottom-right";
+  // "crop" (default, unset) fits into the fixed 4:3 box above. "original"
+  // opts this one image back out — its own natural aspect ratio, no
+  // cropping at all — for a source image (very tall/wide, or content
+  // that a crop would cut regardless of focal point) where losing any
+  // of it matters more than matching every other image's footprint.
+  imageFit?: "crop" | "original";
 }
 
 // A small icon + label + bold text card — the founder's own "Key
@@ -754,6 +760,8 @@ export interface HighlightCardBlock extends BlockBase {
     | "bottom-left"
     | "bottom"
     | "bottom-right";
+  // Same crop opt-out as SimpleImageBlock's imageFit.
+  imageFit?: "crop" | "original";
 }
 
 // A single icon + label + description row — one item's worth of

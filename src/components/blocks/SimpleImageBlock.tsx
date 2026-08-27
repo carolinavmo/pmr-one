@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { ImagePlus, X, Maximize2, Crosshair } from "lucide-react";
+import { ImagePlus, X, Maximize2, Crosshair, Crop, Expand } from "lucide-react";
 import type { SimpleImageBlock } from "@/lib/editorial-blocks";
 import { useEditMode } from "@/components/disease-page/EditMode";
 import { RichEditableText } from "@/components/ui/RichEditableText";
@@ -14,9 +14,16 @@ import {
   removeSimpleImageAction,
   setSimpleImageWidthAction,
   setSimpleImageFocalPointAction,
+  setSimpleImageFitAction,
 } from "@/lib/actions/authoring";
 
 type ImageWidth = NonNullable<SimpleImageBlock["imageWidth"]>;
+type ImageFit = NonNullable<SimpleImageBlock["imageFit"]>;
+
+const FIT_OPTIONS: { value: ImageFit; label: string; icon: typeof Crop }[] = [
+  { value: "crop", label: "Crop to fill", icon: Crop },
+  { value: "original", label: "Show full image, no crop", icon: Expand },
+];
 
 // Same 6-value scale as MedicalIllustrationBlock/OverviewBlock's own
 // image width control — one shared vocabulary across every block that
@@ -65,8 +72,18 @@ export function SimpleImageBlockView({
   const [widthOpen, setWidthOpen] = useState(false);
   const [imageFocalPoint, setImageFocalPoint] = useState<ImageFocalPoint>(block.imageFocalPoint ?? "center");
   const [focalPointOpen, setFocalPointOpen] = useState(false);
+  const [imageFit, setImageFit] = useState<ImageFit>(block.imageFit ?? "crop");
   const caption = block.caption;
   const captionAlign = block.layout?.textAlign ?? "left";
+  const isCropped = imageFit === "crop";
+  // "original" drops both the fixed aspect-ratio box and object-cover —
+  // the image just renders at its own natural height, exactly like
+  // before this whole crop feature existed. The upload-placeholder
+  // state (no imageUrl yet) always keeps the 4:3 box regardless of
+  // `imageFit`, since a height-less container would collapse the
+  // placeholder button to nothing to click.
+  const boxAspectClass = !imageUrl || isCropped ? "aspect-[4/3]" : "";
+  const imgFitClass = isCropped ? `size-full object-cover ${FOCAL_POINT_CLASS[imageFocalPoint]}` : "w-full";
 
   const handleFile = async (file: File) => {
     setUploading(true);
@@ -91,14 +108,10 @@ export function SimpleImageBlockView({
     if (!imageUrl) return null;
     return (
       <figure className="flex flex-col gap-2">
-        <div className={`aspect-[4/3] overflow-hidden rounded-lg ${imageWidthClass[imageWidth]}`}>
+        <div className={`${boxAspectClass} overflow-hidden rounded-lg ${imageWidthClass[imageWidth]}`}>
           <ZoomableImage src={imageUrl} alt={caption ?? ""} enabled={isSignedIn}>
             {/* eslint-disable-next-line @next/next/no-img-element -- block-owned upload (public/uploads/illustrations), same as OverviewBlock/ImageComparisonBlock; no fixed remote-pattern domain to configure. */}
-            <img
-              src={imageUrl}
-              alt=""
-              className={`size-full object-cover ${FOCAL_POINT_CLASS[imageFocalPoint]}`}
-            />
+            <img src={imageUrl} alt="" className={imgFitClass} />
           </ZoomableImage>
         </div>
         {caption && (
@@ -155,60 +168,80 @@ export function SimpleImageBlockView({
               </div>
             )}
           </div>
-          <div className="relative">
-            <button
-              type="button"
-              onClick={() => setFocalPointOpen((open) => !open)}
-              aria-label="Image focal point"
-              className="flex items-center gap-1 rounded px-2 py-1 font-ui text-xs text-secondary hover:bg-border/40 hover:text-primary"
-            >
-              <Crosshair className="size-3.5" aria-hidden="true" />
-            </button>
-            {focalPointOpen && (
-              <div className="absolute top-6 right-0 z-10 w-36 rounded-lg border border-border bg-surface-raised p-2 shadow-md">
-                <div className="grid grid-cols-3 gap-1">
-                  {FOCAL_POINT_OPTIONS.map((option) => (
-                    <button
-                      key={option.value}
-                      type="button"
-                      title={option.label}
-                      aria-label={option.label}
-                      onClick={() => {
-                        setFocalPointOpen(false);
-                        setImageFocalPoint(option.value);
-                        setSimpleImageFocalPointAction(block.id, option.value);
-                      }}
-                      className={`flex size-8 items-center justify-center rounded border ${
-                        imageFocalPoint === option.value
-                          ? "border-accent bg-accent/10"
-                          : "border-border hover:border-accent"
-                      }`}
-                    >
-                      <span
-                        className={`size-1.5 rounded-full ${
-                          imageFocalPoint === option.value ? "bg-accent" : "bg-secondary/50"
+          {isCropped && (
+            <div className="relative">
+              <button
+                type="button"
+                onClick={() => setFocalPointOpen((open) => !open)}
+                aria-label="Image focal point"
+                className="flex items-center gap-1 rounded px-2 py-1 font-ui text-xs text-secondary hover:bg-border/40 hover:text-primary"
+              >
+                <Crosshair className="size-3.5" aria-hidden="true" />
+              </button>
+              {focalPointOpen && (
+                <div className="absolute top-6 right-0 z-10 w-36 rounded-lg border border-border bg-surface-raised p-2 shadow-md">
+                  <div className="grid grid-cols-3 gap-1">
+                    {FOCAL_POINT_OPTIONS.map((option) => (
+                      <button
+                        key={option.value}
+                        type="button"
+                        title={option.label}
+                        aria-label={option.label}
+                        onClick={() => {
+                          setFocalPointOpen(false);
+                          setImageFocalPoint(option.value);
+                          setSimpleImageFocalPointAction(block.id, option.value);
+                        }}
+                        className={`flex size-8 items-center justify-center rounded border ${
+                          imageFocalPoint === option.value
+                            ? "border-accent bg-accent/10"
+                            : "border-border hover:border-accent"
                         }`}
-                        aria-hidden="true"
-                      />
-                    </button>
-                  ))}
+                      >
+                        <span
+                          className={`size-1.5 rounded-full ${
+                            imageFocalPoint === option.value ? "bg-accent" : "bg-secondary/50"
+                          }`}
+                          aria-hidden="true"
+                        />
+                      </button>
+                    ))}
+                  </div>
                 </div>
-              </div>
-            )}
+              )}
+            </div>
+          )}
+          <div className="flex items-center gap-0.5 rounded border border-border p-0.5">
+            {FIT_OPTIONS.map(({ value, label, icon: Icon }) => (
+              <button
+                key={value}
+                type="button"
+                aria-label={label}
+                title={label}
+                aria-pressed={imageFit === value}
+                onClick={() => {
+                  setImageFit(value);
+                  setSimpleImageFitAction(block.id, value);
+                }}
+                className={`flex size-6 items-center justify-center rounded transition-colors duration-base ${
+                  imageFit === value
+                    ? "bg-accent/10 text-accent"
+                    : "text-secondary hover:bg-border/40 hover:text-primary"
+                }`}
+              >
+                <Icon className="size-3.5" aria-hidden="true" />
+              </button>
+            ))}
           </div>
         </div>
       )}
       <div
-        className={`relative aspect-[4/3] overflow-hidden rounded-lg bg-surface-raised ${imageWidthClass[imageWidth]}`}
+        className={`relative ${boxAspectClass} overflow-hidden rounded-lg bg-surface-raised ${imageWidthClass[imageWidth]}`}
       >
         {imageUrl ? (
           <>
             {/* eslint-disable-next-line @next/next/no-img-element -- edit-mode upload preview briefly uses a blob: URL, which next/image can't render. */}
-            <img
-              src={imageUrl}
-              alt=""
-              className={`size-full object-cover ${FOCAL_POINT_CLASS[imageFocalPoint]}`}
-            />
+            <img src={imageUrl} alt="" className={imgFitClass} />
             <button
               type="button"
               aria-label="Remove image"
