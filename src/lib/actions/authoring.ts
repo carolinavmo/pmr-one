@@ -2595,21 +2595,27 @@ export async function combineWithAdjacentBlockAction(
   const neighborHasRow = Boolean(neighborLayout?.row);
   const row = neighborLayout?.row ?? mine.row ?? randomUUID();
 
-  // Rows cap at 4 members: ResizableRow's drag-divider only ever
+  // Rows cap at 6 members: ResizableRow's drag-divider only ever
   // handles a pair (by design — a "grow this, shrink that" divider
-  // doesn't generalize past 2), but BlockSequence already falls back
-  // to a plain equal-width 12-column grid once a row has 3+ members,
-  // so 3 and 4 render fine without a divider. Widths are assigned as
-  // an equal share of the *target* size (existing members + this one),
-  // not just set on the new arrival — a 2-member row growing to 3
-  // must rebalance both existing 1/2s down to 1/3, or the row overflows
-  // its 12 columns and visually breaks (this was the original "combine
-  // only ever works for 2" bug: the third block got 1/3 but its two
-  // new row-mates stayed at 1/2 each).
-  const EQUAL_WIDTH: Record<number, "1/2" | "1/3" | "1/4"> = {
+  // doesn't generalize past 2), but BlockSequence renders any 3+-member
+  // row as an equal-width grid, no divider needed, via a dynamic
+  // CSS custom property rather than a fixed set of fraction classes —
+  // so this stored `width` no longer drives that row's own rendering
+  // at all once there are 3+ members; it only matters again as this
+  // block's standalone width if it's later pulled back out of the row
+  // (removeFromRowAction). 6 is a practical ceiling, not a technical
+  // one — a reading-column-width row of 7+ slivers stops being
+  // readable regardless of what the grid can render.
+  const EQUAL_WIDTH: Record<number, "1/2" | "1/3" | "1/4" | "full"> = {
     2: "1/2",
     3: "1/3",
     4: "1/4",
+    // 5 and 6 don't reduce to one of this app's standard width
+    // fractions — "full" here is only ever seen again if this block
+    // later leaves the row, same as any other block with no explicit
+    // width.
+    5: "full",
+    6: "full",
   };
 
   if (neighborHasRow) {
@@ -2626,7 +2632,7 @@ export async function combineWithAdjacentBlockAction(
     // job), so the target size is always "existing cells + 1."
     const cellCount = new Set(memberRows.map((r) => r.col ?? r.id)).size;
     const targetSize = cellCount + 1;
-    if (targetSize > 4) return;
+    if (targetSize > 6) return;
     const width = EQUAL_WIDTH[targetSize];
 
     // Merges into any existing `layout` object (jsonb_set + COALESCE,

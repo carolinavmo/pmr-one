@@ -1,3 +1,4 @@
+import type { CSSProperties } from "react";
 import type { EditorialBlock } from "@/lib/editorial-blocks";
 import { BlockRenderer } from "./BlockRenderer";
 import { BlockControls } from "@/components/disease-page/BlockControls";
@@ -12,17 +13,6 @@ import {
   STANDALONE_WIDTH_CLASS,
   STANDALONE_ALIGN_CLASS,
 } from "@/lib/block-alignment";
-
-// 12 columns, not 6 — the smallest preset (Small Cards, 1/4 width)
-// needs a divisor 6 columns can't give an integer span for.
-const widthClass: Record<string, string> = {
-  "1/4": "sm:col-span-3",
-  "1/3": "sm:col-span-4",
-  "1/2": "sm:col-span-6",
-  "2/3": "sm:col-span-8",
-  "3/4": "sm:col-span-9",
-  full: "sm:col-span-12",
-};
 
 interface BlockGroup {
   row: string | null;
@@ -142,13 +132,23 @@ function renderGroups({ blocks, workspaceContext, diseaseId, diseaseSlug, contex
     }
 
     return group.row && cells.length >= 3 ? (
-      <div key={`${group.row}-${index}`} className="grid grid-cols-1 gap-3 sm:grid-cols-12">
+      // Equal-width columns via a CSS custom property rather than the
+      // fixed 12-column grid + col-span map the 2-cell/standalone paths
+      // still use below — a 12-column base can't give every cell count
+      // an integer span (12/5 isn't whole), and combineWithAdjacentBlockAction
+      // only ever produces equal splits for 3+ members anyway (no UI
+      // exists to give one cell in a 3+ row a custom width — that's
+      // ResizableRow's pair-only job), so there's nothing to look up
+      // per cell here.
+      <div
+        key={`${group.row}-${index}`}
+        className="grid grid-cols-1 gap-3 sm:grid-cols-[repeat(var(--row-cells),minmax(0,1fr))]"
+        style={{ "--row-cells": cells.length } as CSSProperties}
+      >
         {cells.map((cell) => (
           <div
             key={cell.blocks[0].id}
-            className={`${widthClass[cell.blocks[0].layout?.width ?? "full"]} ${
-              cell.blocks[0].layout?.rowAlign ? ROW_ALIGN_SELF_CLASS[cell.blocks[0].layout.rowAlign] : ""
-            }`}
+            className={cell.blocks[0].layout?.rowAlign ? ROW_ALIGN_SELF_CLASS[cell.blocks[0].layout.rowAlign] : ""}
           >
             {renderCell(cell)}
           </div>
