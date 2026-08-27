@@ -123,6 +123,8 @@ export const TRANSLATABLE_FIELDS: Record<EditorialBlock["type"], TranslatableFie
 
   image_comparison: { fields: ["title", "left.label", "right.label"] },
 
+  image_row: { fields: ["images[].label"] },
+
   callout_banner: { fields: ["text"] },
 
   badge_row: { fields: ["badges[].text"] },

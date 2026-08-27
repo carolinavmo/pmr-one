@@ -627,6 +627,16 @@ async function resolveBlock(diseaseId: string, row: BlockRow): Promise<Editorial
         right: (cc.right as { assetUrl?: string; label: string }) ?? { label: "" },
       };
 
+    case "image_row":
+      // Fully owns-content, same as photo_card_gallery — no Knowledge
+      // Graph join, content_config.images is already the shape the
+      // component wants.
+      return {
+        type: "image_row",
+        id: row.id,
+        images: (cc.images as { id: string; assetUrl?: string; label: string }[]) ?? [],
+      };
+
     case "overview":
       return {
         type: "overview",

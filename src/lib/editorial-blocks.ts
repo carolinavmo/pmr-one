@@ -551,6 +551,26 @@ export interface ImageComparisonBlock extends BlockBase {
   right: { assetUrl?: string; label: string };
 }
 
+// 2-4 images in one evenly-spaced row, each with its own label — the
+// variable-count sibling of ImageComparisonBlock's fixed left/right
+// pair, for "here are the anterior/posterior/lateral views" or
+// "here are the 3 grades of this finding" rather than a strict A-vs-B
+// comparison. Every slot shares the same fixed aspect-square box
+// (same reasoning as ImageComparisonBlock/PhotoCardGalleryBlock's own
+// image boxes), so images and labels line up with each other
+// regardless of each source photo's own proportions — the "row
+// alignment" problem MedicalIllustrationBlock/SimpleImageBlock had to
+// solve across *separate* blocks doesn't come up here, since every
+// slot lives inside one block with one shared grid. Owns-content,
+// same per-item id/array-with-add-remove shape as
+// PhotoCardGalleryBlock's `items`, just holding an image+label instead
+// of a title/description/metrics card.
+export interface ImageRowBlock extends BlockBase {
+  type: "image_row";
+  id: string;
+  images: { id: string; assetUrl?: string; label: string }[];
+}
+
 // A composite summary card for a disease's Overview section — a
 // block-owned image on the left, a prose paragraph top-right, and a
 // fixed "Key Takeaway" callout bottom-right. Owns-content image (same
@@ -824,6 +844,7 @@ export type EditorialBlock =
   | EvidenceSummaryBlock
   | StatCardBlock
   | ImageComparisonBlock
+  | ImageRowBlock
   | CalloutBannerBlock
   | BadgeRowBlock
   | IconListBlock

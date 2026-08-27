@@ -135,6 +135,13 @@ const SAMPLE_CONTENT: SampleContentConfig = {
     left: { label: "Normal" },
     right: { label: "Pathological (thickened)" },
   },
+  image_row: {
+    images: [
+      { id: "1", label: "Anterior view" },
+      { id: "2", label: "Posterior view" },
+      { id: "3", label: "Lateral view" },
+    ],
+  },
   callout_banner: { tone: "warning", text: "Avoid high-volume corticosteroid injections." },
   badge_row: { badges: [{ text: "High Yield", color: "rose" }] },
   icon_list: { title: "Aggravating Factors", color: "rose", items: [{ text: "First steps after rest" }] },

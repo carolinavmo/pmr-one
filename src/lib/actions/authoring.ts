@@ -233,6 +233,7 @@ type OwnsContentBlockType =
   | "evidence_summary"
   | "stat_card"
   | "image_comparison"
+  | "image_row"
   | "callout_banner"
   | "badge_row"
   | "icon_list"
@@ -281,6 +282,10 @@ function emptyContentFor(blockType: OwnsContentBlockType) {
       return { variant: "stat", value: "", label: "" };
     case "image_comparison":
       return { title: "", left: { label: "" }, right: { label: "" } };
+    case "image_row":
+      // Starts at the minimum (2) — ImageRowBlockView's own "Add
+      // image" button grows it from there, capped at 4.
+      return { images: [{ id: randomUUID(), label: "" }, { id: randomUUID(), label: "" }] };
     case "callout_banner":
       return { tone: "info", text: "" };
     case "badge_row":
@@ -722,6 +727,98 @@ export async function removeImageComparisonSideAction(
     [blockId, side]
   );
   revalidateDiseaseSurfaces();
+}
+
+// Image Row — the variable-count (2-4) sibling of Image Comparison's
+// fixed left/right pair. Same "commit the whole array, looked up by
+// generated id" pattern as Photo Card Gallery's items, rather than
+// per-field jsonb paths, since slots are addressed by id, not index.
+const IMAGE_ROW_MIN = 2;
+const IMAGE_ROW_MAX = 4;
+
+async function getImageRowItems(
+  blockId: string
+): Promise<{ id: string; assetUrl?: string; label: string }[]> {
+  const { rows } = await pool.query(
+    `SELECT content_config->'images' AS images FROM editorial_block WHERE id = $1`,
+    [blockId]
+  );
+  return rows[0]?.images ?? [];
+}
+
+async function writeImageRowItems(blockId: string, images: unknown[]) {
+  await pool.query(
+    `UPDATE editorial_block SET content_config = jsonb_set(content_config, ARRAY['images'], $2::jsonb) WHERE id = $1`,
+    [blockId, JSON.stringify(images)]
+  );
+  revalidateDiseaseSurfaces();
+}
+
+// Returns the new item (specifically its server-generated `id`) so the
+// client can add it to local state directly — same reasoning as
+// addPhotoCardGalleryItemAction. No-ops past IMAGE_ROW_MAX rather than
+// throwing — the button that calls this is already hidden at the cap,
+// so reaching here past it would only happen from a stale client.
+export async function addImageRowItemAction(blockId: string) {
+  await requireEditor();
+  const items = await getImageRowItems(blockId);
+  if (items.length >= IMAGE_ROW_MAX) return items[items.length - 1];
+  const newItem = { id: randomUUID(), label: "" };
+  await writeImageRowItems(blockId, [...items, newItem]);
+  return newItem;
+}
+
+export async function updateImageRowItemLabelAction(
+  blockId: string,
+  itemId: string,
+  label: string
+) {
+  await requireEditor();
+  const cleanLabel = sanitizeRichText(label);
+  const items = await getImageRowItems(blockId);
+  const updated = items.map((item) => (item.id === itemId ? { ...item, label: cleanLabel } : item));
+  await writeImageRowItems(blockId, updated);
+}
+
+export async function uploadImageRowItemImageAction(
+  blockId: string,
+  itemId: string,
+  formData: FormData
+) {
+  await requireEditor();
+  const file = formData.get("file") as File | null;
+  if (!file) throw new Error("No file provided.");
+  const assetUrl = await saveUploadedIllustration(file);
+
+  const items = await getImageRowItems(blockId);
+  const updated = items.map((item) => (item.id === itemId ? { ...item, assetUrl } : item));
+  await writeImageRowItems(blockId, updated);
+}
+
+export async function removeImageRowItemImageAction(blockId: string, itemId: string) {
+  await requireEditor();
+  const items = await getImageRowItems(blockId);
+  const updated = items.map((item) => {
+    if (item.id !== itemId) return item;
+    const copy: Partial<typeof item> = { ...item };
+    delete copy.assetUrl;
+    return copy;
+  });
+  await writeImageRowItems(blockId, updated);
+}
+
+// Never drops below IMAGE_ROW_MIN — same reasoning as addImageRowItemAction's
+// cap: the remove button is already hidden at the floor, so a request
+// that would cross it only happens from a stale client, and silently
+// no-op'ing is safer than leaving the row at 1 or 0 images.
+export async function removeImageRowItemAction(blockId: string, itemId: string) {
+  await requireEditor();
+  const items = await getImageRowItems(blockId);
+  if (items.length <= IMAGE_ROW_MIN) return;
+  await writeImageRowItems(
+    blockId,
+    items.filter((item) => item.id !== itemId)
+  );
 }
 
 // Same local-disk upload path as Image Comparison — an Overview

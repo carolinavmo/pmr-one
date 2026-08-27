@@ -72,6 +72,7 @@ const MANAGEABLE_TYPES = new Set([
   "evidence_summary",
   "stat_card",
   "image_comparison",
+  "image_row",
   "callout_banner",
   "citation_card",
   "badge_row",

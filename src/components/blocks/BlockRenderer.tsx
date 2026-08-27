@@ -23,6 +23,7 @@ import { RichTableBlockView } from "./RichTableBlock";
 import { EvidenceSummaryBlockView } from "./EvidenceSummaryBlock";
 import { StatCardBlockView } from "./StatCardBlock";
 import { ImageComparisonBlockView } from "./ImageComparisonBlock";
+import { ImageRowBlockView } from "./ImageRowBlock";
 import { CitationCardBlockView } from "./CitationCardBlock";
 import { CalloutBannerBlockView } from "./CalloutBannerBlock";
 import { BadgeRowBlockView } from "./BadgeRowBlock";
@@ -120,6 +121,8 @@ export function BlockRenderer({
       return <StatCardBlockView block={block} diseaseSlug={diseaseSlug} />;
     case "image_comparison":
       return <ImageComparisonBlockView block={block} diseaseSlug={diseaseSlug} />;
+    case "image_row":
+      return <ImageRowBlockView block={block} diseaseSlug={diseaseSlug} isSignedIn={isSignedIn} />;
     case "citation_card":
       return <CitationCardBlockView block={block} diseaseSlug={diseaseSlug} />;
     case "callout_banner":
