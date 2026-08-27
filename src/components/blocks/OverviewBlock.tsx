@@ -6,6 +6,7 @@ import type { OverviewBlock } from "@/lib/editorial-blocks";
 import { useEditMode } from "@/components/disease-page/EditMode";
 import { RichEditableText } from "@/components/ui/RichEditableText";
 import { TEXT_ALIGN_CLASS, COLUMN_JUSTIFY_CLASS } from "@/lib/block-alignment";
+import { FOCAL_POINT_OPTIONS, FOCAL_POINT_CLASS } from "@/lib/image-focal-point";
 import {
   updateBlockRichTextAction,
   uploadOverviewImageAction,
@@ -15,7 +16,6 @@ import {
 } from "@/lib/actions/authoring";
 
 type ImageWidth = NonNullable<OverviewBlock["imageWidth"]>;
-type ImagePosition = NonNullable<OverviewBlock["imagePosition"]>;
 
 const WIDTH_OPTIONS: { value: ImageWidth; label: string }[] = [
   { value: "1/4", label: "25%" },
@@ -35,35 +35,6 @@ const GRID_COLS_CLASS: Record<ImageWidth, string> = {
   "1/2": "sm:grid-cols-[1fr_1fr]",
   "2/3": "sm:grid-cols-[2fr_1fr]",
   "3/4": "sm:grid-cols-[3fr_1fr]",
-};
-
-// 3x3 grid, top-left to bottom-right — a focal point, not a true
-// freeform crop: which part of the image stays visible once
-// `object-cover` fits it into the box. Literal Tailwind classes (the
-// four corners need bracket-value arbitrary properties since
-// `object-position`'s compound corner keywords aren't core utilities).
-const POSITION_OPTIONS: { value: ImagePosition; label: string }[] = [
-  { value: "top-left", label: "Top left" },
-  { value: "top", label: "Top" },
-  { value: "top-right", label: "Top right" },
-  { value: "left", label: "Left" },
-  { value: "center", label: "Center" },
-  { value: "right", label: "Right" },
-  { value: "bottom-left", label: "Bottom left" },
-  { value: "bottom", label: "Bottom" },
-  { value: "bottom-right", label: "Bottom right" },
-];
-
-const OBJECT_POSITION_CLASS: Record<ImagePosition, string> = {
-  "top-left": "object-[left_top]",
-  top: "object-top",
-  "top-right": "object-[right_top]",
-  left: "object-left",
-  center: "object-center",
-  right: "object-right",
-  "bottom-left": "object-[left_bottom]",
-  bottom: "object-bottom",
-  "bottom-right": "object-[right_bottom]",
 };
 
 // A disease's Overview-section summary card — a block-owned image on
@@ -135,7 +106,7 @@ export function OverviewBlockView({
               <img
                 src={imageUrl}
                 alt=""
-                className={`size-full object-cover ${OBJECT_POSITION_CLASS[imagePosition]}`}
+                className={`size-full object-cover ${FOCAL_POINT_CLASS[imagePosition]}`}
               />
               {editing && (
                 <button
@@ -212,7 +183,7 @@ export function OverviewBlockView({
                     Focal point
                   </p>
                   <div className="grid grid-cols-3 gap-1">
-                    {POSITION_OPTIONS.map((option) => (
+                    {FOCAL_POINT_OPTIONS.map((option) => (
                       <button
                         key={option.value}
                         type="button"

@@ -1,7 +1,17 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { Star, Palette, ImagePlus, X, PanelTop, PanelLeft, PanelRight, Maximize2 } from "lucide-react";
+import {
+  Star,
+  Palette,
+  ImagePlus,
+  X,
+  PanelTop,
+  PanelLeft,
+  PanelRight,
+  Maximize2,
+  Crosshair,
+} from "lucide-react";
 import type { HighlightCardBlock } from "@/lib/editorial-blocks";
 import { EditableText } from "@/components/ui/EditableText";
 import { RichEditableText } from "@/components/ui/RichEditableText";
@@ -16,9 +26,11 @@ import {
   removeHighlightCardImageAction,
   setHighlightCardImagePositionAction,
   setHighlightCardImageWidthAction,
+  setHighlightCardImageFocalPointAction,
 } from "@/lib/actions/authoring";
 import { CARD_COLOR_CARD, CARD_COLOR_CHIP, CARD_COLOR_TEXT } from "@/lib/card-colors";
 import { TEXT_ALIGN_CLASS, ROW_ITEMS_CLASS } from "@/lib/block-alignment";
+import { FOCAL_POINT_OPTIONS, FOCAL_POINT_CLASS, type ImageFocalPoint } from "@/lib/image-focal-point";
 
 type ImagePosition = NonNullable<HighlightCardBlock["imagePosition"]>;
 type ImageWidth = NonNullable<HighlightCardBlock["imageWidth"]>;
@@ -71,6 +83,8 @@ export function HighlightCardBlockView({
   const [imagePosition, setImagePosition] = useState<ImagePosition>(block.imagePosition ?? "top");
   const [imageWidth, setImageWidth] = useState<ImageWidth | undefined>(block.imageWidth);
   const [widthOpen, setWidthOpen] = useState(false);
+  const [imageFocalPoint, setImageFocalPoint] = useState<ImageFocalPoint>(block.imageFocalPoint ?? "center");
+  const [focalPointOpen, setFocalPointOpen] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const color = block.color ?? "accent";
   const textAlign = block.layout?.textAlign ?? "left";
@@ -181,6 +195,47 @@ export function HighlightCardBlockView({
           </div>
         )}
       </div>
+      <div className="relative">
+        <button
+          type="button"
+          onClick={() => setFocalPointOpen((open) => !open)}
+          aria-label="Image focal point"
+          className="flex items-center gap-0.5 rounded px-1 py-0.5 font-ui text-xs text-secondary hover:bg-surface-raised hover:text-primary"
+        >
+          <Crosshair className="size-3" aria-hidden="true" />
+        </button>
+        {focalPointOpen && (
+          <div className="absolute top-6 left-0 z-10 w-36 rounded-lg border border-border bg-surface-raised p-2 shadow-md">
+            <div className="grid grid-cols-3 gap-1">
+              {FOCAL_POINT_OPTIONS.map((option) => (
+                <button
+                  key={option.value}
+                  type="button"
+                  title={option.label}
+                  aria-label={option.label}
+                  onClick={() => {
+                    setFocalPointOpen(false);
+                    setImageFocalPoint(option.value);
+                    setHighlightCardImageFocalPointAction(block.id, option.value);
+                  }}
+                  className={`flex size-8 items-center justify-center rounded border ${
+                    imageFocalPoint === option.value
+                      ? "border-accent bg-accent/10"
+                      : "border-border hover:border-accent"
+                  }`}
+                >
+                  <span
+                    className={`size-1.5 rounded-full ${
+                      imageFocalPoint === option.value ? "bg-accent" : "bg-secondary/50"
+                    }`}
+                    aria-hidden="true"
+                  />
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   );
 
@@ -191,9 +246,13 @@ export function HighlightCardBlockView({
   const imageBlock = editing ? (
     <div className={`flex flex-col gap-1.5 ${isSideBySide ? "shrink-0" : ""}`}>
       {imageUrl ? (
-        <div className={`relative overflow-hidden rounded-md ${imageSizeClass}`}>
+        <div className={`relative aspect-[4/3] overflow-hidden rounded-md ${imageSizeClass}`}>
           {/* eslint-disable-next-line @next/next/no-img-element -- arbitrary asset URL, no fixed remote-pattern domain configured yet (same reasoning as KnowledgeObjectCard). */}
-          <img src={imageUrl} alt="" className="w-full object-cover" />
+          <img
+            src={imageUrl}
+            alt=""
+            className={`size-full object-cover ${FOCAL_POINT_CLASS[imageFocalPoint]}`}
+          />
           <button
             type="button"
             aria-label="Remove image"
@@ -232,10 +291,14 @@ export function HighlightCardBlockView({
     </div>
   ) : (
     imageUrl && (
-      <div className={`overflow-hidden rounded-md ${imageSizeClass}`}>
+      <div className={`aspect-[4/3] overflow-hidden rounded-md ${imageSizeClass}`}>
         <ZoomableImage src={imageUrl} alt={block.imageAlt ?? ""} enabled={isSignedIn}>
           {/* eslint-disable-next-line @next/next/no-img-element -- arbitrary asset URL, no fixed remote-pattern domain configured yet (same reasoning as KnowledgeObjectCard). */}
-          <img src={imageUrl} alt={block.imageAlt ?? ""} className="w-full object-cover" />
+          <img
+            src={imageUrl}
+            alt={block.imageAlt ?? ""}
+            className={`size-full object-cover ${FOCAL_POINT_CLASS[imageFocalPoint]}`}
+          />
         </ZoomableImage>
       </div>
     )

@@ -530,6 +530,7 @@ async function resolveBlock(diseaseId: string, row: BlockRow): Promise<Editorial
         imageAlt: cc.imageAlt as string | undefined,
         imagePosition: cc.imagePosition as HighlightCardBlock["imagePosition"],
         imageWidth: cc.imageWidth as HighlightCardBlock["imageWidth"],
+        imageFocalPoint: cc.imageFocalPoint as HighlightCardBlock["imageFocalPoint"],
       };
 
     case "icon_text":
@@ -643,6 +644,7 @@ async function resolveBlock(diseaseId: string, row: BlockRow): Promise<Editorial
         imageUrl: cc.imageUrl as string | undefined,
         caption: cc.caption as string | undefined,
         imageWidth: cc.imageWidth as SimpleImageBlock["imageWidth"],
+        imageFocalPoint: cc.imageFocalPoint as SimpleImageBlock["imageFocalPoint"],
       };
 
     case "callout_banner":

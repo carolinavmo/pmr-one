@@ -886,6 +886,29 @@ export async function setHighlightCardImageWidthAction(
   revalidateDiseaseSurfaces();
 }
 
+// Same focal-point vocabulary as setOverviewImagePositionAction —
+// which part of the image survives the fixed-aspect-ratio crop.
+export async function setHighlightCardImageFocalPointAction(
+  blockId: string,
+  focalPoint:
+    | "top-left"
+    | "top"
+    | "top-right"
+    | "left"
+    | "center"
+    | "right"
+    | "bottom-left"
+    | "bottom"
+    | "bottom-right"
+) {
+  await requireEditor();
+  await pool.query(
+    `UPDATE editorial_block SET content_config = jsonb_set(content_config, ARRAY['imageFocalPoint'], to_jsonb($2::text)) WHERE id = $1`,
+    [blockId, focalPoint]
+  );
+  revalidateDiseaseSurfaces();
+}
+
 // Same field name and 6-value scale as setIllustrationWidthAction —
 // the image's own size within its column, independent of the block's
 // row width (ResizableRow).
@@ -897,6 +920,29 @@ export async function setSimpleImageWidthAction(
   await pool.query(
     `UPDATE editorial_block SET content_config = jsonb_set(content_config, ARRAY['imageWidth'], to_jsonb($2::text)) WHERE id = $1`,
     [blockId, width]
+  );
+  revalidateDiseaseSurfaces();
+}
+
+// Same focal-point vocabulary as setOverviewImagePositionAction —
+// which part of the image survives the fixed-aspect-ratio crop.
+export async function setSimpleImageFocalPointAction(
+  blockId: string,
+  focalPoint:
+    | "top-left"
+    | "top"
+    | "top-right"
+    | "left"
+    | "center"
+    | "right"
+    | "bottom-left"
+    | "bottom"
+    | "bottom-right"
+) {
+  await requireEditor();
+  await pool.query(
+    `UPDATE editorial_block SET content_config = jsonb_set(content_config, ARRAY['imageFocalPoint'], to_jsonb($2::text)) WHERE id = $1`,
+    [blockId, focalPoint]
   );
   revalidateDiseaseSurfaces();
 }

@@ -692,6 +692,22 @@ export interface SimpleImageBlock extends BlockBase {
   imageUrl?: string;
   caption?: string;
   imageWidth?: "1/4" | "1/3" | "1/2" | "2/3" | "3/4" | "full";
+  // Crops the image to a fixed 4:3 box (object-cover) instead of
+  // rendering it at its own natural aspect ratio — otherwise two
+  // images with different source proportions at the same imageWidth
+  // still read as different sizes, since only the width was ever
+  // actually equalized. Same focal-point vocabulary as OverviewBlock's
+  // imagePosition, for picking which part survives the crop.
+  imageFocalPoint?:
+    | "top-left"
+    | "top"
+    | "top-right"
+    | "left"
+    | "center"
+    | "right"
+    | "bottom-left"
+    | "bottom"
+    | "bottom-right";
 }
 
 // A small icon + label + bold text card — the founder's own "Key
@@ -725,6 +741,19 @@ export interface HighlightCardBlock extends BlockBase {
   // so switching position alone still looks reasonable before an
   // author ever touches this.
   imageWidth?: "1/4" | "1/3" | "1/2" | "2/3" | "3/4" | "full";
+  // Same fixed-aspect-ratio crop as SimpleImageBlock's imageFocalPoint
+  // — keeps a card's image the same shape regardless of what the
+  // source photo's own proportions happen to be.
+  imageFocalPoint?:
+    | "top-left"
+    | "top"
+    | "top-right"
+    | "left"
+    | "center"
+    | "right"
+    | "bottom-left"
+    | "bottom"
+    | "bottom-right";
 }
 
 // A single icon + label + description row — one item's worth of
