@@ -337,7 +337,7 @@ function ImageRowItem({
             updateImageRowItemLabelAction(block.id, item.id, html);
           }}
           placeholder={editing ? "Label" : ""}
-          className="min-w-0 flex-1 text-center font-ui text-sm font-semibold text-primary"
+          className="min-w-0 flex-1 text-center font-ui text-sm text-secondary"
           block={block}
           diseaseSlug={diseaseSlug}
         />
