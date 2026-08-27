@@ -708,12 +708,14 @@ export interface SimpleImageBlock extends BlockBase {
     | "bottom-left"
     | "bottom"
     | "bottom-right";
-  // "crop" (default, unset) fits into the fixed 4:3 box above. "original"
-  // opts this one image back out — its own natural aspect ratio, no
-  // cropping at all — for a source image (very tall/wide, or content
-  // that a crop would cut regardless of focal point) where losing any
-  // of it matters more than matching every other image's footprint.
-  imageFit?: "crop" | "original";
+  // "cover" (default, unset) fills the fixed 4:3 box, cropping the
+  // overflow. "contain" keeps that same box (so the image still reads
+  // as "the same size" as every other image) but fits the whole image
+  // inside it uncropped, letterboxed on whichever axis doesn't match.
+  // "original" drops the box entirely — the image's own natural aspect
+  // ratio, for a source image (very tall/wide) where even letterboxing
+  // it into 4:3 would leave mostly empty space.
+  imageFit?: "cover" | "contain" | "original";
 }
 
 // A small icon + label + bold text card — the founder's own "Key
@@ -760,8 +762,9 @@ export interface HighlightCardBlock extends BlockBase {
     | "bottom-left"
     | "bottom"
     | "bottom-right";
-  // Same crop opt-out as SimpleImageBlock's imageFit.
-  imageFit?: "crop" | "original";
+  // Same three-way cover/contain/original vocabulary as
+  // SimpleImageBlock's imageFit.
+  imageFit?: "cover" | "contain" | "original";
 }
 
 // A single icon + label + description row — one item's worth of

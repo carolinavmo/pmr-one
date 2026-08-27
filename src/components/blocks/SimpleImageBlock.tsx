@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { ImagePlus, X, Maximize2, Crosshair, Crop, Expand } from "lucide-react";
+import { ImagePlus, X, Maximize2, Crosshair, Crop, Shrink, Expand } from "lucide-react";
 import type { SimpleImageBlock } from "@/lib/editorial-blocks";
 import { useEditMode } from "@/components/disease-page/EditMode";
 import { RichEditableText } from "@/components/ui/RichEditableText";
@@ -20,9 +20,17 @@ import {
 type ImageWidth = NonNullable<SimpleImageBlock["imageWidth"]>;
 type ImageFit = NonNullable<SimpleImageBlock["imageFit"]>;
 
+// "cover"/"contain" are literally object-fit values — same fixed 4:3
+// box either way, so two images at the same imageWidth still read as
+// the same size; only whether the overflow gets cropped (cover) or
+// letterboxed (contain) differs. "original" is the one option that
+// gives up that size consistency, dropping the box entirely for a
+// source image where even letterboxing loses too much (extreme
+// aspect ratios).
 const FIT_OPTIONS: { value: ImageFit; label: string; icon: typeof Crop }[] = [
-  { value: "crop", label: "Crop to fill", icon: Crop },
-  { value: "original", label: "Show full image, no crop", icon: Expand },
+  { value: "cover", label: "Crop to fill", icon: Crop },
+  { value: "contain", label: "Fit inside, no crop (letterboxed)", icon: Shrink },
+  { value: "original", label: "Natural size, no fixed box", icon: Expand },
 ];
 
 // Same 6-value scale as MedicalIllustrationBlock/OverviewBlock's own
@@ -72,18 +80,22 @@ export function SimpleImageBlockView({
   const [widthOpen, setWidthOpen] = useState(false);
   const [imageFocalPoint, setImageFocalPoint] = useState<ImageFocalPoint>(block.imageFocalPoint ?? "center");
   const [focalPointOpen, setFocalPointOpen] = useState(false);
-  const [imageFit, setImageFit] = useState<ImageFit>(block.imageFit ?? "crop");
+  const [imageFit, setImageFit] = useState<ImageFit>(block.imageFit ?? "cover");
   const caption = block.caption;
   const captionAlign = block.layout?.textAlign ?? "left";
-  const isCropped = imageFit === "crop";
-  // "original" drops both the fixed aspect-ratio box and object-cover —
-  // the image just renders at its own natural height, exactly like
-  // before this whole crop feature existed. The upload-placeholder
-  // state (no imageUrl yet) always keeps the 4:3 box regardless of
-  // `imageFit`, since a height-less container would collapse the
-  // placeholder button to nothing to click.
-  const boxAspectClass = !imageUrl || isCropped ? "aspect-[4/3]" : "";
-  const imgFitClass = isCropped ? `size-full object-cover ${FOCAL_POINT_CLASS[imageFocalPoint]}` : "w-full";
+  const isCover = imageFit === "cover";
+  // "cover"/"contain" both keep the fixed 4:3 box (same visual
+  // footprint as every other image); "original" drops it for the
+  // image's own natural height. The upload-placeholder state (no
+  // imageUrl yet) always keeps the 4:3 box regardless of `imageFit`,
+  // since a height-less container would collapse the placeholder
+  // button to nothing to click.
+  const boxAspectClass = !imageUrl || imageFit !== "original" ? "aspect-[4/3]" : "";
+  const imgFitClass = isCover
+    ? `size-full object-cover ${FOCAL_POINT_CLASS[imageFocalPoint]}`
+    : imageFit === "contain"
+      ? "size-full object-contain"
+      : "w-full";
 
   const handleFile = async (file: File) => {
     setUploading(true);
@@ -108,7 +120,9 @@ export function SimpleImageBlockView({
     if (!imageUrl) return null;
     return (
       <figure className="flex flex-col gap-2">
-        <div className={`${boxAspectClass} overflow-hidden rounded-lg ${imageWidthClass[imageWidth]}`}>
+        <div
+          className={`${boxAspectClass} overflow-hidden rounded-lg bg-surface-raised ${imageWidthClass[imageWidth]}`}
+        >
           <ZoomableImage src={imageUrl} alt={caption ?? ""} enabled={isSignedIn}>
             {/* eslint-disable-next-line @next/next/no-img-element -- block-owned upload (public/uploads/illustrations), same as OverviewBlock/ImageComparisonBlock; no fixed remote-pattern domain to configure. */}
             <img src={imageUrl} alt="" className={imgFitClass} />
@@ -168,7 +182,7 @@ export function SimpleImageBlockView({
               </div>
             )}
           </div>
-          {isCropped && (
+          {isCover && (
             <div className="relative">
               <button
                 type="button"

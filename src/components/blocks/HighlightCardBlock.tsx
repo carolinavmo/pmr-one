@@ -12,6 +12,7 @@ import {
   Maximize2,
   Crosshair,
   Crop,
+  Shrink,
   Expand,
 } from "lucide-react";
 import type { HighlightCardBlock } from "@/lib/editorial-blocks";
@@ -39,9 +40,15 @@ type ImagePosition = NonNullable<HighlightCardBlock["imagePosition"]>;
 type ImageWidth = NonNullable<HighlightCardBlock["imageWidth"]>;
 type ImageFit = NonNullable<HighlightCardBlock["imageFit"]>;
 
+// Same three-way cover/contain/original vocabulary as
+// SimpleImageBlock's own FIT_OPTIONS — "cover"/"contain" both keep the
+// fixed 4:3 box (so the card's image still reads as the same size as
+// every other one), just cropped vs. letterboxed; "original" gives up
+// that consistency for the image's own natural aspect ratio.
 const FIT_OPTIONS: { value: ImageFit; label: string; icon: typeof Crop }[] = [
-  { value: "crop", label: "Crop to fill", icon: Crop },
-  { value: "original", label: "Show full image, no crop", icon: Expand },
+  { value: "cover", label: "Crop to fill", icon: Crop },
+  { value: "contain", label: "Fit inside, no crop (letterboxed)", icon: Shrink },
+  { value: "original", label: "Natural size, no fixed box", icon: Expand },
 ];
 
 const POSITION_OPTIONS: { value: ImagePosition; label: string; icon: typeof PanelTop }[] = [
@@ -94,18 +101,21 @@ export function HighlightCardBlockView({
   const [widthOpen, setWidthOpen] = useState(false);
   const [imageFocalPoint, setImageFocalPoint] = useState<ImageFocalPoint>(block.imageFocalPoint ?? "center");
   const [focalPointOpen, setFocalPointOpen] = useState(false);
-  const [imageFit, setImageFit] = useState<ImageFit>(block.imageFit ?? "crop");
+  const [imageFit, setImageFit] = useState<ImageFit>(block.imageFit ?? "cover");
   const fileInputRef = useRef<HTMLInputElement>(null);
   const color = block.color ?? "accent";
   const textAlign = block.layout?.textAlign ?? "left";
   const textVerticalAlign = block.layout?.textVerticalAlign ?? "top";
   const isSideBySide = imagePosition !== "top";
-  const isCropped = imageFit === "crop";
-  // "original" drops both the fixed aspect-ratio box and object-cover —
-  // the image renders at its own natural height, exactly like before
-  // this crop feature existed.
-  const boxAspectClass = isCropped ? "aspect-[4/3]" : "";
-  const imgFitClass = isCropped ? `size-full object-cover ${FOCAL_POINT_CLASS[imageFocalPoint]}` : "w-full";
+  const isCover = imageFit === "cover";
+  // "cover"/"contain" both keep the fixed 4:3 box; "original" drops it
+  // for the image's own natural height.
+  const boxAspectClass = imageFit !== "original" ? "aspect-[4/3]" : "";
+  const imgFitClass = isCover
+    ? `size-full object-cover ${FOCAL_POINT_CLASS[imageFocalPoint]}`
+    : imageFit === "contain"
+      ? "size-full object-contain"
+      : "w-full";
   // No stored width yet → a position-appropriate default (full for a
   // banner-style top image, a quarter for a side-by-side thumbnail) so
   // switching position alone still looks right before an author ever
@@ -211,7 +221,7 @@ export function HighlightCardBlockView({
           </div>
         )}
       </div>
-      {isCropped && (
+      {isCover && (
         <div className="relative">
           <button
             type="button"

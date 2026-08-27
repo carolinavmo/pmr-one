@@ -912,7 +912,7 @@ export async function setHighlightCardImageFocalPointAction(
 // "crop" (default) fits the fixed-aspect-ratio box; "original" opts
 // this one image back out to its own natural aspect ratio, no
 // cropping at all.
-export async function setHighlightCardImageFitAction(blockId: string, fit: "crop" | "original") {
+export async function setHighlightCardImageFitAction(blockId: string, fit: "cover" | "contain" | "original") {
   await requireEditor();
   await pool.query(
     `UPDATE editorial_block SET content_config = jsonb_set(content_config, ARRAY['imageFit'], to_jsonb($2::text)) WHERE id = $1`,
@@ -960,7 +960,7 @@ export async function setSimpleImageFocalPointAction(
 }
 
 // Same crop opt-out as setHighlightCardImageFitAction.
-export async function setSimpleImageFitAction(blockId: string, fit: "crop" | "original") {
+export async function setSimpleImageFitAction(blockId: string, fit: "cover" | "contain" | "original") {
   await requireEditor();
   await pool.query(
     `UPDATE editorial_block SET content_config = jsonb_set(content_config, ARRAY['imageFit'], to_jsonb($2::text)) WHERE id = $1`,
