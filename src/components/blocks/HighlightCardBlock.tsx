@@ -166,7 +166,7 @@ export function HighlightCardBlockView({
   // Positioning/sizing only matter once an image exists — no point
   // offering either on an empty upload prompt.
   const imageControls = editing && imageUrl && (
-    <div className="flex items-center gap-1">
+    <div className="flex flex-wrap items-center gap-1">
       {POSITION_OPTIONS.map(({ value, label, icon: Icon }) => (
         <button
           key={value}
@@ -294,9 +294,9 @@ export function HighlightCardBlockView({
   }`;
 
   const imageBlock = editing ? (
-    <div className={`flex flex-col gap-1.5 ${isSideBySide ? "shrink-0" : ""}`}>
+    <div className={`flex flex-col gap-1.5 ${imageSizeClass}`}>
       {imageUrl ? (
-        <div className={`relative ${boxAspectClass} overflow-hidden rounded-md ${imageSizeClass}`}>
+        <div className={`relative ${boxAspectClass} overflow-hidden rounded-md w-full`}>
           {/* eslint-disable-next-line @next/next/no-img-element -- arbitrary asset URL, no fixed remote-pattern domain configured yet (same reasoning as KnowledgeObjectCard). */}
           <img src={imageUrl} alt="" className={imgFitClass} />
           <button
