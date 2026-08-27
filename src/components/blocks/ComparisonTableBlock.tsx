@@ -55,8 +55,8 @@ export function ComparisonTableBlockView({
     return (
       <div className="flex flex-col gap-2">
         {block.caption && <p className="font-ui text-sm text-secondary">{block.caption}</p>}
-        <div className="overflow-x-auto rounded-lg border border-border">
-          <table className="w-full min-w-max border-collapse font-ui text-sm">
+        <div className="rounded-lg border border-border">
+          <table className="w-full border-collapse font-ui text-sm">
             <thead>
               <tr className="border-b border-border bg-surface-raised">
                 {block.columns.map((column, i) => (
@@ -89,8 +89,7 @@ export function ComparisonTableBlockView({
 
   return (
     <div className="flex flex-col gap-2 rounded-lg border border-dashed border-border p-3">
-      <div className="overflow-x-auto">
-        <table className="w-full min-w-max border-collapse font-ui text-sm">
+        <table className="w-full border-collapse font-ui text-sm">
           <thead>
             <tr className="border-b border-border">
               {columns.map((column, colIndex) => (
@@ -150,7 +149,6 @@ export function ComparisonTableBlockView({
             ))}
           </tbody>
         </table>
-      </div>
       <div className="flex gap-2">
         <button
           type="button"

@@ -106,8 +106,8 @@ export function RichTableBlockView({
             diseaseSlug={diseaseSlug}
           />
         )}
-        <div className="overflow-x-auto rounded-lg border border-border">
-          <table className="w-full min-w-max border-collapse font-ui text-xs">
+        <div className="rounded-lg border border-border">
+          <table className="w-full border-collapse font-ui text-xs">
             <thead>
               <tr className="border-b border-border bg-surface-raised">
                 <th className="w-12 px-2 py-1.5 text-center font-medium text-primary">
@@ -156,8 +156,7 @@ export function RichTableBlockView({
         block={block}
         diseaseSlug={diseaseSlug}
       />
-      <div className="overflow-x-auto">
-        <table className="w-full min-w-max border-collapse font-ui text-sm">
+        <table className="w-full border-collapse font-ui text-sm">
           <thead>
             <tr className="border-b border-border">
               <th className="w-16 p-1 align-top">
@@ -428,7 +427,6 @@ export function RichTableBlockView({
             ))}
           </tbody>
         </table>
-      </div>
       <div className="flex gap-2">
         <button
           type="button"
