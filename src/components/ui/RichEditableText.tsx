@@ -356,30 +356,84 @@ export function RichEditableText({
   // every other rich text editor (this is what "already bold" meant
   // in practice when the founder reported it, and the exact same gap
   // existed for re-picking the same highlight color). "Already active"
-  // here means the selection sits entirely inside a `className` span
-  // (checked via the selection's own common ancestor, so a selection
-  // straddling both formatted and unformatted text correctly falls
-  // through to "apply," not "remove," same as elsewhere). Font size
-  // stays a plain `wrapSelection` call, not routed through this — Small
-  // /Large/X-Large are three different classes, not one repeatable
-  // choice, so "click the same size again to remove sizing entirely"
-  // isn't an expectation the size popover sets up the way a color
-  // swatch or a Bold button does.
+  // means ANY text node touched by the current selection sits inside a
+  // `className` ancestor — not just the selection's single common
+  // ancestor, which only ever matches when the selection sits entirely
+  // inside one formatted span. A selection that overlaps a formatted
+  // span without exactly matching its edges (missed the trailing
+  // space, started a character early, spans two separately-bolded
+  // runs) used to fall through to "apply" instead of "remove," which
+  // read as the toggle button silently refusing to turn off — this
+  // walks every text node the range intersects instead of just the one
+  // shared ancestor, so any overlap counts as active. Font size stays a
+  // plain `wrapSelection` call, not routed through this — Small/Large/
+  // X-Large are three different classes, not one repeatable choice, so
+  // "click the same size again to remove sizing entirely" isn't an
+  // expectation the size popover sets up the way a color swatch or a
+  // Bold button does.
   const isFormatActive = (className: string) => {
     const sel = window.getSelection();
     if (!sel || sel.rangeCount === 0 || sel.isCollapsed) return false;
-    let node: Node | null = sel.getRangeAt(0).commonAncestorContainer;
-    if (!withinEditable(node)) return false;
-    while (node && node !== editableRef.current) {
-      if (node instanceof HTMLElement && node.classList.contains(className)) return true;
-      node = node.parentNode;
+    const range = sel.getRangeAt(0);
+    if (!withinEditable(range.commonAncestorContainer)) return false;
+    return intersectingElementsWithClass(range, className).length > 0;
+  };
+
+  // Every element with `className` that the range touches at all
+  // (fully or partially) — a TreeWalker over the editable field rather
+  // than a DOM `getElementsByClassName` + filter, since `className`
+  // here is always one literal, pre-defined token (BOLD_CLASS etc.),
+  // never anything derived from user input.
+  const intersectingElementsWithClass = (range: Range, className: string) => {
+    if (!editableRef.current) return [];
+    const walker = document.createTreeWalker(editableRef.current, NodeFilter.SHOW_ELEMENT, {
+      acceptNode: (node) =>
+        node instanceof HTMLElement && node.classList.contains(className) && range.intersectsNode(node)
+          ? NodeFilter.FILTER_ACCEPT
+          : NodeFilter.FILTER_SKIP,
+    });
+    const matches: HTMLElement[] = [];
+    let node: Node | null;
+    while ((node = walker.nextNode())) matches.push(node as HTMLElement);
+    return matches;
+  };
+
+  // Unwraps every `className` element the current selection overlaps —
+  // not just one found by walking up from a single ancestor, so a
+  // selection spanning two separately-formatted runs (or only
+  // partially overlapping one) clears all of them in one click, same
+  // as isFormatActive above now treats any overlap as "active." A
+  // partially-overlapped span is unwrapped in full rather than split
+  // at the selection boundary — simpler, and the common real case here
+  // is a selection that's off by a character or a trailing space, not
+  // one that deliberately clips half a much longer formatted run.
+  const unwrapFormat = (className: string) => {
+    const sel = window.getSelection();
+    if (!sel || sel.rangeCount === 0) return;
+    const range = sel.getRangeAt(0);
+    if (!withinEditable(range.commonAncestorContainer)) return;
+    const matches = intersectingElementsWithClass(range, className);
+    if (matches.length === 0) return;
+    // Same focus-preservation dance as unwrapAncestor below — removing
+    // an element the Selection anchors into can drop focus to <body>.
+    suppressBlurRef.current = true;
+    for (const el of matches) {
+      const parent = el.parentNode;
+      if (!parent) continue;
+      while (el.firstChild) parent.insertBefore(el.firstChild, el);
+      parent.removeChild(el);
     }
-    return false;
+    editableRef.current?.focus();
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        suppressBlurRef.current = false;
+      });
+    });
   };
 
   const toggleFormat = (className: string) => {
     if (isFormatActive(className)) {
-      unwrapAncestor((el) => el.classList.contains(className));
+      unwrapFormat(className);
     } else {
       wrapSelection(className);
     }
