@@ -92,6 +92,7 @@ export function BlockPicker({
           | "paragraph"
           | "section_heading"
           | "subsection_heading"
+          | "subsubsection_heading"
           | "key_point"
           | "warning_pitfall"
           | "learning_objective"

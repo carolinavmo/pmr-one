@@ -83,6 +83,17 @@ export interface SubsectionHeadingBlock extends BlockBase {
   text: string;
 }
 
+// A third, lighter tier still — same non-indexed behaviour as
+// SubsectionHeadingBlock above (invisible to OnThisPage, the sidebar,
+// and splitIntoSections), one visual step quieter. Exists so a source
+// document's own Heading 1/2/3 levels can map 1:1 onto this platform's
+// three heading blocks instead of collapsing levels 2 and 3 together.
+export interface SubsubsectionHeadingBlock extends BlockBase {
+  type: "subsubsection_heading";
+  id: string;
+  text: string;
+}
+
 // Decorative-only palette for card backgrounds and badges — deliberately
 // separate from the four *meaningful* colors (accent/trust/insight/
 // warning, DESIGN_SYSTEM.md's Color System). "neutral" plus those four
@@ -847,6 +858,7 @@ export interface IconTextBlock extends BlockBase {
 export type EditorialBlock =
   | SectionHeadingBlock
   | SubsectionHeadingBlock
+  | SubsubsectionHeadingBlock
   | ParagraphBlock
   | KeyPointBlock
   | MedicalIllustrationBlock

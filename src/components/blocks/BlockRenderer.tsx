@@ -1,6 +1,7 @@
 import type { EditorialBlock } from "@/lib/editorial-blocks";
 import { SectionHeadingBlockView } from "./SectionHeadingBlock";
 import { SubsectionHeadingBlockView } from "./SubsectionHeadingBlock";
+import { SubsubsectionHeadingBlockView } from "./SubsubsectionHeadingBlock";
 import { ParagraphBlockView } from "./ParagraphBlock";
 import { KeyPointBlockView } from "./KeyPointBlock";
 import { MedicalIllustrationBlockView } from "./MedicalIllustrationBlock";
@@ -64,6 +65,8 @@ export function BlockRenderer({
       return <SectionHeadingBlockView block={block} />;
     case "subsection_heading":
       return <SubsectionHeadingBlockView block={block} />;
+    case "subsubsection_heading":
+      return <SubsubsectionHeadingBlockView block={block} />;
     case "paragraph":
       return <ParagraphBlockView block={block} diseaseSlug={diseaseSlug} />;
     case "key_point":

@@ -34,6 +34,8 @@ export const TRANSLATABLE_FIELDS: Record<EditorialBlock["type"], TranslatableFie
 
   subsection_heading: { fields: ["text"] },
 
+  subsubsection_heading: { fields: ["text"] },
+
   paragraph: { fields: ["body", "learningObjective", "imageAlt", "badges[].text"] },
 
   self_check: { fields: ["question", "answer"] },
