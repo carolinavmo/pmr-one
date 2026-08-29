@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useState, type ReactNode } from "react";
+import { createContext, useContext, useRef, useState, type ReactNode } from "react";
 import { Pencil } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 
@@ -33,6 +33,39 @@ export function useEditMode() {
   return useContext(EditModeContext);
 }
 
+// Toggling `editing` can change a large amount of content's height —
+// every block in that section gains hover/insert chrome (the "+"
+// inserter row above each block, BlockControls' toolbar column, etc.)
+// even before anything is hovered. Without compensation, the browser
+// keeps the same raw scroll offset while the content sitting at that
+// offset shifts underneath it, so whatever you were looking at slides
+// out from under you — reported as "the page kind of scrolls... does
+// not stay in that section." Measuring the toggle button's own
+// position immediately before and after the update, then nudging
+// window.scrollBy by the difference, keeps it (and whatever you were
+// reading near it) in the same screen position either way.
+// requestAnimationFrame (not a layout effect) so the measurement runs
+// after the browser has actually painted the new layout, not just
+// after React's commit. Falls back to doing nothing if the ref can't
+// be read at either point (e.g. this exact button instance didn't
+// survive the re-render) — never worse than the pre-existing
+// behavior, just doesn't always fully compensate.
+function useScrollPreservingToggle(editing: boolean, setEditing: (value: boolean) => void) {
+  const ref = useRef<HTMLButtonElement>(null);
+  const onClick = () => {
+    const before = ref.current?.getBoundingClientRect().top ?? null;
+    setEditing(!editing);
+    if (before == null) return;
+    requestAnimationFrame(() => {
+      const after = ref.current?.getBoundingClientRect().top;
+      if (after != null && after !== before) {
+        window.scrollBy(0, after - before);
+      }
+    });
+  };
+  return { ref, onClick };
+}
+
 // Only ever rendered by the page when session.user.role is already
 // known to be editor/admin — wraps already-server-rendered block
 // output (passed as children) without converting any of it to client
@@ -49,11 +82,13 @@ export function EditModeProvider({ children }: { children: ReactNode }) {
 
 export function EditModeToggle() {
   const { editing, setEditing } = useEditMode();
+  const { ref, onClick } = useScrollPreservingToggle(editing, setEditing);
   return (
     <Button
+      ref={ref}
       type="button"
       variant={editing ? "primary" : "secondary"}
-      onClick={() => setEditing(!editing)}
+      onClick={onClick}
       className="gap-2"
     >
       <Pencil className="size-4" aria-hidden="true" />
@@ -72,10 +107,12 @@ export function EditModeToggle() {
 // just Context resolving to the closest Provider up the tree.
 export function SectionEditToggle() {
   const { editing, setEditing } = useEditMode();
+  const { ref, onClick } = useScrollPreservingToggle(editing, setEditing);
   return (
     <button
+      ref={ref}
       type="button"
-      onClick={() => setEditing(!editing)}
+      onClick={onClick}
       aria-pressed={editing}
       className={`inline-flex shrink-0 items-center gap-1 rounded-full border px-2.5 py-1 font-ui text-xs font-medium transition-colors duration-base ${
         editing
