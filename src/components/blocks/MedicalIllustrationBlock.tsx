@@ -154,10 +154,14 @@ export function MedicalIllustrationBlockView({
       </div>
     );
 
-    const legend = (caption || annotations.length > 0) && (
+    const labeledAnnotations = annotations
+      .map((annotation, index) => ({ annotation, index }))
+      .filter(({ annotation }) => annotation.label.trim() !== "");
+
+    const legend = (caption || labeledAnnotations.length > 0) && (
       <figcaption className="flex flex-col gap-1 font-ui text-xs text-secondary">
         {caption && <span>{caption}</span>}
-        {annotations.map((annotation, index) => (
+        {labeledAnnotations.map(({ annotation, index }) => (
           <span key={index}>
             {index + 1}. {annotation.label}
           </span>
@@ -358,7 +362,7 @@ export function MedicalIllustrationBlockView({
         onClick={(e) => {
           if (draggingIndex.current !== null) return;
           const { x, y } = percentFromEvent(e);
-          commit([...annotations, { label: "New label", x, y }]);
+          commit([...annotations, { label: "", x, y }]);
         }}
         className={`relative cursor-crosshair overflow-hidden rounded-lg ${imageWidthClass[imageWidth]}`}
       >
@@ -414,7 +418,8 @@ export function MedicalIllustrationBlockView({
                   )
                 }
                 onBlur={() => commit(annotations)}
-                className="min-w-0 flex-1 rounded border border-transparent bg-transparent px-1.5 py-0.5 font-ui text-sm text-primary outline-none hover:border-border focus:border-accent"
+                placeholder="Label (optional)"
+                className="min-w-0 flex-1 rounded border border-transparent bg-transparent px-1.5 py-0.5 font-ui text-sm text-primary outline-none placeholder:text-secondary/50 hover:border-border focus:border-accent"
               />
               <button
                 type="button"
