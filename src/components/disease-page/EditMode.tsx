@@ -7,6 +7,16 @@ import { Button } from "@/components/ui/Button";
 interface EditModeValue {
   editing: boolean;
   setEditing: (value: boolean) => void;
+  // Whether *this viewer* has edit permission at all — distinct from
+  // `editing` (the current on/off toggle state). A block deep inside a
+  // section (SubsectionHeadingBlockView, SubsubsectionHeadingBlockView)
+  // needs this to decide whether to render its own SectionEditToggle,
+  // and can't infer it from `editing` alone (false means either "no
+  // permission" or "permission, just toggled off" — indistinguishable
+  // without this field). Always true wherever EditModeProvider is
+  // actually mounted (see its own comment below); the default context
+  // value below is the only place this is ever false.
+  canEdit: boolean;
 }
 
 // Default value (no Provider in the tree — a visitor, or any signed-in
@@ -16,6 +26,7 @@ interface EditModeValue {
 const EditModeContext = createContext<EditModeValue>({
   editing: false,
   setEditing: () => {},
+  canEdit: false,
 });
 
 export function useEditMode() {
@@ -30,7 +41,7 @@ export function useEditMode() {
 export function EditModeProvider({ children }: { children: ReactNode }) {
   const [editing, setEditing] = useState(false);
   return (
-    <EditModeContext.Provider value={{ editing, setEditing }}>
+    <EditModeContext.Provider value={{ editing, setEditing, canEdit: true }}>
       {children}
     </EditModeContext.Provider>
   );
