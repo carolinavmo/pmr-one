@@ -19,7 +19,7 @@ export function SubsubsectionHeadingBlockView({ block }: { block: SubsubsectionH
     <EditableText
       as="h4"
       multiline={false}
-      className={`w-full border-b-2 border-[#128A99] pb-1.5 font-heading text-base font-semibold text-[#128A99] ${TEXT_ALIGN_CLASS[textAlign]}`}
+      className={`w-full border-b border-[#128A99] pb-1.5 font-heading text-[26px] font-semibold text-[#128A99] ${TEXT_ALIGN_CLASS[textAlign]}`}
       value={block.text}
       onSave={(value) => updateBlockTextAction(block.id, "text", value)}
     />
