@@ -10,6 +10,7 @@ import {
   removeImageComparisonSideAction,
 } from "@/lib/actions/authoring";
 import { RichEditableText } from "@/components/ui/RichEditableText";
+import { TEXT_ALIGN_CLASS } from "@/lib/block-alignment";
 
 type Side = "left" | "right";
 
@@ -31,6 +32,7 @@ export function ImageComparisonBlockView({
   const [title, setTitle] = useState(block.title ?? "");
   const [left, setLeft] = useState(block.left);
   const [right, setRight] = useState(block.right);
+  const titleAlign = block.layout?.textAlign ?? "left";
 
   const commitLabels = (nextTitle: string, nextLeft: typeof left, nextRight: typeof right) => {
     setTitle(nextTitle);
@@ -48,7 +50,7 @@ export function ImageComparisonBlockView({
             value={title}
             onSave={async (html) => commitLabels(html, left, right)}
             placeholder=""
-            className="font-reading text-lg text-primary"
+            className={`font-reading text-lg text-primary ${TEXT_ALIGN_CLASS[titleAlign]}`}
             block={block}
             diseaseSlug={diseaseSlug}
           />
@@ -67,7 +69,7 @@ export function ImageComparisonBlockView({
         value={title}
         onSave={async (html) => commitLabels(html, left, right)}
         placeholder="Title (optional)"
-        className="w-full font-reading text-lg text-primary"
+        className={`w-full font-reading text-lg text-primary ${TEXT_ALIGN_CLASS[titleAlign]}`}
         block={block}
         diseaseSlug={diseaseSlug}
       />

@@ -42,6 +42,7 @@ const ALIGNABLE_TYPES = new Set([
   "icon_text",
   "icon_list",
   "medical_illustration",
+  "image_comparison",
 ]);
 
 // Block types whose insert path is fully wired end-to-end today, so
