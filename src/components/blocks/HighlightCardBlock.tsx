@@ -357,8 +357,10 @@ export function HighlightCardBlockView({
   return (
     <div
       className={`relative flex rounded-lg border p-3 ${
-        isSideBySide ? "flex-row items-start gap-3" : "flex-col gap-1.5"
-      } ${CARD_COLOR_CARD[color]} ${ROW_ITEMS_CLASS[textVerticalAlign]}`}
+        isSideBySide
+          ? "flex-row items-center gap-3"
+          : `flex-col gap-1.5 ${ROW_ITEMS_CLASS[textVerticalAlign]}`
+      } ${CARD_COLOR_CARD[color]}`}
     >
       {editing && (
         <div className="absolute top-2 right-2">
