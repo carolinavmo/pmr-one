@@ -51,6 +51,8 @@ const ALIGNABLE_TYPES = new Set([
 const MANAGEABLE_TYPES = new Set([
   "paragraph",
   "section_heading",
+  "subsection_heading",
+  "subsubsection_heading",
   "key_point",
   "clinical_pearl",
   "risk_factor",
