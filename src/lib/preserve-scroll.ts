@@ -17,7 +17,12 @@ export async function preserveScrollAcrossSave<T>(save: () => Promise<T>): Promi
     requestAnimationFrame(() => {
       requestAnimationFrame(() => {
         if (Math.abs(window.scrollY - y) > 1) {
-          window.scrollTo(0, y);
+          // { behavior: "instant" }: layout.tsx sets `scroll-smooth`
+          // globally, so an unqualified scrollTo would animate this
+          // correction into view — after the page has already visibly
+          // drifted, that reads as a second, separate swoop rather
+          // than never having moved at all.
+          window.scrollTo({ top: y, behavior: "instant" });
         }
       });
     });

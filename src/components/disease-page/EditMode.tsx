@@ -63,7 +63,12 @@ function useScrollPreservingToggle(editing: boolean, setEditing: (value: boolean
     });
     const after = ref.current?.getBoundingClientRect().top;
     if (before != null && after != null && after !== before) {
-      window.scrollBy(0, after - before);
+      // { behavior: "instant" }, not the two-arg scrollBy(x, y) form —
+      // layout.tsx sets `scroll-smooth` globally, so an unqualified
+      // call here would animate the correction into view instead of
+      // applying it immediately, reading as a visible swoop/jump even
+      // though it lands in the right place.
+      window.scrollBy({ top: after - before, behavior: "instant" });
     }
   };
   return { ref, onClick };
