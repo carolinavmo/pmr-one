@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, type ReactNode } from "react";
-import { Plus, Trash2, ChevronUp, ChevronDown, Columns2, GripVertical } from "lucide-react";
+import { Plus, Trash2, ChevronUp, ChevronDown, Columns2, GripVertical, Copy, Check } from "lucide-react";
 import type { EditorialBlock } from "@/lib/editorial-blocks";
 import { useEditMode } from "@/components/disease-page/EditMode";
 import { useBlockDnd, type DropZone } from "@/components/disease-page/BlockDnd";
@@ -10,7 +10,9 @@ import {
   moveBlockAction,
   combineWithAdjacentBlockAction,
   removeFromRowAction,
+  getBlockForClipboardAction,
 } from "@/lib/actions/authoring";
+import { writeBlockClipboard } from "@/lib/block-clipboard";
 import { BlockPicker } from "@/components/disease-page/BlockPicker";
 import { AlignmentPicker } from "@/components/disease-page/AlignmentPicker";
 import { notifySectionIndexChanged } from "@/lib/section-events";
@@ -109,6 +111,7 @@ export function BlockControls({
   const { editing } = useEditMode();
   const [pickerOpen, setPickerOpen] = useState(false);
   const [layoutOpen, setLayoutOpen] = useState(false);
+  const [copied, setCopied] = useState(false);
   // Drop-target state for this specific block — which of its four drop
   // zones (§below) a drag is currently hovering, so the right indicator
   // renders on the right edge. Called unconditionally (before the
@@ -261,6 +264,27 @@ export function BlockControls({
                 }
               >
                 <Columns2 className="size-3.5" aria-hidden="true" />
+              </button>
+            )}
+            {isManageable && (
+              <button
+                type="button"
+                aria-label="Copy block"
+                title="Copy — paste it anywhere via the + inserter"
+                className="flex size-6 items-center justify-center rounded text-secondary hover:bg-border/40 hover:text-primary"
+                onClick={async () => {
+                  const clip = await getBlockForClipboardAction(block.id);
+                  if (!clip) return;
+                  writeBlockClipboard(clip);
+                  setCopied(true);
+                  setTimeout(() => setCopied(false), 1500);
+                }}
+              >
+                {copied ? (
+                  <Check className="size-3.5 text-trust" aria-hidden="true" />
+                ) : (
+                  <Copy className="size-3.5" aria-hidden="true" />
+                )}
               </button>
             )}
             {isManageable && (

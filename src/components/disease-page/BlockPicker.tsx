@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { Search, Plus, ArrowLeft } from "lucide-react";
+import { Search, Plus, ArrowLeft, Clipboard } from "lucide-react";
 import {
   BLOCK_REGISTRY,
   BLOCK_GROUPS,
@@ -28,12 +28,14 @@ import {
   searchRehabilitationProtocolsAction,
   insertRehabilitationProtocolBlockAction,
   insertCardGridBlockAction,
+  pasteBlockAction,
 } from "@/lib/actions/authoring";
 import { IllustrationPicker } from "@/components/disease-page/IllustrationPicker";
 import { notifySectionIndexChanged } from "@/lib/section-events";
 import type { ManeuverRelationship } from "@/lib/editorial-blocks";
 import { maneuverRelationshipLabel } from "@/lib/editorial-blocks";
 import { relationshipGlyph } from "@/lib/relationship-glyphs";
+import { readBlockClipboard, type BlockClipboardEntry } from "@/lib/block-clipboard";
 
 // Large Cards (2-up, big) / Card Grid (3-up, medium) / Small Cards
 // (4-up, compact) are the same mechanism at three preset sizes — not
@@ -67,6 +69,13 @@ export function BlockPicker({
   // Non-null once a references-object type is chosen — swaps the
   // whole picker into that type's search-before-create sub-panel.
   const [objectSearch, setObjectSearch] = useState<{ type: string; query: string } | null>(null);
+  // Lazy initializer, not an effect — this component only ever mounts
+  // client-side (BlockControls.tsx renders it inside `pickerOpen &&`,
+  // which starts false, so it's never part of the server-rendered
+  // pass), and it unmounts on close, so a fresh mount already means
+  // "picker just opened" — exactly when a clipboard written on a
+  // different page needs to be picked up.
+  const [clipboard] = useState<BlockClipboardEntry | null>(() => readBlockClipboard());
 
   const suggested = useMemo(() => suggestedBlockTypes(contextHint), [contextHint]);
   const filtered = useMemo(() => {
@@ -257,6 +266,24 @@ export function BlockPicker({
         />
       </div>
       <div className="max-h-80 overflow-y-auto p-1">
+        {!query && clipboard && (
+          <div className="mb-1 border-b border-border pb-1">
+            <button
+              type="button"
+              onClick={async () => {
+                onClose();
+                await pasteBlockAction(diseaseId, afterPosition, clipboard);
+                if (clipboard.blockType === "section_heading") notifySectionIndexChanged();
+              }}
+              className="flex w-full items-center gap-2.5 rounded px-3 py-1.5 text-left font-ui text-sm text-accent hover:bg-accent/10"
+            >
+              <Clipboard className="size-4 shrink-0" aria-hidden="true" />
+              <span className="flex-1">
+                Paste <span className="text-primary">{clipboard.label}</span>
+              </span>
+            </button>
+          </div>
+        )}
         {!query && suggested.length > 0 && (
           <PickerSection label="Suggested" entries={suggested} onSelect={handleSelect} />
         )}

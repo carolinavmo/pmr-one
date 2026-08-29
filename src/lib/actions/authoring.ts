@@ -8,6 +8,8 @@ import { pool } from "@/lib/db";
 import { sanitizeRichText } from "@/lib/rich-text";
 import { revalidateDiseaseSurfaces } from "@/lib/revalidation";
 import type { BlockLayout, CardColor, ImageRowBlock } from "@/lib/editorial-blocks";
+import type { BlockClipboardEntry } from "@/lib/block-clipboard";
+import { BLOCK_REGISTRY } from "@/lib/block-registry";
 
 const MAX_UPLOAD_BYTES = 8 * 1024 * 1024;
 
@@ -1895,6 +1897,64 @@ export async function deleteBlockAction(blockId: string) {
   if (info?.row) {
     await cleanupOrphanedRow(info.disease_id, info.row);
   }
+  revalidateDiseaseSurfaces();
+}
+
+// Reads the raw row rather than going through resolveBlock/disease-
+// loader — a resolved EditorialBlock's shape varies per type and, for
+// references-object types (Clinical Pearl, Treatment Algorithm...),
+// embeds the shared object's own data inline instead of its id, which
+// is exactly the thing paste needs to preserve (so a pasted Clinical
+// Pearl still points at the same shared pearl row, not a copy of its
+// text under a new id). BLOCK_REGISTRY's label is attached here, not
+// derived client-side, so the picker can show "Paste Highlight Card"
+// without importing block-registry.ts into block-clipboard.ts.
+export async function getBlockForClipboardAction(
+  blockId: string
+): Promise<Omit<BlockClipboardEntry, "copiedAt"> | null> {
+  await requireEditor();
+  const { rows } = await pool.query(
+    `SELECT block_type, referenced_object_type, referenced_object_id, content_config, display_config
+     FROM editorial_block WHERE id = $1`,
+    [blockId]
+  );
+  const row = rows[0];
+  if (!row) return null;
+  const restLayout: BlockLayout = { ...(row.display_config?.layout ?? {}) };
+  delete restLayout.row;
+  delete restLayout.col;
+  const entry = BLOCK_REGISTRY.find((e) => e.type === row.block_type);
+  return {
+    blockType: row.block_type as string,
+    referencedObjectType: row.referenced_object_type as string | null,
+    referencedObjectId: row.referenced_object_id as string | null,
+    contentConfig: row.content_config,
+    layout: Object.keys(restLayout).length > 0 ? restLayout : null,
+    label: entry?.label ?? (row.block_type as string),
+  };
+}
+
+export async function pasteBlockAction(
+  diseaseId: string,
+  afterPosition: number,
+  clip: Omit<BlockClipboardEntry, "copiedAt" | "label">
+) {
+  await requireEditor();
+  await makeRoomAfter(diseaseId, afterPosition);
+  await pool.query(
+    `INSERT INTO editorial_block
+       (disease_id, position, block_type, referenced_object_type, referenced_object_id, content_config, display_config)
+     VALUES ($1, $2, $3, $4, $5, $6, $7)`,
+    [
+      diseaseId,
+      afterPosition + 1,
+      clip.blockType,
+      clip.referencedObjectType,
+      clip.referencedObjectId,
+      clip.contentConfig,
+      clip.layout ? { layout: clip.layout } : {},
+    ]
+  );
   revalidateDiseaseSurfaces();
 }
 
