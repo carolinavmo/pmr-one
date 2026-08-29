@@ -7,7 +7,7 @@ import { auth } from "@/auth";
 import { pool } from "@/lib/db";
 import { sanitizeRichText } from "@/lib/rich-text";
 import { revalidateDiseaseSurfaces } from "@/lib/revalidation";
-import type { BlockLayout, ImageRowBlock } from "@/lib/editorial-blocks";
+import type { BlockLayout, CardColor, ImageRowBlock } from "@/lib/editorial-blocks";
 
 const MAX_UPLOAD_BYTES = 8 * 1024 * 1024;
 
@@ -1872,7 +1872,7 @@ export async function setIllustrationLegendPositionAction(
 // another disease's page.
 export async function updateIllustrationAnnotationsAction(
   blockId: string,
-  annotations: { label: string; x: number; y: number }[]
+  annotations: { label: string; x: number; y: number; color?: CardColor }[]
 ) {
   await requireEditor();
   await pool.query(

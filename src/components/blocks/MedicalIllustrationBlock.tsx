@@ -11,12 +11,15 @@ import {
   PanelBottom,
   PanelLeft,
   PanelRight,
+  Palette,
 } from "lucide-react";
-import type { MedicalIllustrationBlock } from "@/lib/editorial-blocks";
+import type { CardColor, MedicalIllustrationBlock } from "@/lib/editorial-blocks";
 import { useEditMode } from "@/components/disease-page/EditMode";
 import { RichEditableText } from "@/components/ui/RichEditableText";
 import { ZoomableImage } from "@/components/ui/ZoomableImage";
 import { IllustrationPicker } from "@/components/disease-page/IllustrationPicker";
+import { ColorSwatchPicker } from "@/components/ui/ColorSwatchPicker";
+import { CARD_COLOR_BADGE } from "@/lib/card-colors";
 import {
   updateIllustrationAnnotationsAction,
   updateBlockRichTextAction,
@@ -27,7 +30,15 @@ import {
   setIllustrationLegendPositionAction,
 } from "@/lib/actions/authoring";
 
-type Annotation = { label: string; x: number; y: number };
+type Annotation = { label: string; x: number; y: number; color?: CardColor };
+
+// Reader/edit markers default to the pre-existing neutral/accent look
+// when an annotation has no explicit color — only switches to the
+// badge's solid fill once an author actually picks one.
+const MARKER_DEFAULT = {
+  reader: "bg-surface-raised text-primary",
+  edit: "bg-accent text-white",
+};
 type ImageWidth = NonNullable<MedicalIllustrationBlock["imageWidth"]>;
 type LegendPosition = NonNullable<MedicalIllustrationBlock["legendPosition"]>;
 
@@ -88,6 +99,7 @@ export function MedicalIllustrationBlockView({
   const [annotations, setAnnotations] = useState<Annotation[]>(block.annotations ?? []);
   const [pickerOpen, setPickerOpen] = useState(false);
   const [widthOpen, setWidthOpen] = useState(false);
+  const [colorPickerIndex, setColorPickerIndex] = useState<number | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const draggingIndex = useRef<number | null>(null);
   const legendPosition = block.legendPosition ?? "bottom";
@@ -145,7 +157,9 @@ export function MedicalIllustrationBlockView({
           <span
             key={index}
             style={{ left: `${annotation.x}%`, top: `${annotation.y}%` }}
-            className="absolute flex size-6 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-surface-raised font-ui text-xs font-medium text-primary shadow"
+            className={`absolute flex size-6 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full font-ui text-xs font-medium shadow ${
+              annotation.color ? CARD_COLOR_BADGE[annotation.color] : MARKER_DEFAULT.reader
+            }`}
             aria-hidden="true"
           >
             {index + 1}
@@ -396,7 +410,9 @@ export function MedicalIllustrationBlockView({
               commit(annotations);
             }}
             onClick={(e) => e.stopPropagation()}
-            className="absolute flex size-6 -translate-x-1/2 -translate-y-1/2 cursor-grab items-center justify-center rounded-full bg-accent font-ui text-xs font-medium text-white shadow active:cursor-grabbing"
+            className={`absolute flex size-6 -translate-x-1/2 -translate-y-1/2 cursor-grab items-center justify-center rounded-full font-ui text-xs font-medium shadow active:cursor-grabbing ${
+              annotation.color ? CARD_COLOR_BADGE[annotation.color] : MARKER_DEFAULT.edit
+            }`}
           >
             {index + 1}
           </span>
@@ -407,7 +423,11 @@ export function MedicalIllustrationBlockView({
         <ul className="flex flex-col gap-1">
           {annotations.map((annotation, index) => (
             <li key={index} className="flex items-center gap-2">
-              <span className="flex size-5 shrink-0 items-center justify-center rounded-full bg-surface text-xs text-secondary">
+              <span
+                className={`flex size-5 shrink-0 items-center justify-center rounded-full font-ui text-xs ${
+                  annotation.color ? CARD_COLOR_BADGE[annotation.color] : "bg-surface text-secondary"
+                }`}
+              >
                 {index + 1}
               </span>
               <input
@@ -421,6 +441,24 @@ export function MedicalIllustrationBlockView({
                 placeholder="Label (optional)"
                 className="min-w-0 flex-1 rounded border border-transparent bg-transparent px-1.5 py-0.5 font-ui text-sm text-primary outline-none placeholder:text-secondary/50 hover:border-border focus:border-accent"
               />
+              <div className="relative shrink-0">
+                <button
+                  type="button"
+                  aria-label="Pin color"
+                  onClick={() => setColorPickerIndex((current) => (current === index ? null : index))}
+                  className="flex size-6 items-center justify-center rounded text-secondary hover:bg-border/40 hover:text-primary"
+                >
+                  <Palette className="size-3.5" aria-hidden="true" />
+                </button>
+                {colorPickerIndex === index && (
+                  <ColorSwatchPicker
+                    onPick={(color) => {
+                      setColorPickerIndex(null);
+                      commit(annotations.map((a, i) => (i === index ? { ...a, color } : a)));
+                    }}
+                  />
+                )}
+              </div>
               <button
                 type="button"
                 aria-label="Move annotation up"
