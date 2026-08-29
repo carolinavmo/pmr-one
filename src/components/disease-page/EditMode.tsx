@@ -1,6 +1,7 @@
 "use client";
 
 import { createContext, useContext, useRef, useState, type ReactNode } from "react";
+import { flushSync } from "react-dom";
 import { Pencil } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 
@@ -44,24 +45,26 @@ export function useEditMode() {
 // position immediately before and after the update, then nudging
 // window.scrollBy by the difference, keeps it (and whatever you were
 // reading near it) in the same screen position either way.
-// requestAnimationFrame (not a layout effect) so the measurement runs
-// after the browser has actually painted the new layout, not just
-// after React's commit. Falls back to doing nothing if the ref can't
-// be read at either point (e.g. this exact button instance didn't
-// survive the re-render) — never worse than the pre-existing
-// behavior, just doesn't always fully compensate.
+//
+// flushSync, not requestAnimationFrame: a plain setEditing() call
+// schedules the re-render for whenever React gets to it, which isn't
+// guaranteed to have happened (let alone been painted) by the time a
+// later rAF callback runs — that race was the actual bug in an
+// earlier version of this fix (the "after" measurement could still
+// read the pre-toggle layout). flushSync forces React to apply the
+// update and its DOM changes immediately, synchronously, so the very
+// next line already sees the new layout — no timing assumption needed.
 function useScrollPreservingToggle(editing: boolean, setEditing: (value: boolean) => void) {
   const ref = useRef<HTMLButtonElement>(null);
   const onClick = () => {
     const before = ref.current?.getBoundingClientRect().top ?? null;
-    setEditing(!editing);
-    if (before == null) return;
-    requestAnimationFrame(() => {
-      const after = ref.current?.getBoundingClientRect().top;
-      if (after != null && after !== before) {
-        window.scrollBy(0, after - before);
-      }
+    flushSync(() => {
+      setEditing(!editing);
     });
+    const after = ref.current?.getBoundingClientRect().top;
+    if (before != null && after != null && after !== before) {
+      window.scrollBy(0, after - before);
+    }
   };
   return { ref, onClick };
 }
