@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useState, type ElementType } from "react";
+import { Check } from "lucide-react";
 import { useEditMode } from "@/components/disease-page/EditMode";
 
 interface EditableTextProps {
@@ -76,9 +77,24 @@ export function EditableText({
     className: `${className} w-full resize-none rounded border border-accent bg-surface-raised px-2 py-1 outline-none`,
   };
 
-  return multiline ? (
-    <textarea {...sharedProps} rows={3} />
-  ) : (
-    <input {...sharedProps} type="text" />
+  return (
+    <div className="relative">
+      {multiline ? <textarea {...sharedProps} rows={3} /> : <input {...sharedProps} type="text" />}
+      {/* Explicit save affordance, right on the field — onBlur already
+          commits (clicking away saves just fine), but reaching for a
+          page/section-level "Done" button out of habit meant scrolling
+          back to it on a long page. onMouseDown prevents the button
+          itself from stealing focus first, so this fires as a normal
+          click rather than racing the field's own onBlur. */}
+      <button
+        type="button"
+        aria-label="Save"
+        onMouseDown={(e) => e.preventDefault()}
+        onClick={commit}
+        className="absolute -right-2 -bottom-2 flex size-6 items-center justify-center rounded-full bg-accent text-white shadow-sm hover:bg-accent/90"
+      >
+        <Check className="size-3.5" aria-hidden="true" />
+      </button>
+    </div>
   );
 }

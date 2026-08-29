@@ -1403,6 +1403,17 @@ export function RichEditableText({
             ))}
           </>
         )}
+
+        <div className="mx-0.5 h-5 w-px shrink-0 bg-border" />
+
+        <button
+          type="button"
+          onClick={commit}
+          className="ml-auto flex h-7 items-center gap-1 rounded bg-accent px-2 font-ui text-xs font-medium text-white transition-colors duration-base hover:bg-accent/90"
+        >
+          <Save className="size-3.5" aria-hidden="true" />
+          {saveLabel}
+        </button>
       </div>
       )}
       {createElement(resolveTag(Tag, frozenHtml), {
