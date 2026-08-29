@@ -23,7 +23,7 @@ export function SubsubsectionHeadingBlockView({ block }: { block: SubsubsectionH
   const textAlign = block.layout?.textAlign ?? "left";
 
   return (
-    <div className="flex items-center gap-2">
+    <div className="mt-6 flex items-center gap-2">
       <div className="min-w-0 flex-1">
         <EditableText
           as="h4"
