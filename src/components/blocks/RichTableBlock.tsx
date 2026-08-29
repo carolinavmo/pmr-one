@@ -141,13 +141,13 @@ export function RichTableBlockView({
                   row.badgeIcon && isCardIconName(row.badgeIcon) ? cardIcons[row.badgeIcon] : null;
                 return (
                   <tr key={rowIndex} className="border-b border-border last:border-0">
-                    <td className="px-2 py-2 text-center">
+                    <td className="px-2 py-2 text-center align-middle">
                       <span className="mx-auto flex size-6 items-center justify-center rounded-full border-2 border-[#128A99] font-ui text-xs font-semibold text-[#128A99]">
                         {BadgeIcon ? <BadgeIcon className="size-3.5" aria-hidden="true" /> : rowIndex + 1}
                       </span>
                     </td>
                     {columns.map((column, colIndex) => (
-                      <td key={colIndex} className="px-3 py-2 align-top text-secondary">
+                      <td key={colIndex} className="px-3 py-2 align-middle text-secondary">
                         <RichTableCellView type={column.type} value={row.cells[colIndex]} />
                       </td>
                     ))}
