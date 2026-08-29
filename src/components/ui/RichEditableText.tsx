@@ -25,6 +25,7 @@ import {
   Save,
 } from "lucide-react";
 import { useEditMode } from "@/components/disease-page/EditMode";
+import { preserveScrollAcrossSave } from "@/lib/preserve-scroll";
 import { ColorSwatchPicker } from "@/components/ui/ColorSwatchPicker";
 import { AnnotatableProse } from "@/components/annotations/AnnotatableProse";
 import type { EditorialBlock, HorizontalAlign } from "@/lib/editorial-blocks";
@@ -279,7 +280,7 @@ export function RichEditableText({
     setIsEditing(false);
     setPopover(null);
     if (html !== frozenHtml) {
-      await onSave(html);
+      await preserveScrollAcrossSave(() => onSave(html));
     }
   };
 

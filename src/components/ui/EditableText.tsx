@@ -3,6 +3,7 @@
 import { useRef, useState, type ElementType } from "react";
 import { Check } from "lucide-react";
 import { useEditMode } from "@/components/disease-page/EditMode";
+import { preserveScrollAcrossSave } from "@/lib/preserve-scroll";
 
 interface EditableTextProps {
   value: string;
@@ -63,7 +64,7 @@ export function EditableText({
   const commit = async () => {
     setIsEditing(false);
     if (draft !== value) {
-      await onSave(draft);
+      await preserveScrollAcrossSave(() => onSave(draft));
     }
   };
 

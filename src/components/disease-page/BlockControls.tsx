@@ -108,20 +108,27 @@ export function BlockControls({
   contextHint,
   children,
 }: BlockControlsProps) {
-  const { editing } = useEditMode();
+  const { editing, canEdit } = useEditMode();
   const [pickerOpen, setPickerOpen] = useState(false);
   const [layoutOpen, setLayoutOpen] = useState(false);
   const [copied, setCopied] = useState(false);
   // Drop-target state for this specific block — which of its four drop
   // zones (§below) a drag is currently hovering, so the right indicator
   // renders on the right edge. Called unconditionally (before the
-  // `!editing` early return below) even though it's only ever read
+  // `!canEdit` early return below) even though it's only ever read
   // once editing is true — same rules-of-hooks requirement
   // TopicTreeItem's own separator early-return already ran into.
   const [dropZone, setDropZone] = useState<DropZone | null>(null);
   const dnd = useBlockDnd();
 
-  if (!editing) return <>{children}</>;
+  // A visitor/non-editor never transitions in/out of editing (`editing`
+  // stays permanently false for them, since no EditModeProvider ever
+  // mounts), so there's no remount-continuity concern to solve for
+  // them — keep the exact zero-wrapper-DOM output a regular reader has
+  // always gotten. Only a real editor's session ever reaches the
+  // stable-wrapper tree below, where `editing` toggling on/off needs a
+  // structurally unchanged parent chain (see its own comment).
+  if (!canEdit) return <>{children}</>;
 
   const position = block.position ?? 0;
   const isManageable = MANAGEABLE_TYPES.has(block.type);
@@ -130,47 +137,68 @@ export function BlockControls({
   const inRow = Boolean(block.layout?.row);
   const isDragging = dnd?.draggingId === block.id;
 
+  // One stable tree for an editor regardless of `editing` — toggling
+  // used to swap between a bare Fragment (`!editing`) and this whole
+  // subtree, which meant `children`'s own internals (any block-local
+  // component state, and specifically the SectionEditToggle ref the
+  // scroll-preservation fix in EditMode.tsx depends on) got unmounted
+  // and recreated the instant editing flipped, for every block in the
+  // section at once — the actual cause of the "clicking Edit jumps the
+  // page" bug, not a timing issue. `children` now always sits at the
+  // same depth (this div → the flex row → the content div), so it
+  // survives the toggle; only the editing-only chrome around it (drop
+  // indicators, the insert row, the controls column) is conditionally
+  // present as stable-position siblings, never removed as an ancestor.
   return (
     <div
-      className="group/block relative flex flex-col gap-1"
-      onDragOver={(e) => {
-        if (!dnd?.draggingId || dnd.draggingId === block.id) return;
-        e.preventDefault();
-        const rect = e.currentTarget.getBoundingClientRect();
-        const fraction = (e.clientY - rect.top) / rect.height;
-        // Outer quarters reorder this block's *position* on the page
-        // (before/after); the middle half stacks the dragged block
-        // into this one's column (#132) — only offered when this
-        // block can actually hold a row cell (not a section heading).
-        // Stack zones fall back to plain before/after on a heading, so
-        // the whole block surface always does *something* sensible.
-        if (!canLayout) {
-          setDropZone(fraction < 0.5 ? "before" : "after");
-        } else if (fraction < 0.25) {
-          setDropZone("before");
-        } else if (fraction < 0.5) {
-          setDropZone("stack-above");
-        } else if (fraction < 0.75) {
-          setDropZone("stack-below");
-        } else {
-          setDropZone("after");
-        }
-      }}
-      onDragLeave={() => setDropZone(null)}
-      onDrop={(e) => {
-        e.preventDefault();
-        if (dropZone) dnd?.requestDrop(block.id, dropZone);
-        setDropZone(null);
-      }}
+      className={editing ? "group/block relative flex flex-col gap-1" : undefined}
+      onDragOver={
+        editing
+          ? (e) => {
+              if (!dnd?.draggingId || dnd.draggingId === block.id) return;
+              e.preventDefault();
+              const rect = e.currentTarget.getBoundingClientRect();
+              const fraction = (e.clientY - rect.top) / rect.height;
+              // Outer quarters reorder this block's *position* on the
+              // page (before/after); the middle half stacks the
+              // dragged block into this one's column (#132) — only
+              // offered when this block can actually hold a row cell
+              // (not a section heading). Stack zones fall back to
+              // plain before/after on a heading, so the whole block
+              // surface always does *something* sensible.
+              if (!canLayout) {
+                setDropZone(fraction < 0.5 ? "before" : "after");
+              } else if (fraction < 0.25) {
+                setDropZone("before");
+              } else if (fraction < 0.5) {
+                setDropZone("stack-above");
+              } else if (fraction < 0.75) {
+                setDropZone("stack-below");
+              } else {
+                setDropZone("after");
+              }
+            }
+          : undefined
+      }
+      onDragLeave={editing ? () => setDropZone(null) : undefined}
+      onDrop={
+        editing
+          ? (e) => {
+              e.preventDefault();
+              if (dropZone) dnd?.requestDrop(block.id, dropZone);
+              setDropZone(null);
+            }
+          : undefined
+      }
     >
-      {(dropZone === "before" || dropZone === "after") && (
+      {editing && (dropZone === "before" || dropZone === "after") && (
         <div
           className={`absolute inset-x-0 z-10 h-0.5 rounded-full bg-accent ${
             dropZone === "before" ? "-top-0.5" : "-bottom-0.5"
           }`}
         />
       )}
-      {(dropZone === "stack-above" || dropZone === "stack-below") && (
+      {editing && (dropZone === "stack-above" || dropZone === "stack-below") && (
         <div className="pointer-events-none absolute inset-0 z-10 rounded-lg ring-2 ring-accent ring-inset">
           <div
             className={`absolute inset-x-4 h-0.5 rounded-full bg-accent ${
@@ -179,33 +207,37 @@ export function BlockControls({
           />
         </div>
       )}
-      <div className="relative flex h-3 items-center justify-center">
-        <div className="absolute inset-x-0 top-1/2 h-px bg-border opacity-0 group-hover/block:opacity-100" />
-        <div className="relative">
-          <button
-            type="button"
-            onClick={() => setPickerOpen((open) => !open)}
-            aria-label="Insert block"
-            className="flex size-6 items-center justify-center rounded-full border border-border bg-surface-raised text-secondary opacity-0 shadow-sm transition-opacity duration-base group-hover/block:opacity-100 hover:text-accent"
-          >
-            <Plus className="size-3.5" aria-hidden="true" />
-          </button>
-          {pickerOpen && (
-            <div className="absolute top-7 left-1/2 z-10 -translate-x-1/2">
-              <BlockPicker
-                diseaseId={diseaseId}
-                afterPosition={position}
-                contextHint={contextHint}
-                onClose={() => setPickerOpen(false)}
-              />
-            </div>
-          )}
+      {editing && (
+        <div className="relative flex h-3 items-center justify-center">
+          <div className="absolute inset-x-0 top-1/2 h-px bg-border opacity-0 group-hover/block:opacity-100" />
+          <div className="relative">
+            <button
+              type="button"
+              onClick={() => setPickerOpen((open) => !open)}
+              aria-label="Insert block"
+              className="flex size-6 items-center justify-center rounded-full border border-border bg-surface-raised text-secondary opacity-0 shadow-sm transition-opacity duration-base group-hover/block:opacity-100 hover:text-accent"
+            >
+              <Plus className="size-3.5" aria-hidden="true" />
+            </button>
+            {pickerOpen && (
+              <div className="absolute top-7 left-1/2 z-10 -translate-x-1/2">
+                <BlockPicker
+                  diseaseId={diseaseId}
+                  afterPosition={position}
+                  contextHint={contextHint}
+                  onClose={() => setPickerOpen(false)}
+                />
+              </div>
+            )}
+          </div>
         </div>
-      </div>
+      )}
 
-      <div className="flex items-start gap-2">
-        <div className={`min-w-0 flex-1 ${isDragging ? "opacity-40" : ""}`}>{children}</div>
-        {(isManageable || canLayout || isAlignable) && (
+      <div className={editing ? "flex items-start gap-2" : undefined}>
+        <div className={editing ? `min-w-0 flex-1 ${isDragging ? "opacity-40" : ""}` : undefined}>
+          {children}
+        </div>
+        {editing && (isManageable || canLayout || isAlignable) && (
           <div className="relative flex shrink-0 flex-col gap-0.5 opacity-0 transition-opacity duration-base group-hover/block:opacity-100">
             <button
               type="button"
