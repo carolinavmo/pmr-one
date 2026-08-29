@@ -88,44 +88,54 @@ function SectionCardBody({
     );
   }
 
-  if (editing) {
-    return (
-      <div className="flex flex-col gap-2">
-        <div className="flex items-start justify-between gap-2">
-          {/* items-start, not items-baseline: `heading` here is
-              BlockControls' full editing chrome (a hover "+" insert row
-              sits above every block, headings included), not a bare h2
-              — flex baseline alignment against that multi-row content
-              lands on its bottom edge, not the heading text. mt-4 on
-              the number and [&_h2]:!mt-0 on the heading (descendant
-              selector — h2 sits two levels deep in BlockControls' own
-              markup here, so [&>h2] can't reach it) both cancel out to
-              the same offset instead, so both start at the same y. */}
-          <div className="flex min-w-0 flex-1 items-start gap-2 [&_h2]:!mt-0">
-            {numberLabel("text-[28px] leading-[36px] tracking-[-0.2px]", "mt-4")}
-            <div className="min-w-0 flex-1">{heading}</div>
-          </div>
-          <SectionEditToggle />
-        </div>
-        {children}
-      </div>
-    );
-  }
-
-  // Fixed brand color on every section header bar, on every page —
-  // deliberately not CARD_COLOR_TINT[branchColor] anymore. The
-  // per-topic branch tint (violet for Anatomy, teal for Foot & Ankle,
-  // etc.) stayed correct but read as inconsistent page-to-page; this
-  // is a flat, always-white-on-#128A99 header regardless of topic.
+  // One stable tree regardless of `editing` — toggling used to swap
+  // between two entirely different subtrees (a bare flex column vs. a
+  // card with a colored banner), which meant `children` (every block
+  // in the section) sat at a different depth/parent-type on each
+  // render and got fully unmounted and remounted on every toggle —
+  // the real cause of "clicking Edit jumps the page," one level above
+  // the identical problem already fixed in BlockControls.tsx. Only the
+  // *styling* differs by branch below; element types and nesting are
+  // identical either way, so children — and the heading block's own
+  // internals, and SectionEditToggle — survive the toggle intact.
+  //
+  // heading is now always wrapped in the same min-w-0 flex-1 div in
+  // both branches (previously only the editing branch did this), so
+  // both branches use the [&_h2] descendant selector to reach the h2
+  // inside it — a [&>h2] direct-child selector, which the read-only
+  // branch used to rely on, would stop matching now that heading is
+  // one level deeper here too.
+  //
+  // items-start (not items-baseline) while editing: `heading` here is
+  // BlockControls' full editing chrome (a hover "+" insert row sits
+  // above every block, headings included), not a bare h2 — flex
+  // baseline alignment against that multi-row content lands on its
+  // bottom edge, not the heading text. mt-4 on the number and
+  // [&_h2]:!mt-0 on the heading both cancel out to the same offset
+  // instead, so both start at the same y.
   return (
-    <div className="mt-6 rounded-xl bg-surface-card first:mt-0">
-      <div className="flex items-center gap-3 rounded-[4px] bg-[#128A99] px-4 py-3.5">
-        <div className="flex min-w-0 flex-1 items-baseline gap-2 [&>h2]:!mt-0 [&>h2]:!text-[21px] [&>h2]:!leading-[28px] [&>h2]:!text-white">
-          {numberLabel("text-[21px] leading-[28px]", "", "text-white")}
-          {heading}
+    <div className={editing ? "flex flex-col gap-2" : "mt-6 rounded-xl bg-surface-card first:mt-0"}>
+      <div
+        className={
+          editing
+            ? "flex items-start justify-between gap-2"
+            : "flex items-center gap-3 rounded-[4px] bg-[#128A99] px-4 py-3.5"
+        }
+      >
+        <div
+          className={
+            editing
+              ? "flex min-w-0 flex-1 items-start gap-2 [&_h2]:!mt-0"
+              : "flex min-w-0 flex-1 items-baseline gap-2 [&_h2]:!mt-0 [&_h2]:!text-[21px] [&_h2]:!leading-[28px] [&_h2]:!text-white"
+          }
+        >
+          {editing
+            ? numberLabel("text-[28px] leading-[36px] tracking-[-0.2px]", "mt-4")
+            : numberLabel("text-[21px] leading-[28px]", "", "text-white")}
+          <div className="min-w-0 flex-1">{heading}</div>
         </div>
         {canEdit && <SectionEditToggle />}
-        {isSignedIn && (
+        {!editing && isSignedIn && (
           <button
             type="button"
             onClick={() => setCollapsed((current) => !current)}
@@ -140,9 +150,15 @@ function SectionCardBody({
           </button>
         )}
       </div>
-      {!collapsed && (
-        <div className="flex flex-col gap-4 border-t border-border/50 px-4 pt-4 pb-5">{children}</div>
-      )}
+      <div
+        className={
+          editing
+            ? undefined
+            : `flex flex-col gap-4 border-t border-border/50 px-4 pt-4 pb-5 ${collapsed ? "hidden" : ""}`
+        }
+      >
+        {children}
+      </div>
     </div>
   );
 }
