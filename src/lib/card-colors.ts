@@ -128,6 +128,34 @@ export const CARD_COLOR_CARD: Record<CardColor, string> = {
   pink: "border-card-pink/30 bg-card-pink/5",
 };
 
+// An alternate card treatment (EXPERIMENTAL, local-only — not yet
+// wired into a picker) — a solid colored left border instead of a
+// border on all sides, with a slightly stronger tint than
+// CARD_COLOR_CARD's own /5. Tried first on Highlight Card at the
+// founder's request ("border left, and some background color").
+export const CARD_COLOR_CARD_ACCENT: Record<CardColor, string> = {
+  neutral: "border-l-4 border-l-border bg-surface-raised",
+  accent: "border-l-4 border-l-accent bg-accent/10",
+  trust: "border-l-4 border-l-trust bg-trust/10",
+  insight: "border-l-4 border-l-insight bg-insight/10",
+  blue: "border-l-4 border-l-card-blue bg-card-blue/10",
+  violet: "border-l-4 border-l-card-violet bg-card-violet/10",
+  rose: "border-l-4 border-l-card-rose bg-card-rose/10",
+  slate: "border-l-4 border-l-card-slate bg-card-slate/10",
+  red: "border-l-4 border-l-card-red bg-card-red/10",
+  orange: "border-l-4 border-l-card-orange bg-card-orange/10",
+  yellow: "border-l-4 border-l-card-yellow bg-card-yellow/10",
+  lime: "border-l-4 border-l-card-lime bg-card-lime/10",
+  green: "border-l-4 border-l-card-green bg-card-green/10",
+  teal: "border-l-4 border-l-card-teal bg-card-teal/10",
+  cyan: "border-l-4 border-l-card-cyan bg-card-cyan/10",
+  sky: "border-l-4 border-l-card-sky bg-card-sky/10",
+  indigo: "border-l-4 border-l-card-indigo bg-card-indigo/10",
+  purple: "border-l-4 border-l-card-purple bg-card-purple/10",
+  fuchsia: "border-l-4 border-l-card-fuchsia bg-card-fuchsia/10",
+  pink: "border-l-4 border-l-card-pink bg-card-pink/10",
+};
+
 // A badge's pill treatment — a solid, fixed-dark fill with light text
 // (founder request), not the light tint+border a card's own background
 // uses. Reads the `--color-badge-*` tokens (globals.css), which are

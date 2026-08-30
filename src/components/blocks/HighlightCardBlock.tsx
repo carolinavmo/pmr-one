@@ -32,7 +32,7 @@ import {
   setHighlightCardImageFocalPointAction,
   setHighlightCardImageFitAction,
 } from "@/lib/actions/authoring";
-import { CARD_COLOR_CARD, CARD_COLOR_CHIP, CARD_COLOR_TEXT } from "@/lib/card-colors";
+import { CARD_COLOR_CARD_ACCENT, CARD_COLOR_CHIP, CARD_COLOR_TEXT } from "@/lib/card-colors";
 import { TEXT_ALIGN_CLASS, ROW_ITEMS_CLASS } from "@/lib/block-alignment";
 import { FOCAL_POINT_OPTIONS, FOCAL_POINT_CLASS, type ImageFocalPoint } from "@/lib/image-focal-point";
 
@@ -356,11 +356,11 @@ export function HighlightCardBlockView({
 
   return (
     <div
-      className={`relative flex rounded-lg border p-3 ${
+      className={`relative flex p-4 ${
         isSideBySide
           ? "flex-row items-center gap-3"
           : `flex-col gap-1.5 ${ROW_ITEMS_CLASS[textVerticalAlign]}`
-      } ${CARD_COLOR_CARD[color]}`}
+      } ${CARD_COLOR_CARD_ACCENT[color]}`}
     >
       {editing && (
         <div className="absolute top-2 right-2">
