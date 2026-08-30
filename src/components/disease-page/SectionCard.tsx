@@ -119,7 +119,7 @@ function SectionCardBody({
         className={
           editing
             ? "flex items-start justify-between gap-2"
-            : "flex items-center gap-3 rounded-[4px] bg-[#128A99] px-4 py-3.5"
+            : "flex items-center gap-3 rounded-[4px] bg-[#0f172a] px-4 py-3.5"
         }
       >
         <div
