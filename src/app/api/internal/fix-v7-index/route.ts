@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { pool } from "@/lib/db";
+import { revalidateDiseaseSurfaces } from "@/lib/revalidation";
 
 // Temporary, one-shot data-fix route — same pattern as the migration/
 // seed routes (hardcoded, idempotent, no user input, deleted after it
@@ -46,5 +47,6 @@ export async function GET() {
     results.push({ position, toType: "subsubsection_heading", text: r.rows[0]?.text ?? null });
   }
 
+  revalidateDiseaseSurfaces();
   return NextResponse.json({ ok: true, diseaseId, results });
 }
