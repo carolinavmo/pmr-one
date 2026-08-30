@@ -83,6 +83,11 @@ export async function getDiseaseBySlug(slug: string): Promise<DiseaseData | null
 export interface SectionIndexEntry {
   id: string;
   heading: string;
+  // Populated for every section regardless of which one is "active" —
+  // IndexSidebar.tsx decides whether to actually render this list (only
+  // for the currently-scrolled-into section), not this query. Always
+  // an array (never undefined) so callers don't need an extra guard.
+  subsections: SectionIndexEntry[];
 }
 
 export interface SectionIndex {
@@ -108,11 +113,15 @@ export async function getSectionIndex(
   diseaseSlug: string,
   includeUnpublished = false
 ): Promise<SectionIndex | null> {
-  const { rows } = await pool.query<{ text: string }>(
-    `SELECT eb.content_config->>'text' AS text
+  // subsection_heading rows ride along in the same position-ordered
+  // query so they can be grouped under whichever section_heading
+  // immediately precedes them — cheaper than a second round-trip, and
+  // the grouping below is a single linear pass either way.
+  const { rows } = await pool.query<{ text: string; block_type: string }>(
+    `SELECT eb.content_config->>'text' AS text, eb.block_type
      FROM editorial_block eb
      JOIN disease d ON d.id = eb.disease_id
-     WHERE d.slug = $1 AND eb.block_type = 'section_heading'
+     WHERE d.slug = $1 AND eb.block_type IN ('section_heading', 'subsection_heading')
        AND (d.status = 'published' OR $2)
      ORDER BY eb.position`,
     [diseaseSlug, includeUnpublished]
@@ -146,9 +155,26 @@ export async function getSectionIndex(
 
   const sectionRows = isSnapshotHeading ? rows.slice(1) : rows;
   if (sectionRows.length === 0) return null;
+
+  const sections: SectionIndexEntry[] = [];
+  for (const row of sectionRows) {
+    if (row.block_type === "section_heading") {
+      sections.push({ id: slugify(row.text), heading: row.text, subsections: [] });
+    } else if (sections.length > 0) {
+      // A subsection_heading before any section_heading (shouldn't
+      // happen — see the preamble-block comment elsewhere in this
+      // file) has nowhere to nest, so it's dropped rather than
+      // crashing on sections[-1].
+      sections[sections.length - 1].subsections.push({
+        id: slugify(row.text),
+        heading: row.text,
+        subsections: [],
+      });
+    }
+  }
   return {
     diseaseSlug,
-    sections: sectionRows.map((row) => ({ id: slugify(row.text), heading: row.text })),
+    sections,
   };
 }
 

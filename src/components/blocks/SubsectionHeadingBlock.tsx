@@ -1,18 +1,22 @@
 "use client";
 
 import type { SubsectionHeadingBlock } from "@/lib/editorial-blocks";
+import { slugify } from "@/lib/slugify";
 import { EditableText } from "@/components/ui/EditableText";
 import { updateBlockTextAction } from "@/lib/actions/authoring";
 import { TEXT_ALIGN_CLASS } from "@/lib/block-alignment";
 import { useEditMode, SectionEditToggle } from "@/components/disease-page/EditMode";
+import { notifySectionIndexChanged } from "@/lib/section-events";
 
 // A solid teal pill (white text) — EXPERIMENTAL, local-only. Swapped
 // with the section banner's own color per founder request: sections
 // are now dark-navy (SectionCard.tsx), subsections now carry the
-// brand teal that used to belong to the section banner. Deliberately
-// no id/slugify and no notifySectionIndexChanged: this
-// heading isn't meant to be deep-linkable or counted, only visually
-// styled like one within the surrounding section's own content.
+// brand teal that used to belong to the section banner. Not counted
+// in the "On this page" card or numbered like a section — but does
+// carry a stable anchor id (same slugify SectionHeadingBlockView
+// uses) and the same scroll-mt as that heading, since IndexSidebar
+// now links straight to whichever section is active's own
+// subsections (getSectionIndex, disease-loader.ts).
 //
 // The Edit/Done toggle beside it reuses SectionEditToggle as-is — it
 // just flips the *enclosing section's* shared editing state (the same
@@ -28,10 +32,14 @@ export function SubsectionHeadingBlockView({ block }: { block: SubsectionHeading
       <div className="min-w-0 flex-1">
         <EditableText
           as="h3"
+          id={slugify(block.text)}
           multiline={false}
-          className={`rounded-[4px] bg-[#128A99] px-3 py-2 font-heading text-lg font-semibold text-white ${TEXT_ALIGN_CLASS[textAlign]}`}
+          className={`scroll-mt-36 rounded-[4px] bg-[#128A99] px-3 py-2 font-heading text-lg font-semibold text-white lg:scroll-mt-24 ${TEXT_ALIGN_CLASS[textAlign]}`}
           value={block.text}
-          onSave={(value) => updateBlockTextAction(block.id, "text", value)}
+          onSave={async (value) => {
+            await updateBlockTextAction(block.id, "text", value);
+            notifySectionIndexChanged();
+          }}
         />
       </div>
       {canEdit && <SectionEditToggle />}

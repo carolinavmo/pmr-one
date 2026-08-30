@@ -333,21 +333,45 @@ function TopicTreeItem({
                     {diseaseSections.map((section, sectionIndexInList) => {
                       const sectionActive = activeSectionId === section.id;
                       return (
-                        <Link
-                          key={section.id}
-                          href={`/conditions/${disease.slug}#${section.id}`}
-                          onClick={onNavigate}
-                          className={`flex items-center gap-1.5 py-1 pr-2 font-ui text-[11px] transition-colors duration-base hover:bg-border/40 ${
-                            sectionActive
-                              ? `font-bold ${CARD_COLOR_TEXT[color]}`
-                              : "text-secondary hover:text-primary"
-                          }`}
-                          style={{ paddingLeft: `${6 + (depth + 2) * 12}px` }}
-                        >
-                          <span className="min-w-0 flex-1 truncate">
-                            {sectionIndexInList + 1}. {section.heading}
-                          </span>
-                        </Link>
+                        <div key={section.id}>
+                          <Link
+                            href={`/conditions/${disease.slug}#${section.id}`}
+                            onClick={onNavigate}
+                            className={`flex items-center gap-1.5 py-1 pr-2 font-ui text-[11px] transition-colors duration-base hover:bg-border/40 ${
+                              sectionActive
+                                ? `font-bold ${CARD_COLOR_TEXT[color]}`
+                                : "text-secondary hover:text-primary"
+                            }`}
+                            style={{ paddingLeft: `${6 + (depth + 2) * 12}px` }}
+                          >
+                            <span className="min-w-0 flex-1 truncate">
+                              {sectionIndexInList + 1}. {section.heading}
+                            </span>
+                          </Link>
+                          {/* Only the currently-active section's own
+                              subsections show, so the sidebar reads as
+                              "here's where you are" rather than every
+                              chapter's full outline at once — a chapter
+                              with 5-10 subsections would otherwise make
+                              the whole tree unreadable. Un-numbered,
+                              matching how subsection_heading itself
+                              isn't counted anywhere else. */}
+                          {sectionActive && section.subsections.length > 0 && (
+                            <div className="flex flex-col">
+                              {section.subsections.map((subsection) => (
+                                <Link
+                                  key={subsection.id}
+                                  href={`/conditions/${disease.slug}#${subsection.id}`}
+                                  onClick={onNavigate}
+                                  className="flex items-center gap-1.5 py-1 pr-2 font-ui text-[11px] text-secondary transition-colors duration-base hover:bg-border/40 hover:text-primary"
+                                  style={{ paddingLeft: `${6 + (depth + 3) * 12}px` }}
+                                >
+                                  <span className="min-w-0 flex-1 truncate">{subsection.heading}</span>
+                                </Link>
+                              ))}
+                            </div>
+                          )}
+                        </div>
                       );
                     })}
                   </div>
