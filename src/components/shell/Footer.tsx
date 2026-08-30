@@ -15,13 +15,14 @@ export async function Footer() {
 
   const links: {
     key: string;
-    href: "/conditions" | "/clinical-tools" | "/study-planner" | "/flashcards" | "/question-bank";
+    href: "/conditions" | "/clinical-tools" | "/study-planner" | "/flashcards" | "/question-bank" | "/courses";
   }[] = [
     { key: "conditions", href: "/conditions" },
     { key: "clinicalTools", href: "/clinical-tools" },
     { key: "studyPlanner", href: "/study-planner" },
     { key: "flashcards", href: "/flashcards" },
     { key: "questionBank", href: "/question-bank" },
+    { key: "courses", href: "/courses" },
   ];
 
   return (

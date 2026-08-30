@@ -51,6 +51,15 @@ export function revalidateQuestionBankSurfaces() {
   revalidatePath("/[locale]/question-bank/set/[setId]", "page");
 }
 
+// Called after any write to a course, module, or lesson (create/
+// rename/reorder/delete/publish, or a lesson's video finishing
+// upload) — covers both the course grid and the detail route since
+// either can show stale titles/counts after a mutation on the other.
+export function revalidateCourseSurfaces() {
+  revalidatePath("/[locale]/courses", "page");
+  revalidatePath("/[locale]/courses/[slug]", "page");
+}
+
 export function revalidateShellSurfaces() {
   revalidatePath("/[locale]", "layout");
   revalidatePath("/[locale]", "page");
