@@ -19,17 +19,12 @@ import { AnnotationProvider } from "@/components/annotations/AnnotationProvider"
 import { categoryForRegions } from "@/lib/disease-icons";
 
 interface DiseasePageProps {
-  // `locale` isn't consumed yet — locale-aware content loading lands
-  // in a later i18n phase (getDiseaseBySlug gaining a locale param,
-  // the source-locale edit lock, etc.). Typed here now so the route
-  // shape is correct from the route move onward, rather than adding
-  // it piecemeal later.
   params: Promise<{ locale: string; slug: string }>;
 }
 
 export default async function DiseasePage({ params }: DiseasePageProps) {
-  const { slug } = await params;
-  const disease = await getDiseaseBySlug(slug);
+  const { slug, locale } = await params;
+  const disease = await getDiseaseBySlug(slug, locale);
   if (!disease) notFound();
 
   // Only published diseases are publicly visible — editors/admins can

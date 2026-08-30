@@ -35,9 +35,9 @@ interface BlockRow {
   display_config: Record<string, unknown>;
 }
 
-export async function getDiseaseBySlug(slug: string): Promise<DiseaseData | null> {
+export async function getDiseaseBySlug(slug: string, locale?: string): Promise<DiseaseData | null> {
   const { rows: diseaseRows } = await pool.query(
-    `SELECT d.id, d.canonical_name, d.slug, d.status,
+    `SELECT d.id, d.canonical_name, d.slug, d.status, d.source_locale,
       d.evidence_based, d.board_relevance, d.updated_at,
       (
         SELECT array_agg(DISTINCT a.region)
@@ -58,9 +58,31 @@ export async function getDiseaseBySlug(slug: string): Promise<DiseaseData | null
     [disease.id]
   );
 
+  // Source-locale content is what's already in blockRows; a non-source
+  // locale swaps in editorial_block_translation's full content_config
+  // blob per block when one exists, falling back silently to the
+  // source-locale row when it doesn't (a partial translation reads as
+  // "some sections still in English", never as missing content).
+  const translationByBlockId = new Map<string, Record<string, unknown>>();
+  if (locale && locale !== disease.source_locale) {
+    const { rows: translationRows } = await pool.query<{
+      block_id: string;
+      content_config: Record<string, unknown>;
+    }>(
+      `SELECT ebt.block_id, ebt.content_config
+       FROM editorial_block_translation ebt
+       JOIN editorial_block eb ON eb.id = ebt.block_id
+       WHERE eb.disease_id = $1 AND ebt.locale = $2`,
+      [disease.id, locale]
+    );
+    for (const row of translationRows) translationByBlockId.set(row.block_id, row.content_config);
+  }
+
   const resolved = await Promise.all(
     blockRows.map(async (row): Promise<EditorialBlock | null> => {
-      const block = await resolveBlock(disease.id, row);
+      const translated = translationByBlockId.get(row.id);
+      const effectiveRow = translated ? { ...row, content_config: translated } : row;
+      const block = await resolveBlock(disease.id, effectiveRow);
       if (!block) return null;
       const layout = row.display_config?.layout as BlockLayout | undefined;
       return { ...block, position: row.position, ...(layout ? { layout } : {}) };
