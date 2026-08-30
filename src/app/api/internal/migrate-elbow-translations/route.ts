@@ -53,38 +53,66 @@ export async function GET() {
       [targetDisease[0].id]
     );
 
-    if (targetBlocks.length !== alignedSource.length) {
+    // The two sequences can drift (an admin edit landed on elbow-anatomy
+    // after this locale's translation snapshot was taken) — a strict
+    // positional zip would silently misattribute every block after the
+    // drift point (the exact V7 bug class this app already hit once).
+    // Instead, find the longest common prefix/suffix of the block_type
+    // sequences; if everything outside that window is a pure insertion
+    // on one side (no genuine substitution), the alignment is
+    // unambiguous and the extra block(s) are simply skipped (no
+    // translation stored for a block that no longer exists, or vice
+    // versa — for locale's block that source doesn't have).
+    const sourceTypes = alignedSource.map((b) => b.block_type);
+    const targetTypes = targetBlocks.map((b) => b.block_type);
+    let prefix = 0;
+    while (
+      prefix < sourceTypes.length &&
+      prefix < targetTypes.length &&
+      sourceTypes[prefix] === targetTypes[prefix]
+    ) {
+      prefix++;
+    }
+    let suffix = 0;
+    while (
+      suffix < sourceTypes.length - prefix &&
+      suffix < targetTypes.length - prefix &&
+      sourceTypes[sourceTypes.length - 1 - suffix] === targetTypes[targetTypes.length - 1 - suffix]
+    ) {
+      suffix++;
+    }
+    const sourceMidLen = sourceTypes.length - prefix - suffix;
+    const targetMidLen = targetTypes.length - prefix - suffix;
+
+    if (sourceMidLen !== 0 || targetMidLen !== targetTypes.length - sourceTypes.length) {
       results[locale] = {
         ok: false,
-        error: "count mismatch",
-        sourceCount: alignedSource.length,
-        targetCount: targetBlocks.length,
+        error: "unresolvable type sequence drift",
+        prefix,
+        suffix,
+        sourceMidLen,
+        targetMidLen,
+        sourceMidSample: sourceTypes.slice(prefix, sourceTypes.length - suffix),
+        targetMidSample: targetTypes.slice(prefix, targetTypes.length - suffix),
       };
       continue;
     }
 
-    const mismatches: { index: number; sourceType: string; targetType: string }[] = [];
-    for (let i = 0; i < alignedSource.length; i++) {
-      if (alignedSource[i].block_type !== targetBlocks[i].block_type) {
-        mismatches.push({
-          index: i,
-          sourceType: alignedSource[i].block_type,
-          targetType: targetBlocks[i].block_type,
-        });
-      }
-    }
-    if (mismatches.length > 0) {
-      results[locale] = { ok: false, error: "type sequence mismatch", mismatches };
-      continue;
+    // Pure insertion on the target side: pair prefix 1:1, skip
+    // target's extra middle block(s) entirely, pair suffix 1:1.
+    const pairs: { source: (typeof alignedSource)[number]; target: (typeof targetBlocks)[number] }[] =
+      [];
+    for (let i = 0; i < prefix; i++) pairs.push({ source: alignedSource[i], target: targetBlocks[i] });
+    for (let i = 0; i < suffix; i++) {
+      pairs.push({
+        source: alignedSource[sourceTypes.length - suffix + i],
+        target: targetBlocks[targetTypes.length - suffix + i],
+      });
     }
 
     let written = 0;
-    for (let i = 0; i < alignedSource.length; i++) {
-      const sourceBlockId = alignedSource[i].id;
-      const translatedConfig = targetBlocks[i].content_config;
-      const sourceHash = createHash("sha256")
-        .update(JSON.stringify(alignedSource[i].content_config))
-        .digest("hex");
+    for (const { source, target } of pairs) {
+      const sourceHash = createHash("sha256").update(JSON.stringify(source.content_config)).digest("hex");
       await pool.query(
         `INSERT INTO editorial_block_translation (block_id, locale, content_config, source_hash, status)
          VALUES ($1, $2, $3, $4, 'machine')
@@ -92,11 +120,16 @@ export async function GET() {
            SET content_config = EXCLUDED.content_config,
                source_hash = EXCLUDED.source_hash,
                translated_at = now()`,
-        [sourceBlockId, locale, translatedConfig, sourceHash]
+        [source.id, locale, target.content_config, sourceHash]
       );
       written++;
     }
-    results[locale] = { ok: true, written };
+    results[locale] = {
+      ok: true,
+      written,
+      skippedTargetBlocks: targetMidLen,
+      skippedTargetTypes: targetTypes.slice(prefix, targetTypes.length - suffix),
+    };
   }
 
   return NextResponse.json({ ok: true, sourceBlockCount: sourceBlocks.length, alignedSourceCount: alignedSource.length, results });
