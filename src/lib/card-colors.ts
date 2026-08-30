@@ -129,32 +129,33 @@ export const CARD_COLOR_CARD: Record<CardColor, string> = {
 };
 
 // An alternate card treatment (EXPERIMENTAL, local-only — not yet
-// wired into a picker) — a solid colored left border instead of a
-// border on all sides, with the same light tint as CARD_COLOR_CARD's
-// own /5 (started at /10, lightened per follow-up feedback). Tried
-// first on Highlight Card at the founder's request ("border left, and
-// some background color").
+// wired into a picker) — a colored left border instead of a border on
+// all sides, with the same light tint as CARD_COLOR_CARD's own /5.
+// Both the border and the tint started fully saturated (border) /
+// at /10 (tint) and were lightened per follow-up feedback — border
+// now /60, tint /5. Tried first on Highlight Card at the founder's
+// request ("border left, and some background color").
 export const CARD_COLOR_CARD_ACCENT: Record<CardColor, string> = {
   neutral: "border-l-4 border-l-border bg-surface-raised",
-  accent: "border-l-4 border-l-accent bg-accent/5",
-  trust: "border-l-4 border-l-trust bg-trust/5",
-  insight: "border-l-4 border-l-insight bg-insight/5",
-  blue: "border-l-4 border-l-card-blue bg-card-blue/5",
-  violet: "border-l-4 border-l-card-violet bg-card-violet/5",
-  rose: "border-l-4 border-l-card-rose bg-card-rose/5",
-  slate: "border-l-4 border-l-card-slate bg-card-slate/5",
-  red: "border-l-4 border-l-card-red bg-card-red/5",
-  orange: "border-l-4 border-l-card-orange bg-card-orange/5",
-  yellow: "border-l-4 border-l-card-yellow bg-card-yellow/5",
-  lime: "border-l-4 border-l-card-lime bg-card-lime/5",
-  green: "border-l-4 border-l-card-green bg-card-green/5",
-  teal: "border-l-4 border-l-card-teal bg-card-teal/5",
-  cyan: "border-l-4 border-l-card-cyan bg-card-cyan/5",
-  sky: "border-l-4 border-l-card-sky bg-card-sky/5",
-  indigo: "border-l-4 border-l-card-indigo bg-card-indigo/5",
-  purple: "border-l-4 border-l-card-purple bg-card-purple/5",
-  fuchsia: "border-l-4 border-l-card-fuchsia bg-card-fuchsia/5",
-  pink: "border-l-4 border-l-card-pink bg-card-pink/5",
+  accent: "border-l-4 border-l-accent/60 bg-accent/5",
+  trust: "border-l-4 border-l-trust/60 bg-trust/5",
+  insight: "border-l-4 border-l-insight/60 bg-insight/5",
+  blue: "border-l-4 border-l-card-blue/60 bg-card-blue/5",
+  violet: "border-l-4 border-l-card-violet/60 bg-card-violet/5",
+  rose: "border-l-4 border-l-card-rose/60 bg-card-rose/5",
+  slate: "border-l-4 border-l-card-slate/60 bg-card-slate/5",
+  red: "border-l-4 border-l-card-red/60 bg-card-red/5",
+  orange: "border-l-4 border-l-card-orange/60 bg-card-orange/5",
+  yellow: "border-l-4 border-l-card-yellow/60 bg-card-yellow/5",
+  lime: "border-l-4 border-l-card-lime/60 bg-card-lime/5",
+  green: "border-l-4 border-l-card-green/60 bg-card-green/5",
+  teal: "border-l-4 border-l-card-teal/60 bg-card-teal/5",
+  cyan: "border-l-4 border-l-card-cyan/60 bg-card-cyan/5",
+  sky: "border-l-4 border-l-card-sky/60 bg-card-sky/5",
+  indigo: "border-l-4 border-l-card-indigo/60 bg-card-indigo/5",
+  purple: "border-l-4 border-l-card-purple/60 bg-card-purple/5",
+  fuchsia: "border-l-4 border-l-card-fuchsia/60 bg-card-fuchsia/5",
+  pink: "border-l-4 border-l-card-pink/60 bg-card-pink/5",
 };
 
 // A badge's pill treatment — a solid, fixed-dark fill with light text
