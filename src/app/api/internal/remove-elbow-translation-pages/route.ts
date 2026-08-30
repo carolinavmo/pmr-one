@@ -1,10 +1,6 @@
 import { NextResponse } from "next/server";
-import { execFile } from "node:child_process";
-import { promisify } from "node:util";
 import { pool } from "@/lib/db";
 import { revalidateShellSurfaces } from "@/lib/revalidation";
-
-const execFileAsync = promisify(execFile);
 
 // Removes the 3 standalone translated Elbow Anatomy disease rows now
 // that their content lives in editorial_block_translation (see
@@ -12,7 +8,9 @@ const execFileAsync = promisify(execFile);
 // them per-locale — these copies would otherwise keep showing up as
 // their own separate entries in the sidebar topic tree. Same
 // relationship-table cleanup order admin/actions.ts's deleteDiseaseAction
-// uses; run only after verifying the locale-aware page works.
+// uses (minus its pg_dump backup step, which only resolves a Windows
+// install path and can't run on this Linux container); run only after
+// verifying the locale-aware page works.
 const SLUGS = ["elbow-anatomy-es", "elbow-anatomy-pt-pt", "elbow-anatomy-pt-br"];
 
 const DISEASE_RELATIONSHIP_TABLES = [
@@ -24,13 +22,6 @@ const DISEASE_RELATIONSHIP_TABLES = [
 ];
 
 export async function GET() {
-  try {
-    await execFileAsync("node", ["scripts/backup-db.mjs"], { cwd: process.cwd() });
-  } catch (err) {
-    const message = err instanceof Error ? err.message : String(err);
-    return NextResponse.json({ ok: false, error: `Backup failed, delete aborted: ${message}` }, { status: 500 });
-  }
-
   const client = await pool.connect();
   const removed: string[] = [];
   try {
