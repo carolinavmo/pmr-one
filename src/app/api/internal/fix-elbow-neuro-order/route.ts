@@ -83,6 +83,18 @@ export async function GET() {
   }
 
   if (mineIds.length !== typedMyBlocks.length) {
+    const unmatchedMine = typedMyBlocks
+      .filter((b) => (myMultiset.get(b.type + "::" + canonicalStringify(b.content_config)) ?? 0) > 0)
+      .map((b) => ({ type: b.type, preview: canonicalStringify(b.content_config).slice(0, 200) }));
+    const tailBlocks = blocks.filter((b) => tailIds.includes(b.id));
+    const suspiciousTail = tailBlocks
+      .filter((b) => unmatchedMine.some((m) => m.type === b.block_type))
+      .map((b) => ({
+        id: b.id,
+        position: b.position,
+        type: b.block_type,
+        preview: canonicalStringify(b.content_config).slice(0, 200),
+      }));
     return NextResponse.json(
       {
         ok: false,
@@ -90,6 +102,8 @@ export async function GET() {
         expectedMine: typedMyBlocks.length,
         foundMine: mineIds.length,
         foundTail: tailIds.length,
+        unmatchedMine,
+        suspiciousTail,
       },
       { status: 409 }
     );
