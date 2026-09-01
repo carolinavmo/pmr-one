@@ -1,0 +1,1476 @@
+[
+  {
+    "type": "section_heading",
+    "content_config": {
+      "text": "1. Overview — Why the Knee Behaves as It Does"
+    }
+  },
+  {
+    "type": "paragraph",
+    "content_config": {
+      "body": "The hip is a socket. The ankle is a mortise. <strong>The knee is two curved surfaces resting on a nearly flat one</strong>, held together almost entirely by soft tissue. It carries the largest loads in the body across the least congruent articulation. Every characteristic problem of the knee follows from that single mismatch."
+    }
+  },
+  {
+    "type": "subsection_heading",
+    "content_config": {
+      "text": "1.1 Two joints in one capsule (and a third nearby)"
+    }
+  },
+  {
+    "type": "comparison_table",
+    "content_config": {
+      "columns": [
+        "<strong>Joint</strong>",
+        "<strong>Type</strong>",
+        "<strong>Note</strong>"
+      ],
+      "rows": [
+        [
+          "<strong>Tibiofemoral</strong>",
+          "Modified hinge (bicondylar); flexion/extension plus rotation and rolling/gliding",
+          "Two separate compartments, medial and lateral, but one cavity"
+        ],
+        [
+          "<strong>Patellofemoral</strong>",
+          "Plane / sellar; the patella glides in the trochlear groove",
+          "<strong>Shares the same synovial cavity</strong> — an effusion fills both"
+        ],
+        [
+          "<strong>Proximal </strong><strong>tibiofibular</strong>",
+          "Plane synovial",
+          "<strong>A separate joint</strong>, but communicates with the knee in ~10–20% of people. Relevant to the common peroneal nerve"
+        ]
+      ]
+    }
+  },
+  {
+    "type": "highlight_card",
+    "content_config": {
+      "label": "PM&R clinical pearl",
+      "text": "<strong>The tibiofemoral and patellofemoral joints share one cavity.</strong> So an effusion, a haemarthrosis or an inflammatory synovitis involves both, and <strong>a single intra-articular injection treats both</strong>. There is no need to inject the patellofemoral joint separately.<br><br>It also means anterior knee pain in a patient with a large effusion may simply be the effusion, not a patellofemoral disorder. Aspirate first, reassess afterwards.",
+      "color": "teal"
+    }
+  },
+  {
+    "type": "subsection_heading",
+    "content_config": {
+      "text": "1.2 Why the knee is so dependent on soft tissue"
+    }
+  },
+  {
+    "type": "paragraph",
+    "content_config": {
+      "body": "<ul><li>The <strong>femoral condyles are convex in both planes</strong>; the <strong>tibial plateaus are nearly flat</strong> (the lateral one is actually convex). Bony congruity is therefore minimal.</li><li>The <strong>menisci</strong> partly correct this, deepening the surfaces and increasing contact area.</li><li><strong>Everything else is ligament and muscle.</strong> The cruciates control anteroposterior translation and rotation; the collaterals control varus and valgus; the quadriceps and hamstrings control the joint dynamically.</li><li>Consequence: the knee is <strong>injured by direction-specific forces</strong> (valgus, varus, rotation, hyperextension), and each produces a predictable pattern of structural failure. Knowing the anatomy lets you predict the lesion from the mechanism.</li></ul>"
+    }
+  },
+  {
+    "type": "subsection_heading",
+    "content_config": {
+      "text": "1.3 Range of motion"
+    }
+  },
+  {
+    "type": "comparison_table",
+    "content_config": {
+      "columns": [
+        "<strong>Motion</strong>",
+        "<strong>Range</strong>",
+        "<strong>Note</strong>"
+      ],
+      "rows": [
+        [
+          "<strong>Extension</strong>",
+          "<strong>0&#176;</strong>, with 5–10&#176; hyperextension normal in many people",
+          "<strong>Loss of full extension is the most disabling deficit</strong> — it costs energy at every step"
+        ],
+        [
+          "<strong>Flexion</strong>",
+          "<strong>0–135&#176;</strong> (up to ~140–150&#176; passively)",
+          "Heel-to-buttock contact limits it"
+        ],
+        [
+          "<strong>Rotation</strong><strong> (</strong><strong>at</strong><strong> 90&#176; </strong><strong>flexion</strong><strong>)</strong>",
+          "Internal ~10&#176;, external ~30–40&#176;",
+          "Only possible in flexion; locked in extension"
+        ]
+      ]
+    }
+  },
+  {
+    "type": "subsubsection_heading",
+    "content_config": {
+      "text": "1.3.1 Functional requirements"
+    }
+  },
+  {
+    "type": "paragraph",
+    "content_config": {
+      "body": "<ul><li><strong>Level</strong><strong> </strong><strong>walking</strong><strong>:</strong> ~0–60–70&#176;</li><li><strong>Stairs</strong><strong>:</strong> ascending ~85–90&#176;, descending ~90–100&#176;</li><li><strong>Sitting and rising from a chair:</strong> ~90–105&#176;</li><li><strong>Tying</strong><strong> a </strong><strong>shoelace</strong><strong>:</strong> ~105&#176;</li><li><strong>Squatting</strong><strong> </strong><strong>and</strong><strong> </strong><strong>kneeling</strong><strong>:</strong> 120–150&#176;</li></ul>"
+    }
+  },
+  {
+    "type": "highlight_card",
+    "content_config": {
+      "label": "PM&R clinical pearl",
+      "text": "<strong>Prioritise extension over flexion in rehabilitation.</strong> A knee that lacks 10&#176; of extension forces the quadriceps to work continuously through stance, produces a limp, and accelerates anterior knee pain and quadriceps fatigue. A knee that lacks 10&#176; of terminal flexion is barely noticed.<br><br>This is why extension is regained first after ACL reconstruction and after arthroplasty, and why a <strong>flexion contracture is treated aggressively while a flexion deficit is treated patiently</strong>.",
+      "color": "teal"
+    }
+  },
+  {
+    "type": "subsection_heading",
+    "content_config": {
+      "text": "1.4 Alignment"
+    }
+  },
+  {
+    "type": "paragraph",
+    "content_config": {
+      "body": "<ul><li><strong>Anatomic axis</strong> — the line of the femoral shaft against the line of the tibial shaft: approximately <strong>5–7&#176; of valgus</strong>.</li><li><strong>Mechanical axis</strong> — the centre of the femoral head to the centre of the ankle. It passes <strong>just medial to the centre of the knee</strong>, which is why the medial compartment carries <strong>~60–70% of the load</strong> and why medial compartment osteoarthritis is far commoner than lateral.</li><li><strong>Varus alignment shifts load further medially</strong>, accelerating medial compartment wear; <strong>valgus shifts it laterally</strong>. This is the entire rationale for offloading braces, lateral wedge insoles and osteotomy.</li></ul>"
+    }
+  },
+  {
+    "type": "subsubsection_heading",
+    "content_config": {
+      "text": "1.4.1 The Q angle"
+    }
+  },
+  {
+    "type": "paragraph",
+    "content_config": {
+      "body": "<ul><li>Measured from the <strong>ASIS → centre of the patella → tibial tubercle</strong>, with the knee extended and the quadriceps relaxed.</li><li>Normal: approximately <strong>13–14&#176; in men and 15–18&#176; in women</strong> (the wider female pelvis increases it). Above ~20&#176; is generally considered abnormal.</li><li>A larger Q angle increases the <strong>lateral vector on the patella</strong>, contributing to lateral maltracking.</li></ul>"
+    }
+  },
+  {
+    "type": "highlight_card",
+    "content_config": {
+      "label": "Pitfall — do not miss",
+      "text": "The Q angle is <strong>poorly reproducible between examiners</strong> and correlates weakly with patellofemoral pain. Do not build a diagnosis on it.<br><br>It is more useful as a reminder of the <strong>kinetic chain</strong>: hip abductor and external rotator weakness produces femoral adduction and internal rotation, which functionally increases the Q angle during loading. <strong>Treat</strong><strong> </strong><strong>the</strong><strong> </strong><strong>hip</strong><strong>, </strong><strong>not</strong><strong> </strong><strong>the</strong><strong> </strong><strong>number</strong><strong>.</strong>",
+      "color": "red"
+    }
+  },
+  {
+    "type": "section_heading",
+    "content_config": {
+      "text": "2. Osteology"
+    }
+  },
+  {
+    "type": "subsection_heading",
+    "content_config": {
+      "text": "2.1 Distal femur"
+    }
+  },
+  {
+    "type": "paragraph",
+    "content_config": {
+      "body": "<ul><li>Two condyles separated posteriorly by the <strong>intercondylar notch</strong> and joined anteriorly by the <strong>trochlear groove</strong>.</li><li><strong>The condyles are asymmetrical</strong>, and the asymmetry does real work:</li><li>— The <strong>medial condyle is larger and extends further distally</strong>, compensating for the femur’s oblique shaft so the joint line ends up horizontal in stance.</li><li>— The <strong>lateral condyle is more prominent anteriorly</strong>, forming a <strong>higher lateral trochlear facet</strong> that acts as a bony buttress against lateral patellar subluxation. <strong>Trochlear dysplasia — a shallow groove with a low lateral facet — is the single strongest anatomical risk factor for recurrent patellar dislocation.</strong></li><li>— The condyles have a <strong>larger radius of curvature anteriorly and a smaller one posteriorly</strong>, which is why the ligaments tighten and slacken through the arc and why the flexion axis is not fixed.</li></ul>"
+    }
+  },
+  {
+    "type": "subsubsection_heading",
+    "content_config": {
+      "text": "2.1.1 Landmarks"
+    }
+  },
+  {
+    "type": "paragraph",
+    "content_config": {
+      "body": "<ul><li><strong>Medial epicondyle</strong> — origin of the superficial MCL. The <strong>adductor tubercle</strong> lies just above it (adductor magnus).</li><li><strong>Lateral epicondyle</strong> — origin of the <strong>LCL</strong>, with the <strong>popliteus tendon arising just anterior and inferior to it</strong> in a small sulcus.</li><li><strong>Intercondylar notch</strong> — houses the cruciates. A narrow notch is a proposed risk factor for ACL injury.</li><li><strong>Blumensaat’s line</strong> — the roof of the notch on a lateral radiograph; the reference line for judging patellar height.</li></ul>"
+    }
+  },
+  {
+    "type": "subsection_heading",
+    "content_config": {
+      "text": "2.2 Proximal tibia"
+    }
+  },
+  {
+    "type": "comparison_table",
+    "content_config": {
+      "columns": [
+        "<strong>Feature</strong>",
+        "<strong>Medial plateau</strong>",
+        "<strong>Lateral plateau</strong>"
+      ],
+      "rows": [
+        [
+          "<strong>Shape</strong>",
+          "<strong>Concave</strong>",
+          "<strong>Convex</strong>"
+        ],
+        [
+          "<strong>Size</strong>",
+          "Larger, oval",
+          "Smaller, circular"
+        ],
+        [
+          "<strong>Congruity</strong><strong> </strong><strong>with</strong><strong> </strong><strong>the</strong><strong> </strong><strong>femur</strong>",
+          "Better",
+          "Worse — relies more on its meniscus"
+        ],
+        [
+          "<strong>Meniscal</strong><strong> </strong><strong>mobility</strong>",
+          "Low",
+          "High"
+        ]
+      ]
+    }
+  },
+  {
+    "type": "paragraph",
+    "content_config": {
+      "body": "<ul><li><strong>Posterior tibial slope</strong> — the plateaus tilt posteriorly by about <strong>7–10&#176;</strong>. An increased slope drives the tibia anteriorly under load and is associated with ACL injury and graft failure.</li><li><strong>Intercondylar eminence</strong> — the medial and lateral tubercles between the plateaus, flanked by the cruciate and meniscal root attachments.</li><li><strong>Tibial tubercle</strong> — insertion of the patellar tendon; the apophysis involved in <strong>Osgood–Schlatter disease</strong>.</li><li><strong>Gerdy’s tubercle</strong> — anterolateral, the insertion of the <strong>iliotibial band</strong>.</li><li><strong>Pes anserinus</strong> — anteromedial, roughly <strong>4–6 cm below the joint line</strong>: sartorius, gracilis and semitendinosus.</li></ul>"
+    }
+  },
+  {
+    "type": "subsection_heading",
+    "content_config": {
+      "text": "2.3 Patella"
+    }
+  },
+  {
+    "type": "paragraph",
+    "content_config": {
+      "body": "<ul><li>The <strong>largest sesamoid bone in the body</strong>, embedded in the quadriceps tendon.</li><li><strong>Function:</strong> it increases the <strong>moment arm of the quadriceps by roughly 30–50%</strong>, most effectively in the middle of the arc. Patellectomy costs about 30% of extension strength permanently.</li><li>It also centralises the divergent quadriceps pull and protects the anterior joint.</li><li><strong>Articular surface:</strong> a larger lateral facet, a smaller medial facet, and a small <strong>odd facet</strong> on the extreme medial edge which only articulates beyond about <strong>135&#176;</strong> of flexion.</li><li>It carries the <strong>thickest articular cartilage in the body — up to 5–7 mm</strong> — because it sees the highest joint reaction forces.</li></ul>"
+    }
+  },
+  {
+    "type": "comparison_table",
+    "content_config": {
+      "columns": [
+        "<strong>Activity</strong>",
+        "<strong>Patellofemoral</strong><strong> </strong><strong>joint</strong><strong> </strong><strong>reaction</strong><strong> force</strong>"
+      ],
+      "rows": [
+        [
+          "<strong>Level</strong><strong> </strong><strong>walking</strong>",
+          "~0.5 &#215; body weight"
+        ],
+        [
+          "<strong>Stair</strong><strong> </strong><strong>climbing</strong>",
+          "~3.3 &#215; body weight"
+        ],
+        [
+          "<strong>Squatting</strong><strong> / </strong><strong>deep</strong><strong> </strong><strong>knee</strong><strong> </strong><strong>bend</strong>",
+          "up to ~7–8 &#215; body weight"
+        ]
+      ]
+    }
+  },
+  {
+    "type": "highlight_card",
+    "content_config": {
+      "label": "PM&R clinical pearl",
+      "text": "<strong>These numbers are the prescription.</strong> They explain why a patient with patellofemoral pain manages flat ground but not stairs or squatting, and they tell you how to grade a programme: begin with <strong>isometric and short-arc work in the ranges of lowest joint reaction force</strong>, and add depth only as symptoms allow.<br><br>They also explain why <strong>contact area matters</strong>: as the knee flexes, the contact patch moves proximally on the patella and grows, so force per unit area does not rise as steeply as total force. That is why some patients tolerate a deep squat better than a shallow one held at 30–40&#176;.",
+      "color": "teal"
+    }
+  },
+  {
+    "type": "subsection_heading",
+    "content_config": {
+      "text": "2.4 Proximal fibula"
+    }
+  },
+  {
+    "type": "paragraph",
+    "content_config": {
+      "body": "<ul><li>Bears no significant weight, but is the <strong>insertion of the LCL and biceps femoris</strong> (the conjoint tendon) and the origin of part of the peroneal muscles.</li><li>The <strong>common peroneal nerve winds around the fibular neck</strong>, where it is subcutaneous and fixed — see section 7.4.</li></ul>"
+    }
+  },
+  {
+    "type": "highlight_card",
+    "content_config": {
+      "label": "Pitfall — do not miss",
+      "text": "<strong>Never examine the lateral knee without palpating the fibular head and testing the common peroneal nerve.</strong> A fibular head or neck fracture, a posterolateral corner injury or a knee dislocation can all produce foot drop, and the nerve lesion is easily overlooked while attention is on the knee.",
+      "color": "red"
+    }
+  },
+  {
+    "type": "section_heading",
+    "content_config": {
+      "text": "3. The Menisci"
+    }
+  },
+  {
+    "type": "subsection_heading",
+    "content_config": {
+      "text": "3.1 Structure and shape"
+    }
+  },
+  {
+    "type": "paragraph",
+    "content_config": {
+      "body": "<ul><li>Wedge-shaped <strong>fibrocartilaginous</strong> discs, thicker peripherally and tapering to a thin free inner edge, triangular in cross-section.</li><li>Mostly <strong>type I collagen</strong> arranged in <strong>circumferential bundles</strong>, with radial tie fibres. This orientation is the whole point: it converts vertical compression into <strong>circumferential hoop stress</strong>.</li><li>Each meniscus is anchored at its <strong>anterior and posterior roots</strong> into the intercondylar area of the tibia.</li></ul>"
+    }
+  },
+  {
+    "type": "comparison_table",
+    "content_config": {
+      "columns": [
+        "",
+        "<strong>Medial </strong><strong>meniscus</strong>",
+        "<strong>Lateral </strong><strong>meniscus</strong>"
+      ],
+      "rows": [
+        [
+          "<strong>Shape</strong>",
+          "<strong>C-</strong><strong>shaped</strong>, open",
+          "<strong>Nearly</strong><strong> circular (O)</strong>"
+        ],
+        [
+          "<strong>Plateau </strong><strong>coverage</strong>",
+          "~50–60%",
+          "~70–80%"
+        ],
+        [
+          "<strong>Peripheral</strong><strong> </strong><strong>attachment</strong>",
+          "<strong>Firmly attached to the deep MCL and capsule</strong>",
+          "Loosely attached; interrupted by the <strong>popliteus hiatus</strong>"
+        ],
+        [
+          "<strong>Mobility</strong>",
+          "Low (~5 mm excursion)",
+          "High (~11 mm excursion)"
+        ],
+        [
+          "<strong>Injury</strong><strong> </strong><strong>pattern</strong>",
+          "<strong>Torn more often overall</strong>; the meniscus of chronic ACL deficiency",
+          "Torn with <strong>acute</strong> ACL rupture"
+        ]
+      ]
+    }
+  },
+  {
+    "type": "highlight_card",
+    "content_config": {
+      "label": "Memory aid",
+      "text": "<strong>Mobility protects.</strong> The lateral meniscus escapes the femoral condyle because it can move; the medial meniscus is tethered to the deep MCL and cannot, so it is caught and torn. That single fact explains the whole table above.",
+      "color": "yellow"
+    }
+  },
+  {
+    "type": "subsection_heading",
+    "content_config": {
+      "text": "3.2 Blood supply and why it decides treatment"
+    }
+  },
+  {
+    "type": "paragraph",
+    "content_config": {
+      "body": "<ul><li>Blood enters <strong>only from the periphery</strong>, from the medial and lateral genicular arteries via a perimeniscal capillary plexus.</li><li>The vascular penetration is only the <strong>outer 10–25%</strong> in adults (more in children).</li><li>The inner portion is <strong>avascular</strong> and is nourished by diffusion from synovial fluid, driven by joint motion and loading.</li></ul>"
+    }
+  },
+  {
+    "type": "comparison_table",
+    "content_config": {
+      "columns": [
+        "<strong>Zone</strong>",
+        "<strong>Location</strong>",
+        "<strong>Healing</strong><strong> </strong><strong>potential</strong>"
+      ],
+      "rows": [
+        [
+          "<strong>Red</strong><strong>–</strong><strong>red</strong>",
+          "Outer, peripheral",
+          "Good — <strong>repairable</strong>"
+        ],
+        [
+          "<strong>Red</strong><strong>–</strong><strong>white</strong>",
+          "Middle",
+          "Variable"
+        ],
+        [
+          "<strong>White–</strong><strong>white</strong>",
+          "Inner, free edge",
+          "<strong>None</strong> — will not heal"
+        ]
+      ]
+    }
+  },
+  {
+    "type": "highlight_card",
+    "content_config": {
+      "label": "PM&R clinical pearl",
+      "text": "<strong>This anatomy decides whether a tear is repaired or resected</strong>, and therefore the rehabilitation protocol you will be given. A peripheral repair needs protection — restricted weight-bearing and a limited flexion arc for several weeks — because it is healing. A resection does not.<br><br>It also explains why <strong>meniscal tears in the avascular zone do not heal with rest</strong>, and why prolonged immobilisation is counterproductive: the inner meniscus is fed by <strong>motion-driven diffusion</strong>.",
+      "color": "teal"
+    }
+  },
+  {
+    "type": "subsection_heading",
+    "content_config": {
+      "text": "3.3 Function"
+    }
+  },
+  {
+    "type": "paragraph",
+    "content_config": {
+      "body": "<ul><li><strong>Load transmission</strong> — the menisci carry roughly <strong>50–70% of load in extension and up to 85–90% in flexion</strong>.</li><li><strong>Increasing contact area</strong> — hence reducing contact stress on the articular cartilage.</li><li><strong>Shock absorption</strong> — they raise the shock-absorbing capacity of the knee substantially.</li><li><strong>Joint congruity and stability</strong> — the medial meniscus is an important <strong>secondary restraint to anterior tibial translation</strong>, which matters greatly in an ACL-deficient knee.</li><li><strong>Proprioception</strong> — mechanoreceptors are concentrated in the anterior and posterior horns.</li><li><strong>Lubrication and nutrition</strong> of the articular cartilage.</li></ul>"
+    }
+  },
+  {
+    "type": "highlight_card",
+    "content_config": {
+      "label": "Pitfall — do not miss",
+      "text": "<strong>Total meniscectomy increases peak contact stress by roughly 2–3 times</strong> and leads to predictable, accelerated osteoarthritis. This is why meniscal preservation has replaced routine resection.<br><br>For the physiatrist this matters directly: <strong>a degenerative meniscal tear in a middle-aged or older patient is usually best treated with exercise therapy, not arthroscopy.</strong> Multiple randomised trials show no benefit of arthroscopic partial meniscectomy over structured exercise for degenerative tears without mechanical locking. The exception is a <strong>true mechanical block</strong> — a locked knee that cannot be fully extended.",
+      "color": "red"
+    }
+  },
+  {
+    "type": "subsection_heading",
+    "content_config": {
+      "text": "3.4 Meniscal roots and associated ligaments"
+    }
+  },
+  {
+    "type": "paragraph",
+    "content_config": {
+      "body": "<ul><li><strong>Roots</strong> — the bony anchors that resist the hoop stress. A <strong>root tear is functionally equivalent to a total meniscectomy</strong>, because the meniscus can no longer contain the load; it extrudes from the joint and stops working.</li><li><strong>Medial meniscal extrusion</strong> on ultrasound or MRI is a marker of root pathology and of rapidly progressive medial compartment osteoarthritis.</li><li><strong>Transverse (intermeniscal) ligament</strong> — joins the two anterior horns.</li><li><strong>Meniscofemoral ligaments</strong> — from the posterior horn of the lateral meniscus to the medial femoral condyle, running either in front of the PCL (<strong>ligament of Humphrey</strong>) or behind it (<strong>ligament of Wrisberg</strong>). At least one is present in about 90% of knees.</li><li><strong>Popliteomeniscal fascicles</strong> — attach the lateral meniscus around the popliteus hiatus; their disruption causes a hypermobile lateral meniscus.</li><li><strong>Discoid lateral meniscus</strong> — a congenital variant (~3–5%, higher in East Asian populations) presenting in children with a snapping, clunking knee.</li></ul>"
+    }
+  },
+  {
+    "type": "section_heading",
+    "content_config": {
+      "text": "4. Ligaments and Stability"
+    }
+  },
+  {
+    "type": "subsection_heading",
+    "content_config": {
+      "text": "4.1 Anterior cruciate ligament"
+    }
+  },
+  {
+    "type": "paragraph",
+    "content_config": {
+      "body": "<ul><li><strong>Course:</strong> from the <strong>posteromedial aspect of the lateral femoral condyle</strong>, inside the notch, running anteriorly, medially and distally to the <strong>anterior intercondylar area of the tibia</strong>.</li><li><strong>Dimensions:</strong> roughly 32 mm long and 7–12 mm wide.</li><li><strong>Two</strong><strong> </strong><strong>functional</strong><strong> </strong><strong>bundles</strong><strong>:</strong></li><li>— <strong>Anteromedial bundle</strong> — taut in <strong>flexion</strong>; the bundle tested by the anterior drawer at 90&#176;.</li><li>— <strong>Posterolateral bundle</strong> — taut in <strong>extension</strong>; the bundle largely responsible for rotational control, tested by Lachman and the pivot shift.</li><li><strong>Function:</strong> the <strong>primary restraint to anterior tibial translation (~85%)</strong>, and a major restraint to internal rotation and hyperextension.</li><li><strong>Blood supply:</strong> the <strong>middle genicular artery</strong> — a single, modest source, contributing to its poor healing.</li><li><strong>Innervation:</strong> richly supplied with <strong>mechanoreceptors</strong> (Ruffini, Pacinian and Golgi-like endings) from the posterior articular nerve.</li></ul>"
+    }
+  },
+  {
+    "type": "highlight_card",
+    "content_config": {
+      "label": "PM&R clinical pearl",
+      "text": "<strong>The mechanoreceptors are the reason ACL rehabilitation is neuromuscular, not just muscular.</strong> Rupture removes a proprioceptive organ as well as a mechanical restraint, producing altered reflex hamstring activation and impaired joint position sense. Strength alone does not restore that — balance, perturbation and landing retraining do.<br><br><strong>Why Lachman beats anterior drawer.</strong> At 20–30&#176; of flexion the hamstrings cannot splint the joint and the posterior horn of the medial meniscus does not wedge against the femoral condyle, so translation is unmasked. At 90&#176; both of those secondary restraints engage and mask the laxity.",
+      "color": "teal"
+    }
+  },
+  {
+    "type": "subsection_heading",
+    "content_config": {
+      "text": "4.2 Posterior cruciate ligament"
+    }
+  },
+  {
+    "type": "paragraph",
+    "content_config": {
+      "body": "<ul><li><strong>Course:</strong> from the <strong>lateral aspect of the medial femoral condyle</strong> to the <strong>posterior intercondylar fossa of the tibia</strong>, about 1–1.5 cm below the joint line.</li><li><strong>The strongest and thickest ligament in the knee</strong> — roughly twice the strength of the ACL.</li><li><strong>Two bundles:</strong> the larger <strong>anterolateral</strong> (taut in flexion) and the smaller <strong>posteromedial</strong> (taut in extension).</li><li><strong>Function:</strong> the <strong>primary restraint to posterior tibial translation</strong>, especially at 90&#176;.</li><li><strong>Mechanism:</strong> a direct blow to the front of the flexed tibia — the <strong>dashboard injury</strong> — or a fall onto the flexed knee with the foot plantarflexed.</li></ul>"
+    }
+  },
+  {
+    "type": "highlight_card",
+    "content_config": {
+      "label": "Pitfall — do not miss",
+      "text": "<strong>The posterior sag sign is the trap.</strong> With both knees flexed to 90&#176;, the tibia of a PCL-deficient knee drops back. If you then perform an anterior drawer, you pull it forward from that sagged position and it feels like a positive <strong>anterior</strong> drawer — leading to a wrong diagnosis of ACL rupture.<br><br><strong>Always look from the side and establish the resting position of the tibial step-off before testing translation.</strong>",
+      "color": "red"
+    }
+  },
+  {
+    "type": "subsection_heading",
+    "content_config": {
+      "text": "4.3 Medial side"
+    }
+  },
+  {
+    "type": "comparison_table",
+    "content_config": {
+      "columns": [
+        "<strong>Structure</strong>",
+        "<strong>Anatomy</strong>",
+        "<strong>Function</strong>"
+      ],
+      "rows": [
+        [
+          "<strong>Superficial MCL</strong>",
+          "Medial epicondyle → the tibia <strong>4–6 cm below the joint line</strong>, deep to the pes anserinus. The longest ligament of the knee",
+          "<strong>The primary restraint to valgus</strong>, particularly at 30&#176; of flexion"
+        ],
+        [
+          "<strong>Deep</strong><strong> MCL (medial capsular </strong><strong>ligament</strong><strong>)</strong>",
+          "Short meniscofemoral and meniscotibial fibres — <strong>attached directly to the medial meniscus</strong>",
+          "Secondary valgus restraint; the anatomical link between MCL and medial meniscal injury"
+        ],
+        [
+          "<strong>Posterior oblique </strong><strong>ligament</strong>",
+          "Posteromedial, blending with the semimembranosus expansion",
+          "Resists valgus and rotation in <strong>extension</strong>; the key posteromedial corner structure"
+        ]
+      ]
+    }
+  },
+  {
+    "type": "highlight_card",
+    "content_config": {
+      "label": "PM&R clinical pearl",
+      "text": "<strong>The MCL heals; the ACL does not.</strong> The MCL is <strong>extra-articular</strong> with a good blood supply and a surrounding soft-tissue envelope, so even grade III injuries usually heal with bracing and progressive loading. The ACL is <strong>intra-articular</strong>, bathed in synovial fluid that prevents clot formation, and has a single small vessel — so it does not heal.<br><br>That contrast is worth stating to patients: it explains why one ligament injury is managed in a brace and the other often needs reconstruction.<br><br>Test the MCL at <strong>30&#176; of flexion</strong>. Valgus laxity in <strong>full extension</strong> implies a much more serious injury — the posteromedial corner and usually a cruciate as well.",
+      "color": "teal"
+    }
+  },
+  {
+    "type": "subsection_heading",
+    "content_config": {
+      "text": "4.4 Lateral side and the posterolateral corner"
+    }
+  },
+  {
+    "type": "comparison_table",
+    "content_config": {
+      "columns": [
+        "<strong>Structure</strong>",
+        "<strong>Anatomy</strong>",
+        "<strong>Function</strong>"
+      ],
+      "rows": [
+        [
+          "<strong>LCL (</strong><strong>fibular</strong><strong> </strong><strong>collateral</strong><strong>)</strong>",
+          "Lateral epicondyle → fibular head. <strong>Extra-articular and cord-like</strong>, separated from the lateral meniscus by the popliteus tendon",
+          "Primary restraint to <strong>varus</strong>, especially at 30&#176;"
+        ],
+        [
+          "<strong>Popliteus</strong><strong> </strong><strong>tendon</strong>",
+          "Origin <strong>anterior and inferior to the LCL</strong> on the lateral femoral condyle; passes deep to the LCL through the popliteus hiatus to the posteromedial tibia",
+          "Resists external rotation; <strong>unlocks the knee</strong> at the start of flexion; retracts the lateral meniscus"
+        ],
+        [
+          "<strong>Popliteofibular</strong><strong> </strong><strong>ligament</strong>",
+          "Popliteus musculotendinous junction → fibular styloid",
+          "Static restraint to external rotation and varus"
+        ],
+        [
+          "<strong>Arcuate ligament, fabellofibular ligament, lateral capsule</strong>",
+          "Posterolateral capsular thickenings",
+          "Supporting restraints"
+        ]
+      ]
+    }
+  },
+  {
+    "type": "highlight_card",
+    "content_config": {
+      "label": "Memory aid",
+      "text": "<strong>The lateral side has no meniscal attachment because the popliteus tendon runs between the LCL and the lateral meniscus.</strong> That is why the LCL is not associated with lateral meniscal tears, whereas the MCL is strongly associated with medial ones.",
+      "color": "yellow"
+    }
+  },
+  {
+    "type": "highlight_card",
+    "content_config": {
+      "label": "Pitfall — do not miss",
+      "text": "<strong>The posterolateral corner is the most commonly missed knee injury.</strong> Unrecognised PLC insufficiency is implicated in a large share of failed ACL and PCL reconstructions, because the graft is loaded abnormally and stretches out.<br><br>Suspect it with <strong>varus laxity, a positive dial test at 30&#176;</strong>, a varus thrust on walking, or any high-energy knee injury.<br><br><strong>Check the common peroneal nerve in every suspected PLC injury</strong> — it is injured in a substantial minority because it lies immediately adjacent to these structures.",
+      "color": "red"
+    }
+  },
+  {
+    "type": "subsection_heading",
+    "content_config": {
+      "text": "4.5 The stability framework"
+    }
+  },
+  {
+    "type": "comparison_table",
+    "content_config": {
+      "columns": [
+        "<strong>Direction</strong><strong> </strong><strong>of</strong><strong> stress</strong>",
+        "<strong>Primary</strong><strong> </strong><strong>restraint</strong>",
+        "<strong>Secondary</strong><strong> </strong><strong>restraints</strong>"
+      ],
+      "rows": [
+        [
+          "<strong>Anterior </strong><strong>translation</strong>",
+          "ACL",
+          "Posterior horn of the medial meniscus, MCL, hamstrings"
+        ],
+        [
+          "<strong>Posterior </strong><strong>translation</strong>",
+          "PCL",
+          "Posterolateral corner, popliteus, quadriceps"
+        ],
+        [
+          "<strong>Valgus</strong>",
+          "Superficial MCL",
+          "Posteromedial corner, cruciates, medial soft tissues"
+        ],
+        [
+          "<strong>Varus</strong>",
+          "LCL",
+          "Posterolateral corner, cruciates, iliotibial band"
+        ],
+        [
+          "<strong>External</strong><strong> </strong><strong>rotation</strong>",
+          "Posterolateral corner (popliteus complex)",
+          "MCL, PCL"
+        ],
+        [
+          "<strong>Hyperextension</strong>",
+          "Posterior capsule + ACL",
+          "Gastrocnemius origins, cruciates"
+        ]
+      ]
+    }
+  },
+  {
+    "type": "subsubsection_heading",
+    "content_config": {
+      "text": "4.5.1 The screw-home mechanism"
+    }
+  },
+  {
+    "type": "paragraph",
+    "content_config": {
+      "body": "<ul><li>In the last <strong>20–30&#176; of extension</strong>, the <strong>tibia externally rotates about 10–15&#176;</strong> on the femur (or, with the foot planted, the femur internally rotates on the tibia).</li><li><strong>Why:</strong> the medial femoral condyle has a longer articular surface, so the tibia continues to travel on the medial side after the lateral side has run out of surface. The cruciates tighten and wind together, locking the joint.</li><li>The result is a <strong>stable, close-packed knee that stands with almost no quadriceps activity</strong> — energy-efficient upright stance.</li><li><strong>Popliteus unlocks it</strong>, initiating flexion by internally rotating the tibia.</li></ul>"
+    }
+  },
+  {
+    "type": "highlight_card",
+    "content_config": {
+      "label": "PM&R clinical pearl",
+      "text": "Screw-home explains a common clinical observation: <strong>a knee that cannot fully extend cannot lock</strong>, so the quadriceps must work throughout stance. That is the mechanism behind quadriceps fatigue, anterior knee pain and a flexed-knee gait in patients with even a small extension deficit — and another reason extension is the rehabilitation priority.",
+      "color": "teal"
+    }
+  },
+  {
+    "type": "section_heading",
+    "content_config": {
+      "text": "5. Capsule, Synovium, Fat Pad and Bursae"
+    }
+  },
+  {
+    "type": "subsection_heading",
+    "content_config": {
+      "text": "5.1 Capsule and synovium"
+    }
+  },
+  {
+    "type": "paragraph",
+    "content_config": {
+      "body": "<ul><li>The knee has the <strong>largest synovial cavity in the body</strong>, extending well above the patella as the <strong>suprapatellar pouch</strong>.</li><li>Normal synovial fluid volume is only about <strong>2–4 mL</strong>; the capsule can accommodate <strong>50–70 mL or more</strong> before becoming tense.</li><li>The capsule is deficient anteriorly, where the extensor mechanism substitutes for it, and reinforced elsewhere by the ligaments and tendon expansions.</li><li>The <strong>cruciates are intra-articular but extrasynovial</strong> — they sit inside the capsule but the synovium reflects around them, which is why they are bathed in synovial fluid without being inside the synovial space.</li></ul>"
+    }
+  },
+  {
+    "type": "subsubsection_heading",
+    "content_config": {
+      "text": "5.1.1 Plicae"
+    }
+  },
+  {
+    "type": "paragraph",
+    "content_config": {
+      "body": "<ul><li>Embryological synovial septa that fail to resorb. Present in up to <strong>50–60%</strong> of knees and usually asymptomatic.</li><li>The <strong>medial patellar plica</strong> is the one that becomes symptomatic — a thickened band snapping over the medial femoral condyle, producing medial clicking and pain that mimics a meniscal tear.</li></ul>"
+    }
+  },
+  {
+    "type": "subsection_heading",
+    "content_config": {
+      "text": "5.2 The infrapatellar (Hoffa’s) fat pad"
+    }
+  },
+  {
+    "type": "paragraph",
+    "content_config": {
+      "body": "<ul><li>A large fat body filling the space between the patellar tendon, the tibia and the femoral condyles.</li><li><strong>Intracapsular but extrasynovial</strong> — the same relationship as the elbow fat pads.</li><li>It is <strong>one of the most richly innervated structures in the knee</strong>, with abundant substance-P nerve fibres.</li></ul>"
+    }
+  },
+  {
+    "type": "highlight_card",
+    "content_config": {
+      "label": "PM&R clinical pearl",
+      "text": "<strong>Hoffa’s fat pad is a genuine and under-diagnosed pain generator.</strong> Impingement between the patellar tendon and the trochlea causes sharp <strong>inferior</strong> anterior knee pain, worse on <strong>hyperextension and prolonged standing</strong>, with tenderness on either side of the patellar tendon and a positive <strong>Hoffa’s test</strong> (pain on extension while compressing the fat pad).<br><br>It is often mislabelled patellar tendinopathy. The discriminator: <strong>tendinopathy hurts with loading and jumping</strong>; <strong>fat pad syndrome hurts with hyperextension and standing still</strong>.<br><br>Post-surgical fibrosis of the fat pad shortens the patellar tendon and causes <strong>patella baja</strong>, a difficult cause of stiffness after arthroplasty or ACL reconstruction.",
+      "color": "teal"
+    }
+  },
+  {
+    "type": "subsection_heading",
+    "content_config": {
+      "text": "5.3 Bursae"
+    }
+  },
+  {
+    "type": "comparison_table",
+    "content_config": {
+      "columns": [
+        "<strong>Bursa</strong>",
+        "<strong>Location</strong>",
+        "<strong>Communicates</strong><strong> </strong><strong>with</strong><strong> </strong><strong>joint</strong><strong>?</strong>",
+        "<strong>Clinical</strong>"
+      ],
+      "rows": [
+        [
+          "<strong>Suprapatellar</strong><strong> </strong><strong>pouch</strong>",
+          "Deep to quadriceps, above the patella",
+          "<strong>Yes — it is part of the joint</strong>",
+          "The best window for detecting and aspirating an effusion"
+        ],
+        [
+          "<strong>Prepatellar</strong>",
+          "Subcutaneous, over the patella",
+          "No",
+          "<strong>&quot;Housemaid’s knee&quot;</strong> — kneeling. Superficial → commonly <strong>septic</strong>"
+        ],
+        [
+          "<strong>Superficial </strong><strong>infrapatellar</strong>",
+          "Subcutaneous, over the patellar tendon",
+          "No",
+          "<strong>&quot;</strong><strong>Clergyman’s</strong><strong> </strong><strong>knee</strong><strong>&quot;</strong>"
+        ],
+        [
+          "<strong>Deep</strong><strong> </strong><strong>infrapatellar</strong>",
+          "Between the patellar tendon and the tibia",
+          "<strong>No</strong>",
+          "Inflames in jumping athletes; mimics distal patellar tendinopathy"
+        ],
+        [
+          "<strong>Pes</strong><strong> </strong><strong>anserine</strong>",
+          "Between the pes tendons and the tibia, <strong>4–6 cm below the medial joint line</strong>",
+          "No",
+          "Common in overweight patients, women, and knee OA. Frequently mistaken for medial meniscal pain"
+        ],
+        [
+          "<strong>Semimembranosus</strong><strong>–</strong><strong>gastrocnemius</strong>",
+          "Posteromedial popliteal fossa",
+          "<strong>Yes in adults</strong>, via a valve",
+          "<strong>Baker’s</strong><strong> </strong><strong>cyst</strong>"
+        ]
+      ]
+    }
+  },
+  {
+    "type": "highlight_card",
+    "content_config": {
+      "label": "PM&R clinical pearl",
+      "text": "<strong>Baker’s cyst anatomy explains its behaviour.</strong> It lies <strong>between the medial head of gastrocnemius and the semimembranosus tendon</strong>, and in adults it communicates with the joint through a <strong>one-way valve</strong>. So it is nearly always <strong>secondary</strong> to an intra-articular problem — osteoarthritis or a meniscal tear.<br><br><strong>Treat the joint, not the cyst.</strong> Aspirating the cyst alone gives short-lived relief because the valve refills it.<br><br>A <strong>ruptured Baker’s cyst mimics deep vein thrombosis</strong> — calf pain, swelling, sometimes a crescent of bruising below the malleolus. Ultrasound distinguishes them, and in a swollen painful calf you must exclude DVT first.",
+      "color": "teal"
+    }
+  },
+  {
+    "type": "highlight_card",
+    "content_config": {
+      "label": "PM&R clinical pearl",
+      "text": "<strong>Pes anserine bursitis is one of the most commonly missed causes of medial knee pain in a PM&amp;R clinic.</strong> The clue is anatomical: tenderness is <strong>4–6 cm BELOW the joint line</strong>, not at it. Joint-line tenderness means meniscus or medial compartment; tenderness below it means the pes.",
+      "color": "teal"
+    }
+  },
+  {
+    "type": "section_heading",
+    "content_config": {
+      "text": "6. Muscles"
+    }
+  },
+  {
+    "type": "subsection_heading",
+    "content_config": {
+      "text": "6.1 The extensor mechanism"
+    }
+  },
+  {
+    "type": "paragraph",
+    "content_config": {
+      "body": "<ul><li><strong>Quadriceps femoris → quadriceps tendon → patella → patellar tendon → tibial tubercle.</strong> It functions as a single unit; failure at any point produces an extensor lag.</li></ul>"
+    }
+  },
+  {
+    "type": "comparison_table",
+    "content_config": {
+      "columns": [
+        "<strong>Component</strong>",
+        "<strong>Origin</strong>",
+        "<strong>Note</strong>"
+      ],
+      "rows": [
+        [
+          "<strong>Rectus</strong><strong> </strong><strong>femoris</strong>",
+          "AIIS (straight head) and superior acetabular rim (reflected head)",
+          "The <strong>only two-joint</strong> quadriceps — also flexes the hip, so it must be tested with the hip in a defined position"
+        ],
+        [
+          "<strong>Vastus</strong><strong> </strong><strong>lateralis</strong>",
+          "Greater trochanter and linea aspera",
+          "The largest; its fibres approach the patella at ~30&#176;, pulling <strong>laterally</strong>"
+        ],
+        [
+          "<strong>Vastus</strong><strong> </strong><strong>medialis</strong>",
+          "Intertrochanteric line and linea aspera",
+          "Its distal oblique fibres (<strong>VMO</strong>) approach at ~50–55&#176; — <strong>the only dynamic medial stabiliser of the patella</strong>"
+        ],
+        [
+          "<strong>Vastus</strong><strong> </strong><strong>intermedius</strong>",
+          "Anterior femoral shaft",
+          "Deep; <strong>articularis genu</strong> arises from it and retracts the suprapatellar pouch"
+        ]
+      ]
+    }
+  },
+  {
+    "type": "paragraph",
+    "content_config": {
+      "body": "<ul><li><strong>Innervation:</strong> all four by the <strong>femoral nerve (L2, L3, L4)</strong>. The <strong>patellar reflex tests L3–L4</strong>.</li></ul>"
+    }
+  },
+  {
+    "type": "highlight_card",
+    "content_config": {
+      "label": "PM&R clinical pearl",
+      "text": "<strong>Arthrogenic muscle inhibition</strong> is the single most important quadriceps concept in PM&amp;R. Joint effusion, pain or capsular distension produces reflex inhibition of the quadriceps — measurable with as little as <strong>20–30 mL</strong> of fluid, and the <strong>VMO is inhibited first and recovers last</strong>.<br><br>Practical consequence: <strong>you cannot strengthen through an effusion.</strong> Reduce the swelling first (aspiration, compression, relative rest), then load. Otherwise the patient trains a muscle the nervous system is actively switching off.<br><br>The same mechanism explains why quadriceps atrophy appears remarkably fast after knee injury or surgery, and why <strong>early quadriceps activation work matters more than heavy loading</strong> in the first phase.",
+      "color": "teal"
+    }
+  },
+  {
+    "type": "subsection_heading",
+    "content_config": {
+      "text": "6.2 The hamstrings"
+    }
+  },
+  {
+    "type": "comparison_table",
+    "content_config": {
+      "columns": [
+        "<strong>Muscle</strong>",
+        "<strong>Origin</strong><strong> → </strong><strong>Insertion</strong>",
+        "<strong>Nerve</strong>",
+        "<strong>Note</strong>"
+      ],
+      "rows": [
+        [
+          "<strong>Biceps</strong><strong> </strong><strong>femoris</strong><strong> — </strong><strong>long</strong><strong> </strong><strong>head</strong>",
+          "Ischial tuberosity → fibular head",
+          "<strong>Tibial</strong> division of sciatic (L5–S2)",
+          "Flexes and <strong>externally rotates</strong> the tibia"
+        ],
+        [
+          "<strong>Biceps</strong><strong> </strong><strong>femoris</strong><strong> — short </strong><strong>head</strong>",
+          "Linea aspera → fibular head",
+          "<strong>Common peroneal</strong> division of sciatic",
+          "<strong>The only muscle supplied by the peroneal division above the knee</strong> — a crucial EMG muscle"
+        ],
+        [
+          "<strong>Semitendinosus</strong>",
+          "Ischial tuberosity → pes anserinus",
+          "Tibial division",
+          "Common ACL graft donor"
+        ],
+        [
+          "<strong>Semimembranosus</strong>",
+          "Ischial tuberosity → posteromedial tibia, with expansions to the posteromedial corner",
+          "Tibial division",
+          "Flexes and <strong>internally rotates</strong>; dynamic posteromedial stabiliser"
+        ]
+      ]
+    }
+  },
+  {
+    "type": "highlight_card",
+    "content_config": {
+      "label": "EMG / electrodiagnostics",
+      "text": "<strong>The short head of biceps femoris is the key muscle for localising a foot drop.</strong> It is the only muscle supplied by the <strong>common peroneal division of the sciatic nerve above the fibular neck</strong>.<br><br>Foot drop with <strong>normal</strong> short head of biceps femoris → lesion at the <strong>fibular neck</strong>.<br><br>Foot drop with <strong>abnormal</strong> short head → lesion at or above the <strong>sciatic nerve</strong> (or a plexus lesion).<br><br>Complete the localisation with <strong>tibialis posterior</strong> (L5 via the tibial nerve) and <strong>gluteus medius</strong> (L5 via the superior gluteal nerve): both are <strong>spared</strong> in a peroneal palsy but <strong>abnormal</strong> in an L5 radiculopathy.",
+      "color": "violet"
+    }
+  },
+  {
+    "type": "subsection_heading",
+    "content_config": {
+      "text": "6.3 Pes anserinus"
+    }
+  },
+  {
+    "type": "paragraph",
+    "content_config": {
+      "body": "<ul><li>Three tendons converging on the anteromedial tibia, <strong>4–6 cm below the joint line</strong>, superficial to the MCL:</li></ul>"
+    }
+  },
+  {
+    "type": "comparison_table",
+    "content_config": {
+      "columns": [
+        "<strong>Tendon</strong>",
+        "<strong>Nerve</strong>",
+        "<strong>Root</strong>"
+      ],
+      "rows": [
+        [
+          "<strong>Sartorius</strong>",
+          "Femoral",
+          "L2–L3"
+        ],
+        [
+          "<strong>Gracilis</strong>",
+          "Obturator",
+          "L2–L4"
+        ],
+        [
+          "<strong>Tendon</strong><strong> </strong><strong>of</strong><strong> </strong><strong>semitendinosus</strong>",
+          "Tibial (sciatic)",
+          "L5–S1"
+        ]
+      ]
+    }
+  },
+  {
+    "type": "highlight_card",
+    "content_config": {
+      "label": "Memory aid",
+      "text": "<strong>&quot;Say Grace before Tea&quot;</strong> — <strong>S</strong>artorius, <strong>G</strong>racilis, semi<strong>T</strong>endinosus, from anterior to posterior.<br><br>And notice the striking fact: <strong>three adjacent tendons, three different nerves</strong> — femoral, obturator and sciatic. There is no single nerve lesion that weakens all three, which is occasionally diagnostically useful.",
+      "color": "yellow"
+    }
+  },
+  {
+    "type": "subsection_heading",
+    "content_config": {
+      "text": "6.4 Popliteus"
+    }
+  },
+  {
+    "type": "paragraph",
+    "content_config": {
+      "body": "<ul><li><strong>Origin:</strong> the lateral femoral condyle, <strong>anterior and inferior to the LCL</strong>, inside the joint capsule. <strong>Insertion</strong><strong>:</strong> the posteromedial tibia above the soleal line.</li><li><strong>Nerve</strong><strong>:</strong> tibial (L4–S1).</li><li><strong>Actions:</strong> internally rotates the tibia (or externally rotates the femur on a fixed tibia) — <strong>&quot;the key that unlocks the knee&quot;</strong>; retracts the lateral meniscus in flexion; resists posterior translation and external rotation as part of the PLC.</li></ul>"
+    }
+  },
+  {
+    "type": "subsection_heading",
+    "content_config": {
+      "text": "6.5 Muscles crossing from above and below"
+    }
+  },
+  {
+    "type": "paragraph",
+    "content_config": {
+      "body": "<ul><li><strong>Gastrocnemius</strong> — medial and lateral heads from the posterior femoral condyles, so it <strong>crosses the knee</strong> and is a knee flexor as well as an ankle plantarflexor. <strong>Tibial nerve.</strong> Its medial head forms one wall of the Baker’s cyst space.</li><li><strong>Plantaris</strong> — small, from the lateral supracondylar line; clinically relevant mainly as a cause of &quot;tennis leg&quot; and as a tendon graft.</li><li><strong>Iliotibial band</strong> — the thickened fascia lata receiving <strong>tensor fasciae latae</strong> and most of <strong>gluteus maximus</strong>, inserting into <strong>Gerdy’s tubercle</strong>. It is an anterior knee stabiliser in extension and moves posterior to the axis in flexion.</li></ul>"
+    }
+  },
+  {
+    "type": "highlight_card",
+    "content_config": {
+      "label": "PM&R clinical pearl",
+      "text": "<strong>Iliotibial band syndrome is a hip problem presenting at the knee.</strong> The band is not a free-sliding structure; symptoms arise from compression of the richly innervated fat beneath it against the lateral femoral epicondyle, around <strong>30&#176; of flexion</strong> — which is exactly the position of foot strike in running and of descending stairs.<br><br>Because the ITB is loaded by <strong>TFL and gluteus maximus</strong>, the effective treatment is <strong>hip abductor and external rotator strengthening plus running mechanics</strong>, not stretching a structure with almost no elastic capacity.",
+      "color": "teal"
+    }
+  },
+  {
+    "type": "section_heading",
+    "content_config": {
+      "text": "7. Neurovascular Anatomy"
+    }
+  },
+  {
+    "type": "subsection_heading",
+    "content_config": {
+      "text": "7.1 The popliteal fossa"
+    }
+  },
+  {
+    "type": "comparison_table",
+    "content_config": {
+      "columns": [
+        "<strong>Boundary</strong>",
+        "<strong>Structure</strong>"
+      ],
+      "rows": [
+        [
+          "<strong>Superomedial</strong>",
+          "Semimembranosus and semitendinosus"
+        ],
+        [
+          "<strong>Superolateral</strong>",
+          "Biceps femoris"
+        ],
+        [
+          "<strong>Inferomedial</strong>",
+          "Medial head of gastrocnemius"
+        ],
+        [
+          "<strong>Inferolateral</strong>",
+          "Lateral head of gastrocnemius (and plantaris)"
+        ],
+        [
+          "<strong>Roof</strong>",
+          "Popliteal fascia (deep fascia of the leg), pierced by the small saphenous vein"
+        ],
+        [
+          "<strong>Floor</strong>",
+          "Popliteal surface of the femur, posterior capsule, popliteus muscle"
+        ]
+      ]
+    }
+  },
+  {
+    "type": "paragraph",
+    "content_config": {
+      "body": "<ul><li><strong>Contents, superficial to deep:</strong> <strong>tibial nerve → popliteal vein → popliteal artery.</strong> The artery is deepest, lying directly on the capsule.</li><li>The <strong>common peroneal nerve</strong> does not run through the middle of the fossa — it follows the <strong>medial border of biceps femoris</strong> along the superolateral boundary toward the fibular neck.</li><li>Also present: the small saphenous vein, popliteal lymph nodes, and the posterior femoral cutaneous nerve.</li></ul>"
+    }
+  },
+  {
+    "type": "highlight_card",
+    "content_config": {
+      "label": "Memory aid",
+      "text": "From the skin inward: <strong>N → V → A</strong> (Nerve, Vein, Artery). The artery, being deepest and adherent to the capsule, is the structure at risk in <strong>knee dislocation and in posterior capsular surgery</strong>.",
+      "color": "yellow"
+    }
+  },
+  {
+    "type": "highlight_card",
+    "content_config": {
+      "label": "Pitfall — do not miss",
+      "text": "<strong>Knee dislocation is a vascular emergency.</strong> The popliteal artery is tethered proximally at the adductor hiatus and distally at the soleal arch, so it cannot move with the joint: <strong>popliteal artery injury occurs in roughly 5–15% of knee dislocations</strong>.<br><br>Many dislocations reduce spontaneously and present looking deceptively benign. <strong>A multiligament knee injury is a dislocation until proven otherwise</strong> — document pulses, calculate the ankle–brachial index, and image if it is below 0.9.",
+      "color": "red"
+    }
+  },
+  {
+    "type": "subsection_heading",
+    "content_config": {
+      "text": "7.2 Arterial supply"
+    }
+  },
+  {
+    "type": "paragraph",
+    "content_config": {
+      "body": "<ul><li>The <strong>popliteal artery</strong> (the continuation of the femoral artery through the adductor hiatus) gives the <strong>genicular anastomosis</strong> around the knee:</li><li>— <strong>Superior medial </strong><strong>and</strong><strong> superior lateral</strong> genicular arteries</li><li>— <strong>Middle genicular</strong> — pierces the posterior capsule to supply the <strong>cruciates</strong></li><li>— <strong>Inferior medial and inferior lateral</strong> genicular arteries — supplying the <strong>peripheral menisci</strong></li><li>Supplemented by the descending genicular artery (from the femoral) and the anterior tibial recurrent artery.</li><li>The anastomosis maintains flow when the knee is flexed and the popliteal artery is compressed, and provides collateral circulation — though rarely enough to save the limb after acute popliteal occlusion.</li></ul>"
+    }
+  },
+  {
+    "type": "subsection_heading",
+    "content_config": {
+      "text": "7.3 Innervation of the knee joint"
+    }
+  },
+  {
+    "type": "paragraph",
+    "content_config": {
+      "body": "<ul><li>Applying <strong>Hilton’s law</strong>, the knee is supplied by the nerves of the muscles that cross it: the <strong>femoral, obturator, tibial and common peroneal</strong> nerves.</li><li>The articular branches are the <strong>genicular nerves</strong>, and they have become directly clinically relevant because they are the targets of <strong>genicular nerve blocks and radiofrequency ablation</strong> for chronic osteoarthritis pain.</li></ul>"
+    }
+  },
+  {
+    "type": "comparison_table",
+    "content_config": {
+      "columns": [
+        "<strong>Genicular </strong><strong>nerve</strong>",
+        "<strong>Parent</strong><strong> </strong><strong>nerve</strong>",
+        "<strong>Target</strong>"
+      ],
+      "rows": [
+        [
+          "<strong>Superomedial</strong>",
+          "Femoral (nerve to vastus medialis)",
+          "Junction of the femoral shaft and the medial epicondyle"
+        ],
+        [
+          "<strong>Superolateral</strong>",
+          "Sciatic (nerve to vastus lateralis)",
+          "Junction of the femoral shaft and the lateral epicondyle"
+        ],
+        [
+          "<strong>Inferomedial</strong>",
+          "Tibial nerve",
+          "Junction of the tibial shaft and the medial epicondyle"
+        ],
+        [
+          "<strong>Inferolateral</strong>",
+          "Common peroneal nerve",
+          "<strong>Usually avoided</strong> — too close to the common peroneal nerve"
+        ]
+      ]
+    }
+  },
+  {
+    "type": "highlight_card",
+    "content_config": {
+      "label": "PM&R clinical pearl",
+      "text": "<strong>The classic three-target technique (superomedial, superolateral, inferomedial) is anatomical, not arbitrary.</strong> The <strong>inferolateral genicular nerve is deliberately omitted</strong> because ablating it risks the common peroneal nerve and a foot drop.<br><br>Note also that the three classic targets do <strong>not</strong> capture the whole joint. The <strong>anteromedial and posterior capsule</strong> receive additional supply (including from the obturator nerve posteriorly and the nerve to vastus intermedius anteriorly), which is one reason results are good but not complete. Newer protocols add targets accordingly.<br><br>Always <strong>confirm with a diagnostic block before ablation</strong>, and set expectations: this treats pain, it does not change the joint.",
+      "color": "teal"
+    }
+  },
+  {
+    "type": "subsection_heading",
+    "content_config": {
+      "text": "7.4 The common peroneal nerve"
+    }
+  },
+  {
+    "type": "paragraph",
+    "content_config": {
+      "body": "<ul><li>Arises from the sciatic nerve in the distal thigh, follows the <strong>medial border of biceps femoris</strong>, crosses behind the fibular head, and <strong>winds around the fibular neck</strong> where it is subcutaneous and tethered.</li><li>It then divides into the <strong>superficial peroneal nerve</strong> (eversion + dorsolateral foot sensation) and the <strong>deep peroneal nerve</strong> (dorsiflexion + first web space sensation).</li><li><strong>It is the most commonly injured nerve in the lower limb.</strong></li></ul>"
+    }
+  },
+  {
+    "type": "comparison_table",
+    "content_config": {
+      "columns": [
+        "<strong>Cause</strong>",
+        "<strong>Mechanism</strong>"
+      ],
+      "rows": [
+        [
+          "<strong>Fibular head or neck fracture</strong>",
+          "Direct injury"
+        ],
+        [
+          "<strong>Casts, braces, stirrups, bed rails</strong>",
+          "External compression at the neck"
+        ],
+        [
+          "<strong>Prolonged squatting or habitual leg crossing</strong>",
+          "Positional compression"
+        ],
+        [
+          "<strong>Rapid weight loss (&quot;slimmer’s palsy&quot;)</strong>",
+          "Loss of the protective fat pad"
+        ],
+        [
+          "<strong>Knee dislocation and posterolateral corner injury</strong>",
+          "Traction"
+        ],
+        [
+          "<strong>Ganglion, nerve sheath tumour, Baker’s cyst</strong>",
+          "Mass effect"
+        ],
+        [
+          "<strong>Prolonged immobility, surgery in lithotomy</strong>",
+          "Compression"
+        ]
+      ]
+    }
+  },
+  {
+    "type": "highlight_card",
+    "content_config": {
+      "label": "EMG / electrodiagnostics",
+      "text": "<strong>Distinguishing peroneal palsy from L5 radiculopathy — three muscles decide it:</strong><br><br><strong>Tibialis posterior</strong> — L5, but via the <strong>tibial</strong> nerve. <strong>Spared</strong> in peroneal palsy, <strong>abnormal</strong> in L5 radiculopathy.<br><br><strong>Gluteus</strong><strong> </strong><strong>medius</strong> — L5, via the <strong>superior </strong><strong>gluteal</strong> nerve. Same logic.<br><br><strong>Short head of biceps femoris</strong> — peroneal division, but <strong>above</strong> the fibular neck. <strong>Spared</strong> in a fibular neck lesion, <strong>abnormal</strong> in a sciatic or plexus lesion.<br><br>Also look for <strong>conduction block across the fibular head</strong> on motor studies (record tibialis anterior or extensor digitorum brevis, stimulating below and above the fibular head) — the finding that both localises the lesion and predicts good recovery.",
+      "color": "violet"
+    }
+  },
+  {
+    "type": "subsection_heading",
+    "content_config": {
+      "text": "7.5 The saphenous nerve"
+    }
+  },
+  {
+    "type": "paragraph",
+    "content_config": {
+      "body": "<ul><li>The <strong>terminal sensory branch of the femoral nerve</strong>. It emerges from the adductor canal and runs down the medial leg with the great saphenous vein.</li><li>The <strong>infrapatellar branch</strong> crosses the anteromedial knee transversely, just below the patella.</li></ul>"
+    }
+  },
+  {
+    "type": "highlight_card",
+    "content_config": {
+      "label": "Pitfall — do not miss",
+      "text": "<strong>The infrapatellar branch of the saphenous nerve is injured by almost any medial knee incision</strong> — arthroscopy portals, hamstring graft harvest, total knee arthroplasty and tibial nailing.<br><br>It produces a patch of <strong>numbness lateral to the scar</strong> — which patients find alarming and which should be warned about in advance — and sometimes a painful <strong>neuroma</strong> with a sharply localised Tinel sign. This is a treatable cause of persistent anterior knee pain after surgery, and it is frequently misattributed to the arthroplasty itself.",
+      "color": "red"
+    }
+  },
+  {
+    "type": "section_heading",
+    "content_config": {
+      "text": "8. Applied Anatomy"
+    }
+  },
+  {
+    "type": "subsection_heading",
+    "content_config": {
+      "text": "8.1 Palpation sequence"
+    }
+  },
+  {
+    "type": "paragraph",
+    "content_config": {
+      "body": "Examine with the knee flexed to about 90&#176; for the joint lines, and extended for the extensor mechanism and effusion."
+    }
+  },
+  {
+    "type": "paragraph",
+    "content_config": {
+      "body": "<ul><li><strong>Quadriceps and quadriceps tendon</strong> — assess bulk and VMO wasting against the other side.</li><li><strong>Patella</strong> — borders, mobility, apprehension on lateral glide; then <strong>patellar tendon</strong> to the tibial tubercle.</li><li><strong>Suprapatellar pouch</strong> — milk fluid down; perform the <strong>bulge test</strong> (small effusion) or <strong>patellar tap</strong> (large effusion).</li><li><strong>Medial joint line</strong> with the knee flexed — meniscus and medial compartment.</li><li><strong>Medial epicondyle and the MCL</strong> down to its tibial insertion 4–6 cm below the line.</li><li><strong>Pes anserinus</strong> — 4–6 cm below the medial joint line. Distinguish from joint-line tenderness.</li><li><strong>Lateral joint line</strong>, then the <strong>LCL</strong> with the leg in a figure-of-four, which makes it stand out as a cord.</li><li><strong>Fibular head and neck</strong> — and roll the <strong>common peroneal nerve</strong> under your finger.</li><li><strong>Gerdy’s tubercle and the ITB</strong> over the lateral epicondyle.</li><li><strong>Popliteal fossa</strong> — with the knee slightly flexed and the patient prone, feel for a Baker’s cyst and check the popliteal pulse.</li></ul>"
+    }
+  },
+  {
+    "type": "subsection_heading",
+    "content_config": {
+      "text": "8.2 Ultrasound windows"
+    }
+  },
+  {
+    "type": "comparison_table",
+    "content_config": {
+      "columns": [
+        "<strong>Window</strong>",
+        "<strong>Position</strong>",
+        "<strong>What</strong><strong> </strong><strong>you</strong><strong> </strong><strong>see</strong>"
+      ],
+      "rows": [
+        [
+          "<strong>Suprapatellar</strong><strong> </strong><strong>recess</strong>",
+          "Knee flexed ~30&#176;, longitudinal above the patella",
+          "<strong>The single best view for an effusion</strong>, and the target for aspiration. Also quadriceps tendon"
+        ],
+        [
+          "<strong>Patellar</strong><strong> </strong><strong>tendon</strong>",
+          "Knee flexed 30–90&#176;, longitudinal",
+          "Tendinopathy at the deep proximal fibres; also the deep infrapatellar bursa and Hoffa’s fat pad"
+        ],
+        [
+          "<strong>Medial </strong><strong>joint</strong><strong> </strong><strong>line</strong>",
+          "Coronal over the medial compartment",
+          "Superficial MCL, the <strong>body of the medial meniscus</strong>, and <strong>meniscal extrusion</strong> — measure it"
+        ],
+        [
+          "<strong>Pes</strong><strong> </strong><strong>anserinus</strong>",
+          "Below the medial joint line, transverse then longitudinal",
+          "The three tendons and the bursa beneath them"
+        ],
+        [
+          "<strong>Lateral</strong>",
+          "Figure-of-four position",
+          "LCL, ITB over the lateral epicondyle, lateral meniscus"
+        ],
+        [
+          "<strong>Popliteal</strong><strong> fossa</strong>",
+          "Prone, transverse between medial gastrocnemius and semimembranosus",
+          "<strong>Baker’s cyst and its neck</strong>; also the popliteal vessels — always identify them before needling"
+        ],
+        [
+          "<strong>Fibular</strong><strong> </strong><strong>neck</strong>",
+          "Transverse over the neck",
+          "Common peroneal nerve: cross-sectional area, ganglia, compression"
+        ]
+      ]
+    }
+  },
+  {
+    "type": "subsection_heading",
+    "content_config": {
+      "text": "8.3 Injection and aspiration"
+    }
+  },
+  {
+    "type": "comparison_table",
+    "content_config": {
+      "columns": [
+        "<strong>Target</strong>",
+        "<strong>Approach</strong>",
+        "<strong>Anatomical</strong><strong> </strong><strong>rationale</strong>"
+      ],
+      "rows": [
+        [
+          "<strong>Knee</strong><strong> </strong><strong>joint</strong><strong> — </strong><strong>superolateral</strong>",
+          "Knee extended and relaxed. Enter <strong>1 cm superior and 1 cm lateral to the superolateral pole of the patella</strong>, aiming beneath the patella toward the intercondylar notch",
+          "<strong>The most accurate blind approach (~90%+)</strong>, because it enters the wide suprapatellar pouch, which is continuous with the joint. Extension relaxes the quadriceps and opens the pouch"
+        ],
+        [
+          "<strong>Knee</strong><strong> </strong><strong>joint</strong><strong> — </strong><strong>anteromedial</strong><strong>/</strong><strong>anterolateral</strong>",
+          "Knee flexed 90&#176;, needle into the soft spot beside the patellar tendon, angled toward the notch",
+          "Useful when the pouch is obliterated; lower blind accuracy"
+        ],
+        [
+          "<strong>Pes</strong><strong> </strong><strong>anserine</strong><strong> bursa</strong>",
+          "Ultrasound-guided, 4–6 cm below the medial joint line, beneath the tendons",
+          "Superficial — easy to inject subcutaneously by mistake"
+        ],
+        [
+          "<strong>Baker’s</strong><strong> </strong><strong>cyst</strong>",
+          "Ultrasound-guided, prone, <strong>from medial to lateral</strong>",
+          "<strong>Identify the popliteal artery, vein and tibial nerve first.</strong> Never needle this blind"
+        ],
+        [
+          "<strong>Genicular </strong><strong>nerve</strong><strong> </strong><strong>block</strong><strong> / RFA</strong>",
+          "Ultrasound or fluoroscopy at the three shaft–epicondyle junctions",
+          "See section 7.3; the inferolateral target is avoided"
+        ]
+      ]
+    }
+  },
+  {
+    "type": "highlight_card",
+    "content_config": {
+      "label": "Ultrasound & injection",
+      "text": "<strong>Always aspirate before injecting steroid into a hot, swollen knee.</strong> Septic arthritis and crystal arthropathy can be clinically indistinguishable, and injecting steroid into an infected joint is a serious harm.<br><br><strong>Effusion size matters clinically, not just diagnostically</strong>: as little as 20–30 mL is enough to inhibit the quadriceps reflexively, so aspiration is sometimes a <strong>therapeutic step that enables rehabilitation</strong>, not just a diagnostic one.",
+      "color": "green"
+    }
+  },
+  {
+    "type": "subsection_heading",
+    "content_config": {
+      "text": "8.4 Common problems mapped back to anatomy"
+    }
+  },
+  {
+    "type": "comparison_table",
+    "content_config": {
+      "columns": [
+        "<strong>Presentation</strong>",
+        "<strong>Structure</strong>",
+        "<strong>The</strong><strong> </strong><strong>anatomical</strong><strong> </strong><strong>explanation</strong>"
+      ],
+      "rows": [
+        [
+          "<strong>Medial </strong><strong>compartment</strong><strong> OA</strong>",
+          "Medial tibiofemoral joint",
+          "Mechanical axis passes medial to the knee → 60–70% of load → offloading braces and lateral wedges"
+        ],
+        [
+          "<strong>Degenerative</strong><strong> </strong><strong>meniscal</strong><strong> tear</strong>",
+          "Inner avascular meniscus",
+          "Cannot heal, and resection raises contact stress → exercise therapy first"
+        ],
+        [
+          "<strong>Meniscal</strong><strong> </strong><strong>extrusion</strong>",
+          "Root attachment",
+          "Loss of hoop stress containment → behaves like a meniscectomy"
+        ],
+        [
+          "<strong>Patellofemoral</strong><strong> </strong><strong>pain</strong>",
+          "PF joint, trochlear geometry, hip control",
+          "Load rises steeply with flexion → grade the arc; treat the hip"
+        ],
+        [
+          "<strong>Recurrent</strong><strong> </strong><strong>patellar</strong><strong> </strong><strong>dislocation</strong>",
+          "Trochlear dysplasia, MPFL, VMO",
+          "Low lateral trochlear facet removes the bony buttress"
+        ],
+        [
+          "<strong>Patellar</strong><strong> </strong><strong>tendinopathy</strong>",
+          "Deep proximal patellar tendon",
+          "Loading pain — unlike fat pad pain, which is hyperextension pain"
+        ],
+        [
+          "<strong>Pes</strong><strong> </strong><strong>anserine</strong><strong> </strong><strong>bursitis</strong>",
+          "Bursa 4–6 cm below the joint line",
+          "Tenderness <strong>below</strong> the line, not at it"
+        ],
+        [
+          "<strong>ITB </strong><strong>syndrome</strong>",
+          "Fat beneath the ITB at the lateral epicondyle",
+          "Compression at ~30&#176; flexion → strengthen the hip"
+        ],
+        [
+          "<strong>Baker’s</strong><strong> </strong><strong>cyst</strong>",
+          "Semimembranosus–gastrocnemius bursa",
+          "Valvular communication → secondary to intra-articular disease"
+        ],
+        [
+          "<strong>Foot drop after knee injury</strong>",
+          "Common peroneal nerve at the fibular neck",
+          "Subcutaneous and tethered → vulnerable to trauma and compression"
+        ]
+      ]
+    }
+  },
+  {
+    "type": "section_heading",
+    "content_config": {
+      "text": "9. Rapid Revision"
+    }
+  },
+  {
+    "type": "subsection_heading",
+    "content_config": {
+      "text": "9.1 Numbers worth knowing"
+    }
+  },
+  {
+    "type": "comparison_table",
+    "content_config": {
+      "columns": [
+        "<strong>Value</strong>",
+        "<strong>What</strong><strong> </strong><strong>it</strong><strong> </strong><strong>is</strong>"
+      ],
+      "rows": [
+        [
+          "<strong>0–135&#176;</strong>",
+          "Knee flexion range; 5–10&#176; hyperextension is normal"
+        ],
+        [
+          "<strong>0–70&#176; / 90–100&#176; / 105&#176;</strong>",
+          "Walking / stairs / tying a shoelace"
+        ],
+        [
+          "<strong>5–7&#176; </strong><strong>valgus</strong>",
+          "Anatomic axis"
+        ],
+        [
+          "<strong>60–70%</strong>",
+          "Share of load through the medial compartment"
+        ],
+        [
+          "<strong>13–14&#176; (M), 15–18&#176; (F)</strong>",
+          "Q angle"
+        ],
+        [
+          "<strong>7–10&#176;</strong>",
+          "Posterior tibial slope"
+        ],
+        [
+          "<strong>30–50%</strong>",
+          "Increase in quadriceps moment arm provided by the patella"
+        ],
+        [
+          "<strong>5–7 mm</strong>",
+          "Patellar articular cartilage — the thickest in the body"
+        ],
+        [
+          "<strong>0.5 / 3.3 / 7–8 &#215; BW</strong>",
+          "PF joint reaction force: walking / stairs / squatting"
+        ],
+        [
+          "<strong>50–70% → 85–90%</strong>",
+          "Load carried by the menisci, extension → flexion"
+        ],
+        [
+          "<strong>Outer</strong><strong> 10–25%</strong>",
+          "Vascular (red–red) zone of the meniscus"
+        ],
+        [
+          "<strong>~85%</strong>",
+          "ACL share of restraint to anterior tibial translation"
+        ],
+        [
+          "<strong>4–6 cm</strong>",
+          "Distance below the joint line of the pes anserinus and the sMCL insertion"
+        ],
+        [
+          "<strong>2–4 </strong><strong>mL</strong>",
+          "Normal synovial fluid volume; <strong>20–30 mL</strong> already inhibits the quadriceps"
+        ],
+        [
+          "<strong>5–15%</strong>",
+          "Rate of popliteal artery injury in knee dislocation"
+        ]
+      ]
+    }
+  },
+  {
+    "type": "subsection_heading",
+    "content_config": {
+      "text": "9.2 Fifteen pearls"
+    }
+  },
+  {
+    "type": "paragraph",
+    "content_config": {
+      "body": "<ul><li><strong>The tibiofemoral and patellofemoral joints share one cavity</strong> — one injection treats both.</li><li><strong>Extension is the rehabilitation priority.</strong> A knee that cannot lock makes the quadriceps work all day.</li><li><strong>The mechanical axis passes medial to the knee</strong> — hence medial compartment OA and the logic of offloading.</li><li><strong>The medial meniscus is tethered to the deep MCL and cannot escape</strong> — which is why it tears more often.</li><li><strong>Only the outer 10–25% of meniscus can heal.</strong> That decides repair versus resection, and the protocol you receive.</li><li><strong>A root tear equals a functional total meniscectomy</strong> — look for extrusion.</li><li><strong>Degenerative meniscal tears without locking do better with exercise than with arthroscopy.</strong></li><li><strong>Lachman beats anterior drawer</strong> because at 20–30&#176; the hamstrings and meniscus cannot mask the laxity.</li><li><strong>The MCL heals and the ACL does not</strong> — extra-articular with blood supply versus intra-articular bathed in synovial fluid.</li><li><strong>Check the posterior sag before the anterior drawer</strong>, or you will call a PCL injury an ACL tear.</li><li><strong>The posterolateral corner is the most commonly missed injury</strong> and the commonest reason a cruciate reconstruction fails.</li><li><strong>Effusion inhibits the quadriceps reflexively</strong> — treat the swelling before you try to strengthen.</li><li><strong>Pes anserine tenderness is 4–6 cm BELOW the joint line</strong>, not at it.</li><li><strong>Baker’s cysts are secondary</strong> — treat the joint, not the cyst; and exclude DVT if it ruptures.</li><li><strong>Short head of biceps femoris, tibialis posterior and gluteus medius separate peroneal palsy from L5 radiculopathy.</strong></li></ul>"
+    }
+  },
+  {
+    "type": "subsection_heading",
+    "content_config": {
+      "text": "9.3 Red flags"
+    }
+  },
+  {
+    "type": "paragraph",
+    "content_config": {
+      "body": "<ul><li><strong>Hot, swollen, exquisitely tender knee with fever or systemic upset</strong> → septic arthritis. <strong>Aspirate</strong><strong> </strong><strong>before</strong><strong> </strong><strong>any</strong><strong> </strong><strong>steroid</strong><strong>.</strong></li><li><strong>Multiligament injury or gross instability</strong> → treat as a reduced knee dislocation; document pulses and the ankle–brachial index.</li><li><strong>Foot drop after a knee injury</strong> → common peroneal nerve; check for a posterolateral corner injury.</li><li><strong>Painful swollen calf after a swollen knee</strong> → ruptured Baker’s cyst, but <strong>exclude DVT first</strong>.</li><li><strong>A true locked knee that cannot be fully extended</strong> → bucket-handle meniscal tear or a loose body; this is the meniscal tear that does need surgery.</li><li><strong>Night pain, rest pain, weight loss, or a firm mass around the knee</strong> → image. The distal femur and proximal tibia are the commonest sites of primary bone tumours in adolescents.</li><li><strong>An adolescent with knee pain and a normal knee examination</strong> → examine the hip. <strong>Slipped</strong><strong> capital femoral </strong><strong>epiphysis</strong><strong> </strong><strong>presents</strong><strong> as </strong><strong>knee</strong><strong> </strong><strong>pain</strong><strong>.</strong></li></ul>"
+    }
+  },
+  {
+    "type": "paragraph",
+    "content_config": {
+      "body": "<em>Anatomy only. Knee biomechanics — the instantaneous axis of rotation, rolling and gliding, gait kinetics and the mechanics of instability — is treated separately.</em>"
+    }
+  }
+]
