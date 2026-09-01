@@ -3,6 +3,29 @@ import { pool } from "@/lib/db";
 import { revalidateDiseaseSurfaces } from "@/lib/revalidation";
 import myBlocks from "./blocks.json";
 
+// Postgres JSONB doesn't preserve key order, so a plain JSON.stringify
+// comparison between a freshly-read-back DB row and this route's own
+// source JSON can mismatch even when the two are semantically
+// identical (first attempt at this route hit exactly that — the
+// safety check aborted with 45/72 matched instead of quietly
+// corrupting anything, which is what it's there for). Recursively
+// sorting object keys before stringifying makes the comparison
+// order-independent.
+function canonical(value: unknown): unknown {
+  if (Array.isArray(value)) return value.map(canonical);
+  if (value !== null && typeof value === "object") {
+    const sorted: Record<string, unknown> = {};
+    for (const key of Object.keys(value as Record<string, unknown>).sort()) {
+      sorted[key] = canonical((value as Record<string, unknown>)[key]);
+    }
+    return sorted;
+  }
+  return value;
+}
+function canonicalStringify(value: unknown): string {
+  return JSON.stringify(canonical(value));
+}
+
 // Repairs the previous replace-elbow-neuro route's position bug: it
 // computed new-block positions as neuroHeadingPosition + 10*N without
 // checking whether that range fit before the old next-section position
@@ -41,7 +64,7 @@ export async function GET() {
   const typedMyBlocks = myBlocks as { type: string; content_config: Record<string, unknown> }[];
   const myMultiset = new Map<string, number>();
   for (const b of typedMyBlocks) {
-    const key = b.type + "::" + JSON.stringify(b.content_config);
+    const key = b.type + "::" + canonicalStringify(b.content_config);
     myMultiset.set(key, (myMultiset.get(key) ?? 0) + 1);
   }
 
@@ -49,7 +72,7 @@ export async function GET() {
   const mineIds: string[] = [];
   const tailIds: string[] = [];
   for (const b of afterNeuro) {
-    const key = b.block_type + "::" + JSON.stringify(b.content_config);
+    const key = b.block_type + "::" + canonicalStringify(b.content_config);
     const count = myMultiset.get(key) ?? 0;
     if (count > 0) {
       myMultiset.set(key, count - 1);
@@ -80,7 +103,7 @@ export async function GET() {
   const mineOrderMatches = mineInCurrentOrder.every(
     (b, i) =>
       b.block_type === typedMyBlocks[i].type &&
-      JSON.stringify(b.content_config) === JSON.stringify(typedMyBlocks[i].content_config)
+      canonicalStringify(b.content_config) === canonicalStringify(typedMyBlocks[i].content_config)
   );
   const firstTailPos = tailIds.length > 0 ? blocks.find((b) => b.id === tailIds[0])!.position : Infinity;
   const lastMinePos = Math.max(...mineInCurrentOrder.map((b) => b.position));
