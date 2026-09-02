@@ -34,7 +34,7 @@ export function SubsectionHeadingBlockView({ block }: { block: SubsectionHeading
           as="h3"
           id={slugify(block.text)}
           multiline={false}
-          className={`scroll-mt-36 rounded-[4px] bg-[#128A99] px-3 py-2 font-heading text-lg font-semibold text-white lg:scroll-mt-24 ${TEXT_ALIGN_CLASS[textAlign]}`}
+          className={`scroll-mt-36 rounded-[4px] px-3 py-2 font-heading text-lg font-semibold !bg-[#128A99] !text-white lg:scroll-mt-24 ${TEXT_ALIGN_CLASS[textAlign]}`}
           value={block.text}
           onSave={async (value) => {
             await updateBlockTextAction(block.id, "text", value);
