@@ -81,6 +81,7 @@ export function RichTableBlockView({
   const [badgeColumnTitle, setBadgeColumnTitle] = useState(block.badgeColumnTitle ?? "");
   const [columns, setColumns] = useState<Column[]>(block.columns);
   const [rows, setRows] = useState<Row[]>(block.rows);
+  const [showBadgeColumn, setShowBadgeColumn] = useState(block.showBadgeColumn ?? true);
 
   const commit = (
     nextTitle: string,
@@ -92,7 +93,18 @@ export function RichTableBlockView({
     setBadgeColumnTitle(nextBadgeColumnTitle);
     setColumns(nextColumns);
     setRows(nextRows);
-    updateRichTableAction(block.id, nextTitle, nextBadgeColumnTitle, nextColumns, nextRows);
+    updateRichTableAction(block.id, nextTitle, nextBadgeColumnTitle, nextColumns, nextRows, showBadgeColumn);
+  };
+
+  // The one field commit() doesn't thread through (every other call
+  // site already passes title/badgeColumnTitle/columns/rows explicitly
+  // — adding a 5th required argument everywhere for a toggle that only
+  // this one control ever changes would just be noise), so it gets its
+  // own tiny save path instead.
+  const toggleBadgeColumn = () => {
+    const next = !showBadgeColumn;
+    setShowBadgeColumn(next);
+    updateRichTableAction(block.id, title, badgeColumnTitle, columns, rows, next);
   };
 
   // A "text" cell's own RichEditableText reports its final HTML at
@@ -125,9 +137,11 @@ export function RichTableBlockView({
           <table className="w-full border-collapse font-ui text-xs">
             <thead>
               <tr className="border-b border-border bg-[#128A99]/10">
-                <th className="w-12 px-2 py-1.5 text-center font-medium text-black">
-                  {badgeColumnTitle}
-                </th>
+                {showBadgeColumn && (
+                  <th className="w-12 px-2 py-1.5 text-center font-medium text-black">
+                    {badgeColumnTitle}
+                  </th>
+                )}
                 {columns.map((column, i) => (
                   <th key={i} className="px-3 py-1.5 text-left font-medium text-black">
                     {column.title}
@@ -141,11 +155,13 @@ export function RichTableBlockView({
                   row.badgeIcon && isCardIconName(row.badgeIcon) ? cardIcons[row.badgeIcon] : null;
                 return (
                   <tr key={rowIndex} className="border-b border-border last:border-0">
-                    <td className="px-2 py-2 text-center align-middle">
-                      <span className="mx-auto flex size-6 items-center justify-center rounded-full border-2 border-[#128A99] font-ui text-xs font-semibold text-[#128A99]">
-                        {BadgeIcon ? <BadgeIcon className="size-3.5" aria-hidden="true" /> : rowIndex + 1}
-                      </span>
-                    </td>
+                    {showBadgeColumn && (
+                      <td className="px-2 py-2 text-center align-middle">
+                        <span className="mx-auto flex size-6 items-center justify-center rounded-full border-2 border-[#128A99] font-ui text-xs font-semibold text-[#128A99]">
+                          {BadgeIcon ? <BadgeIcon className="size-3.5" aria-hidden="true" /> : rowIndex + 1}
+                        </span>
+                      </td>
+                    )}
                     {columns.map((column, colIndex) => (
                       <td key={colIndex} className="px-3 py-2 align-middle text-black">
                         <RichTableCellView type={column.type} value={row.cells[colIndex]} />
@@ -171,18 +187,29 @@ export function RichTableBlockView({
         block={block}
         diseaseSlug={diseaseSlug}
       />
+      <label className="flex w-fit items-center gap-1.5 font-ui text-xs text-secondary">
+        <input
+          type="checkbox"
+          checked={showBadgeColumn}
+          onChange={toggleBadgeColumn}
+          className="size-3.5 accent-accent"
+        />
+        Show row numbers
+      </label>
         <table className="w-full border-collapse font-ui text-sm">
           <thead>
             <tr className="border-b border-border">
-              <th className="w-16 p-1 align-top">
-                <input
-                  value={badgeColumnTitle}
-                  placeholder="e.g. Phase"
-                  onChange={(e) => setBadgeColumnTitle(e.target.value)}
-                  onBlur={() => commit(title, badgeColumnTitle, columns, rows)}
-                  className="w-full min-w-0 rounded border border-transparent bg-transparent px-1 py-1 text-center font-medium text-primary outline-none hover:border-border focus:border-accent"
-                />
-              </th>
+              {showBadgeColumn && (
+                <th className="w-16 p-1 align-top">
+                  <input
+                    value={badgeColumnTitle}
+                    placeholder="e.g. Phase"
+                    onChange={(e) => setBadgeColumnTitle(e.target.value)}
+                    onBlur={() => commit(title, badgeColumnTitle, columns, rows)}
+                    className="w-full min-w-0 rounded border border-transparent bg-transparent px-1 py-1 text-center font-medium text-primary outline-none hover:border-border focus:border-accent"
+                  />
+                </th>
+              )}
               {columns.map((column, colIndex) => (
                 <th key={colIndex} className="min-w-32 p-1 align-top">
                   <div className="flex flex-col gap-1">
@@ -246,17 +273,19 @@ export function RichTableBlockView({
           <tbody>
             {rows.map((row, rowIndex) => (
               <tr key={rowIndex} className="border-b border-border last:border-0">
-                <td className="p-1 text-center align-top">
-                  <IconPickerButton
-                    icon={row.badgeIcon}
-                    allowClear
-                    fallback={<span className="font-ui text-xs">{rowIndex + 1}</span>}
-                    onPick={(icon) => {
-                      const nextRows = rows.map((r, i) => (i === rowIndex ? { ...r, badgeIcon: icon } : r));
-                      commit(title, badgeColumnTitle, columns, nextRows);
-                    }}
-                  />
-                </td>
+                {showBadgeColumn && (
+                  <td className="p-1 text-center align-top">
+                    <IconPickerButton
+                      icon={row.badgeIcon}
+                      allowClear
+                      fallback={<span className="font-ui text-xs">{rowIndex + 1}</span>}
+                      onPick={(icon) => {
+                        const nextRows = rows.map((r, i) => (i === rowIndex ? { ...r, badgeIcon: icon } : r));
+                        commit(title, badgeColumnTitle, columns, nextRows);
+                      }}
+                    />
+                  </td>
+                )}
                 {columns.map((column, colIndex) => (
                   <td key={colIndex} className="p-1 align-top">
                     {column.type === "text" && (

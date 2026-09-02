@@ -308,6 +308,7 @@ async function resolveBlock(diseaseId: string, row: BlockRow): Promise<Editorial
         id: row.id,
         title: cc.title as string | undefined,
         badgeColumnTitle: cc.badgeColumnTitle as string | undefined,
+        showBadgeColumn: cc.showBadgeColumn as boolean | undefined,
         columns:
           (cc.columns as { title: string; type: "text" | "icon_list" | "scale" }[]) ?? [],
         rows:

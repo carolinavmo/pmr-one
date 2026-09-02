@@ -570,7 +570,8 @@ export async function updateRichTableAction(
   rows: {
     badgeIcon?: string;
     cells: (string | { icon?: string; label: string }[] | { label: string; value: number })[];
-  }[]
+  }[],
+  showBadgeColumn: boolean
 ) {
   await requireEditor();
   await pool.query(
@@ -579,10 +580,18 @@ export async function updateRichTableAction(
        'title', $2::text,
        'badgeColumnTitle', $3::text,
        'columns', $4::jsonb,
-       'rows', $5::jsonb
+       'rows', $5::jsonb,
+       'showBadgeColumn', $6::boolean
      )
      WHERE id = $1`,
-    [blockId, sanitizeRichText(title), badgeColumnTitle, JSON.stringify(columns), JSON.stringify(rows)]
+    [
+      blockId,
+      sanitizeRichText(title),
+      badgeColumnTitle,
+      JSON.stringify(columns),
+      JSON.stringify(rows),
+      showBadgeColumn,
+    ]
   );
   revalidateDiseaseSurfaces();
 }

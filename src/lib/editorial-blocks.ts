@@ -494,6 +494,11 @@ export interface RichTableBlock extends BlockBase {
   // text like every other column title, just stored separately since
   // that column's cells aren't author-typed the way the rest are.
   badgeColumnTitle?: string;
+  // Whether the leading numbered/icon badge column renders at all —
+  // undefined means true (every table before this option existed keeps
+  // showing it unchanged). Some tables (e.g. a plain layer/contents
+  // reference) read better without a number implying a sequence.
+  showBadgeColumn?: boolean;
   columns: RichTableColumn[];
   rows: RichTableRow[];
 }
