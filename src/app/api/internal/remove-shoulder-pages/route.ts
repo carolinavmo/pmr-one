@@ -25,7 +25,7 @@ const DISEASE_RELATIONSHIP_TABLES = [
 
 export async function GET() {
   const { rows: candidates } = await pool.query(
-    `SELECT id, slug, canonical_name FROM disease WHERE canonical_name ILIKE '%shoulder%anatomy%' ORDER BY canonical_name`
+    `SELECT id, slug, canonical_name FROM disease WHERE canonical_name ILIKE '%shoulder%' ORDER BY canonical_name`
   );
 
   const keep = candidates.filter((d) => /v7/i.test(d.canonical_name));
