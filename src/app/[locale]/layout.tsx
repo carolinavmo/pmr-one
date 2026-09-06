@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Google_Sans, Inter, Poppins, Yanone_Kaffeesatz } from "next/font/google";
+import { Inter, Poppins, Roboto, Yanone_Kaffeesatz } from "next/font/google";
 import { notFound } from "next/navigation";
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages } from "next-intl/server";
@@ -22,10 +22,11 @@ const fontUI = Inter({
 });
 
 // Reading typeface (Tier 1: clinical content — Overview, Definition,
-// Clinical Pearls, algorithm text). Google Sans — chosen after trying
-// several alternatives (Archivo, Open Sans, DM Sans, Montserrat,
-// Poppins, Manrope, Quicksand) side by side.
-const fontReading = Google_Sans({
+// Clinical Pearls, algorithm text). Roboto — swapped in for Google
+// Sans (itself chosen after trying several alternatives — Archivo,
+// Open Sans, DM Sans, Montserrat, Poppins, Manrope, Quicksand — side
+// by side) per founder request.
+const fontReading = Roboto({
   variable: "--font-reading",
   subsets: ["latin"],
   weight: ["400", "500", "700"],
