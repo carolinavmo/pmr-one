@@ -47,7 +47,7 @@ const NEW_ROWS = [
   },
 ];
 
-const TABLE_TITLE = "The Beaton classification of variants";
+const TABLE_TITLE_SUBSTRING = "beaton classification of variants";
 
 export async function GET() {
   const { rows: diseaseRows } = await pool.query(`SELECT id FROM disease WHERE slug = 'hip-anatomy'`);
@@ -58,7 +58,9 @@ export async function GET() {
     `SELECT id, content_config FROM editorial_block WHERE disease_id = $1 AND block_type = 'rich_table'`,
     [diseaseId]
   );
-  const block = blocks.find((b) => b.content_config?.title === TABLE_TITLE);
+  const block = blocks.find((b) =>
+    String(b.content_config?.title ?? "").toLowerCase().includes(TABLE_TITLE_SUBSTRING)
+  );
   if (!block) {
     return NextResponse.json(
       {
