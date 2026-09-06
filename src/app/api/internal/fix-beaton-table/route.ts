@@ -60,7 +60,14 @@ export async function GET() {
   );
   const block = blocks.find((b) => b.content_config?.title === TABLE_TITLE);
   if (!block) {
-    return NextResponse.json({ ok: false, error: "Beaton table not found" }, { status: 404 });
+    return NextResponse.json(
+      {
+        ok: false,
+        error: "Beaton table not found",
+        allRichTableTitles: blocks.map((b) => b.content_config?.title),
+      },
+      { status: 404 }
+    );
   }
 
   const currentRows = block.content_config.rows as { cells: string[] }[];
