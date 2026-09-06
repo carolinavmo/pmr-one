@@ -56,7 +56,7 @@ export function ComparisonTableBlockView({
       <div className="flex flex-col gap-2">
         {block.caption && <p className="font-ui text-sm text-secondary">{block.caption}</p>}
         <div className="rounded-lg border border-border">
-          <table className="w-full border-collapse font-ui text-sm">
+          <table className="w-full border-collapse font-reading text-sm">
             <thead>
               <tr className="border-b border-border bg-[#128A99]/10">
                 {block.columns.map((column, i) => (

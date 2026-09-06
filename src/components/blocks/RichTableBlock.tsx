@@ -134,7 +134,7 @@ export function RichTableBlockView({
           />
         )}
         <div className="rounded-lg border border-border">
-          <table className="w-full border-collapse font-ui text-xs">
+          <table className="w-full border-collapse font-reading text-xs">
             <thead>
               <tr className="border-b border-border bg-[#128A99]/10">
                 {showBadgeColumn && (
