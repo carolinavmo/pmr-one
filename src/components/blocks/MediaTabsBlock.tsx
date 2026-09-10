@@ -188,8 +188,8 @@ export function MediaTabsBlockView({
       // closes.
       const next = tabs.map((t, i) => (i === clampedIndex ? { ...t, imageUrl: assetUrl } : t));
       setTabs(next);
-    } catch {
-      setUploadError("Upload failed. Try again.");
+    } catch (err) {
+      setUploadError(err instanceof Error ? err.message : "Upload failed. Try again.");
     } finally {
       setUploading(false);
     }

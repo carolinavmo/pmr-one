@@ -185,8 +185,8 @@ export function IllustrationPicker({
               setUploadError(null);
               try {
                 await onUploadNew(formData);
-              } catch {
-                setUploadError("Upload failed. Try again.");
+              } catch (err) {
+                setUploadError(err instanceof Error ? err.message : "Upload failed. Try again.");
                 setUploading(false);
               }
             }}

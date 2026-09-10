@@ -124,8 +124,8 @@ function PhotoCard({
     try {
       await uploadPhotoCardGalleryIllustrationAction(blockId, item.id, formData);
       onItemChange({ ...item, illustrationUrl: URL.createObjectURL(file) });
-    } catch {
-      setUploadError("Upload failed. Try again.");
+    } catch (err) {
+      setUploadError(err instanceof Error ? err.message : "Upload failed. Try again.");
     } finally {
       setUploading(false);
     }

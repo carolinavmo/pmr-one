@@ -35,9 +35,9 @@ export function AvatarUploader({
     formData.set("file", file);
     try {
       await updateAvatarAction(formData);
-    } catch {
+    } catch (err) {
       setImageUrl(initialImageUrl);
-      setUploadError("Upload failed. Try again.");
+      setUploadError(err instanceof Error ? err.message : "Upload failed. Try again.");
     } finally {
       setUploading(false);
     }

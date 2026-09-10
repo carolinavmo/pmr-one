@@ -80,8 +80,8 @@ export function OverviewBlockView({
     try {
       await uploadOverviewImageAction(block.id, formData);
       setImageUrl(URL.createObjectURL(file));
-    } catch {
-      setUploadError("Upload failed. Try again.");
+    } catch (err) {
+      setUploadError(err instanceof Error ? err.message : "Upload failed. Try again.");
     } finally {
       setUploading(false);
     }

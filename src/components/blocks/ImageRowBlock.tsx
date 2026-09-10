@@ -189,8 +189,8 @@ function ImageRowItem({
     try {
       await uploadImageRowItemImageAction(block.id, item.id, formData);
       onImageChange(URL.createObjectURL(file));
-    } catch {
-      setUploadError("Upload failed. Try again.");
+    } catch (err) {
+      setUploadError(err instanceof Error ? err.message : "Upload failed. Try again.");
     } finally {
       setUploading(false);
     }
