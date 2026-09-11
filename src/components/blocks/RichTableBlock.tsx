@@ -12,6 +12,7 @@ import { updateRichTableAction } from "@/lib/actions/authoring";
 import { cardIcons, type CardIconName } from "@/components/ui/cardIcons";
 import { RichEditableText } from "@/components/ui/RichEditableText";
 import { sanitizeRichText } from "@/lib/rich-text";
+import { TEXT_ALIGN_CLASS } from "@/lib/block-alignment";
 
 type Column = RichTableBlock["columns"][number];
 type Row = RichTableBlock["rows"][number];
@@ -118,6 +119,8 @@ export function RichTableBlockView({
     commit(title, badgeColumnTitle, columns, nextRows);
   };
 
+  const titleAlign = block.layout?.textAlign ?? "left";
+
   if (!editing) {
     if (columns.length === 0) return null;
     return (
@@ -128,7 +131,7 @@ export function RichTableBlockView({
             value={title}
             onSave={async (html) => commit(html, badgeColumnTitle, columns, rows)}
             placeholder=""
-            className="font-reading text-lg text-primary"
+            className={`font-reading text-lg text-primary ${TEXT_ALIGN_CLASS[titleAlign]}`}
             block={block}
             diseaseSlug={diseaseSlug}
           />
@@ -183,7 +186,7 @@ export function RichTableBlockView({
         value={title}
         onSave={async (html) => commit(html, badgeColumnTitle, columns, rows)}
         placeholder="Table title (optional)"
-        className="w-full font-reading text-lg text-primary"
+        className={`w-full font-reading text-lg text-primary ${TEXT_ALIGN_CLASS[titleAlign]}`}
         block={block}
         diseaseSlug={diseaseSlug}
       />

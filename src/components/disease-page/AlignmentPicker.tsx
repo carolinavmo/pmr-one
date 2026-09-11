@@ -47,12 +47,14 @@ interface AlignmentPickerProps {
 
 // Popover for the four/five alignment controls (AUTHORING request:
 // "modify vertical and horizontal alignment of the text, and the
-// block itself") — scoped to the text/prose block types only
-// (ALIGNABLE_TYPES in BlockControls.tsx), since most other block types
-// (tables, algorithms, timelines...) don't have a single piece of
-// running text to align. Each button fires immediately (matches this
-// app's "discrete choice = commit now" convention already used by
-// color swatch pickers, not a form with a save button).
+// block itself") — scoped to the block types listed in ALIGNABLE_TYPES
+// (BlockControls.tsx), since most other block types (algorithms,
+// timelines...) don't have a single piece of running text to align.
+// Text align applies to a table's own title/caption for the table
+// types (ComparisonTableBlock.tsx, RichTableBlock.tsx), not just prose
+// blocks. Each button fires immediately (matches this app's "discrete
+// choice = commit now" convention already used by color swatch
+// pickers, not a form with a save button).
 export function AlignmentPicker({ block }: AlignmentPickerProps) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);

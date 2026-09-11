@@ -7,6 +7,7 @@ import { useEditMode } from "@/components/disease-page/EditMode";
 import { updateComparisonTableAction } from "@/lib/actions/authoring";
 import { RichEditableText } from "@/components/ui/RichEditableText";
 import { sanitizeRichText } from "@/lib/rich-text";
+import { TEXT_ALIGN_CLASS } from "@/lib/block-alignment";
 
 // A grid, not a list — add/remove row and column controls sit at the
 // grid's own edges rather than reusing the up/down reorder pattern
@@ -51,10 +52,14 @@ export function ComparisonTableBlockView({
     await updateComparisonTableAction(block.id, columns, nextRows);
   };
 
+  const captionAlign = block.layout?.textAlign ?? "left";
+
   if (!editing) {
     return (
       <div className="flex flex-col gap-2">
-        {block.caption && <p className="font-ui text-sm text-secondary">{block.caption}</p>}
+        {block.caption && (
+          <p className={`font-ui text-sm text-secondary ${TEXT_ALIGN_CLASS[captionAlign]}`}>{block.caption}</p>
+        )}
         <div className="rounded-lg border border-border">
           <table className="w-full border-collapse font-reading text-sm">
             <thead>

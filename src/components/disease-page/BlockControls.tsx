@@ -22,10 +22,10 @@ import { notifySectionIndexChanged } from "@/lib/section-events";
 // of which assume one heading spans the whole column on its own line.
 const LAYOUT_INCOMPATIBLE_TYPES = new Set(["section_heading"]);
 
-// Text/prose blocks only — the alignment picker's "text align" and
+// Mostly text/prose blocks — the alignment picker's "text align" and
 // "text vertical align" controls need one piece of running text to
-// apply to, which most other block types (tables, algorithms,
-// timelines, stat cards...) don't have a single obvious one of.
+// apply to, which most other block types (algorithms, timelines, stat
+// cards...) don't have a single obvious one of.
 const ALIGNABLE_TYPES = new Set([
   "paragraph",
   "section_heading",
@@ -35,16 +35,19 @@ const ALIGNABLE_TYPES = new Set([
   "learning_objective",
   "self_check",
   "overview",
-  // Not prose, but reuses this same picker for its own caption's text
-  // align plus the standard standalone block width/position controls
-  // (SimpleImageBlock.tsx) — cheaper than a bespoke control for a
-  // block deliberately kept this simple.
+  // Not prose, but reuses this same picker for its own caption/title's
+  // text align plus the standard standalone block width/position
+  // controls (SimpleImageBlock.tsx, ComparisonTableBlock.tsx,
+  // RichTableBlock.tsx) — cheaper than a bespoke control for blocks
+  // deliberately kept this simple.
   "simple_image",
   "highlight_card",
   "icon_text",
   "icon_list",
   "medical_illustration",
   "image_comparison",
+  "comparison_table",
+  "rich_table",
 ]);
 
 // Block types whose insert path is fully wired end-to-end today, so
