@@ -30,7 +30,7 @@ export async function Footer() {
       <div className="mx-auto flex w-full max-w-6xl flex-col gap-6 px-4 py-8 sm:px-6 lg:px-8">
         <div className="flex flex-col gap-6 sm:flex-row sm:items-start sm:justify-between">
           <div className="flex max-w-sm flex-col gap-1.5">
-            <span className="font-heading text-sm font-semibold text-footer-text">PM&R Atlas</span>
+            <span className="font-heading text-sm font-semibold text-footer-text">PM&R Explained</span>
             <p className="font-ui text-sm text-footer-text-secondary">{t("tagline")}</p>
           </div>
           <nav aria-label={t("linksLabel")} className="flex flex-wrap gap-x-6 gap-y-2">

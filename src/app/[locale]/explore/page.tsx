@@ -32,7 +32,7 @@ interface ComparisonRow {
   member: boolean;
 }
 
-// The landing spot for a signed-out visitor's "Explore PM&R Atlas" click
+// The landing spot for a signed-out visitor's "Explore PM&R Explained" click
 // (see HomeHero.tsx) — a guided tour of the platform's four pillars,
 // meant to motivate account creation, not the catalog browse itself
 // (that's /conditions). A signed-in visitor already has the real

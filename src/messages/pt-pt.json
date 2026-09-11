@@ -47,7 +47,7 @@
   "footer": {
     "tagline": "Patologias, ferramentas clínicas, cartões de memória e perguntas de prática — a plataforma de estudo criada para internos de MFR.",
     "linksLabel": "Rodapé",
-    "copyright": "© {year} PM&R Atlas",
+    "copyright": "© {year} PM&R Explained",
     "disclaimer": "Apenas para referência educativa — não substitui o julgamento clínico."
   },
   "disease": {
@@ -79,7 +79,7 @@
     "doctorPrefix": "Dr.",
     "heroTitle": "Aprendizagem baseada em evidência para fisiatras modernos.",
     "heroSubtitle": "O seu recurso de confiança em MFR — patologias, manobras de exame e algoritmos de tratamento baseados em evidência, feitos para uma leitura rápida quando precisa de uma resposta.",
-    "heroCtaPrimary": "Explorar o PM&R Atlas",
+    "heroCtaPrimary": "Explorar o PM&R Explained",
     "heroCtaSecondary": "Criar conta",
     "heroEyebrow": "Baseado em Evidência · Foco Clínico",
     "heroBadgeTitle": "Criado para profissionais de MFR",
@@ -106,7 +106,7 @@
     "featureConditionsBullet3": "Organizado por região do corpo e tipo de patologia",
     "featureConditionsCta": "Ver patologias",
     "featureConditionsStatLabel": "Patologias disponíveis",
-    "featureConditionsUrlLabel": "pmratlas.com/conditions/{slug}",
+    "featureConditionsUrlLabel": "pmrexplained.com/conditions/{slug}",
     "featureConditionsIndexLabel": "Nesta página",
     "featureConditionsOverviewLabel": "Visão geral",
     "featureConditionsKeyPointsLabel": "Pontos-chave",

@@ -44,7 +44,7 @@ const fontHeading = Poppins({
   weight: ["600", "700"],
 });
 
-// Brand wordmark only ("PM&R Atlas" in TopBar.tsx) — a condensed
+// Brand wordmark only ("PM&R Explained" in TopBar.tsx) — a condensed
 // display face, not a general-purpose typeface, so it's scoped to that
 // one span rather than added as a third body/heading role.
 const fontBrand = Yanone_Kaffeesatz({
@@ -54,7 +54,7 @@ const fontBrand = Yanone_Kaffeesatz({
 });
 
 export const metadata: Metadata = {
-  title: "PM&R Atlas",
+  title: "PM&R Explained",
   description:
     "A fast, expert-curated MSK exam and injection reference for PM&R residents.",
 };

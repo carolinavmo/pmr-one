@@ -47,7 +47,7 @@
   "footer": {
     "tagline": "Patologías, herramientas clínicas, tarjetas de memoria y preguntas de práctica — la plataforma de estudio creada para residentes de MFR.",
     "linksLabel": "Pie de página",
-    "copyright": "© {year} PM&R Atlas",
+    "copyright": "© {year} PM&R Explained",
     "disclaimer": "Solo con fines educativos — no sustituye el juicio clínico."
   },
   "disease": {
@@ -79,7 +79,7 @@
     "doctorPrefix": "Dr.",
     "heroTitle": "Aprendizaje basado en evidencia para fisiatras modernos.",
     "heroSubtitle": "Tu recurso de confianza en MFR — patologías, maniobras exploratorias y algoritmos de tratamiento basados en evidencia, pensados para leerse rápido cuando necesitas una respuesta.",
-    "heroCtaPrimary": "Explorar PM&R Atlas",
+    "heroCtaPrimary": "Explorar PM&R Explained",
     "heroCtaSecondary": "Crear cuenta",
     "heroEyebrow": "Basado en Evidencia · Enfoque Clínico",
     "heroBadgeTitle": "Creado para profesionales de MFR",
@@ -106,7 +106,7 @@
     "featureConditionsBullet3": "Organizado por región del cuerpo y tipo de patología",
     "featureConditionsCta": "Ver patologías",
     "featureConditionsStatLabel": "Patologías disponibles",
-    "featureConditionsUrlLabel": "pmratlas.com/conditions/{slug}",
+    "featureConditionsUrlLabel": "pmrexplained.com/conditions/{slug}",
     "featureConditionsIndexLabel": "En esta página",
     "featureConditionsOverviewLabel": "Resumen",
     "featureConditionsKeyPointsLabel": "Puntos clave",

@@ -47,7 +47,7 @@
   "footer": {
     "tagline": "Conditions, clinical tools, flashcards, and practice questions — the study platform built for PM&R residents.",
     "linksLabel": "Footer",
-    "copyright": "© {year} PM&R Atlas",
+    "copyright": "© {year} PM&R Explained",
     "disclaimer": "For educational reference only — not a substitute for clinical judgment."
   },
   "disease": {
@@ -79,7 +79,7 @@
     "doctorPrefix": "Dr.",
     "heroTitle": "Evidence-based learning for modern physiatrists.",
     "heroSubtitle": "Your trusted resource for PM&R knowledge — evidence-based conditions, exam maneuvers, and treatment algorithms, built to be read fast when you need an answer.",
-    "heroCtaPrimary": "Explore PM&R Atlas",
+    "heroCtaPrimary": "Explore PM&R Explained",
     "heroCtaSecondary": "Create account",
     "heroEyebrow": "Evidence-Based · Clinically Focused",
     "heroBadgeTitle": "Built for PM&R professionals",
@@ -106,7 +106,7 @@
     "featureConditionsBullet3": "Organized by body region and condition type",
     "featureConditionsCta": "Browse conditions",
     "featureConditionsStatLabel": "Conditions available",
-    "featureConditionsUrlLabel": "pmratlas.com/conditions/{slug}",
+    "featureConditionsUrlLabel": "pmrexplained.com/conditions/{slug}",
     "featureConditionsIndexLabel": "On this page",
     "featureConditionsOverviewLabel": "Overview",
     "featureConditionsKeyPointsLabel": "Key Points",
