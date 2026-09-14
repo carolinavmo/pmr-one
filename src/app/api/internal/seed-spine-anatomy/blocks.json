@@ -1,0 +1,1287 @@
+[
+  {
+    "type": "section_heading",
+    "text": "1. Overview — The Spine as a System"
+  },
+  {
+    "type": "paragraph",
+    "body": "The spine has to do two incompatible things at once: <strong>protect the neural tissue running through it</strong> and <strong>stay mobile enough to be useful</strong>. It resolves that by stacking many small joints, each moving a little, so the column as a whole moves a great deal while no single segment is very mobile."
+  },
+  {
+    "type": "paragraph",
+    "body": "That design produces the two great families of spinal pathology: <strong>too much motion at one segment</strong> (instability, spondylolisthesis, segmental pain) and <strong>too little space for the neural structures</strong> (stenosis, radiculopathy, myelopathy)."
+  },
+  {
+    "type": "subsection_heading",
+    "text": "1.1 The numbers"
+  },
+  {
+    "type": "paragraph",
+    "body": "<ul><li><strong>33 vertebrae:</strong> 7 cervical, 12 thoracic, 5 lumbar, 5 fused sacral, 4 (usually fused) coccygeal.</li><li><strong>23 intervertebral discs.</strong> There is <strong>no disc between C1 and C2</strong>, and none above C1 — so the first disc is C2–C3 and the last is L5–S1.</li><li>Discs make up roughly <strong>20–33% of the height of the vertebral column</strong>, which is why we lose height with age and are measurably shorter at the end of the day.</li></ul>"
+  },
+  {
+    "type": "subsection_heading",
+    "text": "1.2 The curves"
+  },
+  {
+    "type": "comparison_table",
+    "columns": [
+      "<strong>Curve</strong>",
+      "<strong>Direction</strong>",
+      "<strong>Type</strong>",
+      "<strong>Normal range</strong>"
+    ],
+    "rows": [
+      [
+        "<strong>Cervical</strong>",
+        "Lordosis",
+        "<strong>Secondary</strong> — develops with head control (~3–4 months)",
+        "20–40&#176;"
+      ],
+      [
+        "<strong>Thoracic</strong>",
+        "Kyphosis",
+        "<strong>Primary</strong> — present at birth",
+        "20–45&#176;"
+      ],
+      [
+        "<strong>Lumbar</strong>",
+        "Lordosis",
+        "<strong>Secondary</strong> — develops with standing and walking (~12–18 months)",
+        "40–60&#176;"
+      ],
+      [
+        "<strong>Sacral</strong>",
+        "Kyphosis",
+        "<strong>Primary</strong>",
+        "Fixed"
+      ]
+    ]
+  },
+  {
+    "type": "paragraph",
+    "body": "<ul><li><strong>Primary curves are kyphotic</strong> and follow the shape of the fetal spine. <strong>Secondary curves are lordotic</strong> and are acquired as the child lifts the head and then stands.</li><li>The curves act as a <strong>spring</strong>. A curved column resists axial compression far better than a straight one, and the alternating curves let the spine absorb load rather than transmit it rigidly to the head.</li></ul>"
+  },
+  {
+    "type": "subsubsection_heading",
+    "text": "1.2.1 Sagittal balance — the parameters you will see on reports"
+  },
+  {
+    "type": "paragraph",
+    "body": "<ul><li><strong>Sagittal vertical axis (SVA)</strong> — a plumb line from C7 should fall within about <strong>5 cm</strong> of the posterosuperior corner of S1.</li><li><strong>Pelvic incidence (PI)</strong> — a fixed, individual morphological value: <strong>PI = pelvic tilt + sacral slope</strong>. It does not change with position.</li><li><strong>PI – LL mismatch</strong> — lumbar lordosis should roughly match pelvic incidence; a mismatch greater than about <strong>10&#176;</strong> is associated with pain and disability.</li></ul>"
+  },
+  {
+    "type": "highlight_card",
+    "label": "PM&R clinical pearl",
+    "text": "<strong>Sagittal balance is the single most useful concept to take from spinal surgery into rehabilitation.</strong> A patient whose trunk has drifted forward must work continuously with the hip extensors and the posterior chain simply to stand upright — which is exhausting, and is a common but under-recognised cause of “I can walk only a short distance.”<br>Look for the compensations rather than the number: <strong>pelvic retroversion, knee flexion, reduced thoracic kyphosis</strong> and a forward head. When a patient describes needing to lean on a trolley, ask whether they lean because of <strong>claudication</strong> (stenosis, relieved by flexion) or because of <strong>sagittal imbalance</strong> (fatigue, relieved by support). The management differs.",
+    "color": "teal"
+  },
+  {
+    "type": "subsection_heading",
+    "text": "1.3 The functional spinal unit"
+  },
+  {
+    "type": "paragraph",
+    "body": "The smallest piece of spine that behaves like a spine: <strong>two adjacent vertebrae, the disc between them, the two facet joints, and the connecting ligaments.</strong>"
+  },
+  {
+    "type": "paragraph",
+    "body": "<ul><li>This gives the <strong>three-joint complex</strong>: one <strong>disc</strong> anteriorly and two <strong>facet joints</strong> posteriorly. They are mechanically coupled — degeneration in one loads the others, which is why disc height loss and facet arthropathy travel together.</li><li><strong>Load sharing:</strong> in neutral standing the anterior column (body and disc) carries roughly <strong>80%</strong> of axial load and the facets about <strong>20%</strong>. In <strong>extension</strong> the facet share rises substantially — one reason extension-based pain suggests a posterior element source.</li></ul>"
+  },
+  {
+    "type": "highlight_card",
+    "label": "Memory aid",
+    "text": "<strong>Anterior column = the shock absorber. Posterior column = the guide rail.</strong> The disc takes the load; the facets decide which directions the segment is allowed to move in. Most of the regional differences in the spine are differences in the <strong>orientation of that guide rail</strong>.",
+    "color": "yellow"
+  },
+  {
+    "type": "subsection_heading",
+    "text": "1.4 Regional differences at a glance"
+  },
+  {
+    "type": "comparison_table",
+    "columns": [
+      "",
+      "<strong>Cervical</strong>",
+      "<strong>Thoracic</strong>",
+      "<strong>Lumbar</strong>"
+    ],
+    "rows": [
+      [
+        "<strong>Body</strong>",
+        "Small, wide; <strong>uncinate processes</strong>",
+        "Heart-shaped; <strong>costal facets</strong>",
+        "Large, kidney-shaped"
+      ],
+      [
+        "<strong>Vertebral foramen</strong>",
+        "<strong>Large</strong>, triangular",
+        "<strong>Small</strong>, circular",
+        "Triangular"
+      ],
+      [
+        "<strong>Facet orientation</strong>",
+        "~45&#176; from horizontal, coronal-oblique",
+        "Coronal, ~60&#176; from horizontal",
+        "<strong>Sagittal</strong>"
+      ],
+      [
+        "<strong>Motion favoured</strong>",
+        "All directions — the most mobile region",
+        "<strong>Rotation</strong>; flexion/extension limited by ribs",
+        "<strong>Flexion / extension</strong>; rotation very limited"
+      ],
+      [
+        "<strong>Special feature</strong>",
+        "<strong>Transverse foramen</strong> (vertebral artery)",
+        "Articulates with ribs",
+        "Mammillary and accessory processes; <strong>pars interarticularis</strong>"
+      ],
+      [
+        "<strong>Typical pathology</strong>",
+        "Radiculopathy, myelopathy, whiplash",
+        "Fracture (least space for the cord), scoliosis",
+        "Disc herniation, stenosis, spondylolisthesis"
+      ]
+    ]
+  },
+  {
+    "type": "highlight_card",
+    "label": "PM&R clinical pearl",
+    "text": "<strong>Facet orientation explains almost every regional difference.</strong> Sagittal lumbar facets permit flexion and extension but block rotation — which is why <strong>the lumbar spine tolerates bending but is injured by twisting</strong>, and why rotation is only about <strong>2&#176; per segment</strong> in the lumbar spine.<br>Coronal thoracic facets permit rotation but the <strong>ribs</strong> restrict everything else — which is why the thoracic spine is the stiff middle of the column and why <strong>thoracic pain deserves more suspicion</strong> than lumbar pain: it is less often mechanical.",
+    "color": "teal"
+  },
+  {
+    "type": "subsection_heading",
+    "text": "1.5 Load"
+  },
+  {
+    "type": "paragraph",
+    "body": "<ul><li>Disc pressure varies greatly with posture. Relative to standing (100%), it is <strong>lowest lying supine</strong>, higher <strong>sitting</strong>, and <strong>highest in forward flexion while lifting</strong>.</li><li>The classical Nachemson figures have been refined by later in-vivo measurements, but the <strong>ranking has held</strong>: lying &lt; standing &lt; sitting &lt; flexed &lt; flexed and loaded.</li><li>Intradiscal pressure also <strong>rises through the day</strong> and falls overnight as the disc rehydrates.</li></ul>"
+  },
+  {
+    "type": "highlight_card",
+    "label": "PM&R clinical pearl",
+    "text": "<strong>The practical advice that follows from disc pressure is about position, not about avoiding load.</strong> Discs need loading and unloading cycles to be nourished (see 3.2). The message is to <strong>vary posture frequently</strong> and to <strong>avoid sustained loaded flexion</strong>, not to avoid bending altogether.<br>One concrete implication: disc pressure and hydration are highest in the morning, so <strong>heavy flexion-based loading in the first hour after rising</strong> is the worst time for a vulnerable disc.",
+    "color": "teal"
+  },
+  {
+    "type": "section_heading",
+    "text": "2. Vertebrae — Typical and Regional"
+  },
+  {
+    "type": "subsection_heading",
+    "text": "2.1 The typical vertebra"
+  },
+  {
+    "type": "paragraph",
+    "body": "<ul><li><strong>Body</strong> — anterior, weight-bearing, increasing in size as you descend.</li><li><strong>Pedicles</strong> — short, strong bridges from body to posterior elements. They are the <strong>strongest part of the vertebra</strong> and the anchor point for surgical screws.</li><li><strong>Laminae</strong> — form the roof of the canal; the target of laminectomy.</li><li><strong>Spinous process</strong> — posterior, palpable, a lever for the extensor muscles.</li><li><strong>Transverse processes</strong> — lateral levers for rotation and side-bending.</li><li><strong>Superior and inferior articular processes</strong> — carry the facets and determine the segment’s permitted motion.</li><li><strong>Vertebral foramen</strong> — which, stacked, forms the spinal canal.</li></ul>"
+  },
+  {
+    "type": "subsection_heading",
+    "text": "2.2 Cervical spine"
+  },
+  {
+    "type": "subsubsection_heading",
+    "text": "2.2.1 Typical cervical vertebrae (C3–C6)"
+  },
+  {
+    "type": "paragraph",
+    "body": "<ul><li><strong>Small, broad body</strong> with <strong>uncinate processes</strong> projecting upward from the lateral margins, forming the <strong>uncovertebral joints (of Luschka)</strong>.</li><li><strong>Transverse foramen</strong> in each transverse process. The <strong>vertebral artery</strong> enters at <strong>C6</strong> in most people and ascends to C1 — it does <strong>not</strong> traverse the C7 foramen.</li><li><strong>Large triangular vertebral foramen</strong> — more room for the cord than anywhere else, which is why cervical stenosis must be marked before it becomes symptomatic.</li><li><strong>Bifid spinous processes</strong> at C3–C6.</li><li><strong>Facets oriented about 45&#176;</strong> from horizontal, allowing flexion, extension, rotation and lateral flexion — but also making the cervical spine the <strong>most mobile and least protected</strong> region.</li></ul>"
+  },
+  {
+    "type": "subsubsection_heading",
+    "text": "2.2.2 The atlas (C1) and axis (C2)"
+  },
+  {
+    "type": "paragraph",
+    "body": "<ul><li><strong>Atlas</strong> — a ring with <strong>no body and no spinous process</strong>. Two lateral masses, an anterior and a posterior arch, and a groove on the posterior arch for the <strong>vertebral artery</strong>.</li><li><strong>Axis</strong> — carries the <strong>dens (odontoid process)</strong>, which is effectively the body of the atlas fused to C2. It is held against the anterior arch of C1 by the <strong>transverse ligament</strong>.</li><li><strong>Atlanto-occipital joint</strong> — flexion and extension: the <strong>“yes” joint</strong>. Roughly 50% of cervical flexion/extension.</li><li><strong>Atlanto-axial joint</strong> — rotation: the <strong>“no” joint</strong>. Roughly <strong>50% of total cervical rotation</strong>, about 45&#176; to each side.</li></ul>"
+  },
+  {
+    "type": "subsubsection_heading",
+    "text": "2.2.3 C7"
+  },
+  {
+    "type": "paragraph",
+    "body": "<ul><li><strong>Vertebra prominens</strong> — long, <strong>non-bifid</strong> spinous process; the standard surface landmark.</li><li>Its transverse foramen, when present, transmits only small veins — not the vertebral artery.</li></ul>"
+  },
+  {
+    "type": "highlight_card",
+    "label": "Pitfall — do not miss",
+    "text": "<strong>The atlanto-dental interval (ADI)</strong> — the gap between the anterior arch of C1 and the dens — should be <strong>under 3 mm in adults</strong> and under about 5 mm in children.<br>Widening means <strong>transverse ligament incompetence</strong> and atlantoaxial instability. The groups to think of are <strong>rheumatoid arthritis</strong> and <strong>Down syndrome</strong>, and it matters enormously before any procedure involving neck positioning or intubation. In a rheumatoid patient with new neck pain or any long-tract sign, image the craniocervical junction before manual therapy or manipulation.",
+    "color": "red"
+  },
+  {
+    "type": "subsection_heading",
+    "text": "2.3 Thoracic spine"
+  },
+  {
+    "type": "paragraph",
+    "body": "<ul><li><strong>Heart-shaped bodies</strong> with <strong>costal demifacets</strong> on the posterolateral body for the rib heads, and <strong>facets on the transverse processes</strong> for the rib tubercles (ribs 1–10).</li><li><strong>Long, downward-angled spinous processes</strong> that overlap like roof tiles — which is why the palpable spinous process often lies opposite the body of the vertebra <strong>below</strong>.</li><li><strong>Coronally oriented facets</strong> favour rotation, but the <strong>rib cage restricts overall motion</strong>, making this the stiffest region.</li><li><strong>The smallest vertebral canal relative to cord size</strong> — the cord has least room to escape here.</li></ul>"
+  },
+  {
+    "type": "highlight_card",
+    "label": "Pitfall — do not miss",
+    "text": "<strong>Two reasons to take thoracic symptoms more seriously than lumbar ones.</strong><br>First, <strong>the canal is narrowest and the cord blood supply is most tenuous here</strong> (the T4–T9 watershed), so thoracic cord compression can progress quickly and with little warning.<br>Second, <strong>mechanical thoracic pain is less common than in the neck or low back</strong>, so the prior probability of a non-mechanical cause — fracture, metastasis, infection, or referred visceral pain — is higher. New thoracic pain in an older patient, or with any systemic feature, deserves imaging rather than a course of treatment.",
+    "color": "red"
+  },
+  {
+    "type": "subsection_heading",
+    "text": "2.4 Lumbar spine"
+  },
+  {
+    "type": "paragraph",
+    "body": "<ul><li><strong>Large kidney-shaped bodies</strong> built for load.</li><li><strong>Sagittally oriented facets</strong> — permitting flexion and extension freely, but <strong>restricting rotation to about 2&#176; per segment</strong>.</li><li><strong>Mammillary and accessory processes</strong> — small bony prominences at the junction of the superior articular and transverse processes. Clinically important because the <strong>medial branch of the dorsal ramus runs in the groove between them</strong>, held by the mamillo-accessory ligament — this is the target for medial branch blocks.</li><li><strong>Pars interarticularis</strong> — the bone between the superior and inferior articular processes. It is the <strong>stress riser of the lumbar spine</strong>.</li><li>At <strong>L5–S1</strong> the facets become more coronally oriented, which allows more rotation but provides less resistance to forward translation.</li></ul>"
+  },
+  {
+    "type": "highlight_card",
+    "label": "PM&R clinical pearl",
+    "text": "<strong>Spondylolysis</strong> is a stress fracture of the <strong>pars interarticularis</strong>, most often at <strong>L5</strong>. It is produced by repeated <strong>extension and rotation</strong> — hence its frequency in gymnasts, cricketers, dancers, throwers and rowers.<br>In an adolescent athlete with <strong>extension-related low back pain</strong>, this is the diagnosis to exclude. Plain films are insensitive; <strong>MRI with STIR</strong> detects the pre-fracture stress reaction, which is the stage at which relative rest actually works.<br>If the pars fails bilaterally, the vertebra can translate forward — <strong>isthmic spondylolisthesis</strong>. Contrast this with <strong>degenerative spondylolisthesis</strong>, which occurs at <strong>L4–L5</strong> in older patients with intact pars but incompetent facets and disc.",
+    "color": "teal"
+  },
+  {
+    "type": "subsection_heading",
+    "text": "2.5 Sacrum and coccyx"
+  },
+  {
+    "type": "paragraph",
+    "body": "<ul><li><strong>Five fused sacral vertebrae</strong> forming a wedge that transmits load from the spine to the pelvis.</li><li><strong>Sacral promontory</strong> — the anterior projecting edge of S1; an obstetric and surgical landmark.</li><li><strong>Auricular surface</strong> — the articulation with the ilium at the <strong>sacroiliac joint</strong>.</li><li><strong>Anterior and posterior sacral foramina</strong> — transmitting the ventral and dorsal rami of the sacral nerves.</li><li><strong>Sacral hiatus</strong> — the defect at the lower end from failure of the S5 laminae to fuse, bounded by the <strong>sacral cornua</strong>. This is the access point for <strong>caudal epidural injection</strong>.</li><li><strong>Coccyx</strong> — usually four fused segments; attachment for the pelvic floor and the coccygeal ligaments. Relevant in coccydynia.</li></ul>"
+  },
+  {
+    "type": "subsubsection_heading",
+    "text": "2.5.1 Transitional anatomy"
+  },
+  {
+    "type": "paragraph",
+    "body": "<ul><li><strong>Lumbosacral transitional vertebrae</strong> are common — present in roughly <strong>10–20%</strong> of people: a <strong>sacralised L5</strong> or a <strong>lumbarised S1</strong>.</li></ul>"
+  },
+  {
+    "type": "highlight_card",
+    "label": "Pitfall — do not miss",
+    "text": "<strong>Transitional vertebrae are a real source of clinical error.</strong> If the radiologist and the clinician number the segments differently, an injection or an operation can be performed at the wrong level.<br>Whenever a transitional segment is present, <strong>count from a fixed reference and state the convention used</strong> — and confirm the level against the report before any procedure. <strong>Bertolotti syndrome</strong> describes pain attributed to an enlarged transverse process articulating with the sacrum, and remains a contested diagnosis.",
+    "color": "red"
+  },
+  {
+    "type": "section_heading",
+    "text": "3. The Intervertebral Disc"
+  },
+  {
+    "type": "subsection_heading",
+    "text": "3.1 Structure"
+  },
+  {
+    "type": "comparison_table",
+    "columns": [
+      "<strong>Component</strong>",
+      "<strong>Composition</strong>",
+      "<strong>Function</strong>"
+    ],
+    "rows": [
+      [
+        "<strong>Nucleus pulposus</strong>",
+        "A notochordal remnant. <strong>70–90% water</strong> in youth, rich in proteoglycans, with loose <strong>type II collagen</strong>",
+        "Behaves as an incompressible gel — converts axial load into <strong>radial pressure</strong> on the annulus"
+      ],
+      [
+        "<strong>Annulus fibrosus</strong>",
+        "<strong>15–25 concentric lamellae</strong> of <strong>type I collagen</strong>, fibres angled ~60&#176; from vertical and <strong>alternating direction</strong> in successive layers",
+        "Contains the nucleus. The alternating angle means <strong>only half the fibres resist rotation in any one direction</strong>"
+      ],
+      [
+        "<strong>Cartilaginous endplates</strong>",
+        "Hyaline cartilage covering the vertebral body surfaces",
+        "The <strong>route of nutrition</strong> for the disc, and the usual site of initial failure"
+      ]
+    ]
+  },
+  {
+    "type": "highlight_card",
+    "label": "Memory aid",
+    "text": "The disc is a <strong>water balloon in a radial-ply tyre</strong>. Load the balloon and it pushes outward on the tyre walls. <strong>Twist</strong> it, and only half the plies are aligned to resist — which is why <strong>rotation is the movement that damages the annulus</strong>, and why the sagittal lumbar facets exist to prevent it.",
+    "color": "yellow"
+  },
+  {
+    "type": "subsection_heading",
+    "text": "3.2 Nutrition — and why discs degenerate"
+  },
+  {
+    "type": "paragraph",
+    "body": "<ul><li>Blood vessels regress from the disc through childhood. After about <strong>age 8 it is avascular</strong> — the <strong>largest avascular structure in the body</strong>.</li><li>Nutrition is by <strong>diffusion through the cartilaginous endplates</strong>, and that diffusion is driven by <strong>loading and unloading cycles</strong> which pump fluid in and out.</li><li>Consequences: <strong>immobility starves the disc</strong>, and <strong>endplate sclerosis</strong> (from ageing, smoking, or vibration) blocks the supply route.</li><li>Degeneration begins with <strong>proteoglycan loss</strong> → reduced water content → the nucleus can no longer pressurise → load is transferred to the annulus and the facets → disc height falls → the facets subluxate and the foramen narrows.</li></ul>"
+  },
+  {
+    "type": "subsubsection_heading",
+    "text": "3.2.1 Innervation"
+  },
+  {
+    "type": "paragraph",
+    "body": "<ul><li>Only the <strong>outer third of the annulus</strong> is innervated, by the <strong>sinuvertebral (recurrent meningeal) nerve</strong>, which arises from the ventral ramus and the grey ramus communicans and re-enters the foramen.</li><li>The sinuvertebral nerve also supplies the <strong>PLL, the anterior dura and the epidural vessels</strong> — and it supplies <strong>more than one level</strong>, which is part of why discogenic pain is so poorly localised.</li><li>In degeneration, <strong>nerve and vessel ingrowth extends deeper</strong> into the annulus and even into the nucleus — the anatomical basis for a previously insensate structure becoming painful.</li></ul>"
+  },
+  {
+    "type": "highlight_card",
+    "label": "PM&R clinical pearl",
+    "text": "<strong>“The disc needs movement to eat.”</strong> That single sentence justifies most of what a physiatrist advises: early mobilisation rather than bed rest, frequent postural change rather than one “correct” posture, and graded loading rather than avoidance.<br>It also explains why <strong>prolonged sitting and whole-body vibration</strong> are genuine risk factors — both represent sustained static loading with no pumping cycle.",
+    "color": "teal"
+  },
+  {
+    "type": "subsection_heading",
+    "text": "3.3 Herniation — the anatomy of it"
+  },
+  {
+    "type": "paragraph",
+    "body": "<ul><li>Herniations are described by their <strong>morphology</strong>: bulge (circumferential, not a herniation), protrusion (base wider than the dome), extrusion (dome wider than the base), and sequestration (a free fragment).</li><li>And by their <strong>location</strong>: central, paracentral (subarticular), foraminal, and extraforaminal (far lateral).</li></ul>"
+  },
+  {
+    "type": "subsubsection_heading",
+    "text": "3.3.1 Why posterolateral?"
+  },
+  {
+    "type": "paragraph",
+    "body": "<ul><li>The <strong>posterior longitudinal ligament narrows as it descends</strong> and is hourglass-shaped in the lumbar region — strong centrally, deficient laterally.</li><li>The annulus is <strong>thinnest posterolaterally</strong>.</li><li>Together these make the posterolateral corner the path of least resistance — so <strong>most herniations are paracentral</strong>, and they strike the traversing root.</li></ul>"
+  },
+  {
+    "type": "subsubsection_heading",
+    "text": "3.3.2 Which root is compressed — the rule to memorise"
+  },
+  {
+    "type": "comparison_table",
+    "columns": [
+      "<strong>Region</strong>",
+      "<strong>Root numbering</strong>",
+      "<strong>Example</strong>"
+    ],
+    "rows": [
+      [
+        "<strong>Cervical</strong>",
+        "Roots exit <strong>ABOVE</strong> the same-numbered pedicle, down to C7. <strong>C8 exits between C7 and T1</strong> (there are 8 cervical roots but 7 cervical vertebrae)",
+        "A <strong>C5–C6 disc compresses the C6 root</strong>"
+      ],
+      [
+        "<strong>Thoracic / lumbar</strong>",
+        "Roots exit <strong>BELOW</strong> the same-numbered pedicle",
+        "The <strong>L4 root exits below the L4 pedicle</strong>, through the L4–L5 foramen"
+      ]
+    ]
+  },
+  {
+    "type": "highlight_card",
+    "label": "PM&R clinical pearl",
+    "text": "<strong>In the lumbar spine the level of the disc does not tell you the root — the position of the herniation does.</strong><br><strong>Paracentral herniation at L4–L5</strong> catches the root that is passing <em>through</em> on its way to the level below: the <strong>traversing L5 root</strong>. This is much the commonest situation.<br><strong>Far lateral (extraforaminal) herniation at L4–L5</strong> catches the root that has already left: the <strong>exiting L4 root</strong>.<br>So the same disc produces two different syndromes depending on where it herniates, and a patient with an L4 pattern from an L4–L5 disc is not a diagnostic error — it points to a far lateral fragment.",
+    "color": "teal"
+  },
+  {
+    "type": "highlight_card",
+    "label": "PM&R clinical pearl",
+    "text": "<strong>Most herniations resorb.</strong> Extruded and sequestrated fragments — counterintuitively the more dramatic ones — <strong>resorb more readily</strong> than contained protrusions, because exposure to the epidural vascular supply triggers an inflammatory and phagocytic response.<br>This is worth telling patients explicitly. It changes how a frightening MRI report is received, and it supports a non-operative course in the absence of progressive deficit or cauda equina signs.",
+    "color": "teal"
+  },
+  {
+    "type": "section_heading",
+    "text": "4. Joints and Ligaments"
+  },
+  {
+    "type": "subsection_heading",
+    "text": "4.1 Facet (zygapophyseal) joints"
+  },
+  {
+    "type": "paragraph",
+    "body": "<ul><li><strong>True synovial joints</strong> with a capsule, hyaline cartilage and a synovial lining. They also contain small <strong>fibroadipose meniscoids</strong>, which have been proposed as a cause of acute locking.</li><li>Their <strong>orientation determines regional motion</strong> (see 1.4), and they carry roughly <strong>20% of axial load in neutral</strong>, rising in extension.</li></ul>"
+  },
+  {
+    "type": "subsubsection_heading",
+    "text": "4.1.1 Innervation — the basis of medial branch blocks"
+  },
+  {
+    "type": "paragraph",
+    "body": "<ul><li>Each facet joint is supplied by the <strong>medial branch of the dorsal ramus</strong> at its own level <strong>and</strong> the level above — so <strong>each joint has a dual nerve supply</strong>.</li><li><strong>Therefore each medial branch must be blocked at two levels to anaesthetise one joint.</strong> This is not a technical preference; it follows directly from the anatomy.</li><li>In the lumbar spine the medial branch crosses the <strong>junction of the superior articular process and the transverse process</strong>, in the groove beside the mammillary process. In the cervical spine the medial branches wrap around the <strong>articular pillar waist</strong>.</li><li>The <strong>third occipital nerve</strong> (the superficial medial branch of the C3 dorsal ramus) supplies the <strong>C2–C3 facet joint</strong> — a well-described source of cervicogenic headache.</li></ul>"
+  },
+  {
+    "type": "highlight_card",
+    "label": "Imaging & procedures",
+    "text": "<strong>Medial branch block and radiofrequency ablation follow the dual supply rule.</strong> To treat the L4–L5 facet joint you target the <strong>L3 and L4 medial branches</strong>.<br>Facet-mediated pain has <strong>no reliable clinical signs</strong> — no physical examination finding, imaging appearance or pain pattern is diagnostic. <strong>A controlled diagnostic block is the only way to establish it</strong>, which is why single uncontrolled blocks have high false-positive rates.",
+    "color": "green"
+  },
+  {
+    "type": "subsection_heading",
+    "text": "4.2 Uncovertebral joints (of Luschka)"
+  },
+  {
+    "type": "paragraph",
+    "body": "<ul><li>Found only in the <strong>cervical spine (C3–C7)</strong>, between the uncinate process of the vertebra below and the body above.</li><li>Not true synovial joints — they are clefts that develop in childhood within the lateral annulus.</li><li><strong>They form the anteromedial wall of the intervertebral foramen</strong>, so <strong>uncovertebral osteophytes are a leading cause of cervical foraminal stenosis and radiculopathy</strong>.</li></ul>"
+  },
+  {
+    "type": "subsection_heading",
+    "text": "4.3 Ligaments of the spinal column"
+  },
+  {
+    "type": "comparison_table",
+    "columns": [
+      "<strong>Ligament</strong>",
+      "<strong>Course</strong>",
+      "<strong>Resists</strong>",
+      "<strong>Clinical note</strong>"
+    ],
+    "rows": [
+      [
+        "<strong>Anterior longitudinal (ALL)</strong>",
+        "Basiocciput to sacrum, along the anterior bodies and discs. Broad and strong",
+        "<strong>Extension</strong>",
+        "Ossifies in <strong>DISH</strong>, producing flowing anterior bridging"
+      ],
+      [
+        "<strong>Posterior longitudinal (PLL)</strong>",
+        "Within the canal, along the posterior bodies. <strong>Narrows caudally</strong>, hourglass-shaped in the lumbar spine",
+        "<strong>Flexion</strong>",
+        "Its lateral deficiency directs herniations <strong>posterolaterally</strong>. <strong>OPLL</strong> is an important cause of myelopathy"
+      ],
+      [
+        "<strong>Ligamentum flavum</strong>",
+        "Lamina to lamina, within the canal posteriorly. <strong>~80% elastin</strong> — the most elastic tissue in the body",
+        "Flexion; recoils the spine to neutral",
+        "<strong>Buckles into the canal in extension</strong> → dynamic stenosis. <strong>Hypertrophies</strong> with degeneration — a major contributor to lumbar stenosis"
+      ],
+      [
+        "<strong>Interspinous and supraspinous</strong>",
+        "Between and over the spinous processes",
+        "Flexion",
+        "The supraspinous ligament ends around <strong>L4</strong>, leaving the lower lumbar segments less protected in flexion"
+      ],
+      [
+        "<strong>Ligamentum nuchae</strong>",
+        "The expanded cervical supraspinous ligament, external occipital protuberance to C7",
+        "Flexion",
+        "Muscle attachment and a midline surgical plane"
+      ],
+      [
+        "<strong>Intertransverse</strong>",
+        "Between transverse processes",
+        "Lateral flexion",
+        ""
+      ]
+    ]
+  },
+  {
+    "type": "highlight_card",
+    "label": "PM&R clinical pearl",
+    "text": "<strong>The ligamentum flavum explains why stenotic patients flex.</strong> In <strong>extension</strong> it buckles inward, the disc bulges back, and the facets override — the canal and foramina narrow. In <strong>flexion</strong> the opposite happens and the canal opens.<br>That is the anatomy behind <strong>neurogenic claudication</strong>: symptoms on standing and walking, relieved by sitting, leaning forward, or pushing a trolley — the <strong>shopping trolley sign</strong>. It is also why stenotic patients often tolerate a bicycle better than a treadmill.<br>Contrast <strong>vascular claudication</strong>, which is relieved by <strong>stopping</strong> regardless of position.",
+    "color": "teal"
+  },
+  {
+    "type": "subsection_heading",
+    "text": "4.4 Craniocervical ligaments"
+  },
+  {
+    "type": "paragraph",
+    "body": "<ul><li><strong>Transverse ligament of the atlas</strong> — the horizontal band of the cruciate ligament, holding the dens against the anterior arch of C1. <strong>The primary stabiliser of the atlantoaxial joint.</strong></li><li><strong>Alar ligaments</strong> — from the dens to the occipital condyles; <strong>limit rotation and lateral flexion</strong>. Tested by side-bending with the head held.</li><li><strong>Tectorial membrane</strong> — the cranial continuation of the PLL, covering the dens posteriorly.</li><li><strong>Apical ligament</strong> — dens tip to foramen magnum; of little mechanical importance.</li></ul>"
+  },
+  {
+    "type": "subsection_heading",
+    "text": "4.5 The sacroiliac joint"
+  },
+  {
+    "type": "paragraph",
+    "body": "<ul><li>A <strong>hybrid joint</strong>: the anterior third is <strong>synovial</strong>, the posterior two-thirds a <strong>syndesmosis</strong> bound by strong interosseous ligaments.</li><li>Motion is very small — a few degrees of <strong>nutation</strong> (sacral flexion) and counternutation.</li><li><strong>Form closure</strong> comes from the wedge shape and the irregular, interlocking surfaces; <strong>force closure</strong> comes from muscle and fascia — principally the <strong>latissimus dorsi and contralateral gluteus maximus acting through the thoracolumbar fascia</strong>.</li><li><strong>Innervation is variable and multisegmental</strong> (roughly L4–S3 posteriorly), which is why SIJ pain refers so widely and unpredictably.</li></ul>"
+  },
+  {
+    "type": "highlight_card",
+    "label": "Pitfall — do not miss",
+    "text": "<strong>No single physical test diagnoses SIJ pain.</strong> The evidence supports using a <strong>cluster</strong> — typically <strong>three or more positive out of five</strong> provocation tests (distraction, thigh thrust, compression, sacral thrust, Gaenslen) — and even then the reference standard is a <strong>diagnostic block</strong>.<br>Also remember that <strong>inflammatory sacroiliitis is a different problem entirely</strong>. Inflammatory back pain — onset under 45, insidious, better with exercise, worse with rest, night pain, morning stiffness over 30 minutes — should prompt consideration of axial spondyloarthritis, not a mechanical label.",
+    "color": "red"
+  },
+  {
+    "type": "section_heading",
+    "text": "5. The Spinal Canal and Its Contents"
+  },
+  {
+    "type": "subsection_heading",
+    "text": "5.1 The canal"
+  },
+  {
+    "type": "comparison_table",
+    "columns": [
+      "<strong>Region</strong>",
+      "<strong>Normal AP diameter</strong>",
+      "<strong>Stenosis threshold</strong>"
+    ],
+    "rows": [
+      [
+        "<strong>Cervical</strong>",
+        "~17–18 mm",
+        "<strong>&lt; 13 mm</strong> suggests stenosis. The <strong>Torg–Pavlov ratio</strong> (canal : vertebral body) below <strong>0.8</strong> indicates congenital narrowing"
+      ],
+      [
+        "<strong>Lumbar</strong>",
+        "~15–27 mm",
+        "<strong>&lt; 10 mm = absolute</strong> stenosis; <strong>10–12 mm = relative</strong>. Cross-sectional area below ~100 mm&#178; is also used"
+      ]
+    ]
+  },
+  {
+    "type": "paragraph",
+    "body": "<ul><li>Stenosis may be <strong>central</strong> (canal), <strong>lateral recess</strong> (subarticular, catching the traversing root) or <strong>foraminal</strong> (catching the exiting root). The three produce different patterns, and a report should specify which.</li><li><strong>Congenitally short pedicles</strong> produce a developmentally narrow canal, so that a modest disc bulge causes symptoms that the same bulge would not cause in a roomier canal.</li></ul>"
+  },
+  {
+    "type": "subsection_heading",
+    "text": "5.2 Meninges and spaces"
+  },
+  {
+    "type": "paragraph",
+    "body": "<ul><li><strong>Dura mater</strong> — the tough outer layer; the <strong>dural (thecal) sac ends at about S2</strong>.</li><li><strong>Arachnoid</strong> — applied to the inner dura; the <strong>subarachnoid space</strong> contains CSF and extends to S2, which is why <strong>lumbar puncture below L2 is safe</strong> — the cord has ended but the CSF has not.</li><li><strong>Pia</strong> — adherent to the cord, continuing as the <strong>filum terminale</strong> and forming the <strong>denticulate ligaments</strong> that anchor the cord laterally.</li><li><strong>Epidural space</strong> — outside the dura, containing <strong>fat, the internal vertebral venous plexus (Batson)</strong>, and the segmental vessels. It is the target of epidural injection.</li></ul>"
+  },
+  {
+    "type": "highlight_card",
+    "label": "PM&R clinical pearl",
+    "text": "<strong>Batson’s venous plexus is valveless and communicates with the pelvic, abdominal and thoracic veins.</strong> That is the accepted anatomical explanation for the spine being such a common site of <strong>metastasis</strong> from prostate, breast, lung, kidney and thyroid — and for how pelvic infection can seed the spine.<br>Practically: <strong>new spinal pain in a patient with a history of malignancy is a metastasis until proven otherwise</strong>, and the thoracic spine is the commonest site.",
+    "color": "teal"
+  },
+  {
+    "type": "subsection_heading",
+    "text": "5.3 The spinal cord"
+  },
+  {
+    "type": "paragraph",
+    "body": "<ul><li>The cord is <strong>shorter than the canal</strong>, because the vertebral column outgrows it during development.</li><li>In adults the <strong>conus medullaris ends at about L1–L2</strong>. At birth it lies at about <strong>L3</strong>.</li><li>Below the conus, the lumbar and sacral roots descend as the <strong>cauda equina</strong> within the thecal sac.</li><li><strong>Cervical enlargement (C4–T1)</strong> supplies the upper limb; <strong>lumbosacral enlargement (L1–S3)</strong> supplies the lower limb.</li><li>The <strong>discrepancy between cord level and vertebral level widens as you descend</strong> — which is why a mid-thoracic vertebral lesion affects cord segments several levels lower.</li></ul>"
+  },
+  {
+    "type": "subsection_heading",
+    "text": "5.4 Blood supply"
+  },
+  {
+    "type": "paragraph",
+    "body": "<ul><li><strong>One anterior spinal artery</strong> supplies the <strong>anterior two-thirds</strong> of the cord — including the corticospinal and spinothalamic tracts and the anterior horns.</li><li><strong>Two posterior spinal arteries</strong> supply the <strong>posterior third</strong> — principally the dorsal columns. Being paired, this territory is better protected.</li><li>These longitudinal vessels are reinforced by <strong>segmental radiculomedullary arteries</strong>, of which the largest is the <strong>artery of Adamkiewicz</strong> — usually arising between <strong>T9 and T12</strong>, and on the <strong>left in about 75%</strong>.</li><li>The <strong>T4–T9 region is a vascular watershed</strong>, with the fewest reinforcing vessels.</li></ul>"
+  },
+  {
+    "type": "highlight_card",
+    "label": "Pitfall — do not miss",
+    "text": "<strong>Anterior spinal artery syndrome</strong> produces <strong>loss of motor function and of pain and temperature below the level, with preserved proprioception and vibration</strong> — because the dorsal columns have a separate, paired supply. The dissociation is the diagnostic clue.<br>The classic settings are <strong>aortic surgery or dissection, profound hypotension, and thoracic cord ischaemia in the T4–T9 watershed</strong>. This is also why <strong>maintaining perfusion pressure matters in acute cord injury</strong>.",
+    "color": "red"
+  },
+  {
+    "type": "subsection_heading",
+    "text": "5.5 The intervertebral foramen"
+  },
+  {
+    "type": "comparison_table",
+    "columns": [
+      "<strong>Boundary</strong>",
+      "<strong>Structure</strong>"
+    ],
+    "rows": [
+      [
+        "<strong>Superior and inferior</strong>",
+        "The pedicles of the vertebrae above and below"
+      ],
+      [
+        "<strong>Anterior</strong>",
+        "The vertebral bodies and the <strong>intervertebral disc</strong> (and in the neck, the <strong>uncovertebral joint</strong>)"
+      ],
+      [
+        "<strong>Posterior</strong>",
+        "The <strong>facet joint</strong> and the <strong>ligamentum flavum</strong>"
+      ]
+    ]
+  },
+  {
+    "type": "paragraph",
+    "body": "<ul><li>The foramen contains the <strong>dorsal root ganglion</strong>, the ventral and dorsal roots, the sinuvertebral nerve, and radicular vessels — and the nerve occupies only about a <strong>third</strong> of it, which is why substantial narrowing is tolerated before symptoms appear.</li><li><strong>The foramen narrows in extension, ipsilateral side-bending and rotation</strong> — which is precisely the combination of Spurling’s test.</li></ul>"
+  },
+  {
+    "type": "highlight_card",
+    "label": "EMG / electrodiagnostics",
+    "text": "<strong>The dorsal root ganglion sits within the foramen — and this single fact underpins electrodiagnosis of radiculopathy.</strong><br>A <strong>radiculopathy is proximal to the DRG</strong>, so the sensory cell body and its peripheral axon remain intact: the <strong>sensory nerve action potential is preserved</strong> even when the patient is numb.<br>A <strong>plexus or peripheral nerve lesion is distal to the DRG</strong>, so the <strong>SNAP is reduced or absent</strong>.<br>Numbness with a <strong>normal SNAP</strong> → think <strong>root</strong>.<br>Numbness with a <strong>reduced SNAP</strong> → think <strong>plexus or peripheral nerve</strong>.<br>Add the <strong>paraspinal muscles</strong>: they are supplied by the <strong>dorsal ramus</strong>, which leaves immediately at the root level. <strong>Abnormal paraspinals are strong evidence of a root lesion</strong>; normal paraspinals do not exclude one, because they reinnervate early and are technically difficult to sample.",
+    "color": "violet"
+  },
+  {
+    "type": "section_heading",
+    "text": "6. Neuroanatomy for Localisation"
+  },
+  {
+    "type": "subsection_heading",
+    "text": "6.1 Roots — dermatomes, myotomes and reflexes"
+  },
+  {
+    "type": "subsubsection_heading",
+    "text": "6.1.1 Cervical and upper limb"
+  },
+  {
+    "type": "comparison_table",
+    "columns": [
+      "<strong>Root</strong>",
+      "<strong>Motor</strong>",
+      "<strong>Sensory</strong>",
+      "<strong>Reflex</strong>"
+    ],
+    "rows": [
+      [
+        "<strong>C5</strong>",
+        "Shoulder abduction, external rotation, elbow flexion",
+        "Lateral arm — the “regimental badge”",
+        "Biceps, brachioradialis"
+      ],
+      [
+        "<strong>C6</strong>",
+        "Elbow flexion, <strong>wrist extension</strong>",
+        "Lateral forearm, thumb",
+        "Brachioradialis, biceps"
+      ],
+      [
+        "<strong>C7</strong>",
+        "<strong>Elbow extension</strong>, wrist flexion, finger extension",
+        "Middle finger",
+        "<strong>Triceps</strong>"
+      ],
+      [
+        "<strong>C8</strong>",
+        "Finger flexion, thumb extension",
+        "Medial forearm, little finger",
+        "—"
+      ],
+      [
+        "<strong>T1</strong>",
+        "Finger abduction and adduction (intrinsics)",
+        "Medial arm",
+        "—"
+      ]
+    ]
+  },
+  {
+    "type": "subsubsection_heading",
+    "text": "6.1.2 Lumbosacral and lower limb"
+  },
+  {
+    "type": "comparison_table",
+    "columns": [
+      "<strong>Root</strong>",
+      "<strong>Motor</strong>",
+      "<strong>Sensory</strong>",
+      "<strong>Reflex</strong>"
+    ],
+    "rows": [
+      [
+        "<strong>L2–L3</strong>",
+        "Hip flexion, hip adduction",
+        "Anterior and medial thigh",
+        "—"
+      ],
+      [
+        "<strong>L4</strong>",
+        "<strong>Knee extension</strong>, ankle inversion (tibialis anterior)",
+        "Medial leg and medial malleolus",
+        "<strong>Patellar</strong>"
+      ],
+      [
+        "<strong>L5</strong>",
+        "<strong>Ankle dorsiflexion, great toe extension</strong>, hip abduction, foot inversion (tib. posterior)",
+        "Lateral leg, dorsum of foot",
+        "— (medial hamstring unreliable)"
+      ],
+      [
+        "<strong>S1</strong>",
+        "<strong>Plantarflexion</strong>, foot eversion, hip extension",
+        "Posterolateral leg, lateral foot, sole",
+        "<strong>Achilles</strong>"
+      ],
+      [
+        "<strong>S2–S4</strong>",
+        "Pelvic floor, bladder and bowel",
+        "Perianal and perineal (saddle)",
+        "Bulbocavernosus, anal wink"
+      ]
+    ]
+  },
+  {
+    "type": "highlight_card",
+    "label": "EMG / electrodiagnostics",
+    "text": "<strong>There is no reliable L5 reflex</strong> — the medial hamstring reflex is difficult to elicit and poorly reproducible. The ankle jerk is <strong>S1</strong>.<br><strong>Localising an L5 lesion therefore rests on the motor examination</strong>, and three muscles do the work: <strong>tibialis posterior</strong> (L5 via the tibial nerve), <strong>gluteus medius</strong> (L5 via the superior gluteal nerve) and the <strong>peroneals</strong> (L5–S1 via the superficial fibular nerve).<br>All three weak, with abnormal paraspinals and a <strong>preserved</strong> SNAP → <strong>L5 radiculopathy</strong>.<br>Only the peroneals and dorsiflexors weak, with <strong>normal</strong> tibialis posterior and gluteus medius → <strong>common fibular neuropathy at the fibular neck</strong>.<br>The same logic runs in the arm: <strong>rhomboids</strong> (dorsal scapular, off the root) and <strong>serratus anterior</strong> (long thoracic, off the roots) separate a <strong>C5 root lesion</strong> from an <strong>upper trunk plexopathy</strong>.",
+    "color": "violet"
+  },
+  {
+    "type": "subsection_heading",
+    "text": "6.2 The long tracts"
+  },
+  {
+    "type": "comparison_table",
+    "columns": [
+      "<strong>Tract</strong>",
+      "<strong>Carries</strong>",
+      "<strong>Where it decussates</strong>",
+      "<strong>Consequence</strong>"
+    ],
+    "rows": [
+      [
+        "<strong>Lateral corticospinal</strong>",
+        "Voluntary motor",
+        "<strong>Medulla</strong> (pyramidal decussation)",
+        "A cord lesion causes <strong>ipsilateral</strong> weakness below the level"
+      ],
+      [
+        "<strong>Dorsal columns</strong>",
+        "Proprioception, vibration, fine touch",
+        "<strong>Medulla</strong> (nucleus gracilis and cuneatus)",
+        "A cord lesion causes <strong>ipsilateral</strong> loss below the level"
+      ],
+      [
+        "<strong>Spinothalamic</strong>",
+        "Pain and temperature",
+        "<strong>Within 1–2 segments of entry</strong>, in the anterior commissure",
+        "A cord lesion causes <strong>CONTRALATERAL</strong> loss, beginning <strong>1–2 levels below</strong> the lesion"
+      ]
+    ]
+  },
+  {
+    "type": "highlight_card",
+    "label": "Memory aid",
+    "text": "<strong>Two decussate high, one decussates immediately.</strong> Motor and dorsal columns cross in the <strong>medulla</strong>, so their deficits are <strong>ipsilateral</strong> to a cord lesion. Pain and temperature cross <strong>within a segment or two of entering</strong>, so that deficit is <strong>contralateral</strong>.<br>That single asymmetry generates the whole pattern of <strong>Brown-S&#233;quard syndrome</strong> — and it is why the sensory level for pinprick sits <strong>one or two segments below</strong> the true lesion.",
+    "color": "yellow"
+  },
+  {
+    "type": "subsection_heading",
+    "text": "6.3 Cord syndromes"
+  },
+  {
+    "type": "comparison_table",
+    "columns": [
+      "<strong>Syndrome</strong>",
+      "<strong>Anatomy</strong>",
+      "<strong>Pattern</strong>"
+    ],
+    "rows": [
+      [
+        "<strong>Central cord</strong>",
+        "Central cord and lateral corticospinal fibres; hyperextension in a stenotic canal",
+        "<strong>Arms weaker than legs, hands worst.</strong> Sacral sparing. The commonest incomplete syndrome"
+      ],
+      [
+        "<strong>Anterior cord</strong>",
+        "Anterior two-thirds — anterior spinal artery territory",
+        "Motor and pain/temperature lost; <strong>proprioception and vibration preserved</strong>. Poorest prognosis"
+      ],
+      [
+        "<strong>Brown-S&#233;quard</strong>",
+        "Hemisection",
+        "<strong>Ipsilateral</strong> motor, proprioception and vibration loss; <strong>contralateral</strong> pain and temperature loss. Best prognosis"
+      ],
+      [
+        "<strong>Posterior cord</strong>",
+        "Dorsal columns",
+        "Loss of proprioception and vibration; sensory ataxia. Rare"
+      ],
+      [
+        "<strong>Conus medullaris</strong>",
+        "Cord segments S2–S5 at L1–L2 vertebral level",
+        "<strong>Sudden, symmetrical</strong>; early and severe <strong>bladder and bowel</strong> involvement; symmetrical saddle anaesthesia; <strong>mixed UMN and LMN</strong>; less radicular pain"
+      ],
+      [
+        "<strong>Cauda equina</strong>",
+        "Lumbosacral roots below L2",
+        "<strong>Gradual, asymmetrical</strong>; <strong>prominent radicular pain</strong>; <strong>LMN only</strong> (areflexia); bladder involvement is <strong>later</strong>"
+      ]
+    ]
+  },
+  {
+    "type": "highlight_card",
+    "label": "Pitfall — do not miss",
+    "text": "<strong>Cauda equina syndrome is the spinal emergency you must not miss.</strong> Ask directly about <strong>new urinary retention or incontinence, faecal incontinence, saddle anaesthesia and bilateral leg symptoms</strong> — patients rarely volunteer them.<br><strong>Retention with overflow is the most consistent finding.</strong> If suspected, examine perianal sensation and anal tone, check a post-void residual, and arrange <strong>urgent MRI</strong> — the same day. Do not wait for bilateral weakness.<br>The distinction from conus syndrome matters less in the acute setting than the recognition: <strong>both need urgent imaging and decompression.</strong>",
+    "color": "red"
+  },
+  {
+    "type": "subsection_heading",
+    "text": "6.4 Upper versus lower motor neuron"
+  },
+  {
+    "type": "comparison_table",
+    "columns": [
+      "",
+      "<strong>Upper motor neuron</strong>",
+      "<strong>Lower motor neuron</strong>"
+    ],
+    "rows": [
+      [
+        "<strong>Tone</strong>",
+        "Increased (spasticity)",
+        "Decreased (flaccid)"
+      ],
+      [
+        "<strong>Reflexes</strong>",
+        "Brisk; clonus; <strong>Babinski, Hoffmann</strong>",
+        "Reduced or absent"
+      ],
+      [
+        "<strong>Wasting</strong>",
+        "Late, from disuse",
+        "<strong>Early and marked</strong>"
+      ],
+      [
+        "<strong>Fasciculations</strong>",
+        "Absent",
+        "Present"
+      ],
+      [
+        "<strong>Pattern</strong>",
+        "Regional, below the lesion",
+        "Follows a <strong>root or nerve</strong> distribution"
+      ]
+    ]
+  },
+  {
+    "type": "highlight_card",
+    "label": "PM&R clinical pearl",
+    "text": "<strong>Myelopathy is the diagnosis that gets missed in a spine clinic</strong>, because patients present with vague complaints: clumsy hands, dropping things, difficulty with buttons, and unsteadiness on the feet.<br><strong>Examine for it deliberately in every patient with neck pain</strong>: Hoffmann’s sign, inverted supinator reflex, brisk lower limb reflexes, clonus, Babinski, and a <strong>tandem gait</strong>. Ask specifically about handwriting and buttons.<br>The combination that should stop you: <strong>LMN signs at the level and UMN signs below it</strong> — for example, wasted hand intrinsics with brisk knee jerks and an upgoing plantar. That is cervical myelopathy until proven otherwise.",
+    "color": "teal"
+  },
+  {
+    "type": "section_heading",
+    "text": "7. The Muscles"
+  },
+  {
+    "type": "subsection_heading",
+    "text": "7.1 How they are organised"
+  },
+  {
+    "type": "paragraph",
+    "body": "The back muscles are conventionally grouped into three layers, and the division is not arbitrary — it follows the innervation."
+  },
+  {
+    "type": "comparison_table",
+    "columns": [
+      "<strong>Group</strong>",
+      "<strong>Muscles</strong>",
+      "<strong>Innervation</strong>",
+      "<strong>Function</strong>"
+    ],
+    "rows": [
+      [
+        "<strong>Superficial (extrinsic)</strong>",
+        "Trapezius, latissimus dorsi, rhomboids, levator scapulae",
+        "<strong>Ventral rami</strong> (and spinal accessory for trapezius)",
+        "Move the <strong>upper limb</strong> — they are limb muscles that happen to attach to the spine"
+      ],
+      [
+        "<strong>Intermediate</strong>",
+        "Serratus posterior superior and inferior",
+        "Intercostal nerves (ventral rami)",
+        "Accessory respiratory; of little clinical importance"
+      ],
+      [
+        "<strong>Deep (intrinsic)</strong>",
+        "Erector spinae, transversospinalis, segmental muscles",
+        "<strong>DORSAL RAMI</strong>",
+        "Move and stabilise the <strong>spine itself</strong>"
+      ]
+    ]
+  },
+  {
+    "type": "highlight_card",
+    "label": "Memory aid",
+    "text": "<strong>The true back muscles are the only ones in the body supplied by dorsal rami.</strong> If a muscle is supplied by a dorsal ramus, it is an intrinsic spinal muscle. That is also why <strong>paraspinal needle EMG localises to the root</strong> — the dorsal ramus leaves immediately, before any plexus forms.",
+    "color": "yellow"
+  },
+  {
+    "type": "subsection_heading",
+    "text": "7.2 Erector spinae"
+  },
+  {
+    "type": "paragraph",
+    "body": "<ul><li>A common tendinous origin from the sacrum, iliac crest and lumbar spinous processes, dividing into three columns.</li><li><strong>Iliocostalis</strong> (lateral) &#183; <strong>Longissimus</strong> (intermediate) &#183; <strong>Spinalis</strong> (medial).</li><li>Acting <strong>bilaterally</strong> they extend the spine; <strong>unilaterally</strong> they side-bend.</li><li>They work largely <strong>eccentrically</strong>, controlling forward flexion rather than producing extension.</li></ul>"
+  },
+  {
+    "type": "highlight_card",
+    "label": "Memory aid",
+    "text": "Lateral to medial: <strong>“I Love Spaghetti”</strong> — <strong>I</strong>liocostalis, <strong>L</strong>ongissimus, <strong>S</strong>pinalis.",
+    "color": "yellow"
+  },
+  {
+    "type": "highlight_card",
+    "label": "PM&R clinical pearl",
+    "text": "<strong>The flexion–relaxation phenomenon.</strong> In a healthy spine, the erector spinae switch <strong>off</strong> at full forward flexion — the load is taken by the passive ligamentous system. In <strong>chronic low back pain this relaxation is lost</strong>, and the muscles remain active throughout.<br>It is one of the more reproducible physiological findings in chronic back pain, and a useful concept to explain to patients why their back “never switches off”.",
+    "color": "teal"
+  },
+  {
+    "type": "subsection_heading",
+    "text": "7.3 Transversospinalis — the deep stabilisers"
+  },
+  {
+    "type": "comparison_table",
+    "columns": [
+      "<strong>Muscle</strong>",
+      "<strong>Span</strong>",
+      "<strong>Role</strong>"
+    ],
+    "rows": [
+      [
+        "<strong>Semispinalis</strong>",
+        "4–6 segments",
+        "Extension and contralateral rotation; <strong>semispinalis capitis</strong> is a major neck extensor"
+      ],
+      [
+        "<strong>Multifidus</strong>",
+        "2–4 segments; thickest in the lumbar spine",
+        "<strong>The key segmental stabiliser.</strong> Rich in muscle spindles — as much a proprioceptive organ as a mover"
+      ],
+      [
+        "<strong>Rotatores</strong>",
+        "1–2 segments",
+        "Very short; the <strong>highest spindle density in the body</strong> — almost certainly proprioceptive rather than prime movers"
+      ]
+    ]
+  },
+  {
+    "type": "highlight_card",
+    "label": "PM&R clinical pearl",
+    "text": "<strong>Multifidus atrophies rapidly, selectively and segmentally after an episode of low back pain</strong> — measurable on ultrasound or MRI within days, at the symptomatic level, and it does <strong>not</strong> recover spontaneously when the pain settles.<br>That persistent, silent deficit is one proposed mechanism for <strong>recurrence</strong>, and it is the anatomical argument for specific motor-control retraining rather than general strengthening alone. Be honest with patients about the evidence, though: <strong>motor control exercise is effective, but not clearly superior to other forms of active exercise</strong> in trials.<br><strong>Fatty infiltration of multifidus</strong> on MRI is a marker of chronicity — worth noting when you see it on a report.",
+    "color": "teal"
+  },
+  {
+    "type": "subsection_heading",
+    "text": "7.4 The segmental and suboccipital muscles"
+  },
+  {
+    "type": "paragraph",
+    "body": "<ul><li><strong>Interspinales</strong> and <strong>intertransversarii</strong> — tiny, spanning one segment. Densely populated with spindles; proprioceptive.</li><li><strong>Levatores costarum</strong> — transverse process to the rib below.</li></ul>"
+  },
+  {
+    "type": "subsubsection_heading",
+    "text": "7.4.1 The suboccipital triangle"
+  },
+  {
+    "type": "paragraph",
+    "body": "<ul><li>Bounded by <strong>rectus capitis posterior major</strong>, <strong>obliquus capitis superior</strong> and <strong>obliquus capitis inferior</strong>, with <strong>rectus capitis posterior minor</strong> medially.</li><li><strong>Innervation: the suboccipital nerve (dorsal ramus of C1).</strong></li><li><strong>Contents: the vertebral artery</strong> (in the groove on the posterior arch of C1) and the <strong>suboccipital venous plexus</strong>.</li><li>These muscles have an extraordinarily <strong>high spindle density</strong> and are principally proprioceptive — providing head-on-neck position sense to the vestibular and visual systems.</li></ul>"
+  },
+  {
+    "type": "highlight_card",
+    "label": "PM&R clinical pearl",
+    "text": "<strong>A myodural bridge</strong> connects rectus capitis posterior minor to the posterior atlanto-occipital membrane and the cervical dura. It is proposed as a mechanism linking suboccipital dysfunction to <strong>cervicogenic headache</strong> and to dural tension.<br>The suboccipital muscles’ proprioceptive role also explains <strong>cervicogenic dizziness</strong>: disturbed neck afferents conflict with vestibular and visual input. This is why <strong>deep cervical flexor training and oculomotor/proprioceptive retraining</strong> feature in cervical rehabilitation, rather than strengthening alone.",
+    "color": "teal"
+  },
+  {
+    "type": "subsection_heading",
+    "text": "7.5 The deep cervical flexors"
+  },
+  {
+    "type": "paragraph",
+    "body": "<ul><li><strong>Longus colli</strong> and <strong>longus capitis</strong>, lying directly on the anterior vertebral bodies.</li><li>They produce <strong>craniocervical flexion</strong> (a nodding motion) and stabilise the cervical lordosis segmentally.</li><li>They are the cervical equivalent of multifidus: <strong>postural stabilisers that are inhibited and atrophy in neck pain</strong>, while the superficial sternocleidomastoid and scalenes become overactive.</li><li>The <strong>craniocervical flexion test</strong> (with a pressure biofeedback unit) assesses them and is the basis of targeted retraining.</li></ul>"
+  },
+  {
+    "type": "subsection_heading",
+    "text": "7.6 The thoracolumbar fascia and the “canister”"
+  },
+  {
+    "type": "paragraph",
+    "body": "<ul><li>The thoracolumbar fascia has <strong>three layers</strong> (posterior, middle and anterior) enveloping the paraspinal muscles and the quadratus lumborum.</li><li>Its <strong>posterior layer receives latissimus dorsi on one side and gluteus maximus on the other</strong>, forming a diagonal sling that <strong>transfers load across the sacroiliac joint</strong> — the anatomical basis of force closure.</li><li>It is <strong>densely innervated</strong>, and is increasingly regarded as a <strong>pain-generating structure</strong> in its own right.</li><li><strong>The canister model:</strong> the <strong>diaphragm</strong> above, the <strong>pelvic floor</strong> below, <strong>transversus abdominis</strong> in front and around, and <strong>multifidus</strong> behind. Coordinated activity of all four raises intra-abdominal pressure and stiffens the lumbar spine before limb movement occurs.</li></ul>"
+  },
+  {
+    "type": "highlight_card",
+    "label": "PM&R clinical pearl",
+    "text": "<strong>Anticipatory postural adjustment</strong> is the useful finding here: in healthy people, <strong>transversus abdominis and multifidus activate a fraction of a second BEFORE the limb moves</strong>. In people with low back pain, that anticipatory timing is <strong>delayed</strong>.<br>The clinical implication is about <strong>timing and coordination, not strength</strong> — which is why a patient can have a strong trunk and still poor control. It also explains why <strong>breathing pattern matters</strong>: the diaphragm is a postural muscle as well as a respiratory one, and the two roles compete under load.",
+    "color": "teal"
+  },
+  {
+    "type": "section_heading",
+    "text": "8. Applied Anatomy"
+  },
+  {
+    "type": "subsection_heading",
+    "text": "8.1 Surface landmarks"
+  },
+  {
+    "type": "comparison_table",
+    "columns": [
+      "<strong>Landmark</strong>",
+      "<strong>Level</strong>",
+      "<strong>Note</strong>"
+    ],
+    "rows": [
+      [
+        "<strong>Vertebra prominens (C7)</strong>",
+        "C7",
+        "The most prominent cervical spinous process. <strong>T1 is often equally prominent</strong> — confirm by asking the patient to extend the neck: C7 moves forward, T1 does not"
+      ],
+      [
+        "<strong>Spine of the scapula</strong>",
+        "~T3",
+        ""
+      ],
+      [
+        "<strong>Inferior angle of the scapula</strong>",
+        "~T7",
+        ""
+      ],
+      [
+        "<strong>Iliac crests (Tuffier’s line)</strong>",
+        "Traditionally the <strong>L4 body or L4–L5 interspace</strong>",
+        "Widely used, but <strong>accurate only to within one to two levels</strong> — and it tends to be too high, particularly in women and in the obese"
+      ],
+      [
+        "<strong>Posterior superior iliac spines</strong>",
+        "~S2",
+        "Also marks the <strong>end of the dural sac</strong>"
+      ],
+      [
+        "<strong>Sacral hiatus</strong>",
+        "Between the sacral cornua",
+        "The access point for <strong>caudal epidural</strong> injection"
+      ]
+    ]
+  },
+  {
+    "type": "highlight_card",
+    "label": "Pitfall — do not miss",
+    "text": "<strong>Do not rely on surface landmarks for level-specific procedures.</strong> Studies of Tuffier’s line consistently show clinicians misidentify the interspace by one or more levels in a substantial proportion of cases, usually <strong>erring too high</strong>.<br>Since the <strong>conus can sit as low as L2</strong> in some adults, an intended L3–L4 puncture that is actually at L1–L2 risks cord injury. <strong>Use imaging guidance for anything level-critical</strong>, and use ultrasound to count from the sacrum when landmarks are unreliable.",
+    "color": "red"
+  },
+  {
+    "type": "subsection_heading",
+    "text": "8.2 Examination anatomy"
+  },
+  {
+    "type": "subsubsection_heading",
+    "text": "8.2.1 Tests and what they actually load"
+  },
+  {
+    "type": "comparison_table",
+    "columns": [
+      "<strong>Test</strong>",
+      "<strong>What it does anatomically</strong>",
+      "<strong>What a positive suggests</strong>"
+    ],
+    "rows": [
+      [
+        "<strong>Spurling’s</strong>",
+        "Extension, ipsilateral side-bend and rotation — <strong>narrows the foramen</strong>",
+        "Cervical radiculopathy. Specific but not sensitive"
+      ],
+      [
+        "<strong>Straight-leg raise</strong>",
+        "Tensions the <strong>sciatic nerve and L4–S1 roots</strong>; root excursion begins around 30–35&#176;",
+        "Lumbar radiculopathy. Sensitive, not specific. Pain <strong>below the knee</strong> matters; back pain alone does not"
+      ],
+      [
+        "<strong>Crossed SLR</strong>",
+        "Raising the <em>unaffected</em> leg",
+        "Much more <strong>specific</strong> for a large disc herniation"
+      ],
+      [
+        "<strong>Femoral nerve stretch</strong>",
+        "Prone knee flexion with hip extension — tensions <strong>L2–L4</strong>",
+        "Upper lumbar radiculopathy"
+      ],
+      [
+        "<strong>Extension–rotation (Kemp’s)</strong>",
+        "Loads the <strong>facet joints</strong> and narrows the foramen",
+        "Posterior element or foraminal source — but <strong>not diagnostic of facet pain</strong>"
+      ],
+      [
+        "<strong>Tandem gait, Romberg</strong>",
+        "Tests <strong>dorsal column and corticospinal</strong> integrity",
+        "Myelopathy"
+      ]
+    ]
+  },
+  {
+    "type": "subsection_heading",
+    "text": "8.3 Imaging anatomy"
+  },
+  {
+    "type": "paragraph",
+    "body": "<ul><li><strong>Radiographs</strong> — alignment, disc height, listhesis, and the pars on oblique views (the “Scottie dog”, whose <strong>collar is a pars defect</strong>). Flexion–extension views assess dynamic instability.</li><li><strong>MRI</strong> — the study for neural structures, disc, marrow and soft tissue. <strong>STIR</strong> sequences reveal oedema: acute fracture, infection, and the pars stress reaction.</li><li><strong>CT</strong> — bone detail, fracture, ossification (OPLL), and pseudarthrosis after fusion.</li><li><strong>Modic changes</strong> describe vertebral endplate marrow signal: <strong>Type 1</strong> oedematous (associated with active pain), <strong>Type 2</strong> fatty, <strong>Type 3</strong> sclerotic.</li></ul>"
+  },
+  {
+    "type": "highlight_card",
+    "label": "Pitfall — do not miss",
+    "text": "<strong>Degenerative findings on MRI are close to universal and correlate poorly with pain.</strong> In asymptomatic people, disc degeneration is present in roughly <strong>40% at age 30 and over 90% by age 60</strong>; disc bulges and annular fissures are similarly common.<br>So a report describing degeneration is describing <strong>ageing, not necessarily the cause of the symptoms</strong>. Imaging is most useful when it answers a specific question raised by the history and examination — and <strong>routine early imaging in non-specific low back pain worsens outcomes</strong>, through labelling and the cascade of further investigation.<br>The wording you use matters: <strong>“age-related changes”</strong> conveys the same fact as <strong>“degenerative disc disease”</strong> without implying a progressive disease.",
+    "color": "red"
+  },
+  {
+    "type": "subsection_heading",
+    "text": "8.4 Procedures and the anatomy behind them"
+  },
+  {
+    "type": "comparison_table",
+    "columns": [
+      "<strong>Procedure</strong>",
+      "<strong>Target</strong>",
+      "<strong>Anatomical basis</strong>"
+    ],
+    "rows": [
+      [
+        "<strong>Interlaminar epidural</strong>",
+        "Posterior epidural space, between adjacent laminae",
+        "Passes through the <strong>ligamentum flavum</strong> — the basis of loss of resistance"
+      ],
+      [
+        "<strong>Transforaminal epidural</strong>",
+        "The “<strong>safe triangle</strong>” beneath the pedicle, above the exiting root",
+        "Places medication at the <strong>dorsal root ganglion and ventral epidural space</strong>. Beware the <strong>artery of Adamkiewicz</strong> and radicular arteries — the reason particulate steroid is avoided in transforaminal injections"
+      ],
+      [
+        "<strong>Caudal epidural</strong>",
+        "Through the <strong>sacral hiatus</strong>",
+        "Safe distance from the dural sac (which ends at <strong>S2</strong>), but a <strong>large volume</strong> is needed to reach the lumbar levels"
+      ],
+      [
+        "<strong>Medial branch block / RFA</strong>",
+        "Junction of the superior articular and transverse processes (lumbar); articular pillar waist (cervical)",
+        "<strong>Each facet has a dual supply</strong>, so two medial branches are targeted per joint"
+      ],
+      [
+        "<strong>Sacroiliac injection</strong>",
+        "The <strong>inferior third</strong> of the joint — the synovial portion",
+        "Only the anteroinferior part is a true synovial joint"
+      ]
+    ]
+  },
+  {
+    "type": "subsection_heading",
+    "text": "8.5 Common problems mapped back to anatomy"
+  },
+  {
+    "type": "comparison_table",
+    "columns": [
+      "<strong>Presentation</strong>",
+      "<strong>Structure</strong>",
+      "<strong>The anatomical explanation</strong>"
+    ],
+    "rows": [
+      [
+        "<strong>Lumbar radiculopathy</strong>",
+        "Traversing root at a paracentral herniation",
+        "PLL is deficient laterally → posterolateral herniation → L4–L5 disc hits the <strong>L5</strong> root"
+      ],
+      [
+        "<strong>Neurogenic claudication</strong>",
+        "Central canal; ligamentum flavum",
+        "Extension buckles the flavum and narrows the canal → relief on <strong>flexion</strong>, the shopping trolley sign"
+      ],
+      [
+        "<strong>Cervical myelopathy</strong>",
+        "Cord in a stenotic canal",
+        "<strong>LMN at the level, UMN below.</strong> Clumsy hands, gait unsteadiness"
+      ],
+      [
+        "<strong>Cervicogenic headache</strong>",
+        "C2–C3 facet, third occipital nerve",
+        "Convergence of upper cervical afferents onto the trigeminocervical nucleus"
+      ],
+      [
+        "<strong>Facet-mediated pain</strong>",
+        "Zygapophyseal joint",
+        "No reliable clinical sign — <strong>diagnosis rests on controlled blocks</strong>"
+      ],
+      [
+        "<strong>Spondylolysis</strong>",
+        "Pars interarticularis, usually L5",
+        "Repeated <strong>extension and rotation</strong> → stress fracture in the adolescent athlete"
+      ],
+      [
+        "<strong>Sacroiliac pain</strong>",
+        "SIJ and its ligaments",
+        "Multisegmental innervation → wide, unpredictable referral. Use a <strong>cluster</strong> of provocation tests"
+      ],
+      [
+        "<strong>Cauda equina syndrome</strong>",
+        "Lumbosacral roots below L2",
+        "Retention, saddle anaesthesia, bilateral symptoms → <strong>same-day MRI</strong>"
+      ]
+    ]
+  },
+  {
+    "type": "section_heading",
+    "text": "9. Rapid Revision"
+  },
+  {
+    "type": "subsection_heading",
+    "text": "9.1 Numbers worth knowing"
+  },
+  {
+    "type": "comparison_table",
+    "columns": [
+      "<strong>Value</strong>",
+      "<strong>What it is</strong>"
+    ],
+    "rows": [
+      [
+        "<strong>7 / 12 / 5 / 5 / 4</strong>",
+        "Cervical, thoracic, lumbar, sacral, coccygeal vertebrae"
+      ],
+      [
+        "<strong>23</strong>",
+        "Intervertebral discs — none at C1–C2 or above"
+      ],
+      [
+        "<strong>L1–L2</strong>",
+        "Where the <strong>conus medullaris</strong> ends in adults (L3 at birth)"
+      ],
+      [
+        "<strong>S2</strong>",
+        "Where the <strong>dural sac</strong> ends — and the level of the PSIS"
+      ],
+      [
+        "<strong>&lt; 3 mm</strong>",
+        "Normal atlanto-dental interval in adults"
+      ],
+      [
+        "<strong>&lt; 13 mm</strong>",
+        "Cervical canal diameter suggesting stenosis; <strong>Torg ratio &lt; 0.8</strong>"
+      ],
+      [
+        "<strong>&lt; 10 mm</strong>",
+        "Lumbar canal diameter indicating absolute stenosis"
+      ],
+      [
+        "<strong>~50%</strong>",
+        "Share of cervical <strong>rotation</strong> occurring at <strong>C1–C2</strong>"
+      ],
+      [
+        "<strong>~2&#176;</strong>",
+        "Rotation available per lumbar segment — why twisting injures"
+      ],
+      [
+        "<strong>80 : 20</strong>",
+        "Approximate anterior column : facet load share in neutral"
+      ],
+      [
+        "<strong>~80%</strong>",
+        "Elastin content of the ligamentum flavum"
+      ],
+      [
+        "<strong>T9–T12</strong>",
+        "Usual origin of the <strong>artery of Adamkiewicz</strong> (left in ~75%)"
+      ],
+      [
+        "<strong>T4–T9</strong>",
+        "The cord’s <strong>vascular watershed</strong>"
+      ],
+      [
+        "<strong>Two</strong>",
+        "Medial branches to block per facet joint"
+      ],
+      [
+        "<strong>20–45&#176; / 40–60&#176;</strong>",
+        "Normal thoracic kyphosis / lumbar lordosis"
+      ],
+      [
+        "<strong>&gt; 90%</strong>",
+        "Prevalence of disc degeneration on MRI in asymptomatic people over 60"
+      ]
+    ]
+  },
+  {
+    "type": "subsection_heading",
+    "text": "9.2 Fifteen pearls"
+  },
+  {
+    "type": "paragraph",
+    "body": "<ul><li><strong>Facet orientation explains regional motion.</strong> Sagittal lumbar facets permit flexion but block rotation — the lumbar spine bends well and twists badly.</li><li><strong>The three-joint complex</strong>: one disc and two facets. Degenerate one and you load the others.</li><li><strong>The disc is avascular and fed by diffusion driven by loading cycles</strong> — movement nourishes it, immobility starves it.</li><li><strong>The PLL is deficient laterally</strong>, so herniations go posterolaterally.</li><li><strong>Cervical roots exit ABOVE their pedicle; lumbar roots exit BELOW.</strong> C5–C6 disc → C6 root; L4–L5 paracentral disc → L5 root.</li><li><strong>A far lateral herniation catches the exiting root</strong>, so the same disc produces a different syndrome.</li><li><strong>Extruded and sequestrated discs resorb more readily than contained ones</strong> — tell patients this.</li><li><strong>Each facet joint has a dual nerve supply</strong>, so two medial branches are blocked per joint.</li><li><strong>Ligamentum flavum buckles in extension</strong> — the anatomy of neurogenic claudication and the shopping trolley sign.</li><li><strong>The conus ends at L1–L2 but the dural sac ends at S2</strong> — which is what makes lumbar puncture below L2 safe.</li><li><strong>The DRG lies in the foramen</strong>, proximal to it → SNAPs are preserved in radiculopathy.</li><li><strong>Paraspinals are supplied by dorsal rami</strong>, so abnormal paraspinals localise to the root.</li><li><strong>Spinothalamic fibres cross within 1–2 segments</strong>, so the pinprick level sits below the true lesion.</li><li><strong>LMN signs at the level with UMN signs below = myelopathy</strong> until proven otherwise.</li><li><strong>Degenerative MRI findings are near-universal with age.</strong> Image to answer a question, not to explain pain.</li></ul>"
+  },
+  {
+    "type": "subsection_heading",
+    "text": "9.3 Red flags"
+  },
+  {
+    "type": "paragraph",
+    "body": "<ul><li><strong>New urinary retention, saddle anaesthesia or bilateral leg symptoms</strong> → <strong>cauda equina syndrome</strong>. Same-day MRI.</li><li><strong>Clumsy hands, gait unsteadiness, brisk reflexes with wasted hand intrinsics</strong> → <strong>cervical myelopathy</strong>.</li><li><strong>New spinal pain in a patient with a history of cancer</strong>, or with weight loss and night pain → <strong>metastasis</strong> until proven otherwise; the thoracic spine is the commonest site.</li><li><strong>Fever, rigors, intravenous drug use, recent bacteraemia or spinal procedure</strong> → <strong>discitis or epidural abscess</strong>. Inflammatory markers and MRI.</li><li><strong>Sudden severe pain in an older or osteoporotic patient, or on long-term steroids</strong> → <strong>vertebral fragility fracture</strong>.</li><li><strong>Inflammatory back pain</strong> — onset under 45, insidious, morning stiffness over 30 minutes, better with exercise and worse with rest → <strong>axial spondyloarthritis</strong>.</li><li><strong>Thoracic pain</strong>, particularly new and in an older patient → a lower prior probability of a mechanical cause; image earlier.</li><li><strong>Neck pain with any long-tract sign in a patient with rheumatoid arthritis or Down syndrome</strong> → image the <strong>craniocervical junction</strong> before any manual treatment.</li></ul>"
+  },
+  {
+    "type": "paragraph",
+    "body": "<em>Anatomy only. Spinal biomechanics — segmental kinematics, coupled motion, load modelling and the mechanics of instability — is treated separately.</em>"
+  }
+]
