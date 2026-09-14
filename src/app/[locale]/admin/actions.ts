@@ -1,12 +1,9 @@
 "use server";
 
-import { execFile } from "node:child_process";
-import { promisify } from "node:util";
 import { auth } from "@/auth";
 import { pool } from "@/lib/db";
 import { revalidateShellSurfaces, revalidateDiseaseSurfaces } from "@/lib/revalidation";
-
-const execFileAsync = promisify(execFile);
+import { createDatabaseBackup } from "@/lib/db-backup";
 
 async function requireReviewer() {
   const session = await auth();
@@ -107,7 +104,7 @@ export async function deleteDiseaseAction(
     }
 
     try {
-      await execFileAsync("node", ["scripts/backup-db.mjs"], { cwd: process.cwd() });
+      await createDatabaseBackup();
     } catch (err) {
       const message = err instanceof Error ? err.message : String(err);
       return { ok: false, error: `Backup failed, delete aborted (nothing was touched): ${message}` };
