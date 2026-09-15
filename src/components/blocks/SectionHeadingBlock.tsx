@@ -45,7 +45,7 @@ export function SectionHeadingBlockView({
       // (TopBar wraps to a second row for the mobile logo), ~69px at
       // `lg`+ (Sidebar carries the logo instead) — measured directly
       // rather than guessed, each with a little headroom on top.
-      className={`mt-8 scroll-mt-36 font-heading text-[28px] leading-[36px] tracking-[-0.2px] font-semibold text-primary first:mt-0 lg:scroll-mt-24 ${TEXT_ALIGN_CLASS[textAlign]}`}
+      className={`mt-8 scroll-mt-36 font-section-heading text-[38px] leading-[46px] tracking-[-0.2px] font-normal text-primary first:mt-0 lg:scroll-mt-24 ${TEXT_ALIGN_CLASS[textAlign]}`}
       value={block.text}
       onSave={async (value) => {
         await updateBlockTextAction(block.id, "text", value);

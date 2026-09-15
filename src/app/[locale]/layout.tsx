@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Assistant, Inter, Poppins, Yanone_Kaffeesatz } from "next/font/google";
+import { Assistant, Caveat_Brush, Inter, Poppins, Yanone_Kaffeesatz } from "next/font/google";
 import { notFound } from "next/navigation";
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages } from "next-intl/server";
@@ -44,6 +44,18 @@ const fontHeading = Poppins({
   weight: ["600", "700"],
 });
 
+// Section/subsection/subsubsection heading blocks only — a local
+// experiment, not the shared `--font-heading` token, so it doesn't
+// also change the disease title (DiseaseHeader's H1). Tried Delicious
+// Handrawn first, now trying Caveat Brush — both ship one weight
+// (400) only, so each block's own `font-semibold` is dropped to
+// `font-normal` wherever this token is in play.
+const fontSectionHeading = Caveat_Brush({
+  variable: "--font-section-heading",
+  subsets: ["latin"],
+  weight: ["400"],
+});
+
 // Brand wordmark only ("PM&R Explained" in TopBar.tsx) — a condensed
 // display face, not a general-purpose typeface, so it's scoped to that
 // one span rather than added as a third body/heading role.
@@ -78,7 +90,7 @@ export default async function RootLayout({ children, params }: LayoutProps<"/[lo
   return (
     <html
       lang={LOCALE_META[locale].bcp47}
-      className={`${fontUI.variable} ${fontReading.variable} ${fontHeading.variable} ${fontBrand.variable} h-full scroll-smooth antialiased`}
+      className={`${fontUI.variable} ${fontReading.variable} ${fontHeading.variable} ${fontSectionHeading.variable} ${fontBrand.variable} h-full scroll-smooth antialiased`}
       suppressHydrationWarning
     >
       <head>

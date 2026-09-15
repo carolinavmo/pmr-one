@@ -82,7 +82,7 @@ function SectionCardBody({
   function numberLabel(sizeClass: string, extraClass = "", colorClass = "text-primary") {
     if (sectionNumber == null) return null;
     return (
-      <span className={`shrink-0 font-heading font-semibold ${colorClass} ${sizeClass} ${extraClass}`} aria-hidden="true">
+      <span className={`shrink-0 font-section-heading font-normal ${colorClass} ${sizeClass} ${extraClass}`} aria-hidden="true">
         {sectionNumber}.
       </span>
     );
@@ -126,12 +126,12 @@ function SectionCardBody({
           className={
             editing
               ? "flex min-w-0 flex-1 items-start gap-2 [&_h2]:!mt-0"
-              : "flex min-w-0 flex-1 items-baseline gap-2 [&_h2]:!mt-0 [&_h2]:!text-[21px] [&_h2]:!leading-[28px] [&_h2]:!text-white"
+              : "flex min-w-0 flex-1 items-baseline gap-2 [&_h2]:!mt-0 [&_h2]:!text-[30px] [&_h2]:!leading-[38px] [&_h2]:!text-white"
           }
         >
           {editing
-            ? numberLabel("text-[28px] leading-[36px] tracking-[-0.2px]", "mt-4")
-            : numberLabel("text-[21px] leading-[28px]", "", "text-white")}
+            ? numberLabel("text-[38px] leading-[46px] tracking-[-0.2px]", "mt-4")
+            : numberLabel("text-[30px] leading-[38px]", "", "text-white")}
           <div className="min-w-0 flex-1">{heading}</div>
         </div>
         {canEdit && <SectionEditToggle />}
