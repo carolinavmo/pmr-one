@@ -50,9 +50,19 @@ export async function GET() {
   const client = await pool.connect();
   try {
     await client.query("BEGIN");
+    // Two-phase shift — a single "position = position + 1" bulk update
+    // can collide with the (disease_id, position) unique constraint
+    // when Postgres processes rows out of order (row at N becomes N+1
+    // while a not-yet-updated row still sits at N+1). Moving everything
+    // out to a disjoint range first, then back down to the real target,
+    // avoids the collision entirely.
     await client.query(
-      `UPDATE editorial_block SET position = position + 1 WHERE disease_id = $1 AND position > $2`,
+      `UPDATE editorial_block SET position = position + 100000 WHERE disease_id = $1 AND position > $2`,
       [diseaseId, position]
+    );
+    await client.query(
+      `UPDATE editorial_block SET position = position - 99999 WHERE disease_id = $1 AND position > $2`,
+      [diseaseId, position + 100000]
     );
     await client.query(
       `INSERT INTO editorial_block (id, disease_id, position, block_type, content_config, source_locale)
