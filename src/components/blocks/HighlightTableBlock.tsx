@@ -412,7 +412,12 @@ export function HighlightTableBlockView({
 
     const tableBody = (
       <>
-        {title && <p className="font-reading text-base text-primary">{title}</p>}
+        {title && (
+          <p
+            className="font-reading text-base text-primary"
+            dangerouslySetInnerHTML={{ __html: sanitizeRichText(title) }}
+          />
+        )}
         <div className="rounded-lg border border-border bg-surface">
           <table className="w-full border-collapse font-reading text-xs">
             <thead>
