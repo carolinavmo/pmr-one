@@ -96,7 +96,8 @@ export async function setCardStyleAction(
 // One action for every card-style block that just needs a `color`
 // field written (#133 — "on all cards, option to change colors"):
 // Key Point, Clinical Pearl, Warning/Pitfall, Learning Objective,
-// Citation Card, Highlight Card. Deliberately NOT used by Stat Card —
+// Citation Card, Highlight Card, Highlight Table. Deliberately NOT
+// used by Stat Card —
 // updateStatCardAction replaces the *whole* content_config wholesale
 // on every field edit, so a color written here via jsonb_set would be
 // silently wiped by the next unrelated field save; Stat Card's own
@@ -244,6 +245,7 @@ type OwnsContentBlockType =
   | "overview"
   | "simple_image"
   | "highlight_card"
+  | "highlight_table"
   | "icon_text";
 
 // Each owns-content type's starting shape — enough to have something
@@ -303,6 +305,14 @@ function emptyContentFor(blockType: OwnsContentBlockType) {
       return {};
     case "highlight_card":
       return { label: "Key Takeaway", text: "" };
+    case "highlight_table":
+      return {
+        label: "Key Takeaway",
+        title: "",
+        badgeColumnTitle: "",
+        columns: [{ title: "", type: "text" }],
+        rows: [{ cells: [""] }],
+      };
     case "icon_text":
       return { label: "" };
     default:
@@ -563,6 +573,46 @@ export async function updateComparisonTableAction(
 // RichTableBlockView's own comment on why the table grid itself is
 // excluded from this pass.
 export async function updateRichTableAction(
+  blockId: string,
+  title: string,
+  badgeColumnTitle: string,
+  columns: { title: string; type: "text" | "icon_list" | "scale" }[],
+  rows: {
+    badgeIcon?: string;
+    cells: (string | { icon?: string; label: string }[] | { label: string; value: number })[];
+  }[],
+  showBadgeColumn: boolean
+) {
+  await requireEditor();
+  await pool.query(
+    `UPDATE editorial_block
+     SET content_config = content_config || jsonb_build_object(
+       'title', $2::text,
+       'badgeColumnTitle', $3::text,
+       'columns', $4::jsonb,
+       'rows', $5::jsonb,
+       'showBadgeColumn', $6::boolean
+     )
+     WHERE id = $1`,
+    [
+      blockId,
+      sanitizeRichText(title),
+      badgeColumnTitle,
+      JSON.stringify(columns),
+      JSON.stringify(rows),
+      showBadgeColumn,
+    ]
+  );
+  revalidateDiseaseSurfaces();
+}
+
+// Same shape as updateRichTableAction — Highlight Table is Rich
+// Table's own columns/rows, just rendered inside Highlight Card's
+// colored box instead of a plain bordered one. `label` and `color`
+// reuse updateBlockTextAction/setBlockCardColorAction, the same
+// generic actions HighlightCardBlockView already calls for those two
+// fields, so this only covers the table-specific ones.
+export async function updateHighlightTableAction(
   blockId: string,
   title: string,
   badgeColumnTitle: string,

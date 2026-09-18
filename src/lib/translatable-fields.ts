@@ -147,6 +147,21 @@ export const TRANSLATABLE_FIELDS: Record<EditorialBlock["type"], TranslatableFie
   // cardStyle/color field in this file — only `label`/`text` are prose.
   highlight_card: { fields: ["label", "text"] },
 
+  // Highlight Card's `label` plus Rich Table's own field set (see that
+  // entry's comment above for why three `rows[].cells...` paths are
+  // each declared despite only one applying per column type).
+  highlight_table: {
+    fields: [
+      "label",
+      "title",
+      "badgeColumnTitle",
+      "columns[].title",
+      "rows[].cells[]",
+      "rows[].cells[].label",
+      "rows[].cells[][].label",
+    ],
+  },
+
   icon_text: { fields: ["title", "label", "description"] },
 };
 

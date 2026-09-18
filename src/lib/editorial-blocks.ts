@@ -832,6 +832,27 @@ export interface HighlightCardBlock extends BlockBase {
   imageFit?: "cover" | "contain" | "original";
 }
 
+// Highlight Card's colored-box chrome (icon chip + eyebrow label,
+// colorable) wrapped around Rich Table's structured columns/rows
+// instead of prose — for a callout that needs a small comparison or
+// reference table rather than a paragraph. No image support (unlike
+// HighlightCardBlock) — keeps this block's own scope tight to "a
+// table in a card"; the two content shapes weren't combined into one
+// mega-block, matching this codebase's existing split between
+// ComparisonTableBlock and RichTableBlock for two different table
+// shapes.
+export interface HighlightTableBlock extends BlockBase {
+  type: "highlight_table";
+  id: string;
+  label: string;
+  color?: CardColor;
+  title?: string;
+  badgeColumnTitle?: string;
+  showBadgeColumn?: boolean;
+  columns: RichTableColumn[];
+  rows: RichTableRow[];
+}
+
 // A single icon + label + description row — one item's worth of
 // Timeline's own step shape (#141), extracted as its own standalone,
 // insertable block for a single fact that deserves an icon without a
@@ -898,6 +919,7 @@ export type EditorialBlock =
   | OverviewBlock
   | SimpleImageBlock
   | HighlightCardBlock
+  | HighlightTableBlock
   | IconTextBlock;
 
 // No graph leakage (Tier 1, principle #6) — the raw relationship_type

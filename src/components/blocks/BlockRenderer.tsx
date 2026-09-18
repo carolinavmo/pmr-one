@@ -33,6 +33,7 @@ import { PhotoCardGalleryBlockView } from "./PhotoCardGalleryBlock";
 import { OverviewBlockView } from "./OverviewBlock";
 import { SimpleImageBlockView } from "./SimpleImageBlock";
 import { HighlightCardBlockView } from "./HighlightCardBlock";
+import { HighlightTableBlockView } from "./HighlightTableBlock";
 import { IconTextBlockView } from "./IconTextBlock";
 
 interface WorkspaceContext {
@@ -142,6 +143,8 @@ export function BlockRenderer({
       return <SimpleImageBlockView block={block} diseaseSlug={diseaseSlug} isSignedIn={isSignedIn} />;
     case "highlight_card":
       return <HighlightCardBlockView block={block} diseaseSlug={diseaseSlug} isSignedIn={isSignedIn} />;
+    case "highlight_table":
+      return <HighlightTableBlockView block={block} />;
     case "icon_text":
       return <IconTextBlockView block={block} diseaseSlug={diseaseSlug} />;
   }

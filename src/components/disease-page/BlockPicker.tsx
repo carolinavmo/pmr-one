@@ -122,6 +122,7 @@ export function BlockPicker({
           | "overview"
           | "simple_image"
           | "highlight_card"
+          | "highlight_table"
           | "icon_text"
       );
       if (entry.type === "section_heading") notifySectionIndexChanged();

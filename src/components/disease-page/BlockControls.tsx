@@ -42,6 +42,7 @@ const ALIGNABLE_TYPES = new Set([
   // deliberately kept this simple.
   "simple_image",
   "highlight_card",
+  "highlight_table",
   "icon_text",
   "icon_list",
   "medical_illustration",
@@ -89,6 +90,7 @@ const MANAGEABLE_TYPES = new Set([
   "overview",
   "simple_image",
   "highlight_card",
+  "highlight_table",
   "icon_text",
 ]);
 

@@ -98,6 +98,7 @@ export const BLOCK_REGISTRY: BlockRegistryEntry[] = [
   { type: "badge_row", label: "Badge Row", group: "text", icon: Tag, kind: "owns-content", status: "available" },
   { type: "icon_list", label: "Icon List", group: "text", icon: List, kind: "owns-content", status: "available" },
   { type: "highlight_card", label: "Highlight Card", group: "text", icon: Star, kind: "owns-content", status: "available" },
+  { type: "highlight_table", label: "Highlight Table", group: "text", icon: TableProperties, kind: "owns-content", status: "available" },
   { type: "icon_text", label: "Icon + Text", group: "text", icon: CircleDot, kind: "owns-content", status: "available" },
 
   // Visual
