@@ -24,6 +24,7 @@ import type {
 import { useEditMode } from "@/components/disease-page/EditMode";
 import {
   updateBlockTextAction,
+  updateBlockRichTextAction,
   updateHighlightTableAction,
   setBlockCardColorAction,
   uploadHighlightCardImageAction,
@@ -141,6 +142,7 @@ export function HighlightTableBlockView({
   const [columns, setColumns] = useState<Column[]>(block.columns);
   const [rows, setRows] = useState<Row[]>(block.rows);
   const [showBadgeColumn, setShowBadgeColumn] = useState(block.showBadgeColumn ?? true);
+  const [text, setText] = useState(block.text ?? "");
   const color = block.color ?? "accent";
 
   const [imageUrl, setImageUrl] = useState(block.imageUrl);
@@ -225,6 +227,24 @@ export function HighlightTableBlockView({
         onSave={(value) => updateBlockTextAction(block.id, "label", value)}
       />
     </div>
+  );
+
+  // Optional continuation below the table — same field/action
+  // HighlightCardBlock's own body text uses (updateBlockRichTextAction
+  // with field "text"), just placed after the table instead of being
+  // the block's only content. Reader view skips it entirely when
+  // empty, same as the table's own optional title above.
+  const bodyText = (
+    <RichEditableText
+      as="p"
+      className="font-reading text-base leading-5 text-primary"
+      value={text}
+      onSave={async (value) => {
+        setText(value);
+        await updateBlockRichTextAction(block.id, "text", value);
+      }}
+      placeholder="Additional text (optional)…"
+    />
   );
 
   // Positioning/sizing only matter once an image exists — same
@@ -421,14 +441,12 @@ export function HighlightTableBlockView({
         <div className="rounded-lg border border-border bg-surface">
           <table className="w-full border-collapse font-reading text-xs">
             <thead>
-              <tr className="border-b border-border bg-[#128A99]/10">
+              <tr className={`border-b border-border ${CARD_COLOR_CHIP[color]}`}>
                 {showBadgeColumn && (
-                  <th className="w-12 px-2 py-1.5 text-center font-medium text-black">
-                    {badgeColumnTitle}
-                  </th>
+                  <th className="w-12 px-2 py-1.5 text-center font-medium">{badgeColumnTitle}</th>
                 )}
                 {columns.map((column, i) => (
-                  <th key={i} className="px-3 py-1.5 text-left font-medium text-black">
+                  <th key={i} className="px-3 py-1.5 text-left font-medium">
                     {column.title}
                   </th>
                 ))}
@@ -442,7 +460,9 @@ export function HighlightTableBlockView({
                   <tr key={rowIndex} className="border-b border-border last:border-0">
                     {showBadgeColumn && (
                       <td className="px-2 py-2 text-center align-middle">
-                        <span className="mx-auto flex size-6 items-center justify-center rounded-full border-2 border-[#128A99] font-ui text-xs font-semibold text-[#128A99]">
+                        <span
+                          className={`mx-auto flex size-6 items-center justify-center rounded-full border-2 border-current font-ui text-xs font-semibold ${CARD_COLOR_TEXT[color]}`}
+                        >
                           {BadgeIcon ? <BadgeIcon className="size-3.5" aria-hidden="true" /> : rowIndex + 1}
                         </span>
                       </td>
@@ -458,6 +478,12 @@ export function HighlightTableBlockView({
             </tbody>
           </table>
         </div>
+        {text && (
+          <p
+            className="font-reading text-base leading-5 text-primary"
+            dangerouslySetInnerHTML={{ __html: sanitizeRichText(text) }}
+          />
+        )}
       </>
     );
 
@@ -806,6 +832,7 @@ export function HighlightTableBlockView({
           </button>
         </div>
       </div>
+      {bodyText}
     </>
   );
 

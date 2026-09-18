@@ -852,6 +852,10 @@ export interface HighlightTableBlock extends BlockBase {
   showBadgeColumn?: boolean;
   columns: RichTableColumn[];
   rows: RichTableRow[];
+  // Optional prose below the table — same free-form continuation
+  // HighlightCardBlock's own `text` provides, just placed after the
+  // table instead of being the block's only content.
+  text?: string;
   imageUrl?: string;
   imageAlt?: string;
   // Where the image sits relative to the table. "top" stacks it

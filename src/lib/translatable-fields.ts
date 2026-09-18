@@ -159,6 +159,7 @@ export const TRANSLATABLE_FIELDS: Record<EditorialBlock["type"], TranslatableFie
       "rows[].cells[]",
       "rows[].cells[].label",
       "rows[].cells[][].label",
+      "text",
     ],
   },
 

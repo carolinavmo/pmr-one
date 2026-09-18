@@ -604,6 +604,7 @@ async function resolveBlock(diseaseId: string, row: BlockRow): Promise<Editorial
             badgeIcon?: string;
             cells: (string | { icon?: string; label: string }[] | { label: string; value: number })[];
           }[]) ?? [],
+        text: (cc.text as string) ?? "",
         imageUrl: cc.imageUrl as string | undefined,
         imageAlt: cc.imageAlt as string | undefined,
         imagePosition: cc.imagePosition as HighlightTableBlock["imagePosition"],
