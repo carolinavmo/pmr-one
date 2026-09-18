@@ -1,7 +1,21 @@
 "use client";
 
-import { useState, type ReactNode } from "react";
-import { Star, Palette, Plus, X } from "lucide-react";
+import { useRef, useState, type ReactNode } from "react";
+import {
+  Star,
+  Palette,
+  Plus,
+  X,
+  ImagePlus,
+  PanelTop,
+  PanelLeft,
+  PanelRight,
+  Maximize2,
+  Crosshair,
+  Crop,
+  Shrink,
+  Expand,
+} from "lucide-react";
 import type {
   HighlightTableBlock,
   RichTableColumnType,
@@ -12,21 +26,65 @@ import {
   updateBlockTextAction,
   updateHighlightTableAction,
   setBlockCardColorAction,
+  uploadHighlightCardImageAction,
+  removeHighlightCardImageAction,
+  setHighlightCardImagePositionAction,
+  setHighlightCardImageWidthAction,
+  setHighlightCardImageFocalPointAction,
+  setHighlightCardImageFitAction,
 } from "@/lib/actions/authoring";
 import { ColorSwatchPicker } from "@/components/ui/ColorSwatchPicker";
 import { EditableText } from "@/components/ui/EditableText";
 import { RichEditableText } from "@/components/ui/RichEditableText";
+import { ZoomableImage } from "@/components/ui/ZoomableImage";
 import { cardIcons, type CardIconName } from "@/components/ui/cardIcons";
 import { sanitizeRichText } from "@/lib/rich-text";
 import { CARD_COLOR_CARD_ACCENT, CARD_COLOR_CHIP, CARD_COLOR_TEXT } from "@/lib/card-colors";
+import { FOCAL_POINT_OPTIONS, FOCAL_POINT_CLASS, type ImageFocalPoint } from "@/lib/image-focal-point";
 
 type Column = HighlightTableBlock["columns"][number];
 type Row = HighlightTableBlock["rows"][number];
 type IconListItem = { icon?: string; label: string };
 type ScaleValue = { label: string; value: number };
+type ImagePosition = NonNullable<HighlightTableBlock["imagePosition"]>;
+type ImageWidth = NonNullable<HighlightTableBlock["imageWidth"]>;
+type ImageFit = NonNullable<HighlightTableBlock["imageFit"]>;
 
 // Same fixed 5-step scale as RichTableBlock's own SCALE_MAX.
 const SCALE_MAX = 5;
+
+// Identical image vocabulary to HighlightCardBlock's own — same
+// actions are reused (they're blockId-keyed content_config writers,
+// not type-specific), so the options have to match exactly.
+const FIT_OPTIONS: { value: ImageFit; label: string; icon: typeof Crop }[] = [
+  { value: "cover", label: "Crop to fill", icon: Crop },
+  { value: "contain", label: "Fit inside, no crop (letterboxed)", icon: Shrink },
+  { value: "original", label: "Natural size, no fixed box", icon: Expand },
+];
+
+const POSITION_OPTIONS: { value: ImagePosition; label: string; icon: typeof PanelTop }[] = [
+  { value: "top", label: "Image above table", icon: PanelTop },
+  { value: "left", label: "Image left of table", icon: PanelLeft },
+  { value: "right", label: "Image right of table", icon: PanelRight },
+];
+
+const WIDTH_OPTIONS: { value: ImageWidth; label: string }[] = [
+  { value: "1/4", label: "25%" },
+  { value: "1/3", label: "33%" },
+  { value: "1/2", label: "50%" },
+  { value: "2/3", label: "66%" },
+  { value: "3/4", label: "75%" },
+  { value: "full", label: "100%" },
+];
+
+const imageWidthClass: Record<ImageWidth, string> = {
+  "1/4": "w-1/4",
+  "1/3": "w-1/3",
+  "1/2": "w-1/2",
+  "2/3": "w-2/3",
+  "3/4": "w-3/4",
+  full: "w-full",
+};
 
 const COLUMN_TYPE_LABEL: Record<RichTableColumnType, string> = {
   text: "Text",
@@ -69,7 +127,13 @@ function asScale(value: RichTableCellValue | undefined): ScaleValue {
 // duplicated rather than shared — same "each block owns its small
 // pieces" pattern the rest of this codebase already follows, not an
 // oversight.
-export function HighlightTableBlockView({ block }: { block: HighlightTableBlock }) {
+export function HighlightTableBlockView({
+  block,
+  isSignedIn = false,
+}: {
+  block: HighlightTableBlock;
+  isSignedIn?: boolean;
+}) {
   const { editing } = useEditMode();
   const [colorPickerOpen, setColorPickerOpen] = useState(false);
   const [title, setTitle] = useState(block.title ?? "");
@@ -78,6 +142,40 @@ export function HighlightTableBlockView({ block }: { block: HighlightTableBlock 
   const [rows, setRows] = useState<Row[]>(block.rows);
   const [showBadgeColumn, setShowBadgeColumn] = useState(block.showBadgeColumn ?? true);
   const color = block.color ?? "accent";
+
+  const [imageUrl, setImageUrl] = useState(block.imageUrl);
+  const [uploadingImage, setUploadingImage] = useState(false);
+  const [imagePosition, setImagePosition] = useState<ImagePosition>(block.imagePosition ?? "top");
+  const [imageWidth, setImageWidth] = useState<ImageWidth | undefined>(block.imageWidth);
+  const [widthOpen, setWidthOpen] = useState(false);
+  const [imageFocalPoint, setImageFocalPoint] = useState<ImageFocalPoint>(block.imageFocalPoint ?? "center");
+  const [focalPointOpen, setFocalPointOpen] = useState(false);
+  const [imageFit, setImageFit] = useState<ImageFit>(block.imageFit ?? "cover");
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const isSideBySide = imagePosition !== "top";
+  const isCover = imageFit === "cover";
+  const boxAspectClass = imageFit !== "original" ? "aspect-[4/3]" : "";
+  const imgFitClass = isCover
+    ? `size-full object-cover ${FOCAL_POINT_CLASS[imageFocalPoint]}`
+    : imageFit === "contain"
+      ? "size-full object-contain"
+      : "w-full";
+  const effectiveWidth: ImageWidth = imageWidth ?? (isSideBySide ? "1/4" : "full");
+  const imageSizeClass = `${imageWidthClass[effectiveWidth]} ${
+    isSideBySide ? "shrink-0" : effectiveWidth !== "full" ? "mx-auto" : ""
+  }`;
+
+  const handleImageFile = async (file: File) => {
+    setUploadingImage(true);
+    const formData = new FormData();
+    formData.set("file", file);
+    try {
+      await uploadHighlightCardImageAction(block.id, formData);
+      setImageUrl(URL.createObjectURL(file));
+    } finally {
+      setUploadingImage(false);
+    }
+  };
 
   const commit = (
     nextTitle: string,
@@ -129,11 +227,191 @@ export function HighlightTableBlockView({ block }: { block: HighlightTableBlock 
     </div>
   );
 
+  // Positioning/sizing only matter once an image exists — same
+  // "nothing to offer on an empty upload prompt" reasoning as
+  // HighlightCardBlockView's own imageControls.
+  const imageControls = editing && imageUrl && (
+    <div className="flex flex-wrap items-center gap-1">
+      {POSITION_OPTIONS.map(({ value, label, icon: Icon }) => (
+        <button
+          key={value}
+          type="button"
+          aria-label={label}
+          aria-pressed={imagePosition === value}
+          onClick={() => {
+            setImagePosition(value);
+            setHighlightCardImagePositionAction(block.id, value);
+          }}
+          className={`flex size-6 items-center justify-center rounded transition-colors duration-base ${
+            imagePosition === value
+              ? "bg-surface-raised text-primary"
+              : "text-secondary hover:bg-surface-raised hover:text-primary"
+          }`}
+        >
+          <Icon className="size-3.5" aria-hidden="true" />
+        </button>
+      ))}
+      <div className="relative">
+        <button
+          type="button"
+          onClick={() => setWidthOpen((open) => !open)}
+          aria-label="Image width"
+          className="flex items-center gap-0.5 rounded px-1 py-0.5 font-ui text-xs text-secondary hover:bg-surface-raised hover:text-primary"
+        >
+          <Maximize2 className="size-3" aria-hidden="true" />
+          {WIDTH_OPTIONS.find((o) => o.value === effectiveWidth)?.label}
+        </button>
+        {widthOpen && (
+          <div className="absolute top-6 left-0 z-10 w-36 rounded-lg border border-border bg-surface-raised p-2 shadow-md">
+            <div className="flex flex-wrap gap-1">
+              {WIDTH_OPTIONS.map((option) => (
+                <button
+                  key={option.value}
+                  type="button"
+                  onClick={() => {
+                    setWidthOpen(false);
+                    setImageWidth(option.value);
+                    setHighlightCardImageWidthAction(block.id, option.value);
+                  }}
+                  className={`rounded border px-1.5 py-1 font-ui text-xs ${
+                    effectiveWidth === option.value
+                      ? "border-accent bg-accent/10 text-accent"
+                      : "border-border text-secondary hover:border-accent hover:text-accent"
+                  }`}
+                >
+                  {option.label}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+      {isCover && (
+        <div className="relative">
+          <button
+            type="button"
+            onClick={() => setFocalPointOpen((open) => !open)}
+            aria-label="Image focal point"
+            className="flex items-center gap-0.5 rounded px-1 py-0.5 font-ui text-xs text-secondary hover:bg-surface-raised hover:text-primary"
+          >
+            <Crosshair className="size-3" aria-hidden="true" />
+          </button>
+          {focalPointOpen && (
+            <div className="absolute top-6 left-0 z-10 w-36 rounded-lg border border-border bg-surface-raised p-2 shadow-md">
+              <div className="grid grid-cols-3 gap-1">
+                {FOCAL_POINT_OPTIONS.map((option) => (
+                  <button
+                    key={option.value}
+                    type="button"
+                    title={option.label}
+                    aria-label={option.label}
+                    onClick={() => {
+                      setFocalPointOpen(false);
+                      setImageFocalPoint(option.value);
+                      setHighlightCardImageFocalPointAction(block.id, option.value);
+                    }}
+                    className={`flex size-8 items-center justify-center rounded border ${
+                      imageFocalPoint === option.value
+                        ? "border-accent bg-accent/10"
+                        : "border-border hover:border-accent"
+                    }`}
+                  >
+                    <span
+                      className={`size-1.5 rounded-full ${
+                        imageFocalPoint === option.value ? "bg-accent" : "bg-secondary/50"
+                      }`}
+                      aria-hidden="true"
+                    />
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+      <div className="flex items-center gap-0.5 rounded border border-border p-0.5">
+        {FIT_OPTIONS.map(({ value, label, icon: Icon }) => (
+          <button
+            key={value}
+            type="button"
+            aria-label={label}
+            title={label}
+            aria-pressed={imageFit === value}
+            onClick={() => {
+              setImageFit(value);
+              setHighlightCardImageFitAction(block.id, value);
+            }}
+            className={`flex size-6 items-center justify-center rounded transition-colors duration-base ${
+              imageFit === value
+                ? "bg-accent/10 text-accent"
+                : "text-secondary hover:bg-border/40 hover:text-primary"
+            }`}
+          >
+            <Icon className="size-3.5" aria-hidden="true" />
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+
+  const imageBlock = editing ? (
+    <div className={`flex flex-col gap-1.5 ${imageSizeClass}`}>
+      {imageUrl ? (
+        <div className={`relative ${boxAspectClass} overflow-hidden rounded-md w-full`}>
+          {/* eslint-disable-next-line @next/next/no-img-element -- arbitrary asset URL, no fixed remote-pattern domain configured yet (same reasoning as HighlightCardBlockView). */}
+          <img src={imageUrl} alt="" className={imgFitClass} />
+          <button
+            type="button"
+            aria-label="Remove image"
+            onClick={() => {
+              setImageUrl(undefined);
+              removeHighlightCardImageAction(block.id);
+            }}
+            className="absolute top-1.5 right-1.5 flex size-6 items-center justify-center rounded-full bg-surface-raised text-secondary shadow-sm hover:text-warning"
+          >
+            <X className="size-3.5" aria-hidden="true" />
+          </button>
+        </div>
+      ) : (
+        <button
+          type="button"
+          disabled={uploadingImage}
+          onClick={() => fileInputRef.current?.click()}
+          className="inline-flex w-fit items-center gap-1 rounded-full border border-dashed border-border px-2.5 py-1 font-ui text-xs text-secondary hover:border-accent hover:text-accent disabled:opacity-50"
+        >
+          <ImagePlus className="size-3" aria-hidden="true" />
+          {uploadingImage ? "Uploading…" : "Add image"}
+        </button>
+      )}
+      {imageControls}
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="image/*"
+        className="hidden"
+        onChange={(e) => {
+          const file = e.target.files?.[0];
+          if (file) handleImageFile(file);
+          e.target.value = "";
+        }}
+      />
+    </div>
+  ) : (
+    imageUrl && (
+      <div className={`${boxAspectClass} overflow-hidden rounded-md ${imageSizeClass}`}>
+        <ZoomableImage src={imageUrl} alt={block.imageAlt ?? ""} enabled={isSignedIn}>
+          {/* eslint-disable-next-line @next/next/no-img-element -- arbitrary asset URL, no fixed remote-pattern domain configured yet (same reasoning as HighlightCardBlockView). */}
+          <img src={imageUrl} alt={block.imageAlt ?? ""} className={imgFitClass} />
+        </ZoomableImage>
+      </div>
+    )
+  );
+
   if (!editing) {
     if (columns.length === 0) return null;
-    return (
-      <div className={`relative flex flex-col gap-2 p-4 ${CARD_COLOR_CARD_ACCENT[color]}`}>
-        {labelRow}
+
+    const tableBody = (
+      <>
         {title && <p className="font-reading text-base text-primary">{title}</p>}
         <div className="rounded-lg border border-border bg-surface">
           <table className="w-full border-collapse font-reading text-xs">
@@ -175,31 +453,39 @@ export function HighlightTableBlockView({ block }: { block: HighlightTableBlock 
             </tbody>
           </table>
         </div>
+      </>
+    );
+
+    const tableColumn = (
+      <div className="flex min-w-0 flex-1 flex-col gap-2">
+        {labelRow}
+        {tableBody}
+      </div>
+    );
+
+    return (
+      <div
+        className={`relative flex p-4 ${
+          isSideBySide ? "flex-row items-start gap-3" : "flex-col gap-2"
+        } ${CARD_COLOR_CARD_ACCENT[color]}`}
+      >
+        {isSideBySide && imagePosition === "left" && imageBlock}
+        {isSideBySide ? (
+          tableColumn
+        ) : (
+          <>
+            {labelRow}
+            {imageBlock}
+            {tableBody}
+          </>
+        )}
+        {isSideBySide && imagePosition === "right" && imageBlock}
       </div>
     );
   }
 
-  return (
-    <div className={`relative flex flex-col gap-3 p-4 ${CARD_COLOR_CARD_ACCENT[color]}`}>
-      <div className="absolute top-2 right-2">
-        <button
-          type="button"
-          aria-label="Card color"
-          onClick={() => setColorPickerOpen((open) => !open)}
-          className="flex size-7 items-center justify-center rounded-full bg-surface-raised text-secondary shadow-sm hover:text-primary"
-        >
-          <Palette className="size-3.5" aria-hidden="true" />
-        </button>
-        {colorPickerOpen && (
-          <ColorSwatchPicker
-            onPick={(next) => {
-              setColorPickerOpen(false);
-              setBlockCardColorAction(block.id, next);
-            }}
-          />
-        )}
-      </div>
-      {labelRow}
+  const editBody = (
+    <>
       <RichEditableText
         value={title}
         onSave={async (html) => commit(html, badgeColumnTitle, columns, rows)}
@@ -515,6 +801,51 @@ export function HighlightTableBlockView({ block }: { block: HighlightTableBlock 
           </button>
         </div>
       </div>
+    </>
+  );
+
+  const editColumn = (
+    <div className="flex min-w-0 flex-1 flex-col gap-3">
+      {labelRow}
+      {editBody}
+    </div>
+  );
+
+  return (
+    <div
+      className={`relative flex p-4 ${
+        isSideBySide ? "flex-row items-start gap-3" : "flex-col gap-3"
+      } ${CARD_COLOR_CARD_ACCENT[color]}`}
+    >
+      <div className="absolute top-2 right-2">
+        <button
+          type="button"
+          aria-label="Card color"
+          onClick={() => setColorPickerOpen((open) => !open)}
+          className="flex size-7 items-center justify-center rounded-full bg-surface-raised text-secondary shadow-sm hover:text-primary"
+        >
+          <Palette className="size-3.5" aria-hidden="true" />
+        </button>
+        {colorPickerOpen && (
+          <ColorSwatchPicker
+            onPick={(next) => {
+              setColorPickerOpen(false);
+              setBlockCardColorAction(block.id, next);
+            }}
+          />
+        )}
+      </div>
+      {isSideBySide && imagePosition === "left" && imageBlock}
+      {isSideBySide ? (
+        editColumn
+      ) : (
+        <>
+          {labelRow}
+          {imageBlock}
+          {editBody}
+        </>
+      )}
+      {isSideBySide && imagePosition === "right" && imageBlock}
     </div>
   );
 }

@@ -144,7 +144,7 @@ export function BlockRenderer({
     case "highlight_card":
       return <HighlightCardBlockView block={block} diseaseSlug={diseaseSlug} isSignedIn={isSignedIn} />;
     case "highlight_table":
-      return <HighlightTableBlockView block={block} />;
+      return <HighlightTableBlockView block={block} isSignedIn={isSignedIn} />;
     case "icon_text":
       return <IconTextBlockView block={block} diseaseSlug={diseaseSlug} />;
   }

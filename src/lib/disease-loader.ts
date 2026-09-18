@@ -5,6 +5,7 @@ import type {
   CardColor,
   EditorialBlock,
   HighlightCardBlock,
+  HighlightTableBlock,
   ImageRowBlock,
   ManeuverRelationship,
   MedicalIllustrationBlock,
@@ -603,6 +604,12 @@ async function resolveBlock(diseaseId: string, row: BlockRow): Promise<Editorial
             badgeIcon?: string;
             cells: (string | { icon?: string; label: string }[] | { label: string; value: number })[];
           }[]) ?? [],
+        imageUrl: cc.imageUrl as string | undefined,
+        imageAlt: cc.imageAlt as string | undefined,
+        imagePosition: cc.imagePosition as HighlightTableBlock["imagePosition"],
+        imageWidth: cc.imageWidth as HighlightTableBlock["imageWidth"],
+        imageFocalPoint: cc.imageFocalPoint as HighlightTableBlock["imageFocalPoint"],
+        imageFit: cc.imageFit as HighlightTableBlock["imageFit"],
       };
 
     case "icon_text":

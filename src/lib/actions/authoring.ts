@@ -1048,7 +1048,11 @@ export async function removeParagraphImageAction(blockId: string) {
 // Same upload path again, for Highlight Card — the block editors
 // actually reach for via the "+" picker (Teaching Point / Clinical Box
 // cards), unlike the callout-Paragraph mode above which has no picker
-// entry of its own.
+// entry of its own. Reused as-is by Highlight Table too (its own
+// image fields are named identically) — this and the five sibling
+// actions below are all blockId-keyed content_config writers with no
+// type-awareness, so nothing here needed to change for that second
+// caller.
 export async function uploadHighlightCardImageAction(blockId: string, formData: FormData) {
   await requireEditor();
   const file = formData.get("file") as File | null;

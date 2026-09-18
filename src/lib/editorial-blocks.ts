@@ -833,14 +833,15 @@ export interface HighlightCardBlock extends BlockBase {
 }
 
 // Highlight Card's colored-box chrome (icon chip + eyebrow label,
-// colorable) wrapped around Rich Table's structured columns/rows
-// instead of prose — for a callout that needs a small comparison or
-// reference table rather than a paragraph. No image support (unlike
-// HighlightCardBlock) — keeps this block's own scope tight to "a
-// table in a card"; the two content shapes weren't combined into one
+// colorable, same optional image) wrapped around Rich Table's
+// structured columns/rows instead of prose — for a callout that needs
+// a small comparison or reference table rather than a paragraph. The
+// two content shapes (prose vs. table) weren't combined into one
 // mega-block, matching this codebase's existing split between
 // ComparisonTableBlock and RichTableBlock for two different table
-// shapes.
+// shapes — but the image fields are identical to HighlightCardBlock's
+// own, reusing the same upload/position/width/focalPoint/fit actions
+// (they're blockId-keyed content_config writers, not type-specific).
 export interface HighlightTableBlock extends BlockBase {
   type: "highlight_table";
   id: string;
@@ -851,6 +852,25 @@ export interface HighlightTableBlock extends BlockBase {
   showBadgeColumn?: boolean;
   columns: RichTableColumn[];
   rows: RichTableRow[];
+  imageUrl?: string;
+  imageAlt?: string;
+  // Where the image sits relative to the table. "top" stacks it
+  // full-width above the table; "left"/"right" put it in a fixed-
+  // width column beside the table instead — same vocabulary as
+  // HighlightCardBlock's own imagePosition.
+  imagePosition?: "top" | "left" | "right";
+  imageWidth?: "1/4" | "1/3" | "1/2" | "2/3" | "3/4" | "full";
+  imageFocalPoint?:
+    | "top-left"
+    | "top"
+    | "top-right"
+    | "left"
+    | "center"
+    | "right"
+    | "bottom-left"
+    | "bottom"
+    | "bottom-right";
+  imageFit?: "cover" | "contain" | "original";
 }
 
 // A single icon + label + description row — one item's worth of
