@@ -229,6 +229,21 @@ export function HighlightTableBlockView({
     </div>
   );
 
+  // Rendered via RichEditableText in both reader and editor views
+  // (not a plain dangerouslySetInnerHTML paragraph) so it picks up
+  // the same list/blockquote styling every other rich-text field
+  // gets — a raw paragraph strips <ul>/<ol> markers entirely (Tailwind's
+  // preflight reset), which is exactly the "bullets disappear" bug
+  // this replaced.
+  const titleField = (
+    <RichEditableText
+      value={title}
+      onSave={async (html) => commit(html, badgeColumnTitle, columns, rows)}
+      placeholder="Table title (optional)"
+      className="w-full font-reading text-base text-primary"
+    />
+  );
+
   // Optional continuation below the table — same field/action
   // HighlightCardBlock's own body text uses (updateBlockRichTextAction
   // with field "text"), just placed after the table instead of being
@@ -432,12 +447,7 @@ export function HighlightTableBlockView({
 
     const tableBody = (
       <>
-        {title && (
-          <p
-            className="font-reading text-base text-primary"
-            dangerouslySetInnerHTML={{ __html: sanitizeRichText(title) }}
-          />
-        )}
+        {title && titleField}
         <div className="rounded-lg border border-border bg-surface">
           <table className="w-full border-collapse font-reading text-xs">
             <thead>
@@ -478,12 +488,7 @@ export function HighlightTableBlockView({
             </tbody>
           </table>
         </div>
-        {text && (
-          <p
-            className="font-reading text-base leading-5 text-primary"
-            dangerouslySetInnerHTML={{ __html: sanitizeRichText(text) }}
-          />
-        )}
+        {text && bodyText}
       </>
     );
 
@@ -517,12 +522,7 @@ export function HighlightTableBlockView({
 
   const editBody = (
     <>
-      <RichEditableText
-        value={title}
-        onSave={async (html) => commit(html, badgeColumnTitle, columns, rows)}
-        placeholder="Table title (optional)"
-        className="w-full font-reading text-base text-primary"
-      />
+      {titleField}
       <label className="flex w-fit items-center gap-1.5 font-ui text-xs text-secondary">
         <input
           type="checkbox"
