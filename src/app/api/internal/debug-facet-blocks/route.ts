@@ -16,7 +16,7 @@ export async function GET() {
   );
 
   const h2 = await pool.query(
-    `SELECT eb.id, eb.position, eb.block_type
+    `SELECT eb.id, eb.position, eb.block_type, eb.disease_id
      FROM editorial_block eb
      JOIN disease d ON d.id = eb.disease_id
      WHERE d.slug = 'spine-anatomy'
