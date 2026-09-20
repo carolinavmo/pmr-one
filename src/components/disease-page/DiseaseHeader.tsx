@@ -5,6 +5,7 @@ import { Star, ShieldCheck } from "lucide-react";
 import { Eyebrow } from "@/components/ui/Eyebrow";
 import { ClinicalBadge } from "@/components/ui/ClinicalBadge";
 import { EditableText } from "@/components/ui/EditableText";
+import { PageHeading, PAGE_HEADING_CLASS } from "@/components/ui/headings";
 import { useEditMode, SectionEditToggle } from "@/components/disease-page/EditMode";
 import { DeleteDiseaseButton } from "@/components/admin/DeleteDiseaseButton";
 import {
@@ -24,6 +25,11 @@ interface DiseaseHeaderProps {
   boardRelevance: number | null;
   updatedAt: string;
   readingMinutes: number;
+  // From getSectionSummaries — matches "On this page"'s own row count
+  // exactly, computed once in page.tsx rather than re-deriving it here.
+  // Optional (defaults to 0, hiding the segment) since DiseaseSnapshot
+  // also renders this component and doesn't thread a count through.
+  sectionCount?: number;
   isSignedIn: boolean;
   isFavorited: boolean;
   // Whether this reader can edit at all (#136 — per-section toggles
@@ -54,6 +60,7 @@ export function DiseaseHeader({
   boardRelevance,
   updatedAt,
   readingMinutes,
+  sectionCount = 0,
   isSignedIn,
   isFavorited,
   canEdit = false,
@@ -79,6 +86,9 @@ export function DiseaseHeader({
   }
   segments.push(<span>Updated {MONTH_YEAR.format(new Date(updatedAt))}</span>);
   segments.push(<span>Reading time: {readingMinutes} min</span>);
+  if (sectionCount > 0) {
+    segments.push(<span>{sectionCount} {sectionCount === 1 ? "section" : "sections"}</span>);
+  }
   if (boardRelevance || editing) {
     segments.push(
       <BoardRelevanceStars diseaseId={diseaseId} rating={boardRelevance} editing={editing} />
@@ -89,15 +99,15 @@ export function DiseaseHeader({
     <div className="flex flex-col gap-2">
       {category && <Eyebrow>{category}</Eyebrow>}
       <div className="flex flex-wrap items-center gap-3">
-        <EditableText
-          as="h1"
-          value={diseaseName}
-          onSave={(value) => updateDiseaseNameAction(diseaseId, value)}
-          multiline={false}
-          // H1 per PM&R Atlas Design System doc: Poppins SemiBold,
-          // 40px/48px, -0.5px tracking.
-          className="font-heading text-[40px] leading-[48px] tracking-[-0.5px] font-semibold text-primary"
-        />
+        <PageHeading>
+          <EditableText
+            as="h1"
+            value={diseaseName}
+            onSave={(value) => updateDiseaseNameAction(diseaseId, value)}
+            multiline={false}
+            className={`font-heading ${PAGE_HEADING_CLASS}`}
+          />
+        </PageHeading>
         {status !== "published" && <ClinicalBadge>Draft — not yet reviewed</ClinicalBadge>}
         {canEdit && <SectionEditToggle />}
         {editing && isAdmin && (
@@ -111,11 +121,11 @@ export function DiseaseHeader({
           />
         )}
       </div>
-      <div className="flex flex-wrap items-center gap-2 font-ui text-sm text-secondary">
+      <div className="flex flex-wrap items-center gap-3.5 font-ui text-[13.5px] font-semibold text-[#8C97A6]">
         {segments.map((segment, index) => (
           <Fragment key={index}>
             {index > 0 && (
-              <span className="text-border" aria-hidden="true">
+              <span className="text-[#8C97A6]" aria-hidden="true">
                 ·
               </span>
             )}
@@ -166,10 +176,10 @@ function EvidenceBadge({
 }) {
   const pill = (
     <span
-      className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 font-ui text-xs font-medium ${
+      className={`inline-flex items-center gap-1 rounded-[14px] px-[11px] py-[4px] font-ui text-[12px] font-extrabold tracking-[0.4px] uppercase ${
         evidenceBased
-          ? "bg-accent/10 text-accent"
-          : "border border-dashed border-border text-secondary"
+          ? "border border-trust/30 bg-trust-bg text-trust"
+          : "border border-dashed border-border text-secondary normal-case"
       }`}
     >
       <ShieldCheck className="size-3.5" aria-hidden="true" />

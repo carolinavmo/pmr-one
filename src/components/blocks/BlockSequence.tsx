@@ -56,6 +56,30 @@ interface RenderGroupsArgs {
   diseaseSlug: string;
   contextHint?: string;
   isSignedIn: boolean;
+  // This section's own 1-based number (SectionCard's sectionNumber,
+  // threaded one level down), or null for the headerless leading
+  // group. Basis for every subsection_heading number computed below —
+  // "1.3" is section 1's third subsection, resetting per section.
+  sectionNumber?: number | null;
+}
+
+// DESIGN-BRIEF.md's L3 "Subsection" number ("1.3") is always derived
+// from position — this block's ordinal among its section's own
+// subsection_heading siblings — never parsed out of the heading's own
+// stored text (see src/lib/heading-number.ts for the companion
+// defensive strip). Sub-subsections have no number in the Heading
+// hierarchy, so nothing is computed for them here.
+function computeSubsectionNumbers(blocks: EditorialBlock[], sectionNumber: number | null | undefined) {
+  const numbers = new Map<string, string>();
+  if (sectionNumber == null) return numbers;
+  let count = 0;
+  for (const block of blocks) {
+    if (block.type === "subsection_heading") {
+      count++;
+      numbers.set(block.id, `${sectionNumber}.${count}`);
+    }
+  }
+  return numbers;
 }
 
 // Groups consecutive blocks that share a display_config.layout.row into
@@ -67,7 +91,15 @@ interface RenderGroupsArgs {
 // section_heading anyway (headings always start a fresh group, same as
 // they always start a fresh section), so grouping per-section slice
 // produces identical results to grouping the whole sequence at once.
-function renderGroups({ blocks, workspaceContext, diseaseId, diseaseSlug, contextHint, isSignedIn }: RenderGroupsArgs) {
+function renderGroups({
+  blocks,
+  workspaceContext,
+  diseaseId,
+  diseaseSlug,
+  contextHint,
+  isSignedIn,
+  sectionNumber,
+}: RenderGroupsArgs) {
   const groups: BlockGroup[] = [];
   for (const block of blocks) {
     const row = block.layout?.row ?? null;
@@ -79,6 +111,8 @@ function renderGroups({ blocks, workspaceContext, diseaseId, diseaseSlug, contex
     }
   }
 
+  const subsectionNumbers = computeSubsectionNumbers(blocks, sectionNumber);
+
   const renderMember = (block: EditorialBlock) => (
     <BlockControls key={block.id} diseaseId={diseaseId} block={block} contextHint={contextHint}>
       <BlockRenderer
@@ -87,6 +121,7 @@ function renderGroups({ blocks, workspaceContext, diseaseId, diseaseSlug, contex
         diseaseId={diseaseId}
         diseaseSlug={diseaseSlug}
         isSignedIn={isSignedIn}
+        headingNumber={subsectionNumbers.get(block.id) ?? null}
       />
     </BlockControls>
   );
@@ -273,6 +308,7 @@ export function BlockSequence({
               diseaseSlug,
               contextHint,
               isSignedIn,
+              sectionNumber: sectionNumbers[index],
             })}
           </SectionCard>
         );

@@ -9,13 +9,42 @@ import type { SectionIndex } from "@/lib/disease-loader";
 import { onSectionIndexChanged } from "@/lib/section-events";
 import { cardIcons } from "@/components/ui/cardIcons";
 import { topicIcons } from "@/components/ui/topicIcons";
-import {
-  CARD_COLOR_CHIP,
-  CARD_COLOR_TINT,
-  CARD_COLOR_TEXT,
-  DEFAULT_BRANCH_CYCLE,
-} from "@/lib/card-colors";
+import { CARD_COLOR_CHIP, DEFAULT_BRANCH_CYCLE } from "@/lib/card-colors";
 import type { CardColor } from "@/lib/editorial-blocks";
+
+// Admin-picked topic colors (`node.color`, from the same 20-color
+// picker cards/badges use) read as a loud, uncoordinated grab-bag once
+// several sit side by side in this one narrow rail — teal next to
+// orange next to amber next to green. Remapped here into five curated,
+// brand-consistent tones (teal/blue/indigo/slate/amber — the same
+// family the rest of the chrome already uses via accent/insight) so
+// the icon column reads as one considered palette instead of the full
+// 20-color picker. Local to this chrome's own icon-chip rendering only
+// — doesn't touch the shared cycle, DEFAULT_BRANCH_CYCLE, or that
+// topic's color anywhere else (cards/badges elsewhere keep the full
+// picker range on purpose).
+const CHROME_SAFE_COLOR: Partial<Record<CardColor, CardColor>> = {
+  // cool/teal family
+  trust: "accent",
+  teal: "accent",
+  cyan: "accent",
+  lime: "accent",
+  green: "accent",
+  // blue family
+  sky: "blue",
+  // indigo/violet family
+  violet: "indigo",
+  purple: "indigo",
+  fuchsia: "indigo",
+  // neutral family
+  neutral: "slate",
+  rose: "slate",
+  pink: "slate",
+  // warm/amber family
+  orange: "insight",
+  yellow: "insight",
+  red: "insight",
+};
 
 interface IndexSidebarProps {
   tree: TopicNode[];
@@ -210,7 +239,7 @@ function TopicTreeItem({
   // none of which applies to a label with no content of its own.
   if (node.kind === "separator") {
     return (
-      <div className={`px-2 ${isFirst ? "" : "mt-3 border-t border-border/60 pt-3"}`}>
+      <div className={`px-2 ${isFirst ? "" : "mt-2 border-t border-border/60 pt-2"}`}>
         <span className="font-ui text-[10px] font-semibold tracking-wide text-secondary/70 uppercase">
           {node.name}
         </span>
@@ -221,13 +250,18 @@ function TopicTreeItem({
   // This node's own color if the admin topic editor set one, else keep
   // carrying whatever the nearest colored ancestor passed down — a
   // whole branch reads as one color by default, but any node can break
-  // from that and start a new color for everything under it.
-  const color = node.color ?? inheritedColor;
+  // from that and start a new color for everything under it. Purely
+  // decorative identity (which icon, which chip tint) — never used for
+  // "this is where you are" (see isActiveParent below, always teal).
+  const color = CHROME_SAFE_COLOR[node.color ?? inheritedColor] ?? node.color ?? inheritedColor;
   const containsActive = activeDiseaseSlug ? nodeContainsSlug(node, activeDiseaseSlug) : false;
   // The immediate parent of the active disease — not every ancestor —
-  // gets the branch-color background wash, same "current section"
-  // emphasis the reference screenshot used (only the disease's direct
-  // parent topic was tinted; topics further up just went bold).
+  // gets the active tint, same "current section" emphasis the
+  // reference screenshot used (only the disease's direct parent topic
+  // was tinted; topics further up just went bold). Always a fixed
+  // teal, never the topic's own decorative branch color — active state
+  // is teal, full stop; branch coloring is chrome decoration and has
+  // no business marking "this is where you are."
   const isActiveParent = activeDiseaseSlug
     ? node.diseases.some((d) => d.slug === activeDiseaseSlug)
     : false;
@@ -244,9 +278,7 @@ function TopicTreeItem({
   // icon if set — today only top-level topics have one — else a
   // generic "book" chip in the branch color); depth 2+ (e.g.
   // Tendinopathies under Foot & Ankle) always falls through to the
-  // plain dot bullet below, same as the disease links — founder
-  // request, so icons mark "browsing categories," not every node that
-  // merely happens to have children.
+  // plain dot bullet below, same as the disease links.
   const Icon = depth < 2 ? (node.icon ? topicIcons[node.icon] : hasChildren ? cardIcons["book-open"] : null) : null;
 
   return (
@@ -255,11 +287,11 @@ function TopicTreeItem({
         type="button"
         onClick={() => hasChildren && setManualOpen((current) => !(current ?? containsActive))}
         disabled={!hasChildren}
-        className={`flex w-full items-center gap-1.5 rounded-md py-1 pr-2 text-left font-ui text-xs transition-colors duration-base ${
+        className={`flex w-full items-center gap-2 rounded-md py-1 pr-2 text-left font-ui text-[13px] leading-tight font-normal transition-colors duration-base ${
           isActiveParent
-            ? `${CARD_COLOR_TINT[color]} font-medium text-primary`
+            ? "bg-accent-bg text-accent"
             : containsActive
-              ? "font-medium text-secondary hover:bg-border/40"
+              ? "text-navy hover:bg-border/40"
               : "text-secondary hover:bg-border/40"
         }`}
         style={{ paddingLeft: `${6 + depth * 12}px` }}
@@ -306,8 +338,8 @@ function TopicTreeItem({
                 <Link
                   href={`/conditions/${disease.slug}`}
                   onClick={onNavigate}
-                  className={`flex items-center gap-1.5 py-1 pr-2 font-ui text-xs transition-colors duration-base hover:bg-border/40 ${
-                    active ? `${CARD_COLOR_TEXT[color]} font-medium` : "text-secondary hover:text-primary"
+                  className={`flex items-center gap-1.5 py-1 pr-2 font-ui text-[13px] leading-tight font-normal transition-colors duration-base hover:bg-border/40 ${
+                    active ? "text-accent" : "text-secondary hover:text-primary"
                   }`}
                   style={{ paddingLeft: `${6 + (depth + 1) * 12}px` }}
                 >
@@ -330,22 +362,46 @@ function TopicTreeItem({
                         notifySectionIndexChanged (fired by
                         reorderSectionAction), so a section drag-reorder
                         renumbers this for free. */}
-                    {diseaseSections.map((section, sectionIndexInList) => {
-                      const sectionActive = activeSectionId === section.id;
-                      return (
-                        <div key={section.id}>
-                          <Link
-                            href={`/conditions/${disease.slug}#${section.id}`}
-                            onClick={onNavigate}
-                            className={`flex items-center gap-1.5 py-1 pr-2 font-ui text-[11px] transition-colors duration-base hover:bg-border/40 ${
-                              sectionActive
-                                ? `font-bold ${CARD_COLOR_TEXT[color]}`
-                                : "text-secondary hover:text-primary"
-                            }`}
-                            style={{ paddingLeft: `${6 + (depth + 2) * 12}px` }}
-                          >
+                    {(() => {
+                      const activeSectionIndexInList = diseaseSections.findIndex(
+                        (s) => s.id === activeSectionId
+                      );
+                      return diseaseSections.map((section, sectionIndexInList) => {
+                        const sectionActive = activeSectionId === section.id;
+                        // "Line of progression" — each row's own left
+                        // border segment is teal up through the current
+                        // section, plain `--line` gray below it. Stacked
+                        // directly against each other (no gap between
+                        // rows), the segments read as one continuous
+                        // rail that fills further down as activeSectionId
+                        // advances with scroll.
+                        const reached =
+                          activeSectionIndexInList !== -1 && sectionIndexInList <= activeSectionIndexInList;
+                        return (
+                          <div key={section.id}>
+                            <Link
+                              href={`/conditions/${disease.slug}#${section.id}`}
+                              onClick={onNavigate}
+                              className={`flex items-center gap-1.5 border-l-2 py-[3px] pr-2 pl-3 font-ui text-[12.5px] leading-tight font-normal transition-colors duration-base hover:bg-border/40 ${
+                                reached ? "border-accent" : "border-border"
+                              } ${sectionActive ? "text-accent" : "text-secondary hover:text-primary"}`}
+                              // `margin-left` (not padding) so the
+                              // border itself — not just the text — sits
+                              // under the parent disease link's own
+                              // indent, rather than flush with the
+                              // sidebar's edge. `pl-3` above is the
+                              // text's own clearance from that line, on
+                              // top of this offset — same total text
+                              // position as before, just with the line
+                              // now aligned below the parent.
+                              style={{ marginLeft: `${6 + (depth + 1) * 12}px` }}
+                            >
+                            {/* Number is a separate value from the title
+                                string — `section.heading` is already
+                                stripped of any hand-typed leading number
+                                (getSectionIndex, disease-loader.ts). */}
                             <span className="min-w-0 flex-1 truncate">
-                              {sectionIndexInList + 1}. {section.heading}
+                              {sectionIndexInList + 1} · {section.heading}
                             </span>
                           </Link>
                           {/* Only the currently-active section's own
@@ -363,7 +419,7 @@ function TopicTreeItem({
                                   key={subsection.id}
                                   href={`/conditions/${disease.slug}#${subsection.id}`}
                                   onClick={onNavigate}
-                                  className="flex items-center gap-1.5 py-1 pr-2 font-ui text-[11px] text-secondary transition-colors duration-base hover:bg-border/40 hover:text-primary"
+                                  className="flex items-center gap-1.5 py-[3px] pr-2 font-ui text-[12px] leading-tight font-normal text-secondary transition-colors duration-base hover:bg-border/40 hover:text-primary"
                                   style={{ paddingLeft: `${6 + (depth + 3) * 12}px` }}
                                 >
                                   <span className="min-w-0 flex-1 truncate">{subsection.heading}</span>
@@ -372,8 +428,9 @@ function TopicTreeItem({
                             </div>
                           )}
                         </div>
-                      );
-                    })}
+                        );
+                      });
+                    })()}
                   </div>
                 )}
               </div>

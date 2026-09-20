@@ -99,6 +99,7 @@ export default async function DiseasePage({ params }: DiseasePageProps) {
       boardRelevance={disease.boardRelevance}
       updatedAt={disease.updatedAt.toISOString()}
       readingMinutes={readingMinutes}
+      sectionCount={sectionSummaries.length}
       isSignedIn={Boolean(session)}
       isFavorited={isFavorited}
       canEdit={canEdit}
@@ -157,7 +158,7 @@ export default async function DiseasePage({ params }: DiseasePageProps) {
   );
 
   return (
-    <main className="flex items-start px-3 py-6">
+    <main className="flex items-start px-[36px] py-[26px]">
       {session ? (
         // One AnnotationProvider wraps both the reading column (where
         // AnnotatableProse instances relocate/render markers) and the

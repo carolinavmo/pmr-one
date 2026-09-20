@@ -50,11 +50,11 @@ export function LanguageSwitcher() {
         onClick={() => setOpen((value) => !value)}
         aria-expanded={open}
         aria-label={t("languageSwitcher")}
-        className="flex min-h-11 items-center gap-1 rounded-full px-2 font-ui text-sm font-medium text-primary transition-colors duration-base hover:bg-border/40"
+        className="flex min-h-11 items-center gap-1 rounded-full px-2 font-ui text-[13.5px] font-bold text-[#A9BBD3] transition-colors duration-base hover:bg-white/10 hover:text-white"
       >
-        <Globe className="size-4 text-secondary" aria-hidden="true" />
+        <Globe className="size-4" aria-hidden="true" />
         {LOCALE_META[locale].shortLabel}
-        <ChevronDown className="size-3.5 text-secondary" aria-hidden="true" />
+        <ChevronDown className="size-3.5" aria-hidden="true" />
       </button>
       {open && (
         <div className="absolute top-full right-0 z-20 mt-1 min-w-48 rounded-lg border border-border bg-surface-raised p-1 shadow-lg">

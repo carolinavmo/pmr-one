@@ -3,6 +3,7 @@
 import { useState, type ReactNode } from "react";
 import { ChevronDown } from "lucide-react";
 import { useEditMode, EditModeProvider, SectionEditToggle } from "@/components/disease-page/EditMode";
+import { SectionHeading } from "@/components/ui/headings";
 
 interface SectionCardProps {
   heading: ReactNode;
@@ -71,22 +72,30 @@ function SectionCardBody({
   // signed-in member ever sees the control that can change it.
   const [collapsed, setCollapsed] = useState(false);
 
-  // Non-editable UI chrome, not part of the heading's own text — sits
-  // beside it (never inside the EditableText h2) so it's never at risk
-  // of getting swept into a save, and never needs the section renumbered
-  // by hand after a reorder. Sized to match the heading's own font size
-  // in each branch below (28px/36px full-size while editing per
-  // SectionHeadingBlockView's own className; 21px/28px inside the
-  // display card's colored title bar, matching that bar's own [&>h2]
-  // override).
-  function numberLabel(sizeClass: string, extraClass = "", colorClass = "text-primary") {
-    if (sectionNumber == null) return null;
-    return (
-      <span className={`shrink-0 font-section-heading font-normal ${colorClass} ${sizeClass} ${extraClass}`} aria-hidden="true">
-        {sectionNumber}.
-      </span>
-    );
-  }
+  // The collapse chevron only ever shows read-only (signed-in visitors
+  // browsing, not the editor mid-edit) — SectionEditToggle is the only
+  // trailing action while editing.
+  const trailingActions = editing ? (
+    canEdit && <SectionEditToggle />
+  ) : (
+    <>
+      {canEdit && <SectionEditToggle />}
+      {isSignedIn && (
+        <button
+          type="button"
+          onClick={() => setCollapsed((current) => !current)}
+          aria-expanded={!collapsed}
+          aria-label={collapsed ? "Expand section" : "Collapse section"}
+          className="flex size-7 shrink-0 items-center justify-center rounded-full text-white/80 transition-colors duration-base hover:bg-white/15 hover:text-white"
+        >
+          <ChevronDown
+            className={`size-4 transition-transform duration-base ${collapsed ? "-rotate-90" : ""}`}
+            aria-hidden="true"
+          />
+        </button>
+      )}
+    </>
+  );
 
   // One stable tree regardless of `editing` — toggling used to swap
   // between two entirely different subtrees (a bare flex column vs. a
@@ -94,62 +103,17 @@ function SectionCardBody({
   // in the section) sat at a different depth/parent-type on each
   // render and got fully unmounted and remounted on every toggle —
   // the real cause of "clicking Edit jumps the page," one level above
-  // the identical problem already fixed in BlockControls.tsx. Only the
-  // *styling* differs by branch below; element types and nesting are
-  // identical either way, so children — and the heading block's own
-  // internals, and SectionEditToggle — survive the toggle intact.
-  //
-  // heading is now always wrapped in the same min-w-0 flex-1 div in
-  // both branches (previously only the editing branch did this), so
-  // both branches use the [&_h2] descendant selector to reach the h2
-  // inside it — a [&>h2] direct-child selector, which the read-only
-  // branch used to rely on, would stop matching now that heading is
-  // one level deeper here too.
-  //
-  // items-start (not items-baseline) while editing: `heading` here is
-  // BlockControls' full editing chrome (a hover "+" insert row sits
-  // above every block, headings included), not a bare h2 — flex
-  // baseline alignment against that multi-row content lands on its
-  // bottom edge, not the heading text. mt-4 on the number and
-  // [&_h2]:!mt-0 on the heading both cancel out to the same offset
-  // instead, so both start at the same y.
+  // the identical problem already fixed in BlockControls.tsx. SectionHeading
+  // (headings.tsx) now owns that same discipline internally — it renders
+  // `heading` at the same tree position regardless of its own `editing`
+  // prop, only varying classNames and the (stateless) number badge — so
+  // rendering through it unconditionally here, rather than branching
+  // between two hand-rolled subtrees, keeps that guarantee.
   return (
     <div className={editing ? "flex flex-col gap-2" : "mt-6 rounded-xl bg-surface-card first:mt-0"}>
-      <div
-        className={
-          editing
-            ? "flex items-start justify-between gap-2"
-            : "flex items-center gap-3 rounded-[4px] bg-[#0f172a] px-4 py-3.5"
-        }
-      >
-        <div
-          className={
-            editing
-              ? "flex min-w-0 flex-1 items-start gap-2 [&_h2]:!mt-0"
-              : "flex min-w-0 flex-1 items-baseline gap-2 [&_h2]:!mt-0 [&_h2]:!text-[30px] [&_h2]:!leading-[38px] [&_h2]:!text-white"
-          }
-        >
-          {editing
-            ? numberLabel("text-[38px] leading-[46px] tracking-[-0.2px]", "mt-4")
-            : numberLabel("text-[30px] leading-[38px]", "", "text-white")}
-          <div className="min-w-0 flex-1">{heading}</div>
-        </div>
-        {canEdit && <SectionEditToggle />}
-        {!editing && isSignedIn && (
-          <button
-            type="button"
-            onClick={() => setCollapsed((current) => !current)}
-            aria-expanded={!collapsed}
-            aria-label={collapsed ? "Expand section" : "Collapse section"}
-            className="flex size-7 shrink-0 items-center justify-center rounded-full text-white/80 transition-colors duration-base hover:bg-white/15 hover:text-white"
-          >
-            <ChevronDown
-              className={`size-4 transition-transform duration-base ${collapsed ? "-rotate-90" : ""}`}
-              aria-hidden="true"
-            />
-          </button>
-        )}
-      </div>
+      <SectionHeading number={sectionNumber} editing={editing} actions={trailingActions}>
+        {heading}
+      </SectionHeading>
       <div
         className={
           editing

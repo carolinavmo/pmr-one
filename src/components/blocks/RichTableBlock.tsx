@@ -139,14 +139,14 @@ export function RichTableBlockView({
         <div className="rounded-lg border border-border">
           <table className="w-full border-collapse font-reading text-xs">
             <thead>
-              <tr className="border-b border-border bg-[#128A99]/10">
+              <tr className="border-b border-border bg-accent-bg">
                 {showBadgeColumn && (
-                  <th className="w-12 px-2 py-1.5 text-center font-medium text-black">
+                  <th className="w-12 px-2 py-1.5 text-center font-medium text-primary">
                     {badgeColumnTitle}
                   </th>
                 )}
                 {columns.map((column, i) => (
-                  <th key={i} className="px-3 py-1.5 text-left font-medium text-black">
+                  <th key={i} className="px-3 py-1.5 text-left font-medium text-primary">
                     {column.title}
                   </th>
                 ))}
@@ -160,13 +160,13 @@ export function RichTableBlockView({
                   <tr key={rowIndex} className="border-b border-border last:border-0">
                     {showBadgeColumn && (
                       <td className="px-2 py-2 text-center align-middle">
-                        <span className="mx-auto flex size-6 items-center justify-center rounded-full border-2 border-[#128A99] font-ui text-xs font-semibold text-[#128A99]">
+                        <span className="mx-auto flex size-6 items-center justify-center rounded-full border-2 border-accent font-ui text-xs font-semibold text-accent">
                           {BadgeIcon ? <BadgeIcon className="size-3.5" aria-hidden="true" /> : rowIndex + 1}
                         </span>
                       </td>
                     )}
                     {columns.map((column, colIndex) => (
-                      <td key={colIndex} className="px-3 py-2 align-middle text-black">
+                      <td key={colIndex} className="px-3 py-2 align-middle text-primary">
                         <RichTableCellView type={column.type} value={row.cells[colIndex]} />
                       </td>
                     ))}
@@ -533,7 +533,7 @@ function RichTableCellView({
     const scale = asScale(value);
     return (
       <div className="flex items-center gap-2">
-        {scale.label && <span className="font-medium text-black">{scale.label}</span>}
+        {scale.label && <span className="font-medium text-primary">{scale.label}</span>}
         <span className="flex items-center gap-1">
           {Array.from({ length: SCALE_MAX }).map((_, i) => (
             <span

@@ -20,17 +20,26 @@ export async function Breadcrumbs({ path }: BreadcrumbsProps) {
   const t = await getTranslations("nav");
   const tDisease = await getTranslations("disease");
 
+  const lastIndex = path.length - 1;
+
   return (
-    <nav aria-label={tDisease("breadcrumbLabel")} className="flex flex-wrap items-center gap-1.5 font-ui text-sm">
-      <Link href="/" className="text-secondary transition-colors duration-base hover:text-accent">
+    <nav
+      aria-label={tDisease("breadcrumbLabel")}
+      className="flex flex-wrap items-center gap-1.5 font-ui text-[13px] font-semibold"
+    >
+      <Link href="/" className="text-[#9AA5B4] transition-colors duration-base hover:text-accent">
         {t("explore")}
       </Link>
-      {path.map((topic) => (
+      {path.map((topic, index) => (
         <span key={topic.slug} className="flex items-center gap-1.5">
-          <ChevronRight className="size-3.5 shrink-0 text-secondary/60" aria-hidden="true" />
+          <ChevronRight className="size-3.5 shrink-0 text-[#9AA5B4]/70" aria-hidden="true" />
           <Link
             href={`/conditions?topic=${topic.slug}`}
-            className="text-secondary transition-colors duration-base hover:text-accent"
+            className={
+              index === lastIndex
+                ? "font-bold text-accent transition-colors duration-base hover:text-accent-hover"
+                : "text-[#9AA5B4] transition-colors duration-base hover:text-accent"
+            }
           >
             {topic.name}
           </Link>

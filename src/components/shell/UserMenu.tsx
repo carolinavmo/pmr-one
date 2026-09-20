@@ -60,9 +60,9 @@ export function UserMenu({ name, email, image, canReview, isAdmin }: UserMenuPro
         onClick={() => setOpen((value) => !value)}
         aria-expanded={open}
         aria-label={t("accountMenu")}
-        className="flex min-h-11 items-center gap-1.5 rounded-full py-1 pl-1 pr-2 transition-colors duration-base hover:bg-border/40"
+        className="flex min-h-11 items-center gap-1.5 rounded-full py-1 pl-1 pr-2 transition-colors duration-base hover:bg-white/10"
       >
-        <span className="flex size-9 shrink-0 items-center justify-center overflow-hidden rounded-full bg-accent font-ui text-sm font-semibold text-white ring-2 ring-surface">
+        <span className="flex size-[34px] shrink-0 items-center justify-center overflow-hidden rounded-full bg-teal-on-dark font-ui text-[13px] font-black text-white">
           {image ? (
             // eslint-disable-next-line @next/next/no-img-element -- user-owned upload (public/uploads/avatars), same as SimpleImageBlock/OverviewBlock; no fixed remote-pattern domain to configure.
             <img src={image} alt="" className="size-full object-cover" />
@@ -70,7 +70,7 @@ export function UserMenu({ name, email, image, canReview, isAdmin }: UserMenuPro
             initialsFor(name, email)
           )}
         </span>
-        <ChevronDown className="size-4 text-secondary" aria-hidden="true" />
+        <ChevronDown className="size-4 text-[#A9BBD3]" aria-hidden="true" />
       </button>
       {open && (
         <div className="absolute top-full right-0 z-20 mt-1 min-w-52 rounded-lg border border-border bg-surface-raised p-1 shadow-lg">

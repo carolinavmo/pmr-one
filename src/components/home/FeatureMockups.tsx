@@ -238,14 +238,14 @@ export function QuestionBankMockup({
           decorative — no separate content, just depth (same technique as
           FlashcardsMockup's card stack). */}
       <div
-        className="absolute inset-x-8 top-5 h-full -rotate-2 rounded-2xl border border-[#E4E4EE] bg-[#F6F6FA]"
+        className="absolute inset-x-8 top-5 h-full -rotate-2 rounded-2xl border border-border bg-surface-sunken"
         aria-hidden="true"
       />
       <div
-        className="absolute inset-x-4 top-2.5 h-full rotate-1 rounded-2xl border border-[#E4E4EE] bg-[#F9F9FC]"
+        className="absolute inset-x-4 top-2.5 h-full rotate-1 rounded-2xl border border-border bg-surface-sunken"
         aria-hidden="true"
       />
-      <div className="relative flex flex-col gap-3 rounded-2xl border border-[#E4E4EE] bg-[#FCFCFE] p-5 shadow-md">
+      <div className="relative flex flex-col gap-3 rounded-2xl border border-border bg-surface-raised p-5 shadow-md">
         <p className="font-ui text-sm font-medium text-primary">{prompt}</p>
         <div className="flex flex-col gap-2">
           {options.map((option, i) => (

@@ -1,9 +1,10 @@
 "use client";
 
-import { createContext, useContext, useRef, useState, type ReactNode } from "react";
+import { createContext, useContext, useEffect, useRef, useState, type ReactNode } from "react";
 import { flushSync } from "react-dom";
 import { Pencil } from "lucide-react";
 import { Button } from "@/components/ui/Button";
+import { reportSectionEditing } from "@/lib/any-section-editing";
 
 interface EditModeValue {
   editing: boolean;
@@ -81,6 +82,17 @@ function useScrollPreservingToggle(editing: boolean, setEditing: (value: boolean
 // reading the real page.
 export function EditModeProvider({ children }: { children: ReactNode }) {
   const [editing, setEditing] = useState(false);
+
+  // Reports to the page-wide "is anything being edited" signal (only
+  // while `editing` is actually true — see reportSectionEditing's own
+  // comment) — OnThisPage's drag handles read this to stay hidden from
+  // a reader who hasn't opened any section for editing.
+  useEffect(() => {
+    if (!editing) return;
+    reportSectionEditing(true);
+    return () => reportSectionEditing(false);
+  }, [editing]);
+
   return (
     <EditModeContext.Provider value={{ editing, setEditing, canEdit: true }}>
       {children}

@@ -1,13 +1,10 @@
 import Image from "next/image";
 import { Bone, PersonStanding, Waves, Share2, Brain, ClipboardCheck, Trophy, ArrowRight } from "lucide-react";
 
-// A deliberate visual "island" — the user asked to match a reference
-// screenshot's exact light/teal look, distinct from the rest of this
-// app's dark-safe design system. Every class here is a literal Tailwind
-// palette color (bg-white, text-slate-900, etc.), never this app's own
-// semantic tokens (bg-surface, text-primary) — that's what keeps it
-// rendering identically regardless of the site's own dark-mode toggle,
-// which is the point.
+// Previously a deliberate visual "island" on literal Tailwind palette
+// colors, kept fixed-light regardless of the site's own dark-mode
+// toggle; now on this app's own tokens per the DESIGN-BRIEF.md
+// restyle, so it adapts like every other section.
 //
 // This is a teaser only: Anatomy/Biomechanics/Physical Agents aren't
 // real content yet (no topic branch, no seeded pages anywhere in this
@@ -23,10 +20,10 @@ const TOPICS = [
 ] as const;
 
 const STEPS = [
-  { key: "step1", icon: Share2, iconBg: "bg-indigo-50", iconColor: "text-indigo-600" },
-  { key: "step2", icon: Brain, iconBg: "bg-emerald-50", iconColor: "text-emerald-600" },
-  { key: "step3", icon: ClipboardCheck, iconBg: "bg-violet-50", iconColor: "text-violet-600" },
-  { key: "step4", icon: Trophy, iconBg: "bg-amber-50", iconColor: "text-amber-600" },
+  { key: "step1", icon: Share2, iconBg: "bg-card-indigo/15", iconColor: "text-card-indigo" },
+  { key: "step2", icon: Brain, iconBg: "bg-trust-bg", iconColor: "text-trust" },
+  { key: "step3", icon: ClipboardCheck, iconBg: "bg-concept-bg", iconColor: "text-concept" },
+  { key: "step4", icon: Trophy, iconBg: "bg-insight-bg", iconColor: "text-insight" },
 ] as const;
 
 export function BasicSciencesSection({
@@ -51,24 +48,24 @@ export function BasicSciencesSection({
   steps: Record<string, { title: string; body: string }>;
 }) {
   return (
-    <section className="w-full bg-gradient-to-b from-slate-50 to-white">
+    <section className="w-full bg-gradient-to-b from-surface-sunken to-surface">
       <div className="mx-auto w-full max-w-6xl px-6 py-16 lg:py-20">
         <div className="grid grid-cols-1 gap-12 lg:grid-cols-2 lg:items-center">
           {/* Text column */}
           <div className="flex flex-col gap-5">
-            <span className="flex w-fit items-center gap-2.5 rounded-full bg-[#1ba7b7]/15 px-6 py-2">
-              <Bone className="size-5 shrink-0 text-[#1ba7b7]" aria-hidden="true" />
-              <span className="font-sans text-lg font-semibold tracking-wide text-[#1ba7b7] uppercase">{eyebrow}</span>
+            <span className="flex w-fit items-center gap-2.5 rounded-full bg-accent-bg px-6 py-2">
+              <Bone className="size-5 shrink-0 text-accent" aria-hidden="true" />
+              <span className="font-sans text-lg font-semibold tracking-wide text-accent uppercase">{eyebrow}</span>
             </span>
 
-            <h2 className="font-sans text-3xl leading-tight font-bold text-slate-900 sm:text-4xl">
+            <h2 className="font-sans text-3xl leading-tight font-bold text-primary sm:text-4xl">
               {headingLine1}
               <br />
-              <span className="text-[#1ba7b7]">{headingLine2.split(" ")[0]}</span>{" "}
+              <span className="text-accent">{headingLine2.split(" ")[0]}</span>{" "}
               {headingLine2.split(" ").slice(1).join(" ")}
             </h2>
 
-            <p className="max-w-lg font-sans text-base leading-relaxed text-slate-600">{body}</p>
+            <p className="max-w-lg font-sans text-base leading-relaxed text-secondary">{body}</p>
           </div>
 
           {/* Illustration column: anatomy illustration bleeding into a gradient
@@ -99,11 +96,11 @@ export function BasicSciencesSection({
             <div className="flex flex-1 flex-col gap-4">
               {TOPICS.map(({ key, icon: Icon }) => (
                 <div key={key} className="flex items-center gap-3">
-                  <div className="flex flex-1 items-center gap-3 rounded-xl border border-[#1ba7b7]/40 bg-white p-4">
-                    <span className="flex size-12 shrink-0 items-center justify-center rounded-full bg-teal-50">
-                      <Icon className="size-6 text-[#1ba7b7]" aria-hidden="true" />
+                  <div className="flex flex-1 items-center gap-3 rounded-xl border border-accent/40 bg-surface p-4">
+                    <span className="flex size-12 shrink-0 items-center justify-center rounded-full bg-accent-bg">
+                      <Icon className="size-6 text-accent" aria-hidden="true" />
                     </span>
-                    <span className="font-heading text-base font-normal text-slate-900 uppercase">{topics[key].title}</span>
+                    <span className="font-heading text-base font-normal text-primary uppercase">{topics[key].title}</span>
                   </div>
                 </div>
               ))}
@@ -115,14 +112,14 @@ export function BasicSciencesSection({
             single row to the right, connected by straight arrows. Matches
             the reference layout (not stacked/numbered like a first pass
             at this had it). */}
-        <div className="mt-14 rounded-2xl border border-slate-100 bg-white p-8 shadow-[0_0_10px_rgba(0,0,0,0.08)]">
+        <div className="mt-14 rounded-2xl border border-border bg-surface p-8 shadow-md">
           <div className="flex flex-col gap-8 lg:flex-row lg:items-center lg:gap-10">
             <div className="flex flex-col gap-1.5 lg:w-64 lg:shrink-0">
-              <h3 className="font-sans text-xl leading-tight font-bold text-[#121729]">
+              <h3 className="font-sans text-xl leading-tight font-bold text-primary">
                 <span className="block whitespace-nowrap">{flowHeadingLine1}</span>
                 <span className="block whitespace-nowrap">{flowHeadingLine2}</span>
               </h3>
-              <p className="font-sans text-sm text-slate-500">{flowBody}</p>
+              <p className="font-sans text-sm text-secondary">{flowBody}</p>
             </div>
 
             <div className="relative flex flex-1 items-start">
@@ -133,12 +130,12 @@ export function BasicSciencesSection({
                       <Icon className={`size-5 ${iconColor}`} aria-hidden="true" />
                     </span>
                     <div className="flex flex-col gap-0.5">
-                      <span className="font-sans text-sm font-semibold text-[#121729]">{steps[key].title}</span>
-                      <span className="font-sans text-xs text-slate-500">{steps[key].body}</span>
+                      <span className="font-sans text-sm font-semibold text-primary">{steps[key].title}</span>
+                      <span className="font-sans text-xs text-secondary">{steps[key].body}</span>
                     </div>
                   </div>
                   {i < STEPS.length - 1 && (
-                    <ArrowRight className="mt-4 hidden size-6 shrink-0 text-slate-300 lg:block" aria-hidden="true" />
+                    <ArrowRight className="mt-4 hidden size-6 shrink-0 text-border lg:block" aria-hidden="true" />
                   )}
                 </div>
               ))}

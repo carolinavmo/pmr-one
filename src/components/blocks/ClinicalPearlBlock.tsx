@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Quote, Bookmark, Palette } from "lucide-react";
+import { Bookmark, Palette } from "lucide-react";
 import type { ClinicalPearlBlock } from "@/lib/editorial-blocks";
 import { toggleSavedPearlAction } from "@/lib/actions/workspace";
 import { updatePearlBodyAction, setBlockCardColorAction } from "@/lib/actions/authoring";
@@ -10,14 +10,15 @@ import { ColorSwatchPicker } from "@/components/ui/ColorSwatchPicker";
 import { useEditMode } from "@/components/disease-page/EditMode";
 import { CARD_COLOR_CARD } from "@/lib/card-colors";
 import { TEXT_ALIGN_CLASS, COLUMN_JUSTIFY_CLASS } from "@/lib/block-alignment";
+import { PearlCallout } from "@/components/ui/callouts";
 
-// Quote-card treatment: a large quote-mark icon top-left, the pearl
-// itself set as italicized quoted text, attribution and the bookmark
-// sharing a footer row (attribution left, bookmark right) rather than
-// the icon/bookmark flanking the text in one row. Keeps the same
-// insight-amber language used on the Pearl Card (Tier 2) — evidence
-// level is deliberately lower tier than verified content, signaled by
-// color, never hidden — just rearranged into this layout.
+// DESIGN-BRIEF.md's Pearl callout (amber, 2px border, "★ CLINICAL
+// PEARL") is now the default — REDESIGN-NOTES.md: "Amber = pearl
+// across the whole system. Purple is reserved for mechanism/
+// rationale." #133's author-overridable color is still honored when a
+// block has an explicit `color`, falling back to the existing
+// CARD_COLOR_CARD palette exactly as before, same escape hatch every
+// other card-color block keeps.
 //
 // `workspaceContext` is only present when a session exists (threaded
 // from the page through BlockSequence/BlockRenderer) — signed-out
@@ -36,10 +37,6 @@ export function ClinicalPearlBlockView({
   const [colorPickerOpen, setColorPickerOpen] = useState(false);
   const textAlign = block.layout?.textAlign ?? "left";
   const textVerticalAlign = block.layout?.textVerticalAlign ?? "top";
-  // Insight-amber by default (the Pearl Card's own reused language),
-  // author-overridable per #133 — a card with no explicit `color`
-  // renders exactly as it always did.
-  const cardClass = block.color ? CARD_COLOR_CARD[block.color] : "border-insight/30 bg-insight/5";
 
   const bookmarkButton = workspaceContext && (
     <form action={toggleSavedPearlAction}>
@@ -59,52 +56,77 @@ export function ClinicalPearlBlockView({
     </form>
   );
 
+  const colorButton = editing && (
+    <div className="absolute top-2 right-2">
+      <button
+        type="button"
+        aria-label="Card color"
+        onClick={() => setColorPickerOpen((open) => !open)}
+        className="flex size-7 items-center justify-center rounded-full bg-surface-raised text-secondary shadow-sm hover:text-primary"
+      >
+        <Palette className="size-3.5" aria-hidden="true" />
+      </button>
+      {colorPickerOpen && (
+        <ColorSwatchPicker
+          onPick={(next) => {
+            setColorPickerOpen(false);
+            setBlockCardColorAction(block.id, next);
+          }}
+        />
+      )}
+    </div>
+  );
+
+  const usageNotice = editing && block.pearl.attachmentCount > 1 && (
+    <span className="font-ui text-xs font-medium text-warning">
+      Used on {block.pearl.attachmentCount - 1} other{" "}
+      {block.pearl.attachmentCount - 1 === 1 ? "page" : "pages"} — editing
+      changes it everywhere.
+    </span>
+  );
+
+  const body = (
+    <RichEditableText
+      as="p"
+      className={`font-reading text-base leading-5 text-primary italic ${TEXT_ALIGN_CLASS[textAlign]}`}
+      value={block.pearl.body}
+      onSave={(value) => updatePearlBodyAction(block.pearl.id, value)}
+      block={block}
+      diseaseSlug={diseaseSlug}
+    />
+  );
+
+  const footer = (block.pearl.attribution || bookmarkButton) && (
+    <div className="flex items-center justify-between gap-2">
+      <span className="font-ui text-sm text-secondary">{block.pearl.attribution}</span>
+      {bookmarkButton}
+    </div>
+  );
+
+  if (block.color) {
+    const cardClass = CARD_COLOR_CARD[block.color];
+    return (
+      <div
+        className={`relative flex flex-col gap-3 rounded-lg border p-4 ${cardClass} ${COLUMN_JUSTIFY_CLASS[textVerticalAlign]}`}
+      >
+        {colorButton}
+        {usageNotice}
+        {body}
+        {footer}
+      </div>
+    );
+  }
+
   return (
-    <div
-      className={`relative flex flex-col gap-3 rounded-lg border p-4 ${cardClass} ${COLUMN_JUSTIFY_CLASS[textVerticalAlign]}`}
-    >
-      {editing && (
-        <div className="absolute top-2 right-2">
-          <button
-            type="button"
-            aria-label="Card color"
-            onClick={() => setColorPickerOpen((open) => !open)}
-            className="flex size-7 items-center justify-center rounded-full bg-surface-raised text-secondary shadow-sm hover:text-primary"
-          >
-            <Palette className="size-3.5" aria-hidden="true" />
-          </button>
-          {colorPickerOpen && (
-            <ColorSwatchPicker
-              onPick={(next) => {
-                setColorPickerOpen(false);
-                setBlockCardColorAction(block.id, next);
-              }}
-            />
-          )}
+    <div className="relative">
+      {colorButton}
+      <PearlCallout>
+        <div className={`flex flex-col gap-3 ${COLUMN_JUSTIFY_CLASS[textVerticalAlign]}`}>
+          {usageNotice}
+          {body}
+          {footer}
         </div>
-      )}
-      {editing && block.pearl.attachmentCount > 1 && (
-        <span className="font-ui text-xs font-medium text-warning">
-          Used on {block.pearl.attachmentCount - 1} other{" "}
-          {block.pearl.attachmentCount - 1 === 1 ? "page" : "pages"} — editing
-          changes it everywhere.
-        </span>
-      )}
-      <Quote className="size-6 shrink-0 text-insight/70" aria-hidden="true" />
-      <RichEditableText
-        as="p"
-        className={`font-reading text-base leading-5 text-primary italic ${TEXT_ALIGN_CLASS[textAlign]}`}
-        value={block.pearl.body}
-        onSave={(value) => updatePearlBodyAction(block.pearl.id, value)}
-        block={block}
-        diseaseSlug={diseaseSlug}
-      />
-      {(block.pearl.attribution || bookmarkButton) && (
-        <div className="flex items-center justify-between gap-2">
-          <span className="font-ui text-sm text-secondary">{block.pearl.attribution}</span>
-          {bookmarkButton}
-        </div>
-      )}
+      </PearlCallout>
     </div>
   );
 }

@@ -174,7 +174,7 @@ export default async function Home({ searchParams }: HomeProps) {
           eyebrowIcon={objectIcons.disease}
           eyebrowLabel={t("featureConditionsEyebrow")}
           heading={t("featureConditionsHeading")}
-          headingHighlight="#5CA4B5"
+          headingHighlight="var(--color-accent)"
           headingClassName="font-sans text-3xl leading-tight font-bold text-primary sm:text-4xl"
           body={t("featureConditionsBody")}
           bullets={[t("featureConditionsBullet1"), t("featureConditionsBullet2"), t("featureConditionsBullet3")]}

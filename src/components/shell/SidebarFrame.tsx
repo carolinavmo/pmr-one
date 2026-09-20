@@ -3,18 +3,7 @@
 import { useEffect, useState, useSyncExternalStore } from "react";
 import { useTranslations } from "next-intl";
 import { Link, usePathname } from "@/i18n/navigation";
-import {
-  Sparkles,
-  Calculator,
-  Calendar,
-  ChevronRight,
-  GraduationCap,
-  Layers,
-  ListChecks,
-  NotebookPen,
-  PanelLeftClose,
-  PanelLeftOpen,
-} from "lucide-react";
+import { ChevronRight, Sparkles, PanelLeftClose, PanelLeftOpen } from "lucide-react";
 import type { TopicNode } from "@/lib/topics";
 import { IndexSidebar } from "./IndexSidebar";
 
@@ -109,72 +98,23 @@ export function SidebarFrame({ tree, userName, userEmail, userRole }: SidebarFra
   return (
     <aside
       style={{ top: topOffset, height: `calc(100vh - ${topOffset}px)` }}
-      className="sticky hidden w-80 shrink-0 flex-col border-r border-border bg-surface-raised lg:flex"
+      className="sticky hidden w-[228px] shrink-0 flex-col border-r border-border bg-surface-raised lg:flex"
     >
-      <div className="relative flex flex-col gap-0.5 border-b border-border px-3 pt-3 pb-2">
+      {/* NAVBAR-SPEC.md — the six tool links that used to open this
+          header region moved to the navbar's own Row 2
+          (NavbarFrame.tsx), same routes/behavior, different chrome.
+          This rail now owns only the Explore tree and its collapse
+          toggle. */}
+      <div className="flex justify-end border-b border-border p-2">
         <button
           type="button"
           onClick={() => setCollapsed(true)}
           aria-label={t("collapseSidebar")}
           title={t("collapseSidebar")}
-          className="absolute top-2 right-2 flex size-6 shrink-0 items-center justify-center rounded text-secondary hover:bg-border/40 hover:text-primary"
+          className="flex size-6 shrink-0 items-center justify-center rounded text-secondary hover:bg-border/40 hover:text-primary"
         >
           <PanelLeftClose className="size-3.5" aria-hidden="true" />
         </button>
-        <Link
-          href="/clinical-tools"
-          className="flex items-center gap-2 rounded-lg px-2 py-1.5 transition-colors duration-base hover:bg-border/40"
-        >
-          <span className="flex size-7 shrink-0 items-center justify-center rounded-full bg-accent/10 text-accent">
-            <Calculator className="size-3.5" aria-hidden="true" />
-          </span>
-          <span className="font-ui text-xs font-medium text-primary">{t("clinicalTools")}</span>
-        </Link>
-        <Link
-          href="/study-planner"
-          className="flex items-center gap-2 rounded-lg px-2 py-1.5 transition-colors duration-base hover:bg-border/40"
-        >
-          <span className="flex size-7 shrink-0 items-center justify-center rounded-full bg-accent/10 text-accent">
-            <Calendar className="size-3.5" aria-hidden="true" />
-          </span>
-          <span className="font-ui text-xs font-medium text-primary">{t("studyPlanner")}</span>
-        </Link>
-        <Link
-          href="/my-atlas"
-          className="flex items-center gap-2 rounded-lg px-2 py-1.5 transition-colors duration-base hover:bg-border/40"
-        >
-          <span className="flex size-7 shrink-0 items-center justify-center rounded-full bg-accent/10 text-accent">
-            <NotebookPen className="size-3.5" aria-hidden="true" />
-          </span>
-          <span className="font-ui text-xs font-medium text-primary">{t("myAtlas")}</span>
-        </Link>
-        <Link
-          href="/flashcards"
-          className="flex items-center gap-2 rounded-lg px-2 py-1.5 transition-colors duration-base hover:bg-border/40"
-        >
-          <span className="flex size-7 shrink-0 items-center justify-center rounded-full bg-accent/10 text-accent">
-            <Layers className="size-3.5" aria-hidden="true" />
-          </span>
-          <span className="font-ui text-xs font-medium text-primary">{t("flashcards")}</span>
-        </Link>
-        <Link
-          href="/question-bank"
-          className="flex items-center gap-2 rounded-lg px-2 py-1.5 transition-colors duration-base hover:bg-border/40"
-        >
-          <span className="flex size-7 shrink-0 items-center justify-center rounded-full bg-accent/10 text-accent">
-            <ListChecks className="size-3.5" aria-hidden="true" />
-          </span>
-          <span className="font-ui text-xs font-medium text-primary">{t("questionBank")}</span>
-        </Link>
-        <Link
-          href="/courses"
-          className="flex items-center gap-2 rounded-lg px-2 py-1.5 transition-colors duration-base hover:bg-border/40"
-        >
-          <span className="flex size-7 shrink-0 items-center justify-center rounded-full bg-accent/10 text-accent">
-            <GraduationCap className="size-3.5" aria-hidden="true" />
-          </span>
-          <span className="font-ui text-xs font-medium text-primary">{t("courses")}</span>
-        </Link>
       </div>
 
       <div className="flex min-h-0 flex-1 flex-col overflow-y-auto px-3 py-3">

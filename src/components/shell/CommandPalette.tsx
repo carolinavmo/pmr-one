@@ -87,8 +87,8 @@ export function CommandPalette({ signedOut }: { signedOut: boolean }) {
 
   return (
     <div ref={containerRef} className="relative w-full">
-      <span className="flex min-h-10 items-center gap-2 rounded-full border border-accent/30 bg-surface pl-4 transition-colors duration-base focus-within:border-accent">
-        <Search className="size-4 shrink-0 text-accent" aria-hidden="true" />
+      <span className="flex h-[42px] items-center gap-[10px] rounded-[22px] border border-white/20 bg-white/10 pl-[17px] transition-colors duration-base focus-within:border-white/40">
+        <Search className="size-4 shrink-0 text-[#A9BBD3]" aria-hidden="true" />
         <input
           ref={inputRef}
           type="search"
@@ -104,7 +104,7 @@ export function CommandPalette({ signedOut }: { signedOut: boolean }) {
           }}
           placeholder={t("searchPlaceholder")}
           aria-label={t("searchLabel")}
-          className="min-w-0 flex-1 bg-transparent font-ui text-sm text-accent placeholder:text-accent/70 focus:outline-none"
+          className="min-w-0 flex-1 bg-transparent font-ui text-[14.5px] text-white placeholder:text-[#A9BBD3] focus:outline-none"
         />
         <button
           type="button"
@@ -113,7 +113,7 @@ export function CommandPalette({ signedOut }: { signedOut: boolean }) {
             if (query) setOpen(true);
             ensureItemsLoaded();
           }}
-          className="hidden shrink-0 -my-px -mr-px items-center self-stretch rounded-full bg-accent-hover px-5 font-ui text-sm font-medium text-white transition-colors duration-base hover:bg-accent sm:flex"
+          className="hidden shrink-0 items-center self-center rounded-[18px] bg-teal-on-dark px-[18px] py-2 font-ui text-[13px] font-extrabold text-white transition-opacity duration-base hover:opacity-90 sm:flex"
         >
           {tSearch("searchButton")}
         </button>

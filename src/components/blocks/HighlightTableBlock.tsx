@@ -478,7 +478,7 @@ export function HighlightTableBlockView({
                       </td>
                     )}
                     {columns.map((column, colIndex) => (
-                      <td key={colIndex} className="px-3 py-2 align-middle text-black">
+                      <td key={colIndex} className="px-3 py-2 align-middle text-primary">
                         <HighlightTableCellView type={column.type} value={row.cells[colIndex]} />
                       </td>
                     ))}
@@ -911,7 +911,7 @@ function HighlightTableCellView({
     const scale = asScale(value);
     return (
       <div className="flex items-center gap-2">
-        {scale.label && <span className="font-medium text-black">{scale.label}</span>}
+        {scale.label && <span className="font-medium text-primary">{scale.label}</span>}
         <span className="flex items-center gap-1">
           {Array.from({ length: SCALE_MAX }).map((_, i) => (
             <span

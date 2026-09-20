@@ -54,18 +54,27 @@ export function BlockRenderer({
   diseaseId,
   diseaseSlug,
   isSignedIn = false,
+  headingNumber = null,
 }: {
   block: EditorialBlock;
   workspaceContext?: WorkspaceContext;
   diseaseId: string;
   diseaseSlug: string;
   isSignedIn?: boolean;
+  // Subsection number ("1.3") derived from this block's position among
+  // its section's own subsection_heading siblings — see BlockSequence's
+  // computeSubsectionNumbers. Only ever consumed by subsection_heading;
+  // sub-subsections have no number in DESIGN-BRIEF.md's Heading
+  // hierarchy, and every other level gets its own number a different
+  // way (section_heading's comes from SectionCard, a sibling prop, not
+  // through here).
+  headingNumber?: string | null;
 }) {
   switch (block.type) {
     case "section_heading":
       return <SectionHeadingBlockView block={block} />;
     case "subsection_heading":
-      return <SubsectionHeadingBlockView block={block} />;
+      return <SubsectionHeadingBlockView block={block} number={headingNumber} />;
     case "subsubsection_heading":
       return <SubsubsectionHeadingBlockView block={block} />;
     case "paragraph":

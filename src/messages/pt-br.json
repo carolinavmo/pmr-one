@@ -42,7 +42,9 @@
     "signOut": "Sair",
     "openExplore": "Abrir Explorar",
     "closeExplore": "Fechar Explorar",
-    "languageSwitcher": "Mudar idioma"
+    "languageSwitcher": "Mudar idioma",
+    "exploreLibrary": "Explorar biblioteca",
+    "mainNav": "Principal"
   },
   "footer": {
     "tagline": "Patologias, ferramentas clínicas, cartões de memória e questões de prática — a plataforma de estudo feita para residentes de MFR.",

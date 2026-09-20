@@ -1,6 +1,7 @@
 import type { EditorialBlock, SectionHeadingBlock } from "@/lib/editorial-blocks";
 import { slugify } from "@/lib/slugify";
 import { estimateReadingMinutes } from "@/lib/reading-time";
+import { stripLeadingNumber } from "@/lib/heading-number";
 
 export interface Section {
   headingBlock: SectionHeadingBlock | null;
@@ -46,8 +47,13 @@ export interface SectionSummary {
 // headerless leading group (DiseaseSnapshot's already-rendered
 // Overview) since there's no heading text to label a row with there.
 // `id` matches exactly what SectionHeadingBlockView renders on the
-// heading itself (slugify(text)), so `#id` links and
+// heading itself (slugify(text), on the RAW text — an anchor id must
+// stay stable regardless of display cleanup), so `#id` links and
 // document.getElementById(id) both resolve to the same element.
+// `heading` strips any hand-typed leading number ("4. ") before
+// display — OnThisPage prepends its own derived row number, and
+// showing both was the source of the "4. 4. Joints and Ligaments"
+// duplication (see src/lib/heading-number.ts).
 export function getSectionSummaries(blocks: EditorialBlock[]): SectionSummary[] {
   return splitIntoSections(blocks)
     .filter(
@@ -56,7 +62,7 @@ export function getSectionSummaries(blocks: EditorialBlock[]): SectionSummary[] 
     )
     .map((section) => ({
       id: slugify(section.headingBlock.text),
-      heading: section.headingBlock.text,
+      heading: stripLeadingNumber(section.headingBlock.text),
       minutes: estimateReadingMinutes(section.blocks),
       blockId: section.headingBlock.id,
     }));

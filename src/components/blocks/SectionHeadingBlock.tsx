@@ -6,14 +6,23 @@ import { EditableText } from "@/components/ui/EditableText";
 import { updateBlockTextAction } from "@/lib/actions/authoring";
 import { TEXT_ALIGN_CLASS } from "@/lib/block-alignment";
 import { notifySectionIndexChanged } from "@/lib/section-events";
+import { useEditMode } from "@/components/disease-page/EditMode";
+import { SECTION_HEADING_TITLE_CLASS } from "@/components/ui/headings";
+import { stripLeadingNumber } from "@/lib/heading-number";
 
 // Carries a stable anchor id so the Sprint 3 Contents rail (left nav)
-// can link straight to it.
+// can link straight to it. `value` is stripped of any hand-typed
+// leading number ("4. ", "4.1 " …) before display — SectionCard's own
+// `sectionNumber` (derived from position, never from this text) is
+// the only number ever shown, via the SectionHeading eyebrow. Fixes
+// the "3. 3. The Intervertebral Disc" duplication regardless of
+// whether the underlying stored text has been cleaned up.
 export function SectionHeadingBlockView({
   block,
 }: {
   block: SectionHeadingBlock;
 }) {
+  const { editing } = useEditMode();
   const textAlign = block.layout?.textAlign ?? "left";
 
   return (
@@ -29,8 +38,7 @@ export function SectionHeadingBlockView({
       // request — felt too spacious both before a heading and in the
       // gap right after it) while still reading as clearly more than
       // the in-section rhythm. Trimmed further (mt-10 → mt-8) as part
-      // of a general page-compaction pass. H2 per PM&R Atlas Design
-      // System doc: Poppins SemiBold, 28px/36px, -0.2px tracking. No
+      // of a general page-compaction pass. No
       // vertical-align control here (unlike the other 6 alignable
       // types) — a bare single-line heading has no container height to
       // position itself within, so AlignmentPicker deliberately omits
@@ -45,8 +53,17 @@ export function SectionHeadingBlockView({
       // (TopBar wraps to a second row for the mobile logo), ~69px at
       // `lg`+ (Sidebar carries the logo instead) — measured directly
       // rather than guessed, each with a little headroom on top.
-      className={`mt-8 scroll-mt-36 font-section-heading text-[38px] leading-[46px] tracking-[-0.2px] font-normal text-primary first:mt-0 lg:scroll-mt-24 ${TEXT_ALIGN_CLASS[textAlign]}`}
-      value={block.text}
+      //
+      // Two treatments: raw/plain while this section is actively being
+      // edited (matches every other heading's editing-mode look), or
+      // DESIGN-BRIEF.md's L2 title style — sized for the navy
+      // SectionHeading card SectionCard wraps this in when read-only.
+      className={
+        editing
+          ? `mt-8 scroll-mt-36 font-section-heading text-[38px] leading-[46px] tracking-[-0.2px] font-black text-primary first:mt-0 lg:scroll-mt-24 ${TEXT_ALIGN_CLASS[textAlign]}`
+          : `font-section-heading ${SECTION_HEADING_TITLE_CLASS} ${TEXT_ALIGN_CLASS[textAlign]}`
+      }
+      value={stripLeadingNumber(block.text)}
       onSave={async (value) => {
         await updateBlockTextAction(block.id, "text", value);
         notifySectionIndexChanged();

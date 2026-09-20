@@ -69,11 +69,11 @@ export function ComparisonTableBlockView({
         <div className="rounded-lg border border-border">
           <table className="w-full border-collapse font-reading text-sm">
             <thead>
-              <tr className="border-b border-border bg-[#128A99]/10">
+              <tr className="border-b border-border bg-accent-bg">
                 {block.columns.map((column, i) => (
                   <th
                     key={i}
-                    className="px-3 py-2 text-left font-medium text-black"
+                    className="px-3 py-2 text-left font-medium text-primary"
                     dangerouslySetInnerHTML={{ __html: sanitizeRichText(column) }}
                   />
                 ))}
@@ -85,7 +85,7 @@ export function ComparisonTableBlockView({
                   {row.map((cell, cellIndex) => (
                     <td
                       key={cellIndex}
-                      className="px-3 py-2 text-black"
+                      className="px-3 py-2 text-primary"
                       dangerouslySetInnerHTML={{ __html: sanitizeRichText(cell) }}
                     />
                   ))}

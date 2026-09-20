@@ -42,7 +42,9 @@
     "signOut": "Sign out",
     "openExplore": "Open Explore",
     "closeExplore": "Close Explore",
-    "languageSwitcher": "Change language"
+    "languageSwitcher": "Change language",
+    "exploreLibrary": "Explore library",
+    "mainNav": "Main"
   },
   "footer": {
     "tagline": "Conditions, clinical tools, flashcards, and practice questions — the study platform built for PM&R residents.",

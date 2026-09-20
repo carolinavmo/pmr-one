@@ -1,12 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 import { ChevronRight, GripVertical } from "lucide-react";
 import type { SectionSummary } from "@/lib/sections";
-import { iconForHeading } from "@/lib/section-icons";
 import { reorderSectionAction } from "@/lib/actions/authoring";
 import { notifySectionIndexChanged } from "@/lib/section-events";
+import { onAnySectionEditingChanged } from "@/lib/any-section-editing";
 
 interface OnThisPageProps {
   sections: SectionSummary[];
@@ -18,18 +18,45 @@ interface OnThisPageProps {
   canEdit: boolean;
 }
 
-// Lowercase on purpose, same reasoning as SectionCard's own
-// sectionIcon helper — a plain render-helper, not a component, so
-// picking an icon at render time from iconForHeading's stable,
-// module-level lookup table doesn't read as "component created during
-// render" to the react-hooks static-components check.
-function rowIcon(heading: string) {
-  const Icon = iconForHeading(heading);
-  return <Icon className="size-4 shrink-0 text-secondary" aria-hidden="true" />;
-}
-
 function scrollToSection(id: string) {
   document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+// Which section is "active" — DESIGN-BRIEF.md's redesign highlights
+// whichever row the reader is currently at, which this app has no
+// existing tracking for. A thin IntersectionObserver band near the
+// top of the viewport (below TopBar's own sticky header, matching
+// SectionHeadingBlockView's own scroll-mt) — a heading crossing that
+// band becomes active and stays active until the next one does.
+// Self-contained client-side state, no persistence, no other
+// component reads it.
+function useActiveSectionId(sectionIds: string[]): string | null {
+  const [activeId, setActiveId] = useState<string | null>(null);
+  const idsKey = sectionIds.join("|");
+
+  useEffect(() => {
+    const ids = idsKey ? idsKey.split("|") : [];
+    const elements = ids
+      .map((id) => document.getElementById(id))
+      .filter((el): el is HTMLElement => el !== null);
+    if (elements.length === 0) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const visible = entries.filter((entry) => entry.isIntersecting);
+        if (visible.length === 0) return;
+        const topMost = visible.reduce((a, b) =>
+          a.boundingClientRect.top < b.boundingClientRect.top ? a : b
+        );
+        setActiveId(topMost.target.id);
+      },
+      { rootMargin: "-100px 0px -66% 0px", threshold: 0 }
+    );
+    elements.forEach((el) => observer.observe(el));
+    return () => observer.disconnect();
+  }, [idsKey]);
+
+  return activeId;
 }
 
 // Inline (normal document flow) summary of the reading column's own
@@ -49,7 +76,10 @@ function scrollToSection(id: string) {
 // means. `columns-2` instead fills one column fully top-to-bottom
 // before continuing at the top of the next (1-6 down the left column,
 // 7-11 down the right, for an 11-section page) — same "1, 2, 3 in
-// order" reading, still using both columns for space efficiency.
+// order" reading, still using both columns for space efficiency —
+// this happens to land on the same left/right split DESIGN-BRIEF.md's
+// own reference markup produces via its 2-column grid + interleaved
+// DOM order, just without needing that interleaving.
 // `break-inside-avoid` on each row keeps a single row from ever being
 // visually split across the column break. Editors can also drag a row
 // to reorder — this drives reorderSectionAction, which moves the
@@ -62,18 +92,30 @@ export function OnThisPage({ sections, diseaseId, canEdit }: OnThisPageProps) {
   const [dropZone, setDropZone] = useState<{ blockId: string; placement: "before" | "after" } | null>(
     null
   );
+  const activeId = useActiveSectionId(sections.map((s) => s.id));
+  // A reader should never see reorder affordances — `canEdit` alone
+  // only means this viewer *has* edit permission, not that they're
+  // currently using it, so the handle also waits for at least one
+  // section's own edit mode to be switched on (see
+  // any-section-editing.ts).
+  const [anySectionEditing, setAnySectionEditing] = useState(false);
+  useEffect(() => onAnySectionEditingChanged(setAnySectionEditing), []);
+  const showDragHandles = canEdit && anySectionEditing;
 
   if (sections.length === 0) return null;
 
   return (
-    <div className="flex flex-col gap-1 rounded-xl border border-border bg-surface-raised p-4">
-      <span className="pb-2 font-ui text-sm font-semibold text-primary">{t("onThisPage")}</span>
-      <div className="columns-1 gap-x-6 sm:columns-2">
+    <div className="mt-5 rounded-[14px] border border-border bg-surface px-5 py-[18px]">
+      <span className="mb-3.5 block font-ui text-[11px] font-black tracking-[1.6px] text-[#8C97A6] uppercase">
+        {t("onThisPage")}
+      </span>
+      <div className="columns-1 gap-x-[30px] gap-y-1.5 sm:columns-2">
         {sections.map((section, index) => {
           const isDropBefore =
             dropZone?.blockId === section.blockId && dropZone.placement === "before";
           const isDropAfter =
             dropZone?.blockId === section.blockId && dropZone.placement === "after";
+          const isActive = section.id === activeId;
 
           return (
             <div
@@ -104,7 +146,7 @@ export function OnThisPage({ sections, diseaseId, canEdit }: OnThisPageProps) {
               {isDropAfter && (
                 <div className="absolute inset-x-2 -bottom-0.5 z-10 h-0.5 rounded-full bg-accent" />
               )}
-              {canEdit && (
+              {showDragHandles && (
                 <span
                   draggable
                   onDragStart={(e) => {
@@ -125,13 +167,26 @@ export function OnThisPage({ sections, diseaseId, canEdit }: OnThisPageProps) {
               <button
                 type="button"
                 onClick={() => scrollToSection(section.id)}
-                className="flex min-w-0 flex-1 items-center gap-3 rounded-md px-2 py-2.5 text-left transition-colors duration-base hover:bg-border/40"
+                aria-current={isActive ? "location" : undefined}
+                className={`flex min-w-0 flex-1 items-center gap-3 rounded-[9px] px-[10px] py-[9px] text-left transition-colors duration-base ${
+                  isActive ? "bg-accent-bg" : "hover:bg-border/40"
+                }`}
               >
-                {rowIcon(section.heading)}
-                <span className="min-w-0 flex-1 truncate font-ui text-sm text-primary">
-                  {index + 1}. {section.heading}
+                <span
+                  className={`flex size-6 shrink-0 items-center justify-center rounded-full border font-ui text-xs font-black ${
+                    isActive ? "border-accent bg-accent text-white" : "border-border bg-surface-sunken text-secondary"
+                  }`}
+                >
+                  {index + 1}
                 </span>
-                <span className="shrink-0 rounded-full bg-border/40 px-2 py-0.5 font-ui text-xs text-secondary">
+                <span
+                  className={`min-w-0 flex-1 truncate font-ui text-[15px] font-bold ${
+                    isActive ? "text-accent" : "text-navy"
+                  }`}
+                >
+                  {section.heading}
+                </span>
+                <span className="shrink-0 rounded-[12px] border border-border bg-surface-sunken px-[10px] py-[3px] font-ui text-[12px] font-bold text-[#9AA5B4]">
                   {tCommon("minutesShort", { count: section.minutes })}
                 </span>
                 <ChevronRight className="size-3.5 shrink-0 text-secondary" aria-hidden="true" />

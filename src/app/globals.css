@@ -20,20 +20,49 @@
   --color-surface-raised: #fcfcfe; /* founder request — replaces Slate 100, a subtler near-white tint instead */
   --color-surface-card: #ffffff; /* founder reference sheet — "White" */
   --color-surface-sunken: #f8fafc; /* Slate 50 — a visibly gray panel tone for nav-style sidebars (My Handbook index), distinct from surface-raised's near-white card tint */
-  --color-border: #cbd5e1; /* founder reference sheet — "Slate 300" (was Slate 200) */
-  --color-text-primary: #0f172a; /* founder reference sheet — "Navy 900" */
-  --color-text-secondary: #64748b; /* founder reference sheet — "Slate 500", exact match, no change needed */
+  --color-border: #d9dfe8; /* DESIGN-BRIEF.md — "--line" */
+  --color-text-primary: #27344a; /* DESIGN-BRIEF.md — "--ink" (default/body ink; headings use --color-navy below) */
+  --color-text-secondary: #5e6b80; /* DESIGN-BRIEF.md — "--mute" */
 
-  /* ---------- Color: three meaningful roles only ----------
+  /* ---------- Color: heading/brand ink (DESIGN-BRIEF.md "--navy") ----------
+     Distinct from --color-text-primary ("--ink" — default running text):
+     the brief reserves navy for headings, the wordmark, and the L2
+     section-heading card fill — never for ordinary body copy. Two
+     tokens because the fill use (a big solid background, e.g. the L2
+     card) needs a different dark-mode value than the ink use (text
+     directly on the page surface) — in dark mode the page itself is
+     already near-black, so a filled card needs a *lighter* navy step
+     to still read as "raised," while navy *text* needs a much lighter
+     step again to stay legible on that near-black surface. Both equal
+     the same brief hex in light mode. */
+  --color-navy: #14284a;
+  --color-navy-fill: #14284a;
+
+  /* ---------- Color: four meaningful roles ----------
      Never used decoratively — see DESIGN_SYSTEM.md Color System.
-     Values below are the founder's reference-sheet palette (Teal 600/
-     Green/Amber/Rose) — a deliberately more vivid, saturated system
-     than this file's original "trust-not-hype" muted tones. */
-  --color-accent: #1ba7b7; /* founder reference sheet — "Teal 600" */
-  --color-accent-hover: #128a99; /* unchanged — already a valid darker step below the new Teal 600 */
-  --color-trust: #10b981; /* founder reference sheet — "Green" */
-  --color-insight: #f59e0b; /* founder reference sheet — "Amber" */
-  --color-warning: #ef4444; /* founder reference sheet — "Rose" (their label for red) */
+     Values below are DESIGN-BRIEF.md's palette (teal/green/amber/red) —
+     a deliberately more muted, editorial system than the founder
+     reference-sheet's earlier "vivid/saturated" pass. Each role now
+     also gets a paired "-bg" tint token (brief pattern, didn't exist
+     before) for the tinted-background treatment callouts/tables use
+     alongside the solid hue. */
+  --color-accent: #0b7a83; /* DESIGN-BRIEF.md — "--teal" (brief's own comment marks this "primary") */
+  --color-accent-hover: #09686f; /* darker step below the new teal, same ~15% darken ratio this file already used */
+  --color-accent-bg: #e2f3f4; /* DESIGN-BRIEF.md — "--teal-bg" */
+  --color-trust: #1f7a4d; /* DESIGN-BRIEF.md — "--grn" */
+  --color-trust-bg: #e8f5ee; /* DESIGN-BRIEF.md — "--grn-bg" */
+  --color-insight: #a8760f; /* DESIGN-BRIEF.md — "--amb" */
+  --color-insight-bg: #fbf2df; /* DESIGN-BRIEF.md — "--amb-bg" */
+  --color-warning: #b8262b; /* DESIGN-BRIEF.md — "--red" */
+  --color-warning-bg: #fbe9e9; /* DESIGN-BRIEF.md — "--red-bg" */
+
+  /* ---------- Color: Concept (DESIGN-BRIEF.md "--pur") ----------
+     A new semantic role the brief introduces — "the mental model"
+     callout (Heading hierarchy → Callouts table) — with no prior
+     equivalent (purple/violet existed only as decorative card-color
+     swatches before, never as a meaningful role). */
+  --color-concept: #5a479c;
+  --color-concept-bg: #ece8f7;
 
   /* ---------- Color: card styles (decorative, by design) ----------
      A deliberate, separate palette from the four meaningful roles
@@ -122,6 +151,14 @@
   --color-footer-text: #ffffff;
   --color-footer-text-secondary: rgb(255 255 255 / 85%);
 
+  /* ---------- Color: chrome-only teal (fixed, not theme-swapped) ----------
+     NAVBAR-SPEC.md: brighter than --color-accent (#0b7a83) on purpose —
+     the darker content teal loses contrast against the navbar's fixed
+     navy. Used only on that permanently-dark chrome (the navbar's
+     library button, active tool pill, avatar, sticky-bar accents) —
+     never in page content, where --color-accent stays the only teal. */
+  --color-teal-on-dark: #0e9aa6;
+
   /* ---------- Spacing: 8px base grid ----------
      4/8/12/16/24/32/48/64px. Tailwind's default spacing scale
      (steps 1,2,3,4,6,8,12,16) already maps exactly to this scale
@@ -163,11 +200,24 @@
     --color-text-primary: #eef1f4;
     --color-text-secondary: #9aa8ba;
 
-    --color-accent: #48d1e1; /* lightened from the new Teal 600, same transform this file already used */
+    /* Brief specifies no dark mode at all — values below are this
+       file's own derivation (same lighten-for-dark-bg transform used
+       throughout this block), not from DESIGN-BRIEF.md. */
+    --color-navy: #90a6d1; /* lightened navy for text legible on a near-black page */
+    --color-navy-fill: #1c2e52; /* a step *lighter* than the page bg (#0f1620) so a filled card still reads as raised, not lightened all the way like the ink use above */
+
+    --color-accent: #45cbd6; /* lightened from the new teal, same transform this file already used */
     --color-accent-hover: #6dd8e0; /* unchanged — already brighter than the new dark-mode accent, so still reads as "hover" */
-    --color-trust: #36ebaf;
-    --color-insight: #f6bf61;
-    --color-warning: #f49696;
+    --color-accent-bg: #163539;
+    --color-trust: #3fcb86;
+    --color-trust-bg: #16301f;
+    --color-insight: #e0a94a;
+    --color-insight-bg: #3a2e12;
+    --color-warning: #e28a8d;
+    --color-warning-bg: #3a1719;
+
+    --color-concept: #c3b3ea;
+    --color-concept-bg: #2c2440;
 
     --color-card-blue: #90b8f8;
     --color-card-violet: #c6b0fa;
@@ -205,11 +255,21 @@
   --color-text-primary: #eef1f4;
   --color-text-secondary: #9aa8ba;
 
-  --color-accent: #48d1e1;
+  --color-navy: #90a6d1;
+  --color-navy-fill: #1c2e52;
+
+  --color-accent: #45cbd6;
   --color-accent-hover: #6dd8e0;
-  --color-trust: #36ebaf;
-  --color-insight: #f6bf61;
-  --color-warning: #f49696;
+  --color-accent-bg: #163539;
+  --color-trust: #3fcb86;
+  --color-trust-bg: #16301f;
+  --color-insight: #e0a94a;
+  --color-insight-bg: #3a2e12;
+  --color-warning: #e28a8d;
+  --color-warning-bg: #3a1719;
+
+  --color-concept: #c3b3ea;
+  --color-concept-bg: #2c2440;
 
   --color-card-blue: #90b8f8;
   --color-card-violet: #c6b0fa;
@@ -257,11 +317,21 @@
   --color-primary: var(--color-text-primary);
   --color-secondary: var(--color-text-secondary);
 
+  --color-navy: var(--color-navy);
+  --color-navy-fill: var(--color-navy-fill);
+
   --color-accent: var(--color-accent);
   --color-accent-hover: var(--color-accent-hover);
+  --color-accent-bg: var(--color-accent-bg);
   --color-trust: var(--color-trust);
+  --color-trust-bg: var(--color-trust-bg);
   --color-insight: var(--color-insight);
+  --color-insight-bg: var(--color-insight-bg);
   --color-warning: var(--color-warning);
+  --color-warning-bg: var(--color-warning-bg);
+
+  --color-concept: var(--color-concept);
+  --color-concept-bg: var(--color-concept-bg);
 
   --color-card-blue: var(--color-card-blue);
   --color-card-violet: var(--color-card-violet);
@@ -306,6 +376,8 @@
   --color-footer-text: var(--color-footer-text);
   --color-footer-text-secondary: var(--color-footer-text-secondary);
 
+  --color-teal-on-dark: var(--color-teal-on-dark);
+
   --max-width-reading: var(--max-width-reading);
 
   --duration-fast: var(--duration-fast);
@@ -332,14 +404,16 @@
      layout.tsx's fontSectionHeading comment. */
   --font-section-heading: var(--font-section-heading);
 
-  /* Main content font size — PM&R Atlas Design System doc's "Body"
-     spec (14px/22px), overriding Tailwind's default 16px/24px
-     `text-base`. Every prose block (paragraph, key point, clinical
-     pearl, warning, etc.) sets its own body text via `text-base` —
-     overriding the token here applies to all of them at once, rather
-     than editing each block component individually. */
-  --text-base: 14px;
-  --text-base--line-height: 22px;
+  /* Main content font size — started from DESIGN-BRIEF.md's "Body"
+     spec (17.5/400, line-height 1.66), stepped down a notch on
+     founder feedback ("a bit smaller"), same 1.66 ratio kept.
+     Overrides Tailwind's default 16px/24px `text-base`. Every prose
+     block (paragraph, key point, clinical pearl, warning, etc.) sets
+     its own body text via `text-base` — overriding the token here
+     applies to all of them at once, rather than editing each block
+     component individually. */
+  --text-base: 16px;
+  --text-base--line-height: 27px; /* 16 * 1.66 ≈ 26.56, rounded */
 }
 
 body {
@@ -383,22 +457,27 @@ body {
   display: none;
 }
 
+/* NAVBAR-SPEC.md — this widget sits in the navbar's own navy Row 1
+   only (its one usage, TopBar.tsx via NavbarFrame.tsx), styled to
+   match LanguageSwitcher's own "#A9BBD3 on navy" treatment right next
+   to it, both read as one "language switchers" pair. */
 #google_translate_element .goog-te-gadget-simple {
   display: inline-flex;
   align-items: center;
   min-height: 2.25rem;
   border-radius: 9999px;
-  border: 1px solid var(--color-border);
+  border: none;
   background: transparent !important;
-  padding: 0.25rem 0.75rem;
+  padding: 0.25rem 0.5rem;
 }
 
 #google_translate_element .goog-te-gadget-simple a {
   display: inline-flex;
   align-items: center;
   font-family: var(--font-ui) !important;
-  font-size: 0.875rem !important;
-  color: var(--color-primary) !important;
+  font-size: 13.5px !important;
+  font-weight: 700 !important;
+  color: #a9bbd3 !important;
   text-decoration: none !important;
 }
 
@@ -409,10 +488,10 @@ body {
 #google_translate_element .goog-te-combo {
   min-height: 2.25rem;
   border-radius: 9999px;
-  border: 1px solid var(--color-border);
+  border: 1px solid rgb(255 255 255 / 20%);
   background: transparent;
   padding: 0.25rem 0.5rem;
   font-family: var(--font-ui);
   font-size: 0.875rem;
-  color: var(--color-primary);
+  color: #a9bbd3;
 }

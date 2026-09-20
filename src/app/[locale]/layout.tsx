@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Assistant, Caveat_Brush, Inter, Poppins, Yanone_Kaffeesatz } from "next/font/google";
+import { Roboto } from "next/font/google";
 import { notFound } from "next/navigation";
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages } from "next-intl/server";
@@ -7,62 +7,53 @@ import { AppShell } from "@/components/shell/AppShell";
 import { isLocale, LOCALE_META } from "@/i18n/locales";
 import "../globals.css";
 
-// Back to a two-typeface split (reverting the brief Poppins-everywhere
-// experiment): Inter for body text (`--font-ui`/`--font-reading`),
-// Poppins kept only for `--font-heading` (disease title + section
-// headings). Kept as three separate `next/font` calls so `--font-ui`/
-// `--font-reading`/`--font-heading` stay independent design tokens
-// components already reference by name.
+// DESIGN-BRIEF.md: "Type — Roboto only," most roles at weight 900.
+// Replaces the prior five-typeface split (Inter/Assistant/Poppins/
+// Caveat Brush/Yanone Kaffeesatz) — including the Caveat Brush
+// section-heading experiment deployed earlier this session, and the
+// even-earlier "Poppins-everywhere" attempt this file used to warn
+// against reverting from. Kept as five separate `next/font` calls
+// (same font, different `variable`) so `--font-ui`/`--font-reading`/
+// `--font-heading`/`--font-section-heading`/`--font-brand` stay
+// independent tokens — every existing component already references
+// them by name, so no component needs to change which variable it
+// uses, only what that variable now resolves to.
+//
+// Roboto doesn't ship a 600 weight (only 100/300/400/500/700/900) —
+// the brief's "Meta 600" role uses 500 here as the nearest available
+// step below 700, not an exact match.
 
-// UI typeface (Tier 1: navigation, labels, buttons, badges, metadata)
-const fontUI = Inter({
+const fontUI = Roboto({
   variable: "--font-ui",
   subsets: ["latin"],
-  weight: ["400", "500"],
+  weight: ["400", "500", "700", "900"],
 });
 
-// Reading typeface (Tier 1: clinical content — Overview, Definition,
-// Clinical Pearls, algorithm text). Assistant — settled on after
-// trying Mulish, Work Sans, Roboto, and originally Google Sans
-// (itself chosen after trying Archivo, Open Sans, DM Sans,
-// Montserrat, Poppins, Manrope, Quicksand side by side) per founder
-// request.
-const fontReading = Assistant({
+const fontReading = Roboto({
   variable: "--font-reading",
   subsets: ["latin"],
   weight: ["400", "500", "700"],
 });
 
-// Disease page title + section headings (`font-heading`). Scoped to
-// headings, not every body-text element — narrower than "every
-// element in the app," matching DESIGN_SYSTEM.md's H1-H5 scale (this
-// app currently only has real semantic uses for H1/H2; H3-H5 aren't
-// wired to any component yet).
-const fontHeading = Poppins({
+const fontHeading = Roboto({
   variable: "--font-heading",
   subsets: ["latin"],
-  weight: ["600", "700"],
+  weight: ["400", "700", "900"],
 });
 
-// Section/subsection/subsubsection heading blocks only — a local
-// experiment, not the shared `--font-heading` token, so it doesn't
-// also change the disease title (DiseaseHeader's H1). Tried Delicious
-// Handrawn first, now trying Caveat Brush — both ship one weight
-// (400) only, so each block's own `font-semibold` is dropped to
-// `font-normal` wherever this token is in play.
-const fontSectionHeading = Caveat_Brush({
+const fontSectionHeading = Roboto({
   variable: "--font-section-heading",
   subsets: ["latin"],
-  weight: ["400"],
+  weight: ["400", "700", "900"],
 });
 
-// Brand wordmark only ("PM&R Explained" in TopBar.tsx) — a condensed
-// display face, not a general-purpose typeface, so it's scoped to that
-// one span rather than added as a third body/heading role.
-const fontBrand = Yanone_Kaffeesatz({
+// Brand wordmark only ("PM&R Explained" in TopBar.tsx) — 900 per
+// DESIGN-BRIEF.md's explicit logo spec (22px/900, sentence case, navy
+// + teal split).
+const fontBrand = Roboto({
   variable: "--font-brand",
   subsets: ["latin"],
-  weight: ["700"],
+  weight: ["900"],
 });
 
 export const metadata: Metadata = {

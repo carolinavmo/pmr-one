@@ -1,5 +1,6 @@
 import { pool } from "@/lib/db";
 import { slugify } from "@/lib/slugify";
+import { stripLeadingNumber } from "@/lib/heading-number";
 import type {
   BlockLayout,
   CardColor,
@@ -179,10 +180,16 @@ export async function getSectionIndex(
   const sectionRows = isSnapshotHeading ? rows.slice(1) : rows;
   if (sectionRows.length === 0) return null;
 
+  // `heading` strips any hand-typed leading number ("4. ") before
+  // display — IndexSidebar prepends its own derived row number for
+  // sections, and showing both was the source of the "4. 4. Joints
+  // and Ligaments" duplication (see src/lib/heading-number.ts). `id`
+  // stays on the raw text — an anchor id must stay stable regardless
+  // of display cleanup.
   const sections: SectionIndexEntry[] = [];
   for (const row of sectionRows) {
     if (row.block_type === "section_heading") {
-      sections.push({ id: slugify(row.text), heading: row.text, subsections: [] });
+      sections.push({ id: slugify(row.text), heading: stripLeadingNumber(row.text), subsections: [] });
     } else if (sections.length > 0) {
       // A subsection_heading before any section_heading (shouldn't
       // happen — see the preamble-block comment elsewhere in this
@@ -190,7 +197,7 @@ export async function getSectionIndex(
       // crashing on sections[-1].
       sections[sections.length - 1].subsections.push({
         id: slugify(row.text),
-        heading: row.text,
+        heading: stripLeadingNumber(row.text),
         subsections: [],
       });
     }
