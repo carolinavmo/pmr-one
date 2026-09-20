@@ -3,13 +3,13 @@ import { randomUUID } from "crypto";
 import { pool } from "@/lib/db";
 
 // TEMPORARY — inserts a facet-orientation-by-region table right after
-// the intro paragraph of "4.1 Facet (zygapophyseal) joints" on the
-// Spine Anatomy page, before its first subsubsection (4.1.1). Anchor
-// is the paragraph block whose body mentions "Their orientation
-// determines regional motion" — the exact intro text this table
-// expands on. Idempotent guard on this table's own caption. Two-phase
-// position shift, same pattern as the prior table insertions this
-// session. Remove after use.
+// the existing (currently empty) subsubsection heading "4.1.1 Their
+// orientation determines regional motion", under "4.1 Facet
+// (zygapophyseal) joints" on the Spine Anatomy page — confirmed via a
+// diagnostic query that this heading has no body content yet, and its
+// own title is exactly what this table expands on. Idempotent guard
+// on this table's own caption. Two-phase position shift, same pattern
+// as the prior table insertions this session. Remove after use.
 const COLUMNS = ["Region", "Orientation", "Permits", "Consequence"];
 const ROWS: string[][] = [
   [
@@ -32,7 +32,7 @@ const ROWS: string[][] = [
   ],
 ];
 const CAPTION = "Facet orientation governs everything regional";
-const ANCHOR_TEXT = "Their orientation determines regional motion";
+const ANCHOR_HEADING = "4.1.1 Their orientation determines regional motion";
 
 export async function GET() {
   const existing = await pool.query(
@@ -52,13 +52,13 @@ export async function GET() {
      FROM editorial_block eb
      JOIN disease d ON d.id = eb.disease_id
      WHERE d.slug = 'spine-anatomy'
-       AND eb.block_type = 'paragraph'
-       AND eb.content_config->>'body' LIKE '%' || $1 || '%'`,
-    [ANCHOR_TEXT]
+       AND eb.block_type = 'subsubsection_heading'
+       AND eb.content_config->>'text' = $1`,
+    [ANCHOR_HEADING]
   );
   if (anchor.rows.length !== 1) {
     return NextResponse.json(
-      { ok: false, error: `expected exactly 1 anchor paragraph, found ${anchor.rows.length}` },
+      { ok: false, error: `expected exactly 1 anchor heading, found ${anchor.rows.length}` },
       { status: 400 }
     );
   }
