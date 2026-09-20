@@ -551,14 +551,15 @@ export async function setMediaTabsImageWidthAction(
 export async function updateComparisonTableAction(
   blockId: string,
   columns: string[],
-  rows: string[][]
+  rows: string[][],
+  caption: string
 ) {
   await requireEditor();
   await pool.query(
     `UPDATE editorial_block
-     SET content_config = content_config || jsonb_build_object('columns', $2::jsonb, 'rows', $3::jsonb)
+     SET content_config = content_config || jsonb_build_object('columns', $2::jsonb, 'rows', $3::jsonb, 'caption', $4::jsonb)
      WHERE id = $1`,
-    [blockId, JSON.stringify(columns), JSON.stringify(rows)]
+    [blockId, JSON.stringify(columns), JSON.stringify(rows), JSON.stringify(sanitizeRichText(caption))]
   );
   revalidateDiseaseSurfaces();
 }

@@ -31,17 +31,18 @@ export function ComparisonTableBlockView({
   const { editing } = useEditMode();
   const [columns, setColumns] = useState<string[]>(block.columns);
   const [rows, setRows] = useState<string[][]>(block.rows);
+  const [caption, setCaption] = useState<string>(block.caption ?? "");
 
   const commit = (nextColumns: string[], nextRows: string[][]) => {
     setColumns(nextColumns);
     setRows(nextRows);
-    updateComparisonTableAction(block.id, nextColumns, nextRows);
+    updateComparisonTableAction(block.id, nextColumns, nextRows, caption);
   };
 
   const saveColumn = async (colIndex: number, html: string) => {
     const nextColumns = columns.map((c, i) => (i === colIndex ? html : c));
     setColumns(nextColumns);
-    await updateComparisonTableAction(block.id, nextColumns, rows);
+    await updateComparisonTableAction(block.id, nextColumns, rows, caption);
   };
 
   const saveCell = async (rowIndex: number, colIndex: number, html: string) => {
@@ -49,7 +50,12 @@ export function ComparisonTableBlockView({
       i === rowIndex ? r.map((c, j) => (j === colIndex ? html : c)) : r
     );
     setRows(nextRows);
-    await updateComparisonTableAction(block.id, columns, nextRows);
+    await updateComparisonTableAction(block.id, columns, nextRows, caption);
+  };
+
+  const saveCaption = async (html: string) => {
+    setCaption(html);
+    await updateComparisonTableAction(block.id, columns, rows, html);
   };
 
   const captionAlign = block.layout?.textAlign ?? "left";
@@ -94,6 +100,12 @@ export function ComparisonTableBlockView({
 
   return (
     <div className="flex flex-col gap-2 rounded-lg border border-dashed border-border p-3">
+        <RichEditableText
+          value={caption}
+          onSave={saveCaption}
+          placeholder="Table caption (optional)"
+          className={`font-ui text-sm text-secondary ${TEXT_ALIGN_CLASS[captionAlign]}`}
+        />
         <table className="w-full border-collapse font-ui text-sm">
           <thead>
             <tr className="border-b border-border">
