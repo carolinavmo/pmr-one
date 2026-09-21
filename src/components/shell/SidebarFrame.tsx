@@ -2,8 +2,8 @@
 
 import { useEffect, useState, useSyncExternalStore } from "react";
 import { useTranslations } from "next-intl";
-import { Link, usePathname } from "@/i18n/navigation";
-import { ChevronRight, Sparkles, PanelLeftClose, PanelLeftOpen } from "lucide-react";
+import { usePathname } from "@/i18n/navigation";
+import { PanelLeftClose, PanelLeftOpen } from "lucide-react";
 import type { TopicNode } from "@/lib/topics";
 import { IndexSidebar } from "./IndexSidebar";
 
@@ -38,7 +38,6 @@ interface SidebarFrameProps {
   tree: TopicNode[];
   userName: string | null | undefined;
   userEmail: string | null | undefined;
-  userRole: string | undefined;
 }
 
 // The interactive shell around the server-fetched tree/session data —
@@ -46,7 +45,7 @@ interface SidebarFrameProps {
 // the collapse toggle (client-only state, read via useSyncExternalStore
 // for the same SSR-safety reasons as the old Contents-minimize toggle)
 // lives in this small client leaf instead.
-export function SidebarFrame({ tree, userName, userEmail, userRole }: SidebarFrameProps) {
+export function SidebarFrame({ tree, userName, userEmail }: SidebarFrameProps) {
   const collapsed = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
   const t = useTranslations("nav");
   const pathname = usePathname();
@@ -104,61 +103,30 @@ export function SidebarFrame({ tree, userName, userEmail, userRole }: SidebarFra
           header region moved to the navbar's own Row 2
           (NavbarFrame.tsx), same routes/behavior, different chrome.
           This rail now owns only the Explore tree and its collapse
-          toggle. */}
-      <div className="flex justify-end border-b border-border p-2">
-        <button
-          type="button"
-          onClick={() => setCollapsed(true)}
-          aria-label={t("collapseSidebar")}
-          title={t("collapseSidebar")}
-          className="flex size-6 shrink-0 items-center justify-center rounded text-secondary hover:bg-border/40 hover:text-primary"
-        >
-          <PanelLeftClose className="size-3.5" aria-hidden="true" />
-        </button>
-      </div>
-
+          toggle — folded into IndexSidebar's own search row via
+          headerAction rather than a dedicated bordered strip above it,
+          which read as empty space. */}
       {/* No overflow-y-auto here — SIDEBAR-SPEC.md's sticky bands need
           exactly one unambiguous scrolling ancestor (IndexSidebar's own
           <nav>) between them and the band and its `top` offset; a second
           scrollable ancestor above it is exactly the kind of thing that
           silently breaks position: sticky. */}
       <div className="flex min-h-0 flex-1 flex-col px-3 py-3">
-        <IndexSidebar tree={tree} isSignedIn={!signedOut} />
-      </div>
-
-      <div className="flex flex-col gap-3 border-t border-border p-3">
-        {!(userEmail || userName) && (
-          <Link
-            href="/register"
-            className="flex items-center gap-3 rounded-lg bg-accent px-3 py-2.5 transition-colors duration-base hover:bg-accent-hover"
-          >
-            <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-white/20 text-white">
-              <Sparkles className="size-4" aria-hidden="true" />
-            </span>
-            <div className="flex flex-col">
-              <span className="font-ui text-sm font-medium text-white">{t("goPremium")}</span>
-              <span className="font-ui text-xs text-white/80">{t("goPremiumSubtitle")}</span>
-            </div>
-          </Link>
-        )}
-
-        {(userEmail || userName) && (
-          <Link
-            href="/account"
-            className="flex items-center gap-2.5 rounded-lg px-2 py-2 transition-colors duration-base hover:bg-border/40"
-          >
-            <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-accent font-ui text-sm font-semibold text-white">
-              {(userName?.trim()[0] ?? userEmail?.[0] ?? "?").toUpperCase()}
-            </span>
-            <span className="flex min-w-0 flex-1 flex-col leading-tight">
-              <span className="truncate font-ui text-sm font-medium text-primary">
-                {userName ?? userEmail}
-              </span>
-              <span className="truncate font-ui text-xs text-secondary capitalize">{userRole}</span>
-            </span>
-            <ChevronRight className="size-4 shrink-0 text-secondary" aria-hidden="true" />
-          </Link>
-        )}
+        <IndexSidebar
+          tree={tree}
+          isSignedIn={!signedOut}
+          headerAction={
+            <button
+              type="button"
+              onClick={() => setCollapsed(true)}
+              aria-label={t("collapseSidebar")}
+              title={t("collapseSidebar")}
+              className="flex size-7 shrink-0 items-center justify-center rounded-[9px] border border-border text-secondary transition-colors duration-base hover:bg-border/40 hover:text-primary"
+            >
+              <PanelLeftClose className="size-3.5" aria-hidden="true" />
+            </button>
+          }
+        />
       </div>
     </aside>
   );

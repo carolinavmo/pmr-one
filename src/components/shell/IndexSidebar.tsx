@@ -17,6 +17,8 @@ import type { TopicIconName, TopicNode } from "@/lib/topics";
 import type { SectionIndex, SectionIndexEntry } from "@/lib/disease-loader";
 import { onSectionIndexChanged } from "@/lib/section-events";
 import { topicIcons } from "@/components/ui/topicIcons";
+import { CARD_COLOR_CHIP } from "@/lib/card-colors";
+import type { CardColor } from "@/lib/editorial-blocks";
 import { saveReadingProgressAction } from "@/lib/actions/workspace";
 import type { ReadingProgress } from "@/lib/workspace";
 
@@ -42,6 +44,12 @@ interface IndexSidebarProps {
   tree: TopicNode[];
   isSignedIn: boolean;
   onNavigate?: () => void;
+  // The desktop rail's collapse toggle — rendered inline in the search
+  // row instead of its own header strip (SidebarFrame.tsx used to give
+  // it a dedicated bordered row above the search field, which read as
+  // dead space). Omitted entirely for the mobile drawer, which has its
+  // own close "X" in its own header for the same job.
+  headerAction?: ReactNode;
 }
 
 interface RailPage {
@@ -54,6 +62,7 @@ interface RailFolder {
   id: string;
   name: string;
   icon: TopicIconName | null;
+  color: CardColor | null;
   pages: RailPage[];
 }
 
@@ -61,6 +70,7 @@ interface RailRegion {
   id: string;
   name: string;
   icon: TopicIconName | null;
+  color: CardColor | null;
   folders: RailFolder[];
   loosePages: RailPage[];
 }
@@ -94,10 +104,12 @@ function buildSubjects(tree: TopicNode[]): RailSubject[] {
         id: regionNode.id,
         name: regionNode.name,
         icon: regionNode.icon,
+        color: regionNode.color,
         folders: regionNode.children.map((folderNode) => ({
           id: folderNode.id,
           name: folderNode.name,
           icon: folderNode.icon,
+          color: folderNode.color,
           pages: folderNode.diseases,
         })),
         loosePages: regionNode.diseases,
@@ -236,7 +248,14 @@ const FULL_STRIP_PX = 40;
 const GROUP_LABEL_CLASS = "px-2 pt-2.5 pb-1 font-ui text-[9.5px] font-black tracking-[1.4px] text-[#9AA5B4] first:pt-0";
 const TREE_ROW_CLASS =
   "flex w-full items-start gap-[9px] rounded-lg px-2 py-1.5 text-left font-ui text-[13px] font-bold leading-[1.3] text-primary transition-colors duration-base hover:bg-[#EAEEF3] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-navy focus-visible:ring-offset-2 focus-visible:ring-offset-white";
-const TREE_TILE_CLASS = "-mt-px flex size-[19px] shrink-0 items-center justify-center rounded-[6px] bg-[#E7EBF4]";
+const TREE_TILE_CLASS = "-mt-px flex size-[19px] shrink-0 items-center justify-center rounded-[6px]";
+// Background/icon color kept out of TREE_TILE_CLASS and chosen one-or-
+// the-other below (an admin-picked CardColor via CARD_COLOR_CHIP, or
+// one of these defaults) — same reasoning as PAGE_ROW_CLASS: two
+// same-property utilities present together race on generated CSS
+// order, not JSX order.
+const TREE_TILE_REGION_DEFAULT_CLASS = "bg-[#E7EBF4] text-[#6B7A99]";
+const TREE_TILE_FOLDER_DEFAULT_CLASS = "border border-[#E6D2A8] bg-insight-bg text-[#A8760F]";
 // Straight guide line, 1.5px, 21px indent step (17px margin + 4px
 // padding) — only ever rendered for an open (on-your-path) branch, so
 // it's always the accent colour; the spec's "#D0D7E1 elsewhere" describes
@@ -259,7 +278,7 @@ const PAGE_ROW_CLASS =
 const PAGE_ROW_CURRENT_CLASS = "bg-navy/[0.08] font-extrabold text-navy hover:bg-navy/[0.08]";
 const PAGE_ROW_DEFAULT_CLASS = "font-semibold text-secondary";
 
-export function IndexSidebar({ tree, isSignedIn, onNavigate }: IndexSidebarProps) {
+export function IndexSidebar({ tree, isSignedIn, onNavigate, headerAction }: IndexSidebarProps) {
   const t = useTranslations("nav");
   const pathname = usePathname();
   const activeDiseaseSlug = pathname.startsWith("/conditions/") ? pathname.split("/")[2] : undefined;
@@ -757,21 +776,24 @@ export function IndexSidebar({ tree, isSignedIn, onNavigate }: IndexSidebarProps
 
   return (
     <div ref={railRef} onKeyDown={handleRailKeyDown} className="flex min-h-0 flex-1 flex-col gap-2">
-      <div className="relative shrink-0 px-1">
-        <Search
-          className="pointer-events-none absolute top-1/2 left-3.5 size-3.5 -translate-y-1/2 text-secondary"
-          aria-hidden="true"
-        />
-        <input
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          placeholder={t("findATopic")}
-          className={`w-full rounded-[9px] border py-1.5 pr-2 pl-8 font-ui text-xs outline-none transition-colors duration-base ${
-            searching
-              ? "border-accent bg-surface text-navy shadow-[0_0_0_3px_rgba(11,122,131,0.10)]"
-              : "border-border bg-surface-sunken text-primary placeholder:text-[#A6B0BC] focus:border-accent focus:bg-surface"
-          }`}
-        />
+      <div className="flex shrink-0 items-center gap-1.5 px-1">
+        <div className="relative min-w-0 flex-1">
+          <Search
+            className="pointer-events-none absolute top-1/2 left-3.5 size-3.5 -translate-y-1/2 text-secondary"
+            aria-hidden="true"
+          />
+          <input
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder={t("findATopic")}
+            className={`w-full rounded-[9px] border py-1.5 pr-2 pl-8 font-ui text-xs outline-none transition-colors duration-base ${
+              searching
+                ? "border-accent bg-surface text-navy shadow-[0_0_0_3px_rgba(11,122,131,0.10)]"
+                : "border-border bg-surface-sunken text-primary placeholder:text-[#A6B0BC] focus:border-accent focus:bg-surface"
+            }`}
+          />
+        </div>
+        {headerAction}
       </div>
 
       {searching ? (
@@ -803,7 +825,7 @@ export function IndexSidebar({ tree, isSignedIn, onNavigate }: IndexSidebarProps
               title={activePath!.page.canonicalName}
               percent={progressPercent}
               sectionLabel={sectionLabel}
-              onExpand={() => handleBarTap("half")}
+              onExpand={() => handleBarTap("full")}
               onGripPointerDown={handleGripPointerDown}
               onGripPointerMove={handleGripPointerMove}
               onGripPointerUp={handleGripPointerUp}
@@ -822,7 +844,7 @@ export function IndexSidebar({ tree, isSignedIn, onNavigate }: IndexSidebarProps
               progressComplete={progressComplete}
               timeLabel={timeLabel}
               canExpand={dockMode !== "full"}
-              onExpand={() => stepDock(1)}
+              onExpand={() => setDockMode("full")}
               onCollapse={() => stepDock(-1)}
               onGripPointerDown={handleGripPointerDown}
               onGripPointerMove={handleGripPointerMove}
@@ -963,7 +985,10 @@ function RegionNode({
   return (
     <>
       <button type="button" onClick={() => onToggleRegion(region.id)} aria-expanded={isOpen} className={TREE_ROW_CLASS}>
-        <span className={`${TREE_TILE_CLASS} text-[#6B7A99]`} aria-hidden="true">
+        <span
+          className={`${TREE_TILE_CLASS} ${region.color ? CARD_COLOR_CHIP[region.color] : TREE_TILE_REGION_DEFAULT_CLASS}`}
+          aria-hidden="true"
+        >
           {RegionIcon && <RegionIcon className="size-3" />}
         </span>
         <span className={`min-w-0 flex-1 ${isOpen ? "text-navy" : ""}`}>{region.name}</span>
@@ -1029,7 +1054,10 @@ function FolderNode({
         aria-expanded={hasPages ? isOpen : undefined}
         className={`${TREE_ROW_CLASS} disabled:opacity-40`}
       >
-        <span className={`${TREE_TILE_CLASS} border border-[#E6D2A8] bg-insight-bg text-[#A8760F]`} aria-hidden="true">
+        <span
+          className={`${TREE_TILE_CLASS} ${folder.color ? CARD_COLOR_CHIP[folder.color] : TREE_TILE_FOLDER_DEFAULT_CLASS}`}
+          aria-hidden="true"
+        >
           {FolderIcon && <FolderIcon className="size-3" />}
         </span>
         <span className={`min-w-0 flex-1 ${isOpen ? "text-navy" : ""}`}>{folder.name}</span>

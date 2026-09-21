@@ -20,7 +20,6 @@ export async function Sidebar() {
       tree={tree}
       userName={session?.user.name}
       userEmail={session?.user.email}
-      userRole={session?.user.role}
     />
   );
 }
