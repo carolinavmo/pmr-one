@@ -1,7 +1,14 @@
 "use server";
 
 import { auth } from "@/auth";
-import { saveNote, toggleSavedPearl, toggleDiseaseFavorite, toggleCalculatorFavorite } from "@/lib/workspace";
+import {
+  saveNote,
+  toggleSavedPearl,
+  toggleDiseaseFavorite,
+  toggleCalculatorFavorite,
+  saveReadingProgress,
+  type ReadingProgress,
+} from "@/lib/workspace";
 import { revalidateDiseaseSurfaces, revalidateClinicalToolsSurfaces } from "@/lib/revalidation";
 
 export async function saveNoteAction(formData: FormData) {
@@ -43,4 +50,18 @@ export async function toggleCalculatorFavoriteAction(formData: FormData) {
 
   await toggleCalculatorFavorite(session.user.id, calculatorId);
   revalidateClinicalToolsSurfaces();
+}
+
+// Plain-argument Server Action rather than the FormData shape every
+// other action here uses — this one is invoked directly from a
+// debounced client-side effect (IndexSidebar.tsx's reading-progress
+// autosave), never from a <form>, so there's no FormData to read in
+// the first place. No revalidateDiseaseSurfaces() call: nothing
+// server-rendered reads this back, only the client's own next fetch of
+// /api/reading-progress/[slug].
+export async function saveReadingProgressAction(diseaseId: string, progress: ReadingProgress) {
+  const session = await auth();
+  if (!session) return;
+
+  await saveReadingProgress(session.user.id, diseaseId, progress);
 }

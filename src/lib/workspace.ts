@@ -255,3 +255,45 @@ export async function getRecentlyViewed(
       r.viewed_at instanceof Date ? r.viewed_at.toISOString() : r.viewed_at,
   }));
 }
+
+// SIDEBAR-BAND-SPEC.md's "Reading a page" — which sections have been
+// read, which one the reader left on, and how far down the page.
+// Signed-in only; an anonymous reader's equivalent lives in
+// localStorage on the client instead (see IndexSidebar.tsx).
+export interface ReadingProgress {
+  readSectionIds: string[];
+  lastSectionId: string | null;
+  scrollRatio: number;
+}
+
+export async function getReadingProgress(
+  userId: string,
+  diseaseId: string,
+): Promise<ReadingProgress | null> {
+  const { rows } = await pool.query(
+    `SELECT read_section_ids, last_section_id, scroll_ratio
+     FROM reading_progress WHERE user_id = $1 AND disease_id = $2`,
+    [userId, diseaseId],
+  );
+  const row = rows[0];
+  if (!row) return null;
+  return {
+    readSectionIds: row.read_section_ids ?? [],
+    lastSectionId: row.last_section_id,
+    scrollRatio: Number(row.scroll_ratio),
+  };
+}
+
+export async function saveReadingProgress(
+  userId: string,
+  diseaseId: string,
+  progress: ReadingProgress,
+): Promise<void> {
+  await pool.query(
+    `INSERT INTO reading_progress (user_id, disease_id, read_section_ids, last_section_id, scroll_ratio, updated_at)
+     VALUES ($1, $2, $3, $4, $5, now())
+     ON CONFLICT (user_id, disease_id) DO UPDATE SET
+       read_section_ids = $3, last_section_id = $4, scroll_ratio = $5, updated_at = now()`,
+    [userId, diseaseId, progress.readSectionIds, progress.lastSectionId, progress.scrollRatio],
+  );
+}

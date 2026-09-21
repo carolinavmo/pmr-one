@@ -162,6 +162,80 @@ export async function getBreadcrumbPath(diseaseSlug: string): Promise<Breadcrumb
   return path;
 }
 
+export interface FolderAdjacentDiseases {
+  // Subject (separator) through folder, joined for the end-of-page
+  // bar's small-caps line — e.g. "MSK · Shoulder · Rotator Cuff
+  // Pathology". Built here rather than reusing getBreadcrumbPath alone
+  // because that function stops at the topic chain and never includes
+  // the subject's own separator label.
+  pathLabel: string;
+  previous: TopicDisease | null;
+  next: TopicDisease | null;
+}
+
+// "Previous/next in this folder" for the end-of-page bar — deliberately
+// narrower than getAdjacentDiseases (which flattens the *entire* tree
+// depth-first, crossing topic boundaries on purpose for "keep reading
+// anything next"). This one never leaves the disease's own immediate
+// parent topic, same fetch-flat-then-findIndex shape as
+// getAdjacentDiseases, just scoped to one topic_id's own disease rows.
+export async function getFolderAdjacentDiseases(
+  diseaseSlug: string,
+  includeUnpublished = false
+): Promise<FolderAdjacentDiseases | null> {
+  const { rows } = await pool.query(`SELECT topic_id FROM disease WHERE slug = $1`, [diseaseSlug]);
+  const topicId = rows[0]?.topic_id as string | undefined;
+  if (!topicId) return null;
+
+  const [topicRows, siblingResult] = await Promise.all([
+    fetchTopicRows(),
+    pool.query(
+      `SELECT id, slug, canonical_name FROM disease
+       WHERE topic_id = $1 ${includeUnpublished ? "" : "AND status = 'published'"}
+       ORDER BY position, canonical_name`,
+      [topicId]
+    ),
+  ]);
+  const siblings: { id: string; slug: string; canonical_name: string }[] = siblingResult.rows;
+  const index = siblings.findIndex((r) => r.slug === diseaseSlug);
+  if (index === -1) return null;
+
+  const byId = new Map(topicRows.map((r) => [r.id, r]));
+  const path: string[] = [];
+  let current: TopicRow | undefined = byId.get(topicId);
+  let root: TopicRow | undefined;
+  while (current) {
+    path.unshift(current.name);
+    root = current;
+    current = current.parent_id ? byId.get(current.parent_id) : undefined;
+  }
+  // The subject prefix is whichever separator precedes this chain's
+  // root in the flat position-ordered list — the same "nearest
+  // separator above a root topic" rule IndexSidebar.tsx's own subject
+  // grouping uses.
+  const rootIndex = topicRows.findIndex((r) => r.id === root?.id);
+  let subjectLabel: string | undefined;
+  for (let i = rootIndex; i >= 0; i--) {
+    if (topicRows[i].kind === "separator") {
+      subjectLabel = topicRows[i].name;
+      break;
+    }
+  }
+  const fullPath = subjectLabel ? [subjectLabel, ...path] : path;
+
+  const toDisease = (row: { id: string; slug: string; canonical_name: string }): TopicDisease => ({
+    id: row.id,
+    slug: row.slug,
+    canonicalName: row.canonical_name,
+  });
+
+  return {
+    pathLabel: fullPath.join(" · "),
+    previous: index > 0 ? toDisease(siblings[index - 1]) : null,
+    next: index < siblings.length - 1 ? toDisease(siblings[index + 1]) : null,
+  };
+}
+
 // Resolves the exact color IndexSidebar.tsx would tint this disease's
 // immediate parent topic with — the "current section" background
 // wash a signed-in editor sees highlighted in the Explore tree while

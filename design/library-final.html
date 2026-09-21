@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8">
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--navy:#14284A;--ink:#27344A;--mute:#5E6B80;--line:#D9DFE8;--soft:#F7F9FB;
+ --acc:#0E9BA6;--acc-ink:#0A7680;--acc-bg:#E1F4F5;--acc-bd:#B5E0E3;--acc-dk:#7FD3DA;
+ --pur:#5A479C;--amb:#A8760F;--amb-bg:#FBF2DF;--grn:#1F7A4D;--gl:#D0D7E1}
+body{font-family:'Roboto','Noto Sans CJK JP',sans-serif;color:var(--ink);background:#E9EDF1}
+.sheet{width:1600px;background:#fff;border-radius:14px;box-shadow:0 24px 64px rgba(20,40,74,.2);margin:0 auto 34px;padding:42px 46px 48px;position:relative;overflow:hidden}
+.tb{position:absolute;left:0;right:0;top:0;height:7px;display:flex}.tb i{flex:1}
+.bh{display:flex;align-items:center;gap:12px}.bh img{height:38px}.bh b{font-size:22px;font-weight:900;color:var(--navy)}
+h1.t{font-size:38px;font-weight:900;color:var(--navy);letter-spacing:-1.2px;margin-top:11px}
+.dek{font-size:17.5px;color:var(--mute);margin-top:7px;line-height:1.45;max-width:1120px}
+.dek b{color:var(--navy)}
+h2.s{font-size:12.5px;font-weight:900;letter-spacing:2.4px;color:var(--acc-ink);margin-top:36px;padding-bottom:9px;border-bottom:2px solid var(--line)}
+.flow{display:flex;align-items:flex-start;margin-top:20px}
+.cap{display:flex;align-items:baseline;gap:9px;margin-bottom:8px}
+.cap .n{font-size:10.5px;font-weight:900;letter-spacing:1.3px;color:#fff;background:var(--navy);border-radius:5px;padding:3px 8px}
+.cap b{font-size:14.5px;font-weight:900;color:var(--navy)}
+.cap span{font-size:12.5px;color:var(--mute)}
+.arr{flex:none;width:62px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding-top:200px;gap:5px}
+.arr .a{font-size:20px;color:#AEB9C6;font-weight:900}
+.arr .l{font-size:10px;font-weight:800;color:#9AA5B4;text-align:center;line-height:1.3}
+.sb{width:300px;height:620px;border:1px solid var(--line);border-radius:12px;overflow:hidden;background:var(--soft);display:flex;flex-direction:column;position:relative}
+.hdr{padding:12px 10px 8px;flex:none}
+.lb{font-size:10px;font-weight:900;letter-spacing:1.6px;color:#8C97A6;padding:0 5px 8px}
+.fd{height:31px;background:#fff;border:1px solid var(--line);border-radius:9px;display:flex;align-items:center;padding:0 10px;font-size:12px;color:#A6B0BC}
+.tree{flex:1;overflow:hidden;padding:0 6px;min-height:0}
+.cp{font-size:12.5px;color:var(--mute);line-height:1.45;margin-top:9px;width:300px}
+.cp b{color:var(--navy);font-weight:800}
+
+/* tree */
+.g{font-size:9.5px;font-weight:900;letter-spacing:1.4px;color:#9AA5B4;padding:10px 8px 4px}
+.r{display:flex;align-items:flex-start;gap:9px;font-size:13px;font-weight:700;color:var(--ink);padding:6px 8px;border-radius:8px;line-height:1.3}
+.r i{width:19px;height:19px;border-radius:6px;background:#E7EBF4;flex:none;margin-top:-1px}
+.r i.fo{background:var(--amb-bg);border:1px solid #E6D2A8}
+.r .d{width:5px;height:5px;border-radius:50%;background:#B8C1CD;flex:none;margin:6px 5px 0 6px}
+.r .cv{margin-left:auto;font-size:11px;color:#AAB4C1;font-weight:900;padding-left:6px}
+.r .pc{margin-left:auto;font-size:10px;font-weight:800;color:var(--acc-ink);padding-left:6px}
+.r.open{color:var(--acc-ink)} .r.open .cv{color:var(--acc)}
+.r.pg{font-weight:600;color:var(--mute);font-size:12.5px}
+.r.cur{background:var(--acc-bg);color:var(--acc-ink);font-weight:800}
+.r.cur .d{background:var(--acc)}
+.r.tap{box-shadow:inset 0 0 0 2px var(--acc)}
+.gl{margin-left:17px;padding-left:4px;border-left:1.5px solid var(--gl)}
+.gl.act{border-left-color:var(--acc)}
+
+/* dock */
+.dock{flex:none;background:#fff;border-top:1px solid var(--line);border-radius:14px 14px 0 0;box-shadow:0 -10px 24px rgba(20,40,74,.12);display:flex;flex-direction:column;overflow:hidden;position:relative}
+.grip{height:16px;display:flex;align-items:center;justify-content:center;flex:none}
+.grip i{width:36px;height:4px;border-radius:3px;background:#C7CFDA}
+.dh{background:var(--navy);margin:0 8px;border-radius:10px;padding:9px 11px 10px;flex:none}
+.dh .top{display:flex;align-items:center;gap:8px}
+.dh .k{font-size:9px;font-weight:900;letter-spacing:1.2px;color:var(--acc-dk)}
+.dh b{display:block;font-size:14px;font-weight:900;color:#fff;margin-top:2px;line-height:1.15}
+.dh .ctl{margin-left:auto;display:flex;gap:5px}
+.dh .ctl span{width:24px;height:24px;border-radius:7px;background:rgba(255,255,255,.14);color:#fff;font-size:12px;font-weight:900;display:flex;align-items:center;justify-content:center}
+.dh .pr{height:3px;background:rgba(255,255,255,.14);border-radius:2px;margin-top:9px;overflow:hidden}
+.dh .pr i{display:block;height:3px;background:var(--acc)}
+.dh .m{font-size:10px;color:#9DB0CA;font-weight:700;margin-top:5px}
+.k9{display:flex;align-items:center;font-size:9.5px;font-weight:900;letter-spacing:1.3px;color:#9AA5B4;padding:10px 12px 5px;flex:none}
+.prog{background:linear-gradient(to bottom,var(--acc) 0,var(--acc) var(--p),var(--gl) var(--p),var(--gl) 100%) left top/1.5px 100% no-repeat;padding-left:6px;margin:0 6px 8px 16px;overflow:hidden}
+.sec{display:flex;align-items:center;gap:9px;font-size:12.5px;font-weight:700;color:var(--ink);padding:5px 9px;border-radius:8px}
+.sec .n{width:18px;height:18px;border-radius:5px;background:#fff;border:1px solid var(--line);font-size:9.5px;font-weight:900;color:#9AA5B4;display:flex;align-items:center;justify-content:center;flex:none}
+.sec.read{color:#A6B0BC}
+.sec.read .n{background:var(--acc-bg);border-color:var(--acc-bd);color:var(--acc-ink)}
+.sec.on{color:var(--acc-ink);background:var(--acc-bg)}
+.sec.on .n{background:var(--acc);border-color:var(--acc);color:#fff}
+.ss{font-size:11.5px;color:var(--mute);padding:3px 9px 3px 36px}
+.ss.on{color:var(--acc-ink);font-weight:800}
+.ss.read{color:#B4BDC8}
+
+/* peek bar */
+.peek{flex:none;background:var(--navy);border-radius:14px 14px 0 0;padding:6px 10px 10px;box-shadow:0 -8px 20px rgba(20,40,74,.18)}
+.peek .grip i{background:rgba(255,255,255,.35)}
+.peek .row{display:flex;align-items:center;gap:9px}
+.peek .ring{width:30px;height:30px;border-radius:50%;background:conic-gradient(var(--acc) var(--p),rgba(255,255,255,.16) 0);display:flex;align-items:center;justify-content:center;flex:none}
+.peek .ring::after{content:"";width:22px;height:22px;border-radius:50%;background:var(--navy)}
+.peek .tx{flex:1;min-width:0}
+.peek .tx .k{font-size:8.5px;font-weight:900;letter-spacing:1.2px;color:var(--acc-dk)}
+.peek .tx b{display:block;font-size:13px;color:#fff;margin-top:1px}
+.peek .tx .m{font-size:10px;color:#9DB0CA;font-weight:700;margin-top:1px}
+.peek .up{width:28px;height:28px;border-radius:8px;background:rgba(255,255,255,.14);color:#fff;font-size:13px;font-weight:900;display:flex;align-items:center;justify-content:center}
+
+/* full: slim path strip on top */
+.strip{flex:none;display:flex;align-items:center;gap:8px;padding:8px 10px;background:#fff;border-bottom:1px solid var(--line);font-size:11.5px;font-weight:800;color:var(--acc-ink)}
+.strip .ic{width:22px;height:22px;border-radius:6px;background:var(--acc-bg);display:flex;align-items:center;justify-content:center;font-size:11px}
+.strip .p{font-size:10px;color:#9AA5B4;font-weight:700;margin-left:auto}
+
+/* detent diagram */
+.det{display:flex;gap:26px;margin-top:20px;align-items:flex-start}
+.dg{width:150px;height:260px;border:1.5px solid var(--line);border-radius:12px;position:relative;background:var(--soft);overflow:hidden;flex:none}
+.dg .trz{position:absolute;left:10px;right:10px;top:12px;display:flex;flex-direction:column;gap:6px}
+.dg .trz i{height:7px;border-radius:4px;background:#DDE3EA}
+.dg .dk{position:absolute;left:0;right:0;bottom:0;background:#fff;border-top:1.5px solid var(--acc);border-radius:10px 10px 0 0;box-shadow:0 -6px 14px rgba(20,40,74,.10)}
+.dg .dk.nv{background:var(--navy);border-top-color:var(--navy)}
+.dg .lbl{position:absolute;left:0;right:0;bottom:-26px;text-align:center;font-size:11px;font-weight:900;color:var(--navy);letter-spacing:.3px}
+.dgw{display:flex;flex-direction:column;align-items:center;gap:9px}
+.lbl2{font-size:11px;font-weight:900;color:var(--navy);letter-spacing:.3px}
+.ul{list-style:none;flex:1;font-size:15px;line-height:1.5}
+.ul li{display:flex;gap:12px;margin-bottom:11px}
+.ul li>b{flex:none;width:24px;height:24px;border-radius:50%;background:var(--acc);color:#fff;font-size:11.5px;font-weight:900;display:flex;align-items:center;justify-content:center}
+.ul li span b{all:unset;font-weight:800;color:var(--navy)}
+.rules{display:flex;gap:15px;margin-top:30px}
+.rules div{flex:1;background:var(--soft);border:1px solid var(--line);border-radius:14px;padding:16px 18px}
+.rules b{display:block;font-size:11.5px;font-weight:900;letter-spacing:1.1px;color:var(--acc-ink);margin-bottom:5px}
+.rules p{font-size:15px;line-height:1.46}
+.tok{display:flex;gap:12px;margin-top:16px;flex-wrap:wrap}
+.tok>div{display:flex;align-items:center;gap:9px;border:1px solid var(--line);border-radius:10px;padding:8px 12px 8px 8px}
+.tok i{width:30px;height:30px;border-radius:8px;border:1px solid rgba(0,0,0,.06);flex:none}
+.tok b{display:block;font-size:12px;font-weight:900;color:var(--navy);font-family:ui-monospace,Menlo,monospace}
+.tok span{display:block;font-size:11.5px;color:var(--mute);margin-top:1px}
+</style></head><body>
+
+<div class="sheet" id="d">
+ <div class="tb"><i style="background:var(--acc)"></i><i style="background:var(--navy)"></i></div>
+ <div class="bh"><img src="logo.png" alt=""><b>PM&amp;R <span style="color:var(--acc)">Explained</span></b></div>
+ <h1 class="t">The library — final</h1>
+ <div class="dek"><b>Browsing</b> is the straight-line tree. <b>Reading</b> rises from the bottom as a dock you drag between three heights. The tree never leaves, so there is nothing to "go back" from — <b>the library is always right above you.</b></div>
+
+<div class="tok">
+  <div><i style="background:#0E9BA6"></i><div><b>--acc #0E9BA6</b><span>lines, chips, fills, progress</span></div></div>
+  <div><i style="background:#0A7680"></i><div><b>--acc-ink #0A7680</b><span>small accent text on white</span></div></div>
+  <div><i style="background:#E1F4F5"></i><div><b>--acc-bg #E1F4F5</b><span>current row, read chips</span></div></div>
+  <div><i style="background:#B5E0E3"></i><div><b>--acc-bd #B5E0E3</b><span>tinted borders</span></div></div>
+  <div><i style="background:#7FD3DA"></i><div><b>--acc-dk #7FD3DA</b><span>accent text on navy</span></div></div>
+ </div>
+ <h2 class="s">THE JOURNEY</h2>
+ <div class="flow">
+
+  <div><div class="cap"><span class="n">1</span><b>Browsing</b><span>tree, full height</span></div>
+   <div class="sb"><div class="hdr"><div class="lb">EXPLORE</div><div class="fd">⌕ Search…</div></div>
+    <div class="tree">
+     <div class="g">MSK</div>
+     <div class="r open"><i></i>Spine<span class="cv">⌄</span></div>
+     <div class="gl act">
+      <div class="r open"><i class="fo"></i>Spine basic &amp; clinical<span class="cv">⌄</span></div>
+      <div class="gl act">
+       <div class="r pg"><span class="d"></span>Spine overview</div>
+       <div class="r pg tap"><span class="d"></span>Spine anatomy</div>
+       <div class="r pg"><span class="d"></span>Biomechanics of the spine</div>
+       <div class="r pg"><span class="d"></span>Clinical examination</div>
+      </div>
+      <div class="r"><i class="fo"></i>Spinal cord injury<span class="cv">›</span></div>
+      <div class="r pg"><span class="d"></span>Red flags in back pain</div>
+     </div>
+     <div class="r"><i></i>Shoulder<span class="cv">›</span></div>
+     <div class="r"><i></i>Elbow<span class="cv">›</span></div>
+     <div class="r"><i></i>Wrist &amp; hand<span class="cv">›</span></div>
+     <div class="r"><i></i>Hip<span class="cv">›</span></div>
+    </div></div>
+   <div class="cp">The straight-line tree, as today.</div></div>
+
+  <div class="arr"><div class="a">↑</div><div class="l">open a page —<br>dock rises</div></div>
+
+  <div><div class="cap"><span class="n">2</span><b>Reading</b><span>dock at half</span></div>
+   <div class="sb"><div class="hdr"><div class="lb">EXPLORE</div><div class="fd">⌕ Search…</div></div>
+    <div class="tree">
+     <div class="g">MSK</div>
+     <div class="r open"><i></i>Spine<span class="cv">⌄</span></div>
+     <div class="gl act">
+      <div class="r open"><i class="fo"></i>Spine basic &amp; clinical<span class="cv">⌄</span></div>
+      <div class="gl act">
+       <div class="r pg"><span class="d"></span>Spine overview</div>
+       <div class="r pg cur"><span class="d"></span>Spine anatomy<span class="pc">46%</span></div>
+       <div class="r pg"><span class="d"></span>Biomechanics of the spine</div>
+      </div>
+     </div>
+    </div>
+    <div class="dock" style="height:340px">
+     <div class="grip"><i></i></div>
+     <div class="dh"><div class="top"><div><div class="k">READING · 2 / 4</div><b>Spine anatomy</b></div><div class="ctl"><span>▾</span></div></div>
+      <div class="pr"><i style="width:46%"></i></div><div class="m">46% · 22 min left</div></div>
+     <div class="k9">ON THIS PAGE</div>
+     <div class="prog" style="--p:52%">
+      <div class="sec read"><div class="n">1</div>Overview</div>
+      <div class="sec read"><div class="n">2</div>Vertebrae</div>
+      <div class="sec on"><div class="n">3</div>Intervertebral disc</div>
+      <div class="ss on">Posture and disc pressure</div>
+      <div class="sec"><div class="n">4</div>Joints and ligaments</div>
+      <div class="sec"><div class="n">5</div>Spinal canal</div>
+     </div>
+    </div></div>
+   <div class="cp">Tree on top, <b>still usable</b>. The dock follows the scroll.</div></div>
+
+  <div class="arr"><div class="a">⇅</div><div class="l">drag the<br>handle</div></div>
+
+  <div><div class="cap"><span class="n">3</span><b>Focused</b><span>dock at full</span></div>
+   <div class="sb"><div class="hdr" style="padding-bottom:0"><div class="lb">EXPLORE</div></div>
+    <div class="strip"><div class="ic">▴</div>Show the library<span class="p">MSK › Spine</span></div>
+    <div class="dock" style="flex:1;border-radius:0;box-shadow:none;border-top:none">
+     <div class="grip"><i></i></div>
+     <div class="dh"><div class="top"><div><div class="k">READING · 2 / 4</div><b>Spine anatomy</b></div><div class="ctl"><span>▾</span></div></div>
+      <div class="pr"><i style="width:46%"></i></div><div class="m">46% · 22 min left</div></div>
+     <div class="k9">ON THIS PAGE</div>
+     <div class="prog" style="--p:40%">
+      <div class="sec read"><div class="n">1</div>Overview</div>
+      <div class="ss read">The numbers</div>
+      <div class="ss read">The curves</div>
+      <div class="sec read"><div class="n">2</div>Vertebrae</div>
+      <div class="sec on"><div class="n">3</div>Intervertebral disc</div>
+      <div class="ss read">How the disc handles load</div>
+      <div class="ss on">Posture and disc pressure</div>
+      <div class="sec"><div class="n">4</div>Joints and ligaments</div>
+      <div class="sec"><div class="n">5</div>Spinal canal</div>
+      <div class="sec"><div class="n">6</div>Neuroanatomy</div>
+      <div class="sec"><div class="n">7</div>The muscles</div>
+      <div class="sec"><div class="n">8</div>Applied anatomy</div>
+     </div>
+    </div></div>
+   <div class="cp">For long pages. The library is <b>one tap away</b> in the strip at the top.</div></div>
+
+  <div class="arr"><div class="a">↓</div><div class="l">drag down —<br>browse again</div></div>
+
+  <div><div class="cap"><span class="n">4</span><b>Browsing again</b><span>dock tucked</span></div>
+   <div class="sb"><div class="hdr"><div class="lb">EXPLORE</div><div class="fd">⌕ Search…</div></div>
+    <div class="tree">
+     <div class="g">MSK</div>
+     <div class="r open"><i></i>Spine<span class="cv">⌄</span></div>
+     <div class="gl act">
+      <div class="r open"><i class="fo"></i>Spine basic &amp; clinical<span class="cv">⌄</span></div>
+      <div class="gl act">
+       <div class="r pg"><span class="d"></span>Spine overview</div>
+       <div class="r pg cur"><span class="d"></span>Spine anatomy<span class="pc">46%</span></div>
+       <div class="r pg"><span class="d"></span>Biomechanics of the spine</div>
+       <div class="r pg"><span class="d"></span>Clinical examination</div>
+      </div>
+      <div class="r"><i class="fo"></i>Spinal cord injury<span class="cv">›</span></div>
+     </div>
+     <div class="r open"><i></i>Shoulder<span class="cv">⌄</span></div>
+     <div class="gl"><div class="r"><i class="fo"></i>Rotator cuff<span class="cv">›</span></div><div class="r"><i class="fo"></i>Instability<span class="cv">›</span></div></div>
+     <div class="r"><i></i>Elbow<span class="cv">›</span></div>
+    </div>
+    <div class="peek"><div class="grip"><i></i></div>
+     <div class="row"><div class="ring" style="--p:46%"></div><div class="tx"><div class="k">STILL READING</div><b>Spine anatomy</b><div class="m">46% · section 3 of 6</div></div><div class="up">▴</div></div>
+    </div></div>
+   <div class="cp">Browse anywhere; your page waits in a <b>bar at the bottom</b>. Tap it to come back.</div></div>
+
+ </div>
+
+ <h2 class="s">THREE HEIGHTS</h2>
+ <div class="det">
+  <div class="dgw"><div class="dg"><div class="trz"><i></i><i style="width:70%"></i><i></i><i style="width:60%"></i><i></i><i style="width:80%"></i><i></i><i style="width:55%"></i></div><div class="dk nv" style="height:44px"></div></div><div class="lbl2">PEEK · 64px</div></div>
+  <div class="dgw"><div class="dg"><div class="trz"><i></i><i style="width:70%"></i><i></i><i style="width:60%"></i></div><div class="dk" style="height:55%"></div></div><div class="lbl2">HALF · 55%</div></div>
+  <div class="dgw"><div class="dg"><div class="trz"><i style="width:60%"></i></div><div class="dk" style="height:88%"></div></div><div class="lbl2">FULL · all but a strip</div></div>
+  <ul class="ul" style="margin-left:20px">
+   <li><b>1</b><span><b>Peek</b> — a 64px navy bar: progress ring, page title, section, and ▴. The tree has the whole sidebar. Tapping anywhere on the bar raises the dock to half.</span></li>
+   <li><b>2</b><span><b>Half</b> — the default when a page opens. Tree above, contents below, both scroll independently. Tapping another page in the tree swaps the dock's contents.</span></li>
+   <li><b>3</b><span><b>Full</b> — for long pages. The tree collapses to a slim strip — "▴ Show the library" with the current path — so browsing is always one tap away.</span></li>
+   <li><b>4</b><span><b>Moving between them</b> — drag the grip, or use the ▾ / ▴ buttons. Heights snap to the three positions, never in between. Keyboard: <b>Ctrl ↑ / Ctrl ↓</b>.</span></li>
+   <li><b>5</b><span><b>The dock remembers</b> the height you last chose and opens there next time.</span></li>
+  </ul>
+ </div>
+
+ <div class="rules">
+  <div><b>NO "BACK" NEEDED</b><p>The library never disappears — at worst it is a strip at the top. Leaving a page is just scrolling the tree.</p></div>
+  <div><b>ONE PAGE IN THE DOCK</b><p>Opening a different page replaces the dock's contents. The previous page keeps its progress in the tree.</p></div>
+  <div><b>INDEPENDENT SCROLL</b><p>Tree and dock each scroll on their own. The dock auto-scrolls to keep the current section in view.</p></div>
+  <div><b>SNAP, DON'T DRIFT</b><p>Three fixed heights only. A dock that can stop anywhere feels unfinished and is harder to return to.</p></div>
+ </div>
+</div>
+
+</body></html>

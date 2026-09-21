@@ -159,6 +159,22 @@
      never in page content, where --color-accent stays the only teal. */
   --color-teal-on-dark: #0e9aa6;
 
+  /* ---------- Color: Explore tree accent (fixed, not theme-swapped) ----------
+     LIBRARY-FINAL-SPEC.md — a second, brighter teal reserved for the
+     Explore tree/reading rail specifically (navigation only, not a
+     platform-wide swap of --color-accent — the spec leaves that as an
+     open decision and this scopes narrowly until it's made). Two
+     shades for the same reason --color-accent/-hover exist: #0E9BA6
+     is ~3.4:1 on white (fine for lines/icons/fills, too light for
+     small text at 4.5:1); #0A7680 is the same hue at ~5.4:1 — spec's
+     explicit rule is --acc-ink for any small accent text on white,
+     never --acc. */
+  --color-acc: #0e9ba6;
+  --color-acc-ink: #0a7680;
+  --color-acc-bg: #e1f4f5;
+  --color-acc-bd: #b5e0e3;
+  --color-acc-dk: #7fd3da;
+
   /* ---------- Spacing: 8px base grid ----------
      4/8/12/16/24/32/48/64px. Tailwind's default spacing scale
      (steps 1,2,3,4,6,8,12,16) already maps exactly to this scale
@@ -378,6 +394,12 @@
 
   --color-teal-on-dark: var(--color-teal-on-dark);
 
+  --color-acc: var(--color-acc);
+  --color-acc-ink: var(--color-acc-ink);
+  --color-acc-bg: var(--color-acc-bg);
+  --color-acc-bd: var(--color-acc-bd);
+  --color-acc-dk: var(--color-acc-dk);
+
   --max-width-reading: var(--max-width-reading);
 
   --duration-fast: var(--duration-fast);
@@ -494,4 +516,17 @@ body {
   font-family: var(--font-ui);
   font-size: 0.875rem;
   color: #a9bbd3;
+}
+
+/* SIDEBAR-SPEC.md (the library rail) — the browse<->page-view
+   crossfade. A cross-fade rather than a slide on purpose: these are
+   different views (browsing vs. reading), not adjacent steps in one
+   sequence. Entrance-only, applied via a `key`-forced remount. */
+@keyframes rail-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }

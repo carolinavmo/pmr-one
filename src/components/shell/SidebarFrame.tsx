@@ -98,7 +98,7 @@ export function SidebarFrame({ tree, userName, userEmail, userRole }: SidebarFra
   return (
     <aside
       style={{ top: topOffset, height: `calc(100vh - ${topOffset}px)` }}
-      className="sticky hidden w-[228px] shrink-0 flex-col border-r border-border bg-surface-raised lg:flex"
+      className="sticky hidden w-[312px] shrink-0 flex-col border-r border-border bg-surface-raised lg:flex"
     >
       {/* NAVBAR-SPEC.md — the six tool links that used to open this
           header region moved to the navbar's own Row 2
@@ -117,8 +117,13 @@ export function SidebarFrame({ tree, userName, userEmail, userRole }: SidebarFra
         </button>
       </div>
 
-      <div className="flex min-h-0 flex-1 flex-col overflow-y-auto px-3 py-3">
-        <IndexSidebar tree={tree} />
+      {/* No overflow-y-auto here — SIDEBAR-SPEC.md's sticky bands need
+          exactly one unambiguous scrolling ancestor (IndexSidebar's own
+          <nav>) between them and the band and its `top` offset; a second
+          scrollable ancestor above it is exactly the kind of thing that
+          silently breaks position: sticky. */}
+      <div className="flex min-h-0 flex-1 flex-col px-3 py-3">
+        <IndexSidebar tree={tree} isSignedIn={!signedOut} />
       </div>
 
       <div className="flex flex-col gap-3 border-t border-border p-3">

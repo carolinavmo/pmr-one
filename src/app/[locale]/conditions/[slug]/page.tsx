@@ -5,11 +5,12 @@ import { recordPageView, getSavedPearlIds, isDiseaseFavorited } from "@/lib/work
 import { getAnnotationsForDisease, type Annotation } from "@/lib/annotations";
 import { estimateReadingMinutes } from "@/lib/reading-time";
 import { getSectionSummaries } from "@/lib/sections";
-import { getBreadcrumbPath, getAdjacentDiseases } from "@/lib/topics";
+import { getBreadcrumbPath, getAdjacentDiseases, getFolderAdjacentDiseases } from "@/lib/topics";
 import { BlockSequence } from "@/components/blocks/BlockSequence";
 import { Breadcrumbs } from "@/components/disease-page/Breadcrumbs";
 import { OnThisPage } from "@/components/disease-page/OnThisPage";
 import { AdjacentDiseaseNav } from "@/components/disease-page/AdjacentDiseaseNav";
+import { EndOfPageBar } from "@/components/disease-page/EndOfPageBar";
 import { BackToTop } from "@/components/disease-page/BackToTop";
 import { DiseaseSnapshot, extractSnapshot } from "@/components/disease-page/DiseaseSnapshot";
 import { DiseaseHeader } from "@/components/disease-page/DiseaseHeader";
@@ -44,9 +45,10 @@ export default async function DiseasePage({ params }: DiseasePageProps) {
   const bodyBlocks = snapshot ? snapshot.rest : disease.blocks;
 
   const sectionSummaries = getSectionSummaries(bodyBlocks);
-  const [breadcrumbPath, adjacent] = await Promise.all([
+  const [breadcrumbPath, adjacent, folderAdjacent] = await Promise.all([
     getBreadcrumbPath(slug),
     getAdjacentDiseases(slug, canSeeUnpublished),
+    getFolderAdjacentDiseases(slug, canSeeUnpublished),
   ]);
 
   // Personal Workspace is signed-in only — a visitor's layout and
@@ -121,6 +123,17 @@ export default async function DiseasePage({ params }: DiseasePageProps) {
         canEdit={canEdit}
         isSignedIn={Boolean(session)}
       />
+      {folderAdjacent && (
+        <EndOfPageBar
+          pathLabel={folderAdjacent.pathLabel}
+          previous={folderAdjacent.previous}
+          next={folderAdjacent.next}
+          diseaseId={disease.id}
+          diseaseSlug={disease.slug}
+          isSignedIn={Boolean(session)}
+          isFavorited={isFavorited}
+        />
+      )}
       <AdjacentDiseaseNav adjacent={adjacent} />
       <BackToTop />
     </>

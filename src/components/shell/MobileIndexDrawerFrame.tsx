@@ -8,6 +8,7 @@ import { IndexSidebar } from "./IndexSidebar";
 
 interface MobileIndexDrawerFrameProps {
   tree: TopicNode[];
+  isSignedIn: boolean;
 }
 
 // Below `lg`, Sidebar hides itself entirely (own file, `hidden ...
@@ -20,7 +21,7 @@ interface MobileIndexDrawerFrameProps {
 // (Sidebar vs. TopBar), and the topic table is small enough that one
 // extra query is cheaper than wiring cross-component shared state just
 // to avoid it.
-export function MobileIndexDrawerFrame({ tree }: MobileIndexDrawerFrameProps) {
+export function MobileIndexDrawerFrame({ tree, isSignedIn }: MobileIndexDrawerFrameProps) {
   const t = useTranslations("nav");
   const [open, setOpen] = useState(false);
 
@@ -54,11 +55,11 @@ export function MobileIndexDrawerFrame({ tree }: MobileIndexDrawerFrameProps) {
 
       <aside
         aria-label={t("explore")}
-        className={`fixed top-0 left-0 z-50 flex h-full w-80 max-w-[85vw] flex-col gap-3 overflow-y-auto border-r border-border bg-surface-raised p-4 shadow-xl transition-transform duration-base ${
+        className={`fixed top-0 left-0 z-50 flex h-full w-80 max-w-[85vw] flex-col gap-3 border-r border-border bg-surface-raised p-4 shadow-xl transition-transform duration-base ${
           open ? "translate-x-0" : "-translate-x-full"
         }`}
       >
-        <div className="flex items-center justify-end">
+        <div className="flex shrink-0 items-center justify-end">
           <button
             type="button"
             onClick={() => setOpen(false)}
@@ -68,7 +69,14 @@ export function MobileIndexDrawerFrame({ tree }: MobileIndexDrawerFrameProps) {
             <X className="size-4" aria-hidden="true" />
           </button>
         </div>
-        <IndexSidebar tree={tree} onNavigate={() => setOpen(false)} />
+        {/* min-h-0 so IndexSidebar's own <nav> is the sole scrolling
+            ancestor its sticky bands measure against — an overflow-
+            auto aside above it would be exactly the kind of second
+            scroll container SIDEBAR-SPEC.md warns silently breaks
+            sticky. */}
+        <div className="flex min-h-0 flex-1 flex-col">
+          <IndexSidebar tree={tree} isSignedIn={isSignedIn} onNavigate={() => setOpen(false)} />
+        </div>
       </aside>
     </>
   );

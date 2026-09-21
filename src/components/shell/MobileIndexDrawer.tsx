@@ -10,5 +10,5 @@ export async function MobileIndexDrawer() {
   const canReview = session?.user.role === "editor" || session?.user.role === "admin";
   const tree = await getTopicTree(canReview);
 
-  return <MobileIndexDrawerFrame tree={tree} />;
+  return <MobileIndexDrawerFrame tree={tree} isSignedIn={Boolean(session)} />;
 }
