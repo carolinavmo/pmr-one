@@ -40,7 +40,14 @@ import { RichEditableText } from "@/components/ui/RichEditableText";
 import { ZoomableImage } from "@/components/ui/ZoomableImage";
 import { cardIcons, type CardIconName } from "@/components/ui/cardIcons";
 import { sanitizeRichText } from "@/lib/rich-text";
-import { CARD_COLOR_CARD_ACCENT, CARD_COLOR_CHIP, CARD_COLOR_TEXT } from "@/lib/card-colors";
+import {
+  CARD_COLOR_CARD_ACCENT,
+  CARD_COLOR_CHIP,
+  CARD_COLOR_TEXT,
+  CARD_COLOR_BADGE,
+  CARD_COLOR_BORDER,
+  CARD_COLOR_BORDER_STRONG,
+} from "@/lib/card-colors";
 import { FOCAL_POINT_OPTIONS, FOCAL_POINT_CLASS, type ImageFocalPoint } from "@/lib/image-focal-point";
 
 type Column = HighlightTableBlock["columns"][number];
@@ -252,7 +259,7 @@ export function HighlightTableBlockView({
   const bodyText = (
     <RichEditableText
       as="p"
-      className="font-reading text-base leading-5 text-primary"
+      className="font-reading text-base text-primary"
       value={text}
       onSave={async (value) => {
         setText(value);
@@ -448,15 +455,17 @@ export function HighlightTableBlockView({
     const tableBody = (
       <>
         {title && titleField}
-        <div className="rounded-lg border border-border bg-surface">
+        <div className={`overflow-hidden rounded-lg border bg-surface ${CARD_COLOR_BORDER_STRONG[color]}`}>
           <table className="w-full border-collapse font-reading text-xs">
             <thead>
-              <tr className={`border-b border-border ${CARD_COLOR_CHIP[color]}`}>
+              <tr className={CARD_COLOR_BADGE[color]}>
                 {showBadgeColumn && (
-                  <th className="w-12 px-2 py-1.5 text-center font-medium">{badgeColumnTitle}</th>
+                  <th className="w-12 px-2 py-2 text-center font-ui text-xs font-bold tracking-wider uppercase">
+                    {badgeColumnTitle}
+                  </th>
                 )}
                 {columns.map((column, i) => (
-                  <th key={i} className="px-3 py-1.5 text-left font-medium">
+                  <th key={i} className="px-3 py-2 text-left font-ui text-xs font-bold tracking-wider uppercase">
                     {column.title}
                   </th>
                 ))}
@@ -467,7 +476,7 @@ export function HighlightTableBlockView({
                 const BadgeIcon =
                   row.badgeIcon && isCardIconName(row.badgeIcon) ? cardIcons[row.badgeIcon] : null;
                 return (
-                  <tr key={rowIndex} className="border-b border-border last:border-0">
+                  <tr key={rowIndex} className={`border-b last:border-0 ${CARD_COLOR_BORDER[color]}`}>
                     {showBadgeColumn && (
                       <td className="px-2 py-2 text-center align-middle">
                         <span

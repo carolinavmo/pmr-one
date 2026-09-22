@@ -121,7 +121,11 @@ export type CardColor =
   | "indigo"
   | "purple"
   | "fuchsia"
-  | "pink";
+  | "pink"
+  | "navy"
+  | "wine"
+  | "umber"
+  | "plum";
 
 export interface ParagraphBlock extends BlockBase {
   type: "paragraph";

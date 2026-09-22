@@ -136,17 +136,17 @@ export function RichTableBlockView({
             diseaseSlug={diseaseSlug}
           />
         )}
-        <div className="rounded-lg border border-border">
+        <div className="overflow-hidden rounded-lg border border-navy">
           <table className="w-full border-collapse font-reading text-xs">
             <thead>
-              <tr className="border-b border-border bg-accent-bg">
+              <tr className="bg-navy">
                 {showBadgeColumn && (
-                  <th className="w-12 px-2 py-1.5 text-center font-medium text-primary">
+                  <th className="w-12 px-2 py-2 text-center font-ui text-xs font-bold tracking-wider text-white uppercase">
                     {badgeColumnTitle}
                   </th>
                 )}
                 {columns.map((column, i) => (
-                  <th key={i} className="px-3 py-1.5 text-left font-medium text-primary">
+                  <th key={i} className="px-3 py-2 text-left font-ui text-xs font-bold tracking-wider text-white uppercase">
                     {column.title}
                   </th>
                 ))}
@@ -157,7 +157,7 @@ export function RichTableBlockView({
                 const BadgeIcon =
                   row.badgeIcon && isCardIconName(row.badgeIcon) ? cardIcons[row.badgeIcon] : null;
                 return (
-                  <tr key={rowIndex} className="border-b border-border last:border-0">
+                  <tr key={rowIndex} className="border-b border-navy/25 last:border-0">
                     {showBadgeColumn && (
                       <td className="px-2 py-2 text-center align-middle">
                         <span className="mx-auto flex size-6 items-center justify-center rounded-full border-2 border-accent font-ui text-xs font-semibold text-accent">

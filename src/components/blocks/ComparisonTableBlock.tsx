@@ -66,14 +66,14 @@ export function ComparisonTableBlockView({
         {block.caption && (
           <p className={`font-ui text-sm text-secondary ${TEXT_ALIGN_CLASS[captionAlign]}`}>{block.caption}</p>
         )}
-        <div className="rounded-lg border border-border">
+        <div className="overflow-hidden rounded-lg border border-navy">
           <table className="w-full border-collapse font-reading text-sm">
             <thead>
-              <tr className="border-b border-border bg-accent-bg">
+              <tr className="bg-navy">
                 {block.columns.map((column, i) => (
                   <th
                     key={i}
-                    className="px-3 py-2 text-left font-medium text-primary"
+                    className="px-3 py-2 text-left font-ui text-xs font-bold tracking-wider text-white uppercase"
                     dangerouslySetInnerHTML={{ __html: sanitizeRichText(column) }}
                   />
                 ))}
@@ -81,7 +81,7 @@ export function ComparisonTableBlockView({
             </thead>
             <tbody>
               {block.rows.map((row, rowIndex) => (
-                <tr key={rowIndex} className="border-b border-border last:border-0">
+                <tr key={rowIndex} className="border-b border-navy/25 last:border-0">
                   {row.map((cell, cellIndex) => (
                     <td
                       key={cellIndex}

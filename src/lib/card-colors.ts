@@ -52,6 +52,10 @@ export const CARD_COLOR_ORDER: CardColor[] = [
   "purple",
   "fuchsia",
   "pink",
+  "navy",
+  "wine",
+  "umber",
+  "plum",
 ];
 
 export const CARD_COLOR_LABEL: Record<CardColor, string> = {
@@ -75,6 +79,10 @@ export const CARD_COLOR_LABEL: Record<CardColor, string> = {
   purple: "Purple",
   fuchsia: "Fuchsia",
   pink: "Pink",
+  navy: "Navy",
+  wine: "Wine",
+  umber: "Umber",
+  plum: "Plum",
 };
 
 // The picker's own swatch dot — a solid fill so the 20 options are
@@ -100,6 +108,10 @@ export const CARD_COLOR_SWATCH: Record<CardColor, string> = {
   purple: "bg-card-purple",
   fuchsia: "bg-card-fuchsia",
   pink: "bg-card-pink",
+  navy: "bg-card-navy",
+  wine: "bg-card-wine",
+  umber: "bg-card-umber",
+  plum: "bg-card-plum",
 };
 
 // A card's own background — a quiet tint plus a matching border, not
@@ -126,6 +138,10 @@ export const CARD_COLOR_CARD: Record<CardColor, string> = {
   purple: "border-card-purple/30 bg-card-purple/5",
   fuchsia: "border-card-fuchsia/30 bg-card-fuchsia/5",
   pink: "border-card-pink/30 bg-card-pink/5",
+  navy: "border-card-navy/30 bg-card-navy/5",
+  wine: "border-card-wine/30 bg-card-wine/5",
+  umber: "border-card-umber/30 bg-card-umber/5",
+  plum: "border-card-plum/30 bg-card-plum/5",
 };
 
 // An alternate card treatment (EXPERIMENTAL, local-only — not yet
@@ -156,6 +172,10 @@ export const CARD_COLOR_CARD_ACCENT: Record<CardColor, string> = {
   purple: "border-l-4 border-l-card-purple/60 bg-card-purple/5",
   fuchsia: "border-l-4 border-l-card-fuchsia/60 bg-card-fuchsia/5",
   pink: "border-l-4 border-l-card-pink/60 bg-card-pink/5",
+  navy: "border-l-4 border-l-card-navy/60 bg-card-navy/5",
+  wine: "border-l-4 border-l-card-wine/60 bg-card-wine/5",
+  umber: "border-l-4 border-l-card-umber/60 bg-card-umber/5",
+  plum: "border-l-4 border-l-card-plum/60 bg-card-plum/5",
 };
 
 // A badge's pill treatment — a solid, fixed-dark fill with light text
@@ -184,6 +204,73 @@ export const CARD_COLOR_BADGE: Record<CardColor, string> = {
   purple: "bg-badge-purple text-white",
   fuchsia: "bg-badge-fuchsia text-white",
   pink: "bg-badge-pink text-white",
+  navy: "bg-badge-navy text-white",
+  wine: "bg-badge-wine text-white",
+  umber: "bg-badge-umber text-white",
+  plum: "bg-badge-plum text-white",
+};
+
+// A table's own rule lines (card border + row dividers) tinted to
+// match its colored header bar instead of the generic neutral
+// `border-border` grey — reads the same fixed `--color-badge-*` token
+// CARD_COLOR_BADGE's header fill uses, at low opacity so a grid of
+// thin lines doesn't read as heavy as the solid header itself.
+export const CARD_COLOR_BORDER: Record<CardColor, string> = {
+  neutral: "border-border",
+  accent: "border-badge-accent/25",
+  trust: "border-badge-trust/25",
+  insight: "border-badge-insight/25",
+  blue: "border-badge-blue/25",
+  violet: "border-badge-violet/25",
+  rose: "border-badge-rose/25",
+  slate: "border-badge-slate/25",
+  red: "border-badge-red/25",
+  orange: "border-badge-orange/25",
+  yellow: "border-badge-yellow/25",
+  lime: "border-badge-lime/25",
+  green: "border-badge-green/25",
+  teal: "border-badge-teal/25",
+  cyan: "border-badge-cyan/25",
+  sky: "border-badge-sky/25",
+  indigo: "border-badge-indigo/25",
+  purple: "border-badge-purple/25",
+  fuchsia: "border-badge-fuchsia/25",
+  pink: "border-badge-pink/25",
+  navy: "border-badge-navy/25",
+  wine: "border-badge-wine/25",
+  umber: "border-badge-umber/25",
+  plum: "border-badge-plum/25",
+};
+
+// The table card's own outer frame — full-strength (not the /25 tint
+// CARD_COLOR_BORDER's row dividers use) so the frame itself reads as
+// the same solid color as the header bar it encloses, with the
+// dividers inside staying a quieter tint of it.
+export const CARD_COLOR_BORDER_STRONG: Record<CardColor, string> = {
+  neutral: "border-border",
+  accent: "border-badge-accent",
+  trust: "border-badge-trust",
+  insight: "border-badge-insight",
+  blue: "border-badge-blue",
+  violet: "border-badge-violet",
+  rose: "border-badge-rose",
+  slate: "border-badge-slate",
+  red: "border-badge-red",
+  orange: "border-badge-orange",
+  yellow: "border-badge-yellow",
+  lime: "border-badge-lime",
+  green: "border-badge-green",
+  teal: "border-badge-teal",
+  cyan: "border-badge-cyan",
+  sky: "border-badge-sky",
+  indigo: "border-badge-indigo",
+  purple: "border-badge-purple",
+  fuchsia: "border-badge-fuchsia",
+  pink: "border-badge-pink",
+  navy: "border-badge-navy",
+  wine: "border-badge-wine",
+  umber: "border-badge-umber",
+  plum: "border-badge-plum",
 };
 
 // A small colored icon-chip treatment (Explore sidebar topic icons,
@@ -214,6 +301,10 @@ export const CARD_COLOR_CHIP: Record<CardColor, string> = {
   purple: "bg-card-purple/15 text-card-purple",
   fuchsia: "bg-card-fuchsia/15 text-card-fuchsia",
   pink: "bg-card-pink/15 text-card-pink",
+  navy: "bg-card-navy/15 text-card-navy",
+  wine: "bg-card-wine/15 text-card-wine",
+  umber: "bg-card-umber/15 text-card-umber",
+  plum: "bg-card-plum/15 text-card-plum",
 };
 
 // A low-opacity full-row background wash (the Explore sidebar's
@@ -240,6 +331,10 @@ export const CARD_COLOR_TINT: Record<CardColor, string> = {
   purple: "bg-card-purple/10",
   fuchsia: "bg-card-fuchsia/10",
   pink: "bg-card-pink/10",
+  navy: "bg-card-navy/10",
+  wine: "bg-card-wine/10",
+  umber: "bg-card-umber/10",
+  plum: "bg-card-plum/10",
 };
 
 // Text color only, no background — the Explore sidebar's active-
@@ -268,4 +363,8 @@ export const CARD_COLOR_TEXT: Record<CardColor, string> = {
   purple: "text-card-purple",
   fuchsia: "text-card-fuchsia",
   pink: "text-card-pink",
+  navy: "text-card-navy",
+  wine: "text-card-wine",
+  umber: "text-card-umber",
+  plum: "text-card-plum",
 };

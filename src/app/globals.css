@@ -100,6 +100,15 @@
   --color-card-purple: #a855f7;
   --color-card-fuchsia: #d946ef;
   --color-card-pink: #ec4899;
+  /* 4 more, muted/editorial rather than another vivid web hue — drawn
+     from the platform's own register (navy is literally --color-navy;
+     wine/umber/plum sit at the same restrained chroma as the brief's
+     four meaningful roles) rather than the Tailwind 500 ramp the 16
+     above come from. */
+  --color-card-navy: #14284a;
+  --color-card-wine: #9c3f56;
+  --color-card-umber: #8b5a34;
+  --color-card-plum: #6b4c7a;
 
   /* ---------- Color: badge backgrounds (fixed, not theme-swapped) ----------
      A badge is its own small dark chip with light text — unlike every
@@ -136,6 +145,12 @@
   --color-badge-purple: #9333ea;
   --color-badge-fuchsia: #c026d3;
   --color-badge-pink: #db2777;
+  /* Badge counterparts for the 4 muted additions — a further ~18%
+     darkening step below each, same ratio as the original 4. */
+  --color-badge-navy: #0c1c37;
+  --color-badge-wine: #7a2e42;
+  --color-badge-umber: #6b4526;
+  --color-badge-plum: #54395f;
 
   /* ---------- Color: footer (fixed, not theme-swapped) ----------
      Same "declared once, doesn't flip with light/dark" reasoning as
@@ -255,6 +270,13 @@
     --color-card-purple: #d8b4fe;
     --color-card-fuchsia: #f0abfc;
     --color-card-pink: #f9a8d4;
+    /* Same transform for the 4 muted additions — navy reuses this
+       file's own dark-mode --color-navy value exactly, for a card
+       color that's meant to represent the platform's own ink. */
+    --color-card-navy: #90a6d1;
+    --color-card-wine: #e8a8b7;
+    --color-card-umber: #d9b48a;
+    --color-card-plum: #c9a8d4;
   }
 }
 
@@ -303,6 +325,10 @@
   --color-card-purple: #d8b4fe;
   --color-card-fuchsia: #f0abfc;
   --color-card-pink: #f9a8d4;
+  --color-card-navy: #90a6d1;
+  --color-card-wine: #e8a8b7;
+  --color-card-umber: #d9b48a;
+  --color-card-plum: #c9a8d4;
 }
 
 /* Homepage hero background photo — light-mode only (it's a near-white
@@ -365,6 +391,10 @@
   --color-card-purple: var(--color-card-purple);
   --color-card-fuchsia: var(--color-card-fuchsia);
   --color-card-pink: var(--color-card-pink);
+  --color-card-navy: var(--color-card-navy);
+  --color-card-wine: var(--color-card-wine);
+  --color-card-umber: var(--color-card-umber);
+  --color-card-plum: var(--color-card-plum);
 
   --color-badge-neutral: var(--color-badge-neutral);
   --color-badge-accent: var(--color-badge-accent);
@@ -386,6 +416,10 @@
   --color-badge-purple: var(--color-badge-purple);
   --color-badge-fuchsia: var(--color-badge-fuchsia);
   --color-badge-pink: var(--color-badge-pink);
+  --color-badge-navy: var(--color-badge-navy);
+  --color-badge-wine: var(--color-badge-wine);
+  --color-badge-umber: var(--color-badge-umber);
+  --color-badge-plum: var(--color-badge-plum);
 
   --color-footer-bg: var(--color-footer-bg);
   --color-footer-border: var(--color-footer-border);
@@ -428,14 +462,15 @@
 
   /* Main content font size — started from DESIGN-BRIEF.md's "Body"
      spec (17.5/400, line-height 1.66), stepped down a notch on
-     founder feedback ("a bit smaller"), same 1.66 ratio kept.
+     founder feedback ("a bit smaller") to 16px, then again to 15px on
+     the same feedback, same 1.66 ratio kept both times.
      Overrides Tailwind's default 16px/24px `text-base`. Every prose
      block (paragraph, key point, clinical pearl, warning, etc.) sets
      its own body text via `text-base` — overriding the token here
      applies to all of them at once, rather than editing each block
      component individually. */
-  --text-base: 16px;
-  --text-base--line-height: 27px; /* 16 * 1.66 ≈ 26.56, rounded */
+  --text-base: 15px;
+  --text-base--line-height: 25px; /* 15 * 1.66 ≈ 24.9, rounded */
 }
 
 body {

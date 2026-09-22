@@ -62,7 +62,7 @@ export function KeyPointBlockView({
           </span>
           <RichEditableText
             as="p"
-            className={`font-reading text-base leading-5 text-primary ${TEXT_ALIGN_CLASS[textAlign]}`}
+            className={`font-reading text-base text-primary ${TEXT_ALIGN_CLASS[textAlign]}`}
             value={block.text}
             onSave={(value) => updateBlockRichTextAction(block.id, "text", value)}
             block={block}
@@ -79,7 +79,7 @@ export function KeyPointBlockView({
       <KeyNumbersCallout>
         <RichEditableText
           as="p"
-          className={`font-reading text-base leading-5 text-[#D6DEEA] [&_b]:text-white [&_strong]:text-white ${TEXT_ALIGN_CLASS[textAlign]}`}
+          className={`font-reading text-base text-[#D6DEEA] [&_b]:text-white [&_strong]:text-white ${TEXT_ALIGN_CLASS[textAlign]}`}
           value={block.text}
           onSave={(value) => updateBlockRichTextAction(block.id, "text", value)}
           block={block}

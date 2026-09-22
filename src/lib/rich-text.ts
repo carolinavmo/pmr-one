@@ -61,6 +61,10 @@ export const TEXT_COLOR_CLASS: Record<CardColor, string> = {
   purple: "text-card-purple",
   fuchsia: "text-card-fuchsia",
   pink: "text-card-pink",
+  navy: "text-card-navy",
+  wine: "text-card-wine",
+  umber: "text-card-umber",
+  plum: "text-card-plum",
 };
 
 // Highlight/background — a visible tint (not the ~5% a card's own
@@ -87,6 +91,10 @@ export const TEXT_BG_CLASS: Record<CardColor, string> = {
   purple: "bg-card-purple/25",
   fuchsia: "bg-card-fuchsia/25",
   pink: "bg-card-pink/25",
+  navy: "bg-card-navy/25",
+  wine: "bg-card-wine/25",
+  umber: "bg-card-umber/25",
+  plum: "bg-card-plum/25",
 };
 
 export { CARD_COLOR_ORDER as TEXT_COLOR_ORDER, CARD_COLOR_LABEL as TEXT_COLOR_LABEL, CARD_COLOR_SWATCH as TEXT_COLOR_SWATCH };

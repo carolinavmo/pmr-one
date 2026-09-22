@@ -247,7 +247,7 @@ const FULL_STRIP_PX = 40;
 // ---- Tree row styling (LIBRARY-FINAL-SPEC.md §1) --------------------
 const GROUP_LABEL_CLASS = "px-2 pt-2.5 pb-1 font-ui text-[9.5px] font-black tracking-[1.4px] text-[#9AA5B4] first:pt-0";
 const TREE_ROW_CLASS =
-  "flex w-full items-start gap-[9px] rounded-lg px-2 py-1.5 text-left font-ui text-[13px] font-bold leading-[1.3] text-primary transition-colors duration-base hover:bg-[#EAEEF3] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-navy focus-visible:ring-offset-2 focus-visible:ring-offset-white";
+  "flex w-full items-start gap-[9px] rounded-lg px-2 py-1.5 text-left font-ui text-[13px] font-normal leading-[1.3] text-primary transition-colors duration-base hover:bg-[#EAEEF3] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-navy focus-visible:ring-offset-2 focus-visible:ring-offset-white";
 const TREE_TILE_CLASS = "-mt-px flex size-[19px] shrink-0 items-center justify-center rounded-[6px]";
 // Background/icon color kept out of TREE_TILE_CLASS and chosen one-or-
 // the-other below (an admin-picked CardColor via CARD_COLOR_CHIP, or
@@ -261,7 +261,7 @@ const TREE_TILE_FOLDER_DEFAULT_CLASS = "border border-[#E6D2A8] bg-insight-bg te
 // it's always the accent colour; the spec's "#D0D7E1 elsewhere" describes
 // the token's other use (the reading-progress line), not a second
 // state this always-one-open-path tree ever shows.
-const GUIDE_LINE_CLASS = "ml-[17px] border-l-[1.5px] border-navy pl-1";
+const GUIDE_LINE_CLASS = "ml-[17px] border-l-[1.5px] border-border pl-1";
 const PAGE_ROW_CLASS =
   "flex items-start gap-[9px] rounded-lg px-2 py-1.5 font-ui text-[12.5px] leading-[1.3] transition-colors duration-base hover:bg-[#EAEEF3] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-navy focus-visible:ring-offset-2 focus-visible:ring-offset-white";
 // font-weight and text-color kept out of PAGE_ROW_CLASS and chosen
@@ -275,8 +275,8 @@ const PAGE_ROW_CLASS =
 // chrome, which still needs a teal accent since navy-on-navy there
 // would be invisible — that's why only the tree switched, not the
 // whole --acc system).
-const PAGE_ROW_CURRENT_CLASS = "bg-navy/[0.08] font-extrabold text-navy hover:bg-navy/[0.08]";
-const PAGE_ROW_DEFAULT_CLASS = "font-semibold text-secondary";
+const PAGE_ROW_CURRENT_CLASS = "bg-navy/[0.08] font-medium text-navy hover:bg-navy/[0.08]";
+const PAGE_ROW_DEFAULT_CLASS = "font-normal text-secondary";
 
 export function IndexSidebar({ tree, isSignedIn, onNavigate, headerAction }: IndexSidebarProps) {
   const t = useTranslations("nav");
