@@ -6,6 +6,8 @@ import type {
   CardColor,
   EditorialBlock,
   HighlightCardBlock,
+  HighlightCardV2Block,
+  HighlightCardV3Block,
   HighlightTableBlock,
   ImageRowBlock,
   ManeuverRelationship,
@@ -593,6 +595,36 @@ async function resolveBlock(diseaseId: string, row: BlockRow): Promise<Editorial
         imageWidth: cc.imageWidth as HighlightCardBlock["imageWidth"],
         imageFocalPoint: cc.imageFocalPoint as HighlightCardBlock["imageFocalPoint"],
         imageFit: cc.imageFit as HighlightCardBlock["imageFit"],
+      };
+
+    case "highlight_card_v2":
+      return {
+        type: "highlight_card_v2",
+        id: row.id,
+        label: (cc.label as string) ?? "Key Takeaway",
+        text: (cc.text as string) ?? "",
+        color: cc.color as CardColor | undefined,
+        imageUrl: cc.imageUrl as string | undefined,
+        imageAlt: cc.imageAlt as string | undefined,
+        imagePosition: cc.imagePosition as HighlightCardV2Block["imagePosition"],
+        imageWidth: cc.imageWidth as HighlightCardV2Block["imageWidth"],
+        imageFocalPoint: cc.imageFocalPoint as HighlightCardV2Block["imageFocalPoint"],
+        imageFit: cc.imageFit as HighlightCardV2Block["imageFit"],
+      };
+
+    case "highlight_card_v3":
+      return {
+        type: "highlight_card_v3",
+        id: row.id,
+        label: (cc.label as string) ?? "Key Takeaway",
+        text: (cc.text as string) ?? "",
+        color: cc.color as CardColor | undefined,
+        imageUrl: cc.imageUrl as string | undefined,
+        imageAlt: cc.imageAlt as string | undefined,
+        imagePosition: cc.imagePosition as HighlightCardV3Block["imagePosition"],
+        imageWidth: cc.imageWidth as HighlightCardV3Block["imageWidth"],
+        imageFocalPoint: cc.imageFocalPoint as HighlightCardV3Block["imageFocalPoint"],
+        imageFit: cc.imageFit as HighlightCardV3Block["imageFit"],
       };
 
     case "highlight_table":

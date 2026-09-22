@@ -168,6 +168,14 @@ const SAMPLE_CONTENT: SampleContentConfig = {
     label: "Key Takeaway",
     text: "Load management and progressive loading are the cornerstones of effective treatment.",
   },
+  highlight_card_v2: {
+    label: "Key Takeaway",
+    text: "Load management and progressive loading are the cornerstones of effective treatment.",
+  },
+  highlight_card_v3: {
+    label: "Key Takeaway",
+    text: "Load management and progressive loading are the cornerstones of effective treatment.",
+  },
   highlight_table: {
     label: "Key Takeaway",
     title: "Rehab phases",

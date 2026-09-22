@@ -245,6 +245,8 @@ type OwnsContentBlockType =
   | "overview"
   | "simple_image"
   | "highlight_card"
+  | "highlight_card_v2"
+  | "highlight_card_v3"
   | "highlight_table"
   | "icon_text";
 
@@ -304,6 +306,8 @@ function emptyContentFor(blockType: OwnsContentBlockType) {
     case "simple_image":
       return {};
     case "highlight_card":
+    case "highlight_card_v2":
+    case "highlight_card_v3":
       return { label: "Key Takeaway", text: "" };
     case "highlight_table":
       return {

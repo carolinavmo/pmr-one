@@ -273,6 +273,38 @@ export const CARD_COLOR_BORDER_STRONG: Record<CardColor, string> = {
   plum: "border-badge-plum",
 };
 
+// A deeper tint than CARD_COLOR_TINT (/10) but still soft — the
+// Highlight Card "header" variant's label strip and the "framed"
+// variant's outer mount both need a background visibly darker than
+// the card's own tint without going solid, same "mid tint" role the
+// hairline/header/framed card-variants spec calls `--cm`.
+export const CARD_COLOR_MID: Record<CardColor, string> = {
+  neutral: "bg-border/35",
+  accent: "bg-accent/20",
+  trust: "bg-trust/20",
+  insight: "bg-insight/20",
+  blue: "bg-card-blue/20",
+  violet: "bg-card-violet/20",
+  rose: "bg-card-rose/20",
+  slate: "bg-card-slate/20",
+  red: "bg-card-red/20",
+  orange: "bg-card-orange/20",
+  yellow: "bg-card-yellow/20",
+  lime: "bg-card-lime/20",
+  green: "bg-card-green/20",
+  teal: "bg-card-teal/20",
+  cyan: "bg-card-cyan/20",
+  sky: "bg-card-sky/20",
+  indigo: "bg-card-indigo/20",
+  purple: "bg-card-purple/20",
+  fuchsia: "bg-card-fuchsia/20",
+  pink: "bg-card-pink/20",
+  navy: "bg-card-navy/20",
+  wine: "bg-card-wine/20",
+  umber: "bg-card-umber/20",
+  plum: "bg-card-plum/20",
+};
+
 // A small colored icon-chip treatment (Explore sidebar topic icons,
 // the admin topic editor) — a light tint background with matching
 // icon/text color, distinct from both the card background (a border

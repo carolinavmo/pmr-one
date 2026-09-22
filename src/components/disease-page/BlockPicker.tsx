@@ -122,6 +122,8 @@ export function BlockPicker({
           | "overview"
           | "simple_image"
           | "highlight_card"
+          | "highlight_card_v2"
+          | "highlight_card_v3"
           | "highlight_table"
           | "icon_text"
       );

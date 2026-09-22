@@ -798,8 +798,10 @@ export interface SimpleImageBlock extends BlockBase {
 // glyph (Star) rather than a picker — matches the reference image
 // exactly and keeps this block's own scope tight; swap for an icon
 // picker later if that's ever asked for.
-export interface HighlightCardBlock extends BlockBase {
-  type: "highlight_card";
+// Shared by all three Highlight Card chrome variants (below) — same
+// authoring fields, same actions (blockId-keyed, not type-specific),
+// only the CSS shell each block_type renders through differs.
+interface HighlightCardFields {
   id: string;
   label: string;
   text: string;
@@ -834,6 +836,39 @@ export interface HighlightCardBlock extends BlockBase {
   // Same three-way cover/contain/original vocabulary as
   // SimpleImageBlock's imageFit.
   imageFit?: "cover" | "contain" | "original";
+}
+
+// A small icon + label + bold text card — the founder's own "Key
+// Takeaway" reference (OverviewBlock's fixed sub-card, itself hardcoded
+// to one color and locked inside Overview) generalized into its own
+// insertable block (#133): same visual language (icon chip, eyebrow
+// label, emphasized text in a tinted/bordered card), but `label` is
+// author-editable (not fixed chrome — "Key Takeaway" is just the
+// default) and the whole card is colorable via the same CardColor
+// system every other card in this pass got. Icon is fixed to a single
+// glyph (Star) rather than a picker — matches the reference image
+// exactly and keeps this block's own scope tight; swap for an icon
+// picker later if that's ever asked for.
+export interface HighlightCardBlock extends BlockBase, HighlightCardFields {
+  type: "highlight_card";
+}
+
+// Same fields and authoring as HighlightCardBlock — a distinct
+// insertable block, not a style option on the original, so an editor
+// can freely mix chrome styles across a page and compare them in
+// place (design/CARDS-VARIANTS-SPEC.md's "header" (S7) treatment: the
+// label becomes a full-width tinted strip across the top of the
+// card instead of sitting inline above the body).
+export interface HighlightCardV2Block extends BlockBase, HighlightCardFields {
+  type: "highlight_card_v2";
+}
+
+// Same fields and authoring as HighlightCardBlock — design/
+// CARDS-VARIANTS-SPEC.md's "framed" (S8) treatment: a tinted 5px
+// frame around a white (surface-card) centre, like a mount around a
+// picture, outer radius 18px / inner 14px.
+export interface HighlightCardV3Block extends BlockBase, HighlightCardFields {
+  type: "highlight_card_v3";
 }
 
 // Highlight Card's colored-box chrome (icon chip + eyebrow label,
@@ -947,6 +982,8 @@ export type EditorialBlock =
   | OverviewBlock
   | SimpleImageBlock
   | HighlightCardBlock
+  | HighlightCardV2Block
+  | HighlightCardV3Block
   | HighlightTableBlock
   | IconTextBlock;
 

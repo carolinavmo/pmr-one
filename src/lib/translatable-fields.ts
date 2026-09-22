@@ -146,6 +146,8 @@ export const TRANSLATABLE_FIELDS: Record<EditorialBlock["type"], TranslatableFie
   // `color` is decorative, same exclusion reasoning as every other
   // cardStyle/color field in this file — only `label`/`text` are prose.
   highlight_card: { fields: ["label", "text"] },
+  highlight_card_v2: { fields: ["label", "text"] },
+  highlight_card_v3: { fields: ["label", "text"] },
 
   // Highlight Card's `label` plus Rich Table's own field set (see that
   // entry's comment above for why three `rows[].cells...` paths are

@@ -8,17 +8,17 @@ import { updatePearlBodyAction, setBlockCardColorAction } from "@/lib/actions/au
 import { RichEditableText } from "@/components/ui/RichEditableText";
 import { ColorSwatchPicker } from "@/components/ui/ColorSwatchPicker";
 import { useEditMode } from "@/components/disease-page/EditMode";
-import { CARD_COLOR_CARD } from "@/lib/card-colors";
+import { CARD_COLOR_TINT, CARD_COLOR_TEXT } from "@/lib/card-colors";
 import { TEXT_ALIGN_CLASS, COLUMN_JUSTIFY_CLASS } from "@/lib/block-alignment";
-import { PearlCallout } from "@/components/ui/callouts";
 
-// DESIGN-BRIEF.md's Pearl callout (amber, 2px border, "★ CLINICAL
-// PEARL") is now the default — REDESIGN-NOTES.md: "Amber = pearl
-// across the whole system. Purple is reserved for mechanism/
-// rationale." #133's author-overridable color is still honored when a
-// block has an explicit `color`, falling back to the existing
-// CARD_COLOR_CARD palette exactly as before, same escape hatch every
-// other card-color block keeps.
+// A solid pastel fill with no border, bold uppercase tracked label —
+// same unified card look HighlightCardBlock and Paragraph's own
+// callout style share, all reading the same CARD_COLOR_TINT/TEXT
+// pair. Defaults to "insight" (amber) unset, matching the pearl's
+// established identity (REDESIGN-NOTES.md: "Amber = pearl across the
+// whole system"), but is a normal author-editable color like every
+// other card from the start — no separate fixed-until-overridden
+// state to fall back to.
 //
 // `workspaceContext` is only present when a session exists (threaded
 // from the page through BlockSequence/BlockRenderer) — signed-out
@@ -35,6 +35,7 @@ export function ClinicalPearlBlockView({
   const isSaved = workspaceContext?.savedPearlIds.has(block.pearl.id) ?? false;
   const { editing } = useEditMode();
   const [colorPickerOpen, setColorPickerOpen] = useState(false);
+  const color = block.color ?? "insight";
   const textAlign = block.layout?.textAlign ?? "left";
   const textVerticalAlign = block.layout?.textVerticalAlign ?? "top";
 
@@ -103,30 +104,17 @@ export function ClinicalPearlBlockView({
     </div>
   );
 
-  if (block.color) {
-    const cardClass = CARD_COLOR_CARD[block.color];
-    return (
-      <div
-        className={`relative flex flex-col gap-3 rounded-lg border p-4 ${cardClass} ${COLUMN_JUSTIFY_CLASS[textVerticalAlign]}`}
-      >
-        {colorButton}
-        {usageNotice}
-        {body}
-        {footer}
-      </div>
-    );
-  }
-
   return (
-    <div className="relative">
+    <div
+      className={`relative flex flex-col gap-3 rounded-[13px] p-4 ${CARD_COLOR_TINT[color]} ${COLUMN_JUSTIFY_CLASS[textVerticalAlign]}`}
+    >
       {colorButton}
-      <PearlCallout>
-        <div className={`flex flex-col gap-3 ${COLUMN_JUSTIFY_CLASS[textVerticalAlign]}`}>
-          {usageNotice}
-          {body}
-          {footer}
-        </div>
-      </PearlCallout>
+      {usageNotice}
+      <span className={`font-ui text-[11px] font-black tracking-[1.6px] uppercase ${CARD_COLOR_TEXT[color]}`}>
+        Clinical Pearl
+      </span>
+      {body}
+      {footer}
     </div>
   );
 }

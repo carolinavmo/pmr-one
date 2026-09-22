@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8">
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--navy:#14284A;--ink:#27344A;--mute:#5E6B80;--line:#D9DFE8;--soft:#F7F9FB;--acc:#0E9BA6}
+body{font-family:'Roboto','Noto Sans CJK JP',sans-serif;color:var(--ink);background:#E9EDF1}
+.sheet{width:1600px;background:#fff;border-radius:14px;box-shadow:0 24px 64px rgba(20,40,74,.2);margin:0 auto 34px;padding:42px 46px 48px;position:relative;overflow:hidden}
+.tb{position:absolute;left:0;right:0;top:0;height:7px;display:flex}.tb i{flex:1}
+.bh{display:flex;align-items:center;gap:12px}.bh img{height:38px}.bh b{font-size:22px;font-weight:900;color:var(--navy)}
+h1.t{font-size:38px;font-weight:900;color:var(--navy);letter-spacing:-1.2px;margin-top:11px}
+.dek{font-size:17.5px;color:var(--mute);margin-top:7px;line-height:1.45;max-width:1120px}
+.dek b{color:var(--navy)}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:34px 30px;margin-top:28px}
+.fh{display:flex;align-items:baseline;gap:10px}
+.fh .n{font-size:11px;font-weight:900;color:#fff;background:var(--navy);border-radius:5px;padding:3px 9px}
+.fh h3{font-size:18px;font-weight:900;color:var(--navy);letter-spacing:-.3px}
+.fd{font-size:13.5px;color:var(--mute);margin:5px 0 14px;line-height:1.4;min-height:38px}
+.stack{display:flex;flex-direction:column;gap:12px;background:#fff;border:1px solid var(--line);border-radius:16px;padding:16px}
+p{font-size:14px;line-height:1.55;color:var(--ink)}
+p b{font-weight:800;color:var(--navy)}
+.lb{font-size:10.5px;font-weight:900;letter-spacing:1.4px;color:var(--c);margin-bottom:6px}
+
+.s1{background:var(--cb);border-radius:16px;padding:12px 16px 15px}
+.s1 .pill{display:inline-block;font-size:10px;font-weight:900;letter-spacing:1.3px;color:var(--c);background:#fff;border-radius:20px;padding:4px 11px;margin-bottom:8px}
+
+.s2{background:var(--cb);border-radius:16px;padding:14px 16px 15px}
+.s2 .lb{display:flex;align-items:center;gap:7px}
+.s2 .lb i{width:7px;height:7px;border-radius:50%;background:var(--c)}
+
+.s3{background:var(--cb);border:1px solid var(--cd);border-radius:16px;padding:14px 16px 15px}
+
+.s4{background:var(--cb);border-radius:16px;padding:14px 16px 15px}
+.s4 .lb{display:flex;align-items:center;gap:8px}
+.s4 .lb i{width:14px;height:3px;border-radius:2px;background:var(--c)}
+
+.s5{background:var(--cb);border-radius:16px;padding:13px 16px 14px}
+.s5 .lb{display:inline;margin:0 7px 0 0;font-size:10px;vertical-align:1px}
+
+.s6{background:var(--cb);border-radius:20px;padding:15px 18px 16px}
+.s6 .lb{font-size:13px;font-weight:800;letter-spacing:0;margin-bottom:5px}
+
+.s7{background:var(--cb);border-radius:16px;overflow:hidden}
+.s7 .hd{background:var(--cm);font-size:10.5px;font-weight:900;letter-spacing:1.4px;color:var(--c);padding:8px 16px}
+.s7 p{padding:10px 16px 14px}
+
+.s8{background:var(--cm);border-radius:18px;padding:5px}
+.s8 .in{background:#fff;border-radius:14px;padding:12px 14px 13px}
+
+.verdict{display:flex;gap:15px;margin-top:34px}
+.verdict>div{flex:1;border:1px solid var(--line);border-radius:14px;padding:16px 18px}
+.verdict .k{font-size:10.5px;font-weight:900;letter-spacing:1.3px;margin-bottom:6px}
+.verdict p{font-size:14.5px;line-height:1.5;color:var(--mute)}
+.verdict p b{color:var(--navy);font-weight:800}
+</style></head><body>
+<div class="sheet" id="d">
+ <div class="tb"><i style="background:#8A5F08"></i><i style="background:#B8262B"></i><i style="background:#5A479C"></i><i style="background:#1F7A4D"></i><i style="background:#14284A"></i></div>
+ <div class="bh"><img src="logo.png" alt=""><b>PM&amp;R <span style="color:var(--acc)">Explained</span></b></div>
+ <h1 class="t">Highlight card — three variants to build</h1>
+ <div class="dek">One component, three looks: <code style="font-family:ui-monospace,Menlo,monospace;font-size:15px;color:#14284A">variant="hairline" | "header" | "framed"</code>. Same types, same colours, same text — only the edge changes.</div>
+ <div class="grid"><div class="fam"><div class="fh"><span class="n">S3</span><h3>hairline</h3></div><div class="fd">A 1px border in the same hue gives each card a crisp outline.</div><div class="stack"><div class="s3" style="--c:#8A5F08;--cb:#FDF6E6;--cd:#F1E2BF;--cm:#F7EACB"><div class="lb">CLINICAL PEARL</div><p>Rehab can't repair a torn labrum — it retrains the <b>dynamic stabilisers</b> that compensate for it.</p></div><div class="s3" style="--c:#B8262B;--cb:#FDF0F0;--cd:#F4D2D3;--cm:#F9DFE0"><div class="lb">RED FLAG</div><p>New bilateral leg symptoms or saddle anaesthesia with back pain is <b>cauda equina until proven otherwise</b>.</p></div><div class="s3" style="--c:#5A479C;--cb:#F4F1FB;--cd:#E0D9F2;--cm:#E9E3F7"><div class="lb">EXAM TIP</div><p>Asked why the hands are worse than the legs? Answer with <b>corticospinal dependence</b>, not lamination.</p></div><div class="s3" style="--c:#1F7A4D;--cb:#EEF8F2;--cd:#CDE9D8;--cm:#DDF0E5"><div class="lb">IN THE CLINIC</div><p>Watch the midline on a curl-up. If it domes, <b>regress one step</b> and rebuild.</p></div><div class="s3" style="--c:#14284A;--cb:#F2F5F9;--cd:#DCE3EC;--cm:#E4EAF2"><div class="lb">DEFINITION</div><p><b>Functional spinal unit</b> — two vertebrae, the disc between them, the facet joints and their ligaments.</p></div></div></div><div class="fam"><div class="fh"><span class="n">S7</span><h3>header</h3></div><div class="fd">Two tones: a slightly deeper tint at the top holds the label.</div><div class="stack"><div class="s7" style="--c:#8A5F08;--cb:#FDF6E6;--cd:#F1E2BF;--cm:#F7EACB"><div class="hd">CLINICAL PEARL</div><p>Rehab can't repair a torn labrum — it retrains the <b>dynamic stabilisers</b> that compensate for it.</p></div><div class="s7" style="--c:#B8262B;--cb:#FDF0F0;--cd:#F4D2D3;--cm:#F9DFE0"><div class="hd">RED FLAG</div><p>New bilateral leg symptoms or saddle anaesthesia with back pain is <b>cauda equina until proven otherwise</b>.</p></div><div class="s7" style="--c:#5A479C;--cb:#F4F1FB;--cd:#E0D9F2;--cm:#E9E3F7"><div class="hd">EXAM TIP</div><p>Asked why the hands are worse than the legs? Answer with <b>corticospinal dependence</b>, not lamination.</p></div><div class="s7" style="--c:#1F7A4D;--cb:#EEF8F2;--cd:#CDE9D8;--cm:#DDF0E5"><div class="hd">IN THE CLINIC</div><p>Watch the midline on a curl-up. If it domes, <b>regress one step</b> and rebuild.</p></div><div class="s7" style="--c:#14284A;--cb:#F2F5F9;--cd:#DCE3EC;--cm:#E4EAF2"><div class="hd">DEFINITION</div><p><b>Functional spinal unit</b> — two vertebrae, the disc between them, the facet joints and their ligaments.</p></div></div></div><div class="fam"><div class="fh"><span class="n">S8</span><h3>framed</h3></div><div class="fd">A tinted frame around a white centre — like a mount around a picture.</div><div class="stack"><div class="s8" style="--c:#8A5F08;--cb:#FDF6E6;--cd:#F1E2BF;--cm:#F7EACB"><div class="in"><div class="lb">CLINICAL PEARL</div><p>Rehab can't repair a torn labrum — it retrains the <b>dynamic stabilisers</b> that compensate for it.</p></div></div><div class="s8" style="--c:#B8262B;--cb:#FDF0F0;--cd:#F4D2D3;--cm:#F9DFE0"><div class="in"><div class="lb">RED FLAG</div><p>New bilateral leg symptoms or saddle anaesthesia with back pain is <b>cauda equina until proven otherwise</b>.</p></div></div><div class="s8" style="--c:#5A479C;--cb:#F4F1FB;--cd:#E0D9F2;--cm:#E9E3F7"><div class="in"><div class="lb">EXAM TIP</div><p>Asked why the hands are worse than the legs? Answer with <b>corticospinal dependence</b>, not lamination.</p></div></div><div class="s8" style="--c:#1F7A4D;--cb:#EEF8F2;--cd:#CDE9D8;--cm:#DDF0E5"><div class="in"><div class="lb">IN THE CLINIC</div><p>Watch the midline on a curl-up. If it domes, <b>regress one step</b> and rebuild.</p></div></div><div class="s8" style="--c:#14284A;--cb:#F2F5F9;--cd:#DCE3EC;--cm:#E4EAF2"><div class="in"><div class="lb">DEFINITION</div><p><b>Functional spinal unit</b> — two vertebrae, the disc between them, the facet joints and their ligaments.</p></div></div></div></div></div>
+ </div>
+</body></html>

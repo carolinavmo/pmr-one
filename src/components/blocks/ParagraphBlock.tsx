@@ -15,7 +15,7 @@ import {
   removeParagraphImageAction,
 } from "@/lib/actions/authoring";
 import { cardIcons, type CardIconName } from "@/components/ui/cardIcons";
-import { CARD_COLOR_CARD, CARD_COLOR_BADGE, CARD_COLOR_SWATCH } from "@/lib/card-colors";
+import { CARD_COLOR_TINT, CARD_COLOR_BADGE, CARD_COLOR_SWATCH } from "@/lib/card-colors";
 import { TEXT_ALIGN_CLASS, ROW_ITEMS_CLASS } from "@/lib/block-alignment";
 
 function isCardIconName(value: string): value is CardIconName {
@@ -198,7 +198,7 @@ export function ParagraphBlockView({
   ) : null;
 
   const content = block.callout ? (
-    <div className={`relative rounded-lg border p-3 ${CARD_COLOR_CARD[cardStyle]}`}>
+    <div className={`relative rounded-[13px] p-3 ${CARD_COLOR_TINT[cardStyle]}`}>
       {editing && (
         <div className="absolute top-2 right-2">
           <button
