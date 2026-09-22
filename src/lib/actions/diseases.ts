@@ -4,6 +4,7 @@ import { auth } from "@/auth";
 import { pool } from "@/lib/db";
 import { slugify } from "@/lib/slugify";
 import { revalidateShellSurfaces } from "@/lib/revalidation";
+import { revalidateLibraryTree } from "@/lib/library-home";
 
 async function requireAdmin() {
   const session = await auth();
@@ -50,6 +51,7 @@ export async function createDiseaseAction(
   );
 
   revalidateShellSurfaces();
+  revalidateLibraryTree();
 
   return { ok: true, slug };
 }
@@ -96,5 +98,6 @@ export async function moveDiseaseAction(
   }
 
   revalidateShellSurfaces();
+  revalidateLibraryTree();
   return { ok: true };
 }

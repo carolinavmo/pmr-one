@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8">
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--navy:#14284A;--ink:#27344A;--mute:#5E6B80;--line:#D9DFE8;--soft:#F7F9FB;
+ --acc:#0E9BA6;--acc-ink:#0A7680;--acc-bg:#E1F4F5;--acc-dk:#7FD3DA;
+ --bs:#0F8A6E;--bs-bg:#E4F4EF;--msk:#A8760F;--msk-bg:#FBF2DF;--neu:#5A479C;--neu-bg:#ECE8F7;--oth:#1F7A4D;--oth-bg:#E8F5EE;--grn:#1F7A4D}
+body{font-family:'Roboto','Noto Sans CJK JP',sans-serif;color:var(--ink);background:#E9EDF1}
+.sheet{width:1600px;background:#fff;border-radius:14px;box-shadow:0 24px 64px rgba(20,40,74,.2);margin:0 auto 34px;padding:36px 40px 44px;position:relative;overflow:hidden}
+.tb{position:absolute;left:0;right:0;top:0;height:7px;display:flex}.tb i{flex:1}
+.bh{display:flex;align-items:center;gap:12px}.bh img{height:36px}.bh b{font-size:21px;font-weight:900;color:var(--navy)}
+h1.t{font-size:34px;font-weight:900;color:var(--navy);letter-spacing:-1px;margin-top:10px}
+.dek{font-size:16.5px;color:var(--mute);margin-top:6px;line-height:1.45;max-width:1150px}
+.dek b{color:var(--navy)}
+.frame{margin-top:22px;border:1px solid var(--line);border-radius:14px;overflow:hidden;box-shadow:0 10px 30px rgba(20,40,74,.10)}
+.nav{background:var(--navy);padding:13px 22px 11px}
+.nav .r1{display:flex;align-items:center;gap:16px}
+.nav .logo{display:flex;align-items:center;gap:9px;color:#fff;font-size:18px;font-weight:900}
+.nav .logo img{height:28px}.nav .logo span{color:var(--acc)}
+.nav .srch{flex:1;max-width:480px;margin:0 auto;height:34px;border-radius:17px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.18);display:flex;align-items:center;padding:0 16px;font-size:12.5px;color:#9DB0CA}
+.nav .ut{display:flex;align-items:center;gap:14px;color:#C2D2E6;font-size:12.5px;font-weight:700}
+.nav .av{width:30px;height:30px;border-radius:50%;background:var(--acc);color:#fff;font-size:11px;font-weight:900;display:flex;align-items:center;justify-content:center}
+.nav .r2{display:flex;align-items:center;gap:6px;margin-top:11px}
+.nav .lib{border:2px solid var(--acc);background:rgba(14,155,166,.18);color:#fff;font-size:13px;font-weight:900;padding:6px 14px;border-radius:17px}
+.nav .dv{width:1px;height:20px;background:rgba(255,255,255,.2);margin:0 8px}
+.nav .pl{color:#C2D2E6;font-size:12.5px;font-weight:700;padding:6px 10px}
+.body{display:flex}
+.side{width:250px;flex:none;background:var(--soft);border-right:1px solid var(--line);padding:14px 10px}
+.side .fd{height:30px;background:#fff;border:1px solid var(--line);border-radius:9px;display:flex;align-items:center;padding:0 10px;font-size:12px;color:#A6B0BC;margin-bottom:6px}
+.side .g{font-size:9.5px;font-weight:900;letter-spacing:1.4px;color:#9AA5B4;padding:10px 8px 4px}
+.side .r{display:flex;align-items:center;gap:9px;font-size:12.5px;font-weight:700;color:var(--ink);padding:5px 8px;border-radius:8px}
+.side .r i{width:16px;height:16px;border-radius:5px;flex:none}
+.side .r .cv{margin-left:auto;font-size:10.5px;color:#AAB4C1}
+.side .r.home{background:var(--acc-bg);color:var(--acc-ink);font-weight:800}
+.side .r.home i{background:var(--acc)}
+.main{flex:1;min-width:0;padding:0 0 40px}
+
+/* hero */
+.hero{background:linear-gradient(180deg,#F2F8F9 0%,#fff 100%);padding:64px 44px 56px;border-bottom:1px solid #EEF1F5;text-align:center}
+.hero .hello{font-size:22px;font-weight:600;color:var(--mute);letter-spacing:-.2px;display:flex;align-items:center;justify-content:center;gap:8px}
+.hero .hello b{color:var(--navy);font-weight:900}
+.hi{display:flex;align-items:center;gap:12px}
+.hi .hello{font-size:15px;font-weight:700;color:var(--mute)}
+.hi .hello b{color:var(--navy);font-weight:900}
+.hi .st{margin-left:auto;display:flex;gap:8px}
+.hi .st span{display:flex;align-items:center;gap:6px;font-size:12px;font-weight:700;color:var(--mute);background:#fff;border:1px solid var(--line);border-radius:14px;padding:5px 11px}
+.hi .st span b{color:var(--navy);font-weight:900}
+.hero h2{font-size:42px;font-weight:900;color:var(--navy);letter-spacing:-1.5px;margin-top:10px}
+.big{margin:26px auto 0;text-align:left;height:58px;border:1.5px solid var(--line);border-radius:16px;display:flex;align-items:center;padding:0 8px 0 20px;gap:10px;font-size:15.5px;color:#A6B0BC;background:#fff;box-shadow:0 8px 24px rgba(20,40,74,.07);max-width:760px}
+.big .kbd{margin-left:auto;font-family:ui-monospace,Menlo,monospace;font-size:11px;color:#8C97A6;border:1px solid var(--line);border-radius:6px;padding:3px 7px;background:var(--soft)}
+.big .go{background:var(--navy);color:#fff;font-size:13.5px;font-weight:800;border-radius:11px;padding:11px 20px}
+.chips{display:flex;gap:7px;flex-wrap:wrap;margin-top:16px;justify-content:center}
+.chips a{font-size:12.5px;font-weight:700;color:var(--ink);border:1px solid var(--line);border-radius:15px;padding:6px 12px;background:#fff}
+.chips a span{color:#9AA5B4;margin-left:4px;font-weight:600}
+.chips .lb{font-size:12px;color:#9AA5B4;font-weight:700;padding:6px 2px}
+
+.sec{padding:0 44px;margin-top:28px}
+.sh{display:flex;align-items:baseline;gap:12px;margin-bottom:12px}
+.sh h3{font-size:19px;font-weight:900;color:var(--navy);letter-spacing:-.4px}
+.sh span{font-size:13px;color:var(--mute)}
+.sh a{margin-left:auto;font-size:12.5px;font-weight:800;color:var(--acc-ink)}
+.sh .dot{width:10px;height:10px;border-radius:3px;align-self:center}
+
+/* cards */
+.row{display:flex;gap:14px;position:relative}
+.card{flex:1;min-width:0;border:1px solid var(--line);border-radius:13px;overflow:hidden;background:#fff}
+.card .th{height:104px;position:relative;display:flex;align-items:center;justify-content:center}
+.card .ctag{position:absolute;top:8px;left:8px;font-size:9.5px;font-weight:900;letter-spacing:.8px;color:var(--acc-ink);background:#fff;border-radius:5px;padding:2px 6px}
+.card .tx{padding:10px 12px 12px}
+.card .tx b{display:block;font-size:13.5px;font-weight:900;color:var(--navy);line-height:1.25}
+.card .tx span{display:block;font-size:11.5px;color:#9AA5B4;margin-top:3px}
+.cbar{height:5px;background:#EEF1F5;border-radius:3px;margin-top:9px;overflow:hidden}
+.cbar i{display:block;height:5px;background:var(--acc)}
+.arrow{position:absolute;right:-14px;top:40px;width:34px;height:34px;border-radius:50%;background:#fff;border:1px solid var(--line);box-shadow:0 4px 12px rgba(20,40,74,.12);display:flex;align-items:center;justify-content:center;color:var(--navy);font-weight:900}
+
+/* continue: wide cards */
+.cont .card{width:auto;flex:1;display:flex}
+.cont .card .th{width:112px;height:auto;flex:none}
+.cont .card .tx{flex:1;padding:14px 16px}
+.cont .card .tx b{font-size:15px}
+.cont .card .go{display:block;font-size:12px;font-weight:800;color:var(--acc-ink);margin-top:8px}
+
+/* feature */
+.feat{background:var(--navy);border-radius:18px;padding:26px 30px;display:flex;gap:26px;align-items:center;overflow:hidden;position:relative}
+.feat .tx{flex:1}
+.feat .k{font-size:10.5px;font-weight:900;letter-spacing:1.6px;color:var(--acc-dk)}
+.feat b{display:block;font-size:28px;font-weight:900;color:#fff;margin-top:6px;letter-spacing:-.6px}
+.feat p{font-size:14.5px;color:#C8D3E2;margin-top:8px;line-height:1.55;max-width:560px}
+.feat .btns{display:flex;gap:10px;margin-top:16px}
+.feat .b1{background:var(--acc);color:#fff;font-size:13px;font-weight:800;border-radius:10px;padding:9px 16px}
+.feat .b2{border:1px solid rgba(255,255,255,.25);color:#fff;font-size:13px;font-weight:800;border-radius:10px;padding:9px 16px}
+.feat .art{width:240px;height:150px;flex:none;border-radius:14px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);padding:12px}
+.feat .meta{display:flex;gap:16px;margin-top:14px;font-size:12px;color:#9DB0CA;font-weight:700}
+
+.note{font-size:13.5px;color:var(--mute);line-height:1.5}
+.ideas{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin-top:26px}
+.ideas div{border:1px solid var(--line);border-radius:14px;padding:15px 17px;background:var(--soft)}
+.ideas b{display:block;font-size:11px;font-weight:900;letter-spacing:1.2px;color:var(--acc-ink);margin-bottom:6px}
+.ideas p{font-size:14px;line-height:1.5;color:var(--mute)}
+.ideas p strong{color:var(--navy)}
+.pin{display:inline-flex;width:20px;height:20px;border-radius:50%;background:#D6336C;box-shadow:0 0 0 2px #fff;color:#fff;font-size:11px;font-weight:900;align-items:center;justify-content:center;margin-right:6px;vertical-align:1px}
+.pin,.sh .pin,.hi .st .pin{color:#fff !important;font-size:11px !important;background:#D6336C !important;border:none !important;padding:0 !important;width:20px;height:20px;border-radius:50% !important;display:inline-flex;align-items:center;justify-content:center;font-weight:900}
+
+/* tabs by area */
+.atabs{display:flex;gap:2px;border-bottom:1px solid var(--line)}
+.atabs a{font-size:14px;font-weight:800;color:var(--mute);padding:10px 14px;border-bottom:3px solid transparent;margin-bottom:-1px}
+.atabs a span{font-size:11.5px;font-weight:700;color:#9AA5B4;margin-left:6px}
+.atabs a.on{color:var(--navy);border-bottom-color:var(--gc)}
+.prow{display:flex;align-items:center;gap:14px;margin-top:14px}
+.pills{display:flex;gap:6px;flex-wrap:wrap;flex:1}
+.pills a{font-size:12.5px;font-weight:800;border-radius:15px;padding:6px 12px;background:#fff;color:var(--ink);border:1px solid var(--line)}
+.pills a span{color:#9AA5B4;margin-left:4px;font-weight:700}
+.pills a.on{background:var(--navy);border-color:var(--navy);color:#fff}
+.pills a.on span{color:#9DB0CA}
+.tools{display:flex;gap:10px;align-items:center;font-size:12.5px;color:var(--mute)}
+.tools b{color:var(--navy)}
+.tools .ck{display:flex;align-items:center;gap:6px}
+.tools .ck i{width:15px;height:15px;border-radius:4px;border:1.5px solid #B8C1CD;background:#fff}
+.tl{border:1px solid var(--line);border-radius:14px;overflow:hidden;margin-top:14px}
+.thd,.tr{display:grid;grid-template-columns:1fr 150px 230px 24px;align-items:center;gap:14px;padding:0 18px}
+.thd{background:var(--soft);font-size:10px;font-weight:900;letter-spacing:1.3px;color:#9AA5B4;height:34px;border-bottom:1px solid var(--line)}
+.fold{display:flex;align-items:center;gap:8px;font-size:10.5px;font-weight:900;letter-spacing:1.3px;color:#8C7440;padding:12px 18px 6px;border-top:1px solid #EEF1F5}
+.fold:first-of-type{border-top:none}
+.fold i{width:12px;height:12px;border-radius:4px;background:var(--msk-bg);border:1px solid #E6CF9C}
+.fold span{color:#B4BDC8;font-weight:700}
+.tr{height:44px;border-top:1px solid #F2F4F7}
+.tr:hover{background:#FAFBFC}
+.tt{display:flex;align-items:center;gap:8px;min-width:0;padding-left:20px}
+.tt b{font-size:14px;font-weight:800;color:var(--navy);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.nt{font-size:9.5px;font-weight:900;letter-spacing:.8px;border-radius:5px;padding:2px 6px;flex:none}
+.nt.nw{background:var(--acc-bg);color:var(--acc-ink)}
+.nt.up{background:#EEF1F5;color:var(--mute)}
+.ty{font-size:10px;font-weight:900;letter-spacing:1px;color:var(--mute);border:1px solid var(--line);border-radius:6px;padding:3px 7px;justify-self:start}
+.pr{display:flex;align-items:center;gap:10px}
+.pr .bar{width:90px;flex:none;height:5px;background:#EEF1F5;border-radius:3px;overflow:hidden}
+.pr .bar i{display:block;height:5px;background:var(--acc)}
+.pr .m{font-size:12px;color:#9AA5B4;font-weight:700}
+.pr .m.ok{color:var(--grn)}
+.pr .m.ac{color:var(--acc-ink)}
+.go{color:#AAB4C1;font-weight:900;font-size:14px}
+.more{margin-top:12px;font-size:13px;font-weight:800;color:var(--acc-ink)}
+
+/* progress */
+.pgrid{display:grid;grid-template-columns:1.05fr 1.35fr 1fr;gap:14px}
+.pc{border:1px solid var(--line);border-radius:14px;padding:16px 18px;background:#fff}
+.pc.ring{display:flex;align-items:center;gap:16px}
+.rt b{display:block;font-size:16px;font-weight:900;color:var(--navy)}
+.rt span{display:block;font-size:12.5px;color:var(--mute);margin-top:5px}
+.rt .up{color:var(--grn);font-weight:800}
+.ah{display:grid;grid-template-columns:120px 1fr 64px 52px;gap:10px;font-size:9.5px;font-weight:900;letter-spacing:1.2px;color:#9AA5B4;margin-bottom:6px}
+.ah span:nth-child(2){grid-column:3}.ah span:nth-child(3){grid-column:4;text-align:center}
+.ar{display:grid;grid-template-columns:120px 1fr 64px 52px;gap:10px;align-items:center;padding:6px 0}
+.an{display:flex;align-items:center;gap:7px;font-size:13px;font-weight:800;color:var(--navy)}
+.an i{width:9px;height:9px;border-radius:3px}
+.ab{height:8px;background:#EEF1F5;border-radius:4px;overflow:hidden}
+.ab i{display:block;height:8px;border-radius:4px}
+.ac{font-size:12px;color:var(--mute);font-weight:700;text-align:right}
+.qb{font-size:11px;font-weight:900;border-radius:6px;padding:3px 0;text-align:center;display:inline-block;min-width:44px}
+.qb.hi{background:#E8F5EE;color:var(--grn)}
+.qb.md{background:#FBF2DF;color:#8A5F08}
+.qb.no{background:#EEF1F5;color:#9AA5B4}
+.leg{font-size:11px;color:#9AA5B4;margin-top:9px;display:flex;align-items:center;gap:5px}
+.leg .qb{min-width:34px;padding:1px 0;font-size:10px}
+.ah2{font-size:9.5px;font-weight:900;letter-spacing:1.2px;color:#9AA5B4;margin-bottom:9px}
+.heat{display:flex;gap:4px}
+.wk{display:flex;flex-direction:column;gap:4px}
+.wk i{width:15px;height:15px;border-radius:4px;display:block}
+.hl{display:flex;align-items:center;gap:4px;margin-top:9px;font-size:10.5px;color:#9AA5B4}
+.hl i{width:11px;height:11px;border-radius:3px;display:block}
+.streak{font-size:12.5px;color:var(--mute);margin-top:9px}
+.streak b{color:var(--navy)}
+.prow2{display:grid;grid-template-columns:1fr 1.25fr;gap:14px;margin-top:14px}
+.done,.next{border:1px solid var(--line);border-radius:14px;padding:14px 16px}
+.done .k,.next .k{font-size:9.5px;font-weight:900;letter-spacing:1.2px;color:#9AA5B4;margin-bottom:9px}
+.dl{display:flex;flex-wrap:wrap;gap:6px}
+.dl span{font-size:12.5px;font-weight:700;color:var(--grn);background:#E8F5EE;border-radius:8px;padding:6px 10px}
+.nx{display:flex;align-items:center;gap:10px;padding:8px 0;border-top:1px solid #F0F2F5}
+.nx:first-of-type{border-top:none;padding-top:0}
+.nx b{display:block;font-size:13.5px;color:var(--navy);font-weight:800}
+.nx span{display:block;font-size:12px;color:var(--mute);margin-top:2px}
+.nx a{margin-left:auto;background:var(--navy);color:#fff;font-size:12px;font-weight:800;border-radius:8px;padding:7px 13px}
+</style></head><body>
+<div class="sheet" id="d">
+ <div class="tb"><i style="background:var(--acc)"></i><i style="background:var(--navy)"></i></div>
+ <div class="bh"><img src="logo.png" alt=""><b>PM&amp;R <span style="color:var(--acc)">Explained</span></b></div>
+ <h1 class="t">Library home — revised</h1>
+ <div class="dek"><b>Bigger greeting</b>, a <b>centred search</b> with more room around it, and <b>Continue reading moved below Your progress</b>. The progress chips beside the greeting are gone — the full progress section now sits directly below. Pink circles are annotations.</div>
+
+ <div class="frame">
+  <div class="nav">
+   <div class="r1"><div class="logo"><img src="logo.png" alt="">PM&amp;R <span>Explained</span></div>
+    <div class="srch">⌕&nbsp; Search conditions, exam maneuvers, calculators…</div>
+    <div class="ut"><span>🌐 EN ⌄</span><span>🔔</span><div class="av">CA</div></div></div>
+   <div class="r2"><span class="lib">▣ Explore library</span><span class="dv"></span><span class="pl">Clinical Tools</span><span class="pl">Study Planner</span><span class="pl">My Handbook</span><span class="pl">Flashcards</span><span class="pl">Question Bank</span><span class="pl">Courses</span></div>
+  </div>
+  <div class="body">
+   <div class="side">
+    <div class="fd">⌕ Find a topic…</div>
+    <div class="r home"><i></i>Library home</div>
+    <div class="g">BASIC SCIENCES</div>
+    <div class="r"><i style="background:var(--bs-bg)"></i>Anatomy<span class="cv">›</span></div>
+    <div class="r"><i style="background:var(--bs-bg)"></i>Biomechanics<span class="cv">›</span></div>
+    <div class="r"><i style="background:var(--bs-bg)"></i>Physical examination<span class="cv">›</span></div>
+    <div class="r"><i style="background:var(--bs-bg)"></i>Physical agents<span class="cv">›</span></div>
+    <div class="r"><i style="background:var(--bs-bg)"></i>ICF<span class="cv">›</span></div>
+    <div class="g">MSK</div>
+    <div class="r"><i style="background:var(--msk-bg)"></i>Spine<span class="cv">›</span></div>
+    <div class="r"><i style="background:var(--msk-bg)"></i>Shoulder<span class="cv">›</span></div>
+    <div class="r"><i style="background:var(--msk-bg)"></i>Elbow<span class="cv">›</span></div>
+    <div class="r"><i style="background:var(--msk-bg)"></i>Wrist &amp; hand<span class="cv">›</span></div>
+    <div class="r"><i style="background:var(--msk-bg)"></i>Hip<span class="cv">›</span></div>
+    <div class="r"><i style="background:var(--msk-bg)"></i>Knee<span class="cv">›</span></div>
+    <div class="r"><i style="background:var(--msk-bg)"></i>Foot &amp; ankle<span class="cv">›</span></div>
+    <div class="g">NEUROLOGY</div>
+    <div class="r"><i style="background:var(--neu-bg)"></i>Cranial nerve &amp; facial<span class="cv">›</span></div>
+    <div class="r"><i style="background:var(--neu-bg)"></i>Stroke<span class="cv">›</span></div>
+    <div class="r"><i style="background:var(--neu-bg)"></i>Spinal cord injury<span class="cv">›</span></div>
+    <div class="r"><i style="background:var(--neu-bg)"></i>Traumatic brain injury<span class="cv">›</span></div>
+    <div class="r"><i style="background:var(--neu-bg)"></i>Mononeuropathies<span class="cv">›</span></div>
+    <div class="g">OTHER TOPICS</div>
+    <div class="r"><i style="background:var(--oth-bg)"></i>Amputees<span class="cv">›</span></div>
+    <div class="r"><i style="background:var(--oth-bg)"></i>Paediatric rehabilitation<span class="cv">›</span></div>
+    <div class="r"><i style="background:var(--oth-bg)"></i>Pelvic floor rehabilitation<span class="cv">›</span></div>
+   </div>
+
+   <div class="main">
+    <div class="hero">
+     <div class="hello"><span class="pin">1</span>Good afternoon, <b>Dr. Carolina</b></div>
+     <h2>What do you want to learn today?</h2>
+     <div class="big">⌕&nbsp; Try "rotator cuff", "Spurling test", "ASIA scale"…<span class="kbd">⌘ K</span><span class="go">Search</span></div>
+     <div class="chips"><span class="lb">Browse:</span><a>Conditions<span>48</span></a><a>Anatomy<span>34</span></a><a>Examination<span>29</span></a><a>Rehabilitation<span>41</span></a><a>Physical agents<span>12</span></a><a>Procedures<span>22</span></a></div>
+    </div>
+
+
+    <div class="sec">
+     <div class="sh"><h3><span class="pin">5</span>Your progress</h3><span>what you have read — and how you did when tested</span><a>Full report ›</a></div>
+     <div class="pgrid">
+      <div class="pc ring">
+       <svg width="118" height="118" viewBox="0 0 118 118"><circle cx="59" cy="59" r="50" fill="none" stroke="#EEF1F5" stroke-width="11"/><circle cx="59" cy="59" r="50" fill="none" stroke="#0E9BA6" stroke-width="11" stroke-linecap="round" stroke-dasharray="64.1 400" transform="rotate(-90 59 59)"/><text x="59" y="57" text-anchor="middle" font-family="Roboto,Arial" font-size="26" font-weight="900" fill="#14284A">38</text><text x="59" y="76" text-anchor="middle" font-family="Roboto,Arial" font-size="11" font-weight="700" fill="#9AA5B4">of 186 pages</text></svg>
+       <div class="rt"><b>20% of the library</b><span class="up">▲ 5 pages this week</span><span>3 folders completed</span><span>212 questions answered</span></div>
+      </div>
+      <div class="pc areas">
+       <div class="ah"><span>BY AREA</span><span>READ</span><span>Q-BANK</span></div>
+       <div class="ar"><span class="an"><i style="background:#0F8A6E"></i>Basic sciences</span><div class="ab"><i style="width:61%;background:#0F8A6E"></i></div><span class="ac">25 / 41</span><span class="qb hi">78%</span></div>
+       <div class="ar"><span class="an"><i style="background:#A8760F"></i>MSK</span><div class="ab"><i style="width:14%;background:#A8760F"></i></div><span class="ac">13 / 94</span><span class="qb md">64%</span></div>
+       <div class="ar"><span class="an"><i style="background:#5A479C"></i>Neurology</span><div class="ab"><i style="width:0%;background:#5A479C"></i></div><span class="ac">0 / 38</span><span class="qb no">—</span></div>
+       <div class="ar"><span class="an"><i style="background:#1F7A4D"></i>Other topics</span><div class="ab"><i style="width:0%;background:#1F7A4D"></i></div><span class="ac">0 / 13</span><span class="qb no">—</span></div>
+       <div class="leg"><span class="qb hi">78%</span> strong · <span class="qb md">64%</span> needs review · <span class="qb no">—</span> not tested yet</div>
+      </div>
+      <div class="pc act">
+       <div class="ah2">ACTIVITY · LAST 12 WEEKS</div>
+       <div class="heat"><div class="wk"><i style="background:#EEF1F5"></i><i style="background:#EEF1F5"></i><i style="background:#7FD3DA"></i><i style="background:#EEF1F5"></i><i style="background:#BFE6E9"></i><i style="background:#EEF1F5"></i><i style="background:#EEF1F5"></i></div><div class="wk"><i style="background:#BFE6E9"></i><i style="background:#EEF1F5"></i><i style="background:#BFE6E9"></i><i style="background:#EEF1F5"></i><i style="background:#EEF1F5"></i><i style="background:#BFE6E9"></i><i style="background:#0E9BA6"></i></div><div class="wk"><i style="background:#EEF1F5"></i><i style="background:#EEF1F5"></i><i style="background:#7FD3DA"></i><i style="background:#0A7680"></i><i style="background:#BFE6E9"></i><i style="background:#BFE6E9"></i><i style="background:#0A7680"></i></div><div class="wk"><i style="background:#EEF1F5"></i><i style="background:#0E9BA6"></i><i style="background:#EEF1F5"></i><i style="background:#EEF1F5"></i><i style="background:#EEF1F5"></i><i style="background:#EEF1F5"></i><i style="background:#0E9BA6"></i></div><div class="wk"><i style="background:#EEF1F5"></i><i style="background:#BFE6E9"></i><i style="background:#7FD3DA"></i><i style="background:#EEF1F5"></i><i style="background:#BFE6E9"></i><i style="background:#EEF1F5"></i><i style="background:#EEF1F5"></i></div><div class="wk"><i style="background:#EEF1F5"></i><i style="background:#7FD3DA"></i><i style="background:#BFE6E9"></i><i style="background:#EEF1F5"></i><i style="background:#BFE6E9"></i><i style="background:#BFE6E9"></i><i style="background:#EEF1F5"></i></div><div class="wk"><i style="background:#7FD3DA"></i><i style="background:#7FD3DA"></i><i style="background:#EEF1F5"></i><i style="background:#BFE6E9"></i><i style="background:#BFE6E9"></i><i style="background:#0E9BA6"></i><i style="background:#7FD3DA"></i></div><div class="wk"><i style="background:#EEF1F5"></i><i style="background:#0A7680"></i><i style="background:#EEF1F5"></i><i style="background:#BFE6E9"></i><i style="background:#7FD3DA"></i><i style="background:#EEF1F5"></i><i style="background:#BFE6E9"></i></div><div class="wk"><i style="background:#EEF1F5"></i><i style="background:#7FD3DA"></i><i style="background:#7FD3DA"></i><i style="background:#BFE6E9"></i><i style="background:#0E9BA6"></i><i style="background:#EEF1F5"></i><i style="background:#7FD3DA"></i></div><div class="wk"><i style="background:#BFE6E9"></i><i style="background:#BFE6E9"></i><i style="background:#BFE6E9"></i><i style="background:#0E9BA6"></i><i style="background:#0A7680"></i><i style="background:#BFE6E9"></i><i style="background:#7FD3DA"></i></div><div class="wk"><i style="background:#7FD3DA"></i><i style="background:#7FD3DA"></i><i style="background:#7FD3DA"></i><i style="background:#0A7680"></i><i style="background:#0E9BA6"></i><i style="background:#EEF1F5"></i><i style="background:#BFE6E9"></i></div><div class="wk"><i style="background:#7FD3DA"></i><i style="background:#7FD3DA"></i><i style="background:#7FD3DA"></i><i style="background:#7FD3DA"></i><i style="background:transparent"></i><i style="background:transparent"></i><i style="background:transparent"></i></div></div>
+       <div class="hl"><span>less</span><i style="background:#EEF1F5"></i><i style="background:#BFE6E9"></i><i style="background:#7FD3DA"></i><i style="background:#0E9BA6"></i><i style="background:#0A7680"></i><span>more</span></div>
+       <div class="streak"><b>6-day streak</b> · best 14 days</div>
+      </div>
+     </div>
+     <div class="prow2">
+      <div class="done"><div class="k">RECENTLY COMPLETED</div>
+       <div class="dl"><span>✓ Shoulder biomechanics</span><span>✓ Shoulder anatomy</span><span>✓ Spine overview</span><span>✓ Physical agents · heat &amp; cold</span></div></div>
+      <div class="next"><div class="k">WHERE TO GO NEXT</div>
+       <div class="nx"><div><b>MSK questions at 64% — review Rotator cuff</b><span>You missed 5 of 8 rotator cuff questions last week</span></div><a>Review</a></div>
+       <div class="nx"><div><b>You haven't started Neurology</b><span>Start with Stroke — 11 pages, about 3 h</span></div><a>Start</a></div></div>
+     </div>
+    </div>
+    <div class="sec">
+     <div class="sh"><h3>Continue reading</h3><span>pick up where you left off</span><a>All in progress ›</a></div>
+     <div class="row cont"><div class="card"><div class="th" style="background:#FBF2DF"><svg viewBox="0 0 140 104" width="100%" height="100%"><rect x="54" y="8" width="34" height="13" rx="4" fill="none" stroke="#A8760F" stroke-width="3.5"/><rect x="54" y="26" width="34" height="13" rx="4" fill="none" stroke="#A8760F" stroke-width="3.5"/><rect x="54" y="44" width="34" height="13" rx="4" fill="none" stroke="#A8760F" stroke-width="3.5"/><rect x="54" y="62" width="34" height="13" rx="4" fill="none" stroke="#A8760F" stroke-width="3.5"/><rect x="54" y="80" width="34" height="13" rx="4" fill="none" stroke="#A8760F" stroke-width="3.5"/></svg></div><div class="tx"><b>Spine anatomy</b><span>Section 3 of 6</span><div class="cbar"><i style="width:46%"></i></div></div></div><div class="card"><div class="th" style="background:#FBF2DF"><svg viewBox="0 0 140 104" width="100%" height="100%"><circle cx="70" cy="46" r="22" fill="none" stroke="#A8760F" stroke-width="4"/><path d="M40 70 Q70 20 104 40" fill="none" stroke="#A8760F" stroke-width="4" opacity=".5"/><line x1="70" y1="68" x2="78" y2="96" stroke="#A8760F" stroke-width="5" stroke-linecap="round"/></svg></div><div class="tx"><b>Rotator cuff tendinopathy</b><span>Section 2 of 5</span><div class="cbar"><i style="width:20%"></i></div></div></div><div class="card"><div class="th" style="background:#ECE8F7"><svg viewBox="0 0 140 104" width="100%" height="100%"><circle cx="70" cy="52" r="36" fill="none" stroke="#5A479C" stroke-width="3" opacity=".45"/><path d="M52 52 Q70 20 88 52 Q70 84 52 52Z" fill="none" stroke="#5A479C" stroke-width="4"/><circle cx="70" cy="52" r="7" fill="#5A479C"/></svg></div><div class="tx"><b>Central cord syndrome</b><span>Section 5 of 6</span><div class="cbar"><i style="width:72%"></i></div></div></div></div>
+    </div>
+    <div class="sec">
+     <div class="feat">
+      <div class="tx"><div class="k">TOPIC OF THE WEEK</div><b>Central cord syndrome</b>
+       <p>Why the hands are weaker than the legs — and why the old "lamination" explanation no longer holds. With the rehabilitation plan that follows from it.</p>
+       <div class="btns"><span class="b1">Start reading</span><span class="b2">☆ Save to handbook</span></div>
+       <div class="meta"><span>Spinal cord injury</span><span>18 min</span><span>✓ Reviewed Aug 2026</span></div></div>
+      <div class="art"><svg viewBox="0 0 140 104" width="100%" height="100%"><circle cx="70" cy="52" r="36" fill="none" stroke="#7FD3DA" stroke-width="3" opacity=".45"/><path d="M52 52 Q70 20 88 52 Q70 84 52 52Z" fill="none" stroke="#7FD3DA" stroke-width="4"/><circle cx="70" cy="52" r="7" fill="#7FD3DA"/></svg></div>
+     </div>
+    </div>
+
+    <div class="sec">
+     <div class="sh"><h3><span class="pin">2</span>Browse by area</h3><span>186 pages</span></div>
+     <div class="atabs"><a>All<span>186</span></a><a class="on" style="--gc:var(--msk)">MSK<span>94</span></a><a>Neurology<span>38</span></a><a>Basic sciences<span>41</span></a><a>Other topics<span>13</span></a></div>
+     <div class="prow">
+      <div class="pills"><a>Spine<span>24</span></a><a class="on">Shoulder<span>18</span></a><a>Elbow<span>9</span></a><a>Wrist &amp; hand<span>12</span></a><a>Hip<span>14</span></a><a>Knee<span>16</span></a><a>Foot &amp; ankle<span>11</span></a></div>
+      <div class="tools"><span class="pin">4</span><span>Sort: <b>Reading order ⌄</b></span><span class="ck"><i></i>Hide read</span></div>
+     </div>
+     <div class="tl"><div class="thd"><span>PAGE</span><span>TYPE</span><span>PROGRESS</span><span></span></div><div class="fold"><i></i>BASIC &amp; CLINICAL<span>3</span></div><div class="tr"><div class="tt"><b>Shoulder anatomy</b></div><span class="ty">ANATOMY</span><div class="pr"><div class="bar"><i style="width:100%;background:#1F7A4D"></i></div><span class="m ok">✓ Read</span></div><span class="go">›</span></div><div class="tr"><div class="tt"><b>Shoulder biomechanics</b></div><span class="ty">BIOMECHANICS</span><div class="pr"><div class="bar"><i style="width:100%;background:#1F7A4D"></i></div><span class="m ok">✓ Read</span></div><span class="go">›</span></div><div class="tr"><div class="tt"><b>Shoulder examination</b></div><span class="ty">EXAMINATION</span><div class="pr"><div class="bar"></div><span class="m">25 min</span></div><span class="go">›</span></div><div class="fold"><i></i>ROTATOR CUFF<span>3</span></div><div class="tr"><div class="tt"><b>Rotator cuff tendinopathy</b></div><span class="ty">CONDITION</span><div class="pr"><div class="bar"><i style="width:20%"></i></div><span class="m ac">20% · 31 min left</span></div><span class="go">›</span></div><div class="tr"><div class="tt"><b>Partial-thickness tears</b></div><span class="ty">CONDITION</span><div class="pr"><div class="bar"></div><span class="m">9 min</span></div><span class="go">›</span></div><div class="tr"><div class="tt"><b>Full-thickness tears</b><span class="nt nw">NEW</span><span class="pin" style="margin-left:4px">3</span></div><span class="ty">CONDITION</span><div class="pr"><div class="bar"></div><span class="m">9 min</span></div><span class="go">›</span></div><div class="fold"><i></i>INSTABILITY<span>2</span></div><div class="tr"><div class="tt"><b>Anterior instability</b></div><span class="ty">CONDITION</span><div class="pr"><div class="bar"></div><span class="m">14 min</span></div><span class="go">›</span></div><div class="tr"><div class="tt"><b>Atraumatic instability</b><span class="nt up">UPDATED</span></div><span class="ty">CONDITION</span><div class="pr"><div class="bar"></div><span class="m">12 min</span></div><span class="go">›</span></div><div class="fold"><i></i>FROZEN SHOULDER<span>1</span></div><div class="tr"><div class="tt"><b>Frozen shoulder</b></div><span class="ty">CONDITION</span><div class="pr"><div class="bar"></div><span class="m">16 min</span></div><span class="go">›</span></div></div>
+     <div class="more">Open Shoulder in the library ›</div>
+    </div>
+   </div>
+  </div>
+ </div>
+
+ <div class="ideas">
+  <div><b><span class="pin">1</span>A BIGGER GREETING</b><p>"Good morning / afternoon / evening, <strong>Dr. Carolina</strong>" at 22px, centred above the question. First visit: "Welcome, Dr. Carolina".</p></div>
+  <div><b><span class="pin">2</span>AREA → REGION → PAGES</b><p>Tabs for area, pills for region, then a <strong>flat list grouped by folder</strong>. Any page is two taps away.</p></div>
+  <div><b><span class="pin">3</span>NEW AND UPDATED, IN PLACE</b><p>Small <strong>NEW / UPDATED</strong> tags on the rows themselves — you see what changed where it lives.</p></div>
+  <div><b><span class="pin">4</span>REMEMBERS YOUR PLACE</b><p>The tab, region, sort and "hide read" you last used are remembered. <strong>First visit:</strong> MSK › Spine.</p></div>
+  <div><b><span class="pin">5</span>READ ≠ LEARNED</b><p>Progress shows <strong>pages read and Question Bank score</strong> per area. "Where to go next" uses both.</p></div>
+ </div>
+</div>
+</body></html>

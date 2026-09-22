@@ -266,6 +266,16 @@ export interface ReadingProgress {
   scrollRatio: number;
 }
 
+// Same threshold IndexSidebar.tsx already uses client-side to decide
+// "Page complete" — kept here too so server-side aggregates (the
+// library home's Your progress / Continue reading) call a page read
+// at exactly the same point the reader themselves sees it happen.
+export const READ_SCROLL_RATIO_THRESHOLD = 0.995;
+
+export function isPageRead(scrollRatio: number): boolean {
+  return scrollRatio >= READ_SCROLL_RATIO_THRESHOLD;
+}
+
 export async function getReadingProgress(
   userId: string,
   diseaseId: string,

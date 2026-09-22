@@ -6,6 +6,7 @@ import { slugify } from "@/lib/slugify";
 import { getDescendantIds, type TopicIconName } from "@/lib/topics";
 import type { CardColor } from "@/lib/editorial-blocks";
 import { revalidateShellSurfaces, revalidateDiseaseSurfaces } from "@/lib/revalidation";
+import { revalidateLibraryTree } from "@/lib/library-home";
 
 type ActionResult = { ok: true } | { ok: false; error: string };
 
@@ -25,6 +26,7 @@ async function requireAdmin() {
 function revalidateTopicSurfaces() {
   revalidateShellSurfaces();
   revalidateDiseaseSurfaces();
+  revalidateLibraryTree();
 }
 
 async function uniqueSlug(base: string): Promise<string> {

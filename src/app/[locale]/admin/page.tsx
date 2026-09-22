@@ -10,6 +10,7 @@ import {
   FolderTree,
   ChevronRight,
   ClipboardList,
+  Tag,
 } from "lucide-react";
 import { auth } from "@/auth";
 import { pool } from "@/lib/db";
@@ -117,6 +118,15 @@ export default async function AdminPage() {
           />
         </section>
       )}
+
+      <section className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+        <QuickLinkCard
+          href="/admin/page-types"
+          icon={Tag}
+          title="Page Types"
+          description="Set anatomy / biomechanics / examination / condition / rehabilitation / procedure for the library home's Browse by area."
+        />
+      </section>
 
       <section className="flex flex-col gap-3">
         <div>

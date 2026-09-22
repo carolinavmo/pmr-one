@@ -12,8 +12,18 @@ import {
   updateDiseaseNameAction,
   toggleEvidenceBasedAction,
   updateBoardRelevanceAction,
+  updateDiseasePageTypeAction,
+  setTopicOfWeekAction,
+  updateTopicOfWeekPitchAction,
 } from "@/lib/actions/authoring";
 import { toggleDiseaseFavoriteAction } from "@/lib/actions/workspace";
+import {
+  DISEASE_PAGE_TYPE_ORDER,
+  DISEASE_PAGE_TYPE_LABEL,
+  PAGE_TYPE_TAG_CLASS,
+  isDiseasePageType,
+  type DiseasePageType,
+} from "@/lib/disease-page-type";
 
 interface DiseaseHeaderProps {
   diseaseId: string;
@@ -23,6 +33,9 @@ interface DiseaseHeaderProps {
   category: string | undefined;
   evidenceBased: boolean;
   boardRelevance: number | null;
+  pageType?: DiseasePageType | null;
+  isTopicOfWeek?: boolean;
+  topicOfWeekPitch?: string | null;
   updatedAt: string;
   readingMinutes: number;
   // From getSectionSummaries — matches "On this page"'s own row count
@@ -58,6 +71,9 @@ export function DiseaseHeader({
   category,
   evidenceBased,
   boardRelevance,
+  pageType,
+  isTopicOfWeek = false,
+  topicOfWeekPitch,
   updatedAt,
   readingMinutes,
   sectionCount = 0,
@@ -93,6 +109,12 @@ export function DiseaseHeader({
     segments.push(
       <BoardRelevanceStars diseaseId={diseaseId} rating={boardRelevance} editing={editing} />
     );
+  }
+  if (pageType || editing) {
+    segments.push(<PageTypeSelect diseaseId={diseaseId} type={pageType ?? null} editing={editing} />);
+  }
+  if (isTopicOfWeek || editing) {
+    segments.push(<TopicOfWeekToggle diseaseId={diseaseId} enabled={isTopicOfWeek} editing={editing} />);
   }
 
   return (
@@ -133,6 +155,9 @@ export function DiseaseHeader({
           </Fragment>
         ))}
       </div>
+      {isTopicOfWeek && editing && (
+        <TopicOfWeekPitchField diseaseId={diseaseId} pitch={topicOfWeekPitch ?? ""} />
+      )}
     </div>
   );
 }
@@ -240,5 +265,84 @@ function BoardRelevanceStars({
         )}
       </span>
     </span>
+  );
+}
+
+// The library home's Browse-by-area type — unset by default (migration
+// 0056), never inferred from the title. Not shown to a reader at all
+// when unset; while editing, a "—" option is always available so an
+// editor can clear it back out.
+function PageTypeSelect({
+  diseaseId,
+  type,
+  editing,
+}: {
+  diseaseId: string;
+  type: DiseasePageType | null;
+  editing: boolean;
+}) {
+  if (!editing) {
+    return type && <span className={PAGE_TYPE_TAG_CLASS}>{DISEASE_PAGE_TYPE_LABEL[type]}</span>;
+  }
+
+  return (
+    <select
+      value={type ?? ""}
+      onChange={(e) => {
+        const next = e.target.value;
+        updateDiseasePageTypeAction(diseaseId, isDiseasePageType(next) ? next : null);
+      }}
+      className="rounded border border-border bg-surface px-1.5 py-0.5 font-ui text-xs text-secondary outline-none focus:border-accent"
+    >
+      <option value="">Page type — unset</option>
+      {DISEASE_PAGE_TYPE_ORDER.map((t) => (
+        <option key={t} value={t}>
+          {DISEASE_PAGE_TYPE_LABEL[t]}
+        </option>
+      ))}
+    </select>
+  );
+}
+
+// "One feature per page" is enforced server-side (migration 0057's
+// partial unique index + setTopicOfWeekAction's own clear-then-set
+// transaction) — turning this on here silently turns it off wherever
+// else it was on, same as a radio button.
+function TopicOfWeekToggle({
+  diseaseId,
+  enabled,
+  editing,
+}: {
+  diseaseId: string;
+  enabled: boolean;
+  editing: boolean;
+}) {
+  if (!editing) {
+    return enabled && <span className="font-ui text-xs font-medium text-accent">★ Topic of the week</span>;
+  }
+  return (
+    <button
+      type="button"
+      onClick={() => setTopicOfWeekAction(diseaseId, !enabled)}
+      aria-pressed={enabled}
+      className={`font-ui text-xs font-medium ${enabled ? "text-accent" : "text-secondary hover:text-primary"}`}
+    >
+      {enabled ? "★ Topic of the week" : "☆ Set as topic of the week"}
+    </button>
+  );
+}
+
+// Only rendered while editing and only once the toggle above is on —
+// the library home's feature panel is the only place this pitch is
+// ever read back, so there's no reader-facing preview needed here.
+function TopicOfWeekPitchField({ diseaseId, pitch }: { diseaseId: string; pitch: string }) {
+  return (
+    <textarea
+      defaultValue={pitch}
+      onBlur={(e) => updateTopicOfWeekPitchAction(diseaseId, e.target.value)}
+      placeholder="Short pitch for the library home feature panel…"
+      rows={2}
+      className="w-full max-w-lg resize-none rounded border border-border bg-surface px-2 py-1.5 font-ui text-sm text-primary outline-none focus:border-accent"
+    />
   );
 }

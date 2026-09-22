@@ -129,7 +129,7 @@ export function NavbarFrame({
         {/* Row 2 — library, divider, tools */}
         <div className="mt-[14px] hidden items-center gap-[5px] overflow-x-auto min-[900px]:flex">
           <Link
-            href="/conditions"
+            href="/library"
             className="flex shrink-0 items-center gap-[10px] rounded-[20px] border-2 border-teal-on-dark bg-teal-on-dark/[0.18] px-[17px] py-[9px] font-ui text-[15px] font-black text-white transition-colors duration-base hover:bg-teal-on-dark/[0.32] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#7FCBD1]"
           >
             <span className="flex size-[21px] shrink-0 items-center justify-center rounded-[6px] border border-white/32 bg-white/20">

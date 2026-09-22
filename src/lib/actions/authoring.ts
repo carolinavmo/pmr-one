@@ -7,7 +7,9 @@ import { auth } from "@/auth";
 import { pool } from "@/lib/db";
 import { sanitizeRichText } from "@/lib/rich-text";
 import { revalidateDiseaseSurfaces } from "@/lib/revalidation";
+import { revalidateLibraryTree } from "@/lib/library-home";
 import type { BlockLayout, CardColor, ImageRowBlock } from "@/lib/editorial-blocks";
+import type { DiseasePageType } from "@/lib/disease-page-type";
 import type { BlockClipboardEntry } from "@/lib/block-clipboard";
 import { BLOCK_REGISTRY } from "@/lib/block-registry";
 
@@ -2912,5 +2914,56 @@ export async function updateBoardRelevanceAction(
     `UPDATE disease SET board_relevance = $2, updated_at = now() WHERE id = $1`,
     [diseaseId, rating]
   );
+  revalidateDiseaseSurfaces();
+}
+
+// `type` powers the library home's Browse-by-area list and Hero
+// chips (design/LIBRARY-HOME-MIX-SPEC.md) — null clears it back to
+// unset (the /admin/page-types list's own "—" option), never a
+// guessed default.
+export async function updateDiseasePageTypeAction(
+  diseaseId: string,
+  type: DiseasePageType | null
+) {
+  await requireEditor();
+  await pool.query(`UPDATE disease SET type = $2, updated_at = now() WHERE id = $1`, [
+    diseaseId,
+    type,
+  ]);
+  revalidateDiseaseSurfaces();
+  revalidateLibraryTree();
+}
+
+// "One feature per page" — enforced by a partial unique index
+// (migration 0057) as well as here: turning this disease's flag on
+// clears every other disease's flag first, in the same transaction,
+// so the index is never violated mid-write. Turning it off just
+// clears this one; the pitch text is left in place either way so
+// re-enabling later doesn't lose what an editor already wrote.
+export async function setTopicOfWeekAction(diseaseId: string, enabled: boolean) {
+  await requireEditor();
+  const client = await pool.connect();
+  try {
+    await client.query("BEGIN");
+    if (enabled) {
+      await client.query(
+        `UPDATE disease SET is_topic_of_week = false WHERE is_topic_of_week = true AND id != $1`,
+        [diseaseId]
+      );
+    }
+    await client.query(`UPDATE disease SET is_topic_of_week = $2 WHERE id = $1`, [diseaseId, enabled]);
+    await client.query("COMMIT");
+  } catch (err) {
+    await client.query("ROLLBACK");
+    throw err;
+  } finally {
+    client.release();
+  }
+  revalidateDiseaseSurfaces();
+}
+
+export async function updateTopicOfWeekPitchAction(diseaseId: string, pitch: string) {
+  await requireEditor();
+  await pool.query(`UPDATE disease SET topic_of_week_pitch = $2 WHERE id = $1`, [diseaseId, pitch]);
   revalidateDiseaseSurfaces();
 }

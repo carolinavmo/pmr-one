@@ -3,6 +3,7 @@ import type {
   ParagraphBlock,
   MedicalIllustrationBlock,
 } from "@/lib/editorial-blocks";
+import type { DiseasePageType } from "@/lib/disease-page-type";
 import { categoryForRegions } from "@/lib/disease-icons";
 import { MedicalIllustrationBlockView } from "@/components/blocks/MedicalIllustrationBlock";
 import { DiseaseHeader } from "@/components/disease-page/DiseaseHeader";
@@ -40,6 +41,9 @@ interface DiseaseSnapshotProps {
   regions: (string | null)[];
   evidenceBased: boolean;
   boardRelevance: number | null;
+  pageType?: DiseasePageType | null;
+  isTopicOfWeek?: boolean;
+  topicOfWeekPitch?: string | null;
   updatedAt: string;
   readingMinutes: number;
   isSignedIn: boolean;
@@ -58,6 +62,9 @@ export function DiseaseSnapshot({
   regions,
   evidenceBased,
   boardRelevance,
+  pageType,
+  isTopicOfWeek,
+  topicOfWeekPitch,
   updatedAt,
   readingMinutes,
   isSignedIn,
@@ -79,6 +86,9 @@ export function DiseaseSnapshot({
         category={category}
         evidenceBased={evidenceBased}
         boardRelevance={boardRelevance}
+        pageType={pageType}
+        isTopicOfWeek={isTopicOfWeek}
+        topicOfWeekPitch={topicOfWeekPitch}
         updatedAt={updatedAt}
         readingMinutes={readingMinutes}
         isSignedIn={isSignedIn}

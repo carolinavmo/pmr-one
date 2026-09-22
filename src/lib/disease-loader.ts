@@ -1,6 +1,7 @@
 import { pool } from "@/lib/db";
 import { slugify } from "@/lib/slugify";
 import { stripLeadingNumber } from "@/lib/heading-number";
+import type { DiseasePageType } from "@/lib/disease-page-type";
 import type {
   BlockLayout,
   CardColor,
@@ -27,6 +28,9 @@ export interface DiseaseData {
   evidenceBased: boolean;
   boardRelevance: number | null;
   updatedAt: Date;
+  type: DiseasePageType | null;
+  isTopicOfWeek: boolean;
+  topicOfWeekPitch: string | null;
 }
 
 interface BlockRow {
@@ -42,7 +46,8 @@ interface BlockRow {
 export async function getDiseaseBySlug(slug: string, locale?: string): Promise<DiseaseData | null> {
   const { rows: diseaseRows } = await pool.query(
     `SELECT d.id, d.canonical_name, d.slug, d.status, d.source_locale,
-      d.evidence_based, d.board_relevance, d.updated_at,
+      d.evidence_based, d.board_relevance, d.updated_at, d.type,
+      d.is_topic_of_week, d.topic_of_week_pitch,
       (
         SELECT array_agg(DISTINCT a.region)
         FROM illustration_usage iu
@@ -103,6 +108,9 @@ export async function getDiseaseBySlug(slug: string, locale?: string): Promise<D
     evidenceBased: disease.evidence_based,
     boardRelevance: disease.board_relevance,
     updatedAt: disease.updated_at,
+    type: disease.type,
+    isTopicOfWeek: disease.is_topic_of_week,
+    topicOfWeekPitch: disease.topic_of_week_pitch,
   };
 }
 

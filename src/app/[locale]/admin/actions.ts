@@ -3,6 +3,7 @@
 import { auth } from "@/auth";
 import { pool } from "@/lib/db";
 import { revalidateShellSurfaces, revalidateDiseaseSurfaces } from "@/lib/revalidation";
+import { revalidateLibraryTree } from "@/lib/library-home";
 import { createDatabaseBackup } from "@/lib/db-backup";
 
 async function requireReviewer() {
@@ -53,6 +54,7 @@ export async function publishDisease(formData: FormData) {
 
   revalidateShellSurfaces();
   revalidateDiseaseSurfaces();
+  revalidateLibraryTree();
 }
 
 export async function unpublishDisease(formData: FormData) {
@@ -68,6 +70,7 @@ export async function unpublishDisease(formData: FormData) {
 
   revalidateShellSurfaces();
   revalidateDiseaseSurfaces();
+  revalidateLibraryTree();
 }
 
 export type DeleteDiseaseResult = { ok: true } | { ok: false; error: string };
@@ -120,6 +123,7 @@ export async function deleteDiseaseAction(
 
     revalidateShellSurfaces();
     revalidateDiseaseSurfaces();
+    revalidateLibraryTree();
     return { ok: true };
   } catch (err) {
     await client.query("ROLLBACK").catch(() => {});

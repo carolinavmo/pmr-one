@@ -50,6 +50,20 @@ export function CommandPalette({ signedOut }: { signedOut: boolean }) {
     return () => document.removeEventListener("keydown", handleKey);
   }, []);
 
+  // A page-level "search" control that isn't this input itself (the
+  // library home's Hero search box) dispatches this instead of
+  // duplicating a second search experience — same target ⌘K already
+  // focuses, just triggered from elsewhere in the tree without prop
+  // drilling a ref through the navbar.
+  useEffect(() => {
+    function handleOpenRequest() {
+      inputRef.current?.scrollIntoView({ block: "center" });
+      inputRef.current?.focus();
+    }
+    window.addEventListener("pmr:open-search", handleOpenRequest);
+    return () => window.removeEventListener("pmr:open-search", handleOpenRequest);
+  }, []);
+
   useEffect(() => {
     if (!open) return;
     function handleClick(event: MouseEvent) {

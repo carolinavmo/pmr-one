@@ -81,6 +81,9 @@ export default async function DiseasePage({ params }: DiseasePageProps) {
       regions={disease.regions}
       evidenceBased={disease.evidenceBased}
       boardRelevance={disease.boardRelevance}
+      pageType={disease.type}
+      isTopicOfWeek={disease.isTopicOfWeek}
+      topicOfWeekPitch={disease.topicOfWeekPitch}
       updatedAt={disease.updatedAt.toISOString()}
       readingMinutes={readingMinutes}
       isSignedIn={Boolean(session)}
@@ -99,6 +102,9 @@ export default async function DiseasePage({ params }: DiseasePageProps) {
       category={categoryForRegions(disease.regions)}
       evidenceBased={disease.evidenceBased}
       boardRelevance={disease.boardRelevance}
+      pageType={disease.type}
+      isTopicOfWeek={disease.isTopicOfWeek}
+      topicOfWeekPitch={disease.topicOfWeekPitch}
       updatedAt={disease.updatedAt.toISOString()}
       readingMinutes={readingMinutes}
       sectionCount={sectionSummaries.length}
