@@ -1,11 +1,12 @@
 import { NextResponse } from "next/server";
 import { pool } from "@/lib/db";
 
-// TEMPORARY — applies migration 0054 (reading_progress table) and
-// reassigns the 8 MSK region topics' generic placeholder icons to
-// their real anatomy-specific ones, against production. Both steps
-// are idempotent (IF NOT EXISTS / UPDATE-by-name) — safe to hit more
-// than once, and touches nothing else. Remove this route after use.
+// TEMPORARY — applies migration 0054 (reading_progress table), 0055
+// (highlight_card_v2/v3 enum values), and reassigns the 8 MSK region
+// topics' generic placeholder icons to their real anatomy-specific
+// ones, against production. All steps are idempotent (IF NOT EXISTS /
+// UPDATE-by-name) — safe to hit more than once, and touches nothing
+// else. Remove this route after use.
 const ICON_UPDATES: [name: string, icon: string][] = [
   ["Spine", "spine"],
   ["Shoulder", "shoulder"],
@@ -31,6 +32,9 @@ export async function GET() {
   `);
   await pool.query(`CREATE INDEX IF NOT EXISTS reading_progress_user_id_idx ON reading_progress (user_id)`);
 
+  await pool.query(`ALTER TYPE editorial_block_type ADD VALUE IF NOT EXISTS 'highlight_card_v2'`);
+  await pool.query(`ALTER TYPE editorial_block_type ADD VALUE IF NOT EXISTS 'highlight_card_v3'`);
+
   const iconResults: { name: string; icon: string; updated: number }[] = [];
   for (const [name, icon] of ICON_UPDATES) {
     const result = await pool.query(
@@ -40,5 +44,10 @@ export async function GET() {
     iconResults.push({ name, icon, updated: result.rowCount ?? 0 });
   }
 
-  return NextResponse.json({ ok: true, readingProgressTable: "ready", iconResults });
+  return NextResponse.json({
+    ok: true,
+    readingProgressTable: "ready",
+    highlightCardEnumValues: "ready",
+    iconResults,
+  });
 }
