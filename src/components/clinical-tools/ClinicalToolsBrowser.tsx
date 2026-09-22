@@ -1,12 +1,34 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, useSyncExternalStore } from "react";
 import { useTranslations } from "next-intl";
-import { Search, Star, Lock } from "lucide-react";
+import { Search } from "lucide-react";
 import type { CalculatorCategory, CalculatorSummary } from "@/lib/clinical-tools";
-import { CARD_COLOR_CHIP } from "@/lib/card-colors";
-import { KnowledgeObjectCard } from "@/components/ui/KnowledgeObjectCard";
-import { toggleCalculatorFavoriteAction } from "@/lib/actions/workspace";
+import { CalculatorCard } from "@/components/clinical-tools/CalculatorCard";
+import { CalculatorListView } from "@/components/clinical-tools/CalculatorListView";
+
+// Cards vs. List — per-browser UI chrome, same localStorage-backed
+// useSyncExternalStore shape as the sidebar's own toggles
+// (ClinicalToolsSidebar.tsx), "remembers the choice" (Pass 4) without
+// a DB round-trip.
+const VIEW_STORAGE_KEY = "pmr-atlas:clinical-tools-view";
+let viewListeners: (() => void)[] = [];
+function subscribeView(onChange: () => void) {
+  viewListeners.push(onChange);
+  return () => {
+    viewListeners = viewListeners.filter((l) => l !== onChange);
+  };
+}
+function getViewSnapshot(): "cards" | "list" {
+  return localStorage.getItem(VIEW_STORAGE_KEY) === "list" ? "list" : "cards";
+}
+function getViewServerSnapshot(): "cards" | "list" {
+  return "cards";
+}
+function setView(value: "cards" | "list") {
+  localStorage.setItem(VIEW_STORAGE_KEY, value);
+  for (const l of viewListeners) l();
+}
 
 // Server-fetched data handed down as props (same "page.tsx fetches,
 // one client component owns the interactive part" split
@@ -17,15 +39,18 @@ export function ClinicalToolsBrowser({
   categories,
   calculators,
   favoritedIds,
+  usageCounts,
   isSignedIn,
 }: {
   categories: CalculatorCategory[];
   calculators: CalculatorSummary[];
   favoritedIds: Set<string>;
+  usageCounts: Map<string, number>;
   isSignedIn: boolean;
 }) {
   const t = useTranslations("clinicalTools");
   const [query, setQuery] = useState("");
+  const view = useSyncExternalStore(subscribeView, getViewSnapshot, getViewServerSnapshot);
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -45,51 +70,70 @@ export function ClinicalToolsBrowser({
 
   return (
     <div className="flex flex-col gap-8">
-      <div className="relative">
-        <Search
-          className="pointer-events-none absolute top-1/2 left-3.5 size-4 -translate-y-1/2 text-secondary"
-          aria-hidden="true"
-        />
-        <input
-          type="search"
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          placeholder={t("searchPlaceholder")}
-          className="w-full rounded-full border border-border bg-surface-raised py-2.5 pr-4 pl-10 font-ui text-sm text-primary outline-none focus:border-accent"
-        />
+      <div className="flex items-center gap-3">
+        <div className="relative flex-1">
+          <Search
+            className="pointer-events-none absolute top-1/2 left-3.5 size-4 -translate-y-1/2 text-secondary"
+            aria-hidden="true"
+          />
+          <input
+            type="search"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder={t("searchPlaceholder")}
+            className="w-full rounded-full border border-border bg-surface-raised py-2.5 pr-4 pl-10 font-ui text-sm text-primary outline-none focus:border-accent"
+          />
+        </div>
+        <div className="flex shrink-0 rounded-[11px] border border-border bg-surface-raised p-[3px]">
+          <button
+            type="button"
+            onClick={() => setView("cards")}
+            aria-pressed={view === "cards"}
+            className={`rounded-[8px] px-3.5 py-2 font-ui text-[12.5px] font-extrabold transition-colors duration-base ${
+              view === "cards" ? "bg-surface text-navy shadow-[0_1px_3px_rgba(20,40,74,0.1)]" : "text-secondary"
+            }`}
+          >
+            {t("cardsView")}
+          </button>
+          <button
+            type="button"
+            onClick={() => setView("list")}
+            aria-pressed={view === "list"}
+            className={`rounded-[8px] px-3.5 py-2 font-ui text-[12.5px] font-extrabold transition-colors duration-base ${
+              view === "list" ? "bg-surface text-navy shadow-[0_1px_3px_rgba(20,40,74,0.1)]" : "text-secondary"
+            }`}
+          >
+            {t("listView")}
+          </button>
+        </div>
       </div>
 
       {filtered.length === 0 ? (
         <p className="font-ui text-sm text-secondary">{t("noResults")}</p>
+      ) : view === "list" ? (
+        <CalculatorListView calculators={filtered} favoritedIds={favoritedIds} isSignedIn={isSignedIn} />
       ) : (
         <>
           {isSignedIn && favorited.length > 0 && (
-            <div className="flex flex-col gap-3">
-              <div className="flex items-center gap-2">
-                <span
-                  className={`rounded-full px-2.5 py-1 font-ui text-xs font-semibold tracking-wide uppercase ${CARD_COLOR_CHIP.yellow}`}
-                >
-                  {t("favouritesHeading")}
-                </span>
-                <span className="font-ui text-xs text-secondary">
-                  {t("calculatorCount", { count: favorited.length })}
-                </span>
-              </div>
-              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
-                {favorited.map((calculator) => {
-                  const category = categories.find((c) => c.slug === calculator.categorySlug);
-                  return (
-                    <CalculatorCard
-                      key={calculator.id}
-                      calculator={calculator}
-                      categoryColor={category?.color}
-                      isFavorited
-                      isSignedIn={isSignedIn}
-                      t={t}
-                    />
-                  );
-                })}
-              </div>
+            // Gold band wraps the section band + card grid together, but
+            // never the cards themselves — each card keeps re-declaring
+            // its own category's data-category inside, so it renders in
+            // its real category color even inside the gold wrap (spec:
+            // "the same tools keep a filled star... duplicate, but
+            // visibly linked", not recolored).
+            <div data-category="favourites" className="rounded-2xl border p-3.5" style={{ background: "var(--tint)", borderColor: "var(--bd)" }}>
+              <SectionBand title={`★ ${t("favouritesHeading")}`} count={favorited.length} />
+              <CardGrid>
+                {favorited.map((calculator) => (
+                  <CalculatorCard
+                    key={calculator.id}
+                    calculator={calculator}
+                    isFavorited
+                    isSignedIn={isSignedIn}
+                    usageCount={usageCounts.get(calculator.id) ?? 0}
+                  />
+                ))}
+              </CardGrid>
             </div>
           )}
 
@@ -97,29 +141,19 @@ export function ClinicalToolsBrowser({
             const categoryCalculators = filtered.filter((c) => c.categorySlug === category.slug);
             if (categoryCalculators.length === 0) return null;
             return (
-              <div key={category.id} className="flex flex-col gap-3">
-                <div className="flex items-center gap-2">
-                  <span
-                    className={`rounded-full px-2.5 py-1 font-ui text-xs font-semibold tracking-wide uppercase ${CARD_COLOR_CHIP[category.color]}`}
-                  >
-                    {category.name}
-                  </span>
-                  <span className="font-ui text-xs text-secondary">
-                    {t("calculatorCount", { count: categoryCalculators.length })}
-                  </span>
-                </div>
-                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+              <div key={category.id} data-category={category.slug} className="flex flex-col">
+                <SectionBand title={category.name} count={categoryCalculators.length} />
+                <CardGrid>
                   {categoryCalculators.map((calculator) => (
                     <CalculatorCard
                       key={calculator.id}
                       calculator={calculator}
-                      categoryColor={category.color}
                       isFavorited={favoritedIds.has(calculator.id)}
                       isSignedIn={isSignedIn}
-                      t={t}
+                      usageCount={usageCounts.get(calculator.id) ?? 0}
                     />
                   ))}
-                </div>
+                </CardGrid>
               </div>
             );
           })}
@@ -129,62 +163,37 @@ export function ClinicalToolsBrowser({
   );
 }
 
-// The star sits as a sibling overlay, not nested inside
-// KnowledgeObjectCard's own <Link> — an <a> can't legally contain a
-// <button>/<form>, and clicking the star would also trigger the
-// card's navigation. Absolutely positioning it over the card's own
-// top-right corner keeps the whole card clickable everywhere except
-// that one corner.
-function CalculatorCard({
-  calculator,
-  categoryColor,
-  isFavorited,
-  isSignedIn,
-  t,
-}: {
-  calculator: CalculatorSummary;
-  categoryColor?: CalculatorCategory["color"];
-  isFavorited: boolean;
-  isSignedIn: boolean;
-  t: ReturnType<typeof useTranslations<"clinicalTools">>;
-}) {
-  const isLocked = !calculator.isPublic && !isSignedIn;
-  // A locked calculator shows as a neutral gray, not its own category
-  // color — same treatment as locked Flashcards/Question Bank folders.
-  const displayColor = isLocked ? "slate" : categoryColor;
-
+// TOOLS-DASHBOARD-SPEC.md's banded section header — --tint background,
+// --bd border, 5px left border in --c, title in --c. Reads the same
+// data-category-scoped tokens as the cards below it, set by the
+// section's own wrapper div, never a per-category class branch here.
+function SectionBand({ title, count }: { title: string; count: number }) {
+  const t = useTranslations("clinicalTools");
   return (
-    <div className="relative">
-      <KnowledgeObjectCard
-        type="clinical_calculator"
-        title={calculator.abbreviation ? `${calculator.abbreviation} - ${calculator.name}` : calculator.name}
-        context={calculator.description}
-        href={`/clinical-tools/${calculator.slug}`}
-        categoryColor={displayColor}
-      />
-      {isLocked && (
-        <span
-          className="absolute top-3 left-3 z-10 flex size-7 items-center justify-center rounded-full bg-surface/80 text-secondary backdrop-blur-sm"
-          title={t("membersOnly")}
-        >
-          <Lock className="size-3.5" aria-hidden="true" />
-        </span>
-      )}
-      {isSignedIn && (
-        <form action={toggleCalculatorFavoriteAction} className="absolute top-3 right-3 z-10">
-          <input type="hidden" name="calculatorId" value={calculator.id} />
-          <button
-            type="submit"
-            aria-pressed={isFavorited}
-            aria-label={isFavorited ? t("removeFromFavourites") : t("addToFavourites")}
-            className={`flex size-7 items-center justify-center rounded-full bg-surface/80 backdrop-blur-sm transition-colors duration-base ${
-              isFavorited ? "text-card-yellow" : "text-secondary hover:text-card-yellow"
-            }`}
-          >
-            <Star className="size-4" fill={isFavorited ? "currentColor" : "none"} aria-hidden="true" />
-          </button>
-        </form>
-      )}
+    <div
+      className="mb-3 flex items-center gap-2.5 rounded-[10px] border border-l-[5px] px-3.5 py-2.5"
+      style={{ background: "var(--tint)", borderColor: "var(--bd)", borderLeftColor: "var(--c)" }}
+    >
+      <span className="font-ui text-[13.5px] font-black tracking-[0.2px]" style={{ color: "var(--c)" }}>
+        {title}
+      </span>
+      <span className="font-ui text-xs font-semibold text-secondary/70">
+        {t("calculatorCount", { count })}
+      </span>
+      {/* "See all ›" — inert until a per-category filtered view exists
+          to link to; kept as a styled span, not a dead <a>. The List
+          view (Pass 4) covers "I want the full sortable set" instead. */}
+      <span className="ml-auto font-ui text-xs font-extrabold" style={{ color: "var(--c)" }}>
+        {t("seeAll")}
+      </span>
     </div>
   );
+}
+
+// TOOLS-IMPLEMENTATION.md Pass 4 point 5 — 3 cards/row from 1200px, 2
+// from 820px, 1 below that. Equal heights within a row come free from
+// grid's default stretch as long as each CalculatorCard is itself a
+// flex column filling its cell, which it is.
+function CardGrid({ children }: { children: React.ReactNode }) {
+  return <div className="grid grid-cols-1 gap-3.5 min-[820px]:grid-cols-2 min-[1200px]:grid-cols-3">{children}</div>;
 }

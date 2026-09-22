@@ -5,6 +5,7 @@ import { useTranslations, useLocale } from "next-intl";
 import { RotateCcw, Copy, Check, ExternalLink, TriangleAlert, ShieldAlert } from "lucide-react";
 import type { Calculator, CalculatorItem } from "@/lib/clinical-tools";
 import { scoreCalculator, resolveInterpretation } from "@/lib/calculator-scoring";
+import { logCalculatorUsageAction } from "@/lib/actions/workspace";
 
 // A band's severity maps to one of this app's existing semantic color
 // tokens — not the decorative CardColor palette (card-colors.ts),
@@ -85,6 +86,13 @@ export function CalculatorRunner({ calculator }: { calculator: Calculator }) {
   // correctly. Measuring it directly is the only robust way to stick
   // the progress bar right beneath it rather than under or far below it.
   const [stickyOffset, setStickyOffset] = useState(76);
+
+  // "Log tool opens" (TOOLS-IMPLEMENTATION.md Pass 4) — fired once per
+  // mount, a no-op server-side when signed out. Not tied to actually
+  // producing a score; opening the runner at all is "using the tool".
+  useEffect(() => {
+    logCalculatorUsageAction(calculator.id);
+  }, [calculator.id]);
 
   useEffect(() => {
     const header = document.querySelector("header");

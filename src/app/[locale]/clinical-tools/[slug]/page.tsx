@@ -3,8 +3,9 @@ import { getTranslations, getLocale } from "next-intl/server";
 import { Clock, ListChecks, Users, Lock } from "lucide-react";
 import { auth } from "@/auth";
 import { getCalculatorBySlug } from "@/lib/clinical-tools";
-import { CARD_COLOR_CHIP } from "@/lib/card-colors";
+import { getFavoritedCalculatorIds } from "@/lib/workspace";
 import { CalculatorRunner } from "@/components/clinical-tools/CalculatorRunner";
+import { CalculatorFavoriteStar } from "@/components/clinical-tools/CalculatorFavoriteStar";
 import { Link } from "@/i18n/navigation";
 
 interface CalculatorPageProps {
@@ -16,6 +17,7 @@ export default async function CalculatorPage({ params }: CalculatorPageProps) {
   const locale = await getLocale();
   const [calculator, session] = await Promise.all([getCalculatorBySlug(slug, locale), auth()]);
   if (!calculator) notFound();
+  const favoritedIds = session ? await getFavoritedCalculatorIds(session.user.id) : new Set<string>();
 
   const t = await getTranslations("clinicalTools");
   const tCommon = await getTranslations("common");
@@ -32,16 +34,23 @@ export default async function CalculatorPage({ params }: CalculatorPageProps) {
           {t("backToAll")}
         </Link>
         <span
-          className={`w-fit rounded-full px-2.5 py-1 font-ui text-xs font-semibold tracking-wide uppercase ${CARD_COLOR_CHIP[calculator.categoryColor]}`}
+          data-category={calculator.categorySlug}
+          className="w-fit rounded-full px-2.5 py-1 font-ui text-xs font-semibold tracking-wide uppercase"
+          style={{ background: "var(--tint)", color: "var(--c)" }}
         >
           {calculator.categoryName}
         </span>
-        <h1 className="font-reading text-3xl text-primary">
-          {calculator.name}
-          {calculator.abbreviation && (
-            <span className="ml-2 font-ui text-lg text-secondary">({calculator.abbreviation})</span>
+        <div className="flex items-center gap-1">
+          <h1 className="font-reading text-3xl text-primary">
+            {calculator.name}
+            {calculator.abbreviation && (
+              <span className="ml-2 font-ui text-lg text-secondary">({calculator.abbreviation})</span>
+            )}
+          </h1>
+          {session && (
+            <CalculatorFavoriteStar calculatorId={calculator.id} isFavorited={favoritedIds.has(calculator.id)} />
           )}
-        </h1>
+        </div>
         <p className="font-ui text-sm text-secondary">{calculator.description}</p>
         <div className="mt-1 flex flex-wrap items-center gap-4 font-ui text-xs text-secondary">
           <span className="inline-flex items-center gap-1.5">

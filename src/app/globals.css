@@ -110,6 +110,122 @@
   --color-card-umber: #8b5a34;
   --color-card-plum: #6b4c7a;
 
+  /* ---------- Color: Clinical Tools category tokens ----------
+     TOOLS-DASHBOARD-SPEC.md — "Add four CSS custom properties per
+     category (--c, --tint, --bd, plus the text use of --c), set from
+     a data-category attribute — never hard-coded per component."
+     Every card/chip/section-band/sidebar-row under a
+     `[data-category="<slug>"]` wrapper reads these three instead of
+     each component branching on category name itself. Slugs are
+     clinical_calculator_category.slug (10 real categories, not the
+     spec mockup's 5 — see the Pass 1 data audit). Independence,
+     Balance & Falls Risk (spec's "Mobility & balance"), Strength
+     (spec's "Pain" slot), Consciousness & Cognition (spec's
+     "Cognition & mood"), and Spasticity (spec's "Neurological") reuse
+     the spec's 5 example hexes verbatim since those categories map
+     conceptually; the other 5 (upper/lower limb, facial palsy,
+     respiratory, pelvic floor) are new hues chosen for hue separation
+     from all 10 at once, not just their nearest neighbour. */
+  --cat-independence-c: #0a7680;
+  --cat-independence-tint: #f0fafb;
+  --cat-independence-bd: #cfe9eb;
+  --cat-balance-falls-risk-c: #1f7a4d;
+  --cat-balance-falls-risk-tint: #f1f9f4;
+  --cat-balance-falls-risk-bd: #cfe8da;
+  --cat-strength-c: #b8262b;
+  --cat-strength-tint: #fef5f5;
+  --cat-strength-bd: #f6d9da;
+  --cat-consciousness-cognition-c: #8a5f08;
+  --cat-consciousness-cognition-tint: #fef9ee;
+  --cat-consciousness-cognition-bd: #f0e3c6;
+  --cat-spasticity-c: #5a479c;
+  --cat-spasticity-tint: #f6f4fc;
+  --cat-spasticity-bd: #ded7f1;
+  --cat-upper-limb-function-c: #2c4d96;
+  --cat-upper-limb-function-tint: #f3f6fc;
+  --cat-upper-limb-function-bd: #d4dced;
+  --cat-lower-limb-function-c: #807e2d;
+  --cat-lower-limb-function-tint: #f9f9f0;
+  --cat-lower-limb-function-bd: #eaead1;
+  --cat-peripheral-facial-palsy-c: #a92d6d;
+  --cat-peripheral-facial-palsy-tint: #fcf3f7;
+  --cat-peripheral-facial-palsy-bd: #eed2e1;
+  --cat-respiratory-rehabilitation-c: #77397f;
+  --cat-respiratory-rehabilitation-tint: #faf4fb;
+  --cat-respiratory-rehabilitation-bd: #e8d7ea;
+  --cat-pelvic-floor-rehabilitation-c: #91553b;
+  --cat-pelvic-floor-rehabilitation-tint: #fbf6f4;
+  --cat-pelvic-floor-rehabilitation-bd: #eddcd4;
+  /* Favourites — band only (spec): no calculator card ever carries
+     data-category="favourites" (each card keeps its own category's
+     colors even inside the gold band), but the band's own header
+     still needs a tint/border pair to match the spec's band anatomy. */
+  --cat-favourites-c: #e8a317;
+  --cat-favourites-tint: #fef6e3;
+  --cat-favourites-bd: #f1e2bf;
+
+  /* data-category on the wrapper resolves to the plain --c/--tint/--bd
+     names components actually read, from the slug-suffixed tokens
+     above — one indirection, so BlockRenderer-style components never
+     hard-code a category name. */
+}
+[data-category="independence"] {
+  --c: var(--cat-independence-c);
+  --tint: var(--cat-independence-tint);
+  --bd: var(--cat-independence-bd);
+}
+[data-category="balance-falls-risk"] {
+  --c: var(--cat-balance-falls-risk-c);
+  --tint: var(--cat-balance-falls-risk-tint);
+  --bd: var(--cat-balance-falls-risk-bd);
+}
+[data-category="strength"] {
+  --c: var(--cat-strength-c);
+  --tint: var(--cat-strength-tint);
+  --bd: var(--cat-strength-bd);
+}
+[data-category="consciousness-cognition"] {
+  --c: var(--cat-consciousness-cognition-c);
+  --tint: var(--cat-consciousness-cognition-tint);
+  --bd: var(--cat-consciousness-cognition-bd);
+}
+[data-category="spasticity"] {
+  --c: var(--cat-spasticity-c);
+  --tint: var(--cat-spasticity-tint);
+  --bd: var(--cat-spasticity-bd);
+}
+[data-category="upper-limb-function"] {
+  --c: var(--cat-upper-limb-function-c);
+  --tint: var(--cat-upper-limb-function-tint);
+  --bd: var(--cat-upper-limb-function-bd);
+}
+[data-category="lower-limb-function"] {
+  --c: var(--cat-lower-limb-function-c);
+  --tint: var(--cat-lower-limb-function-tint);
+  --bd: var(--cat-lower-limb-function-bd);
+}
+[data-category="peripheral-facial-palsy"] {
+  --c: var(--cat-peripheral-facial-palsy-c);
+  --tint: var(--cat-peripheral-facial-palsy-tint);
+  --bd: var(--cat-peripheral-facial-palsy-bd);
+}
+[data-category="respiratory-rehabilitation"] {
+  --c: var(--cat-respiratory-rehabilitation-c);
+  --tint: var(--cat-respiratory-rehabilitation-tint);
+  --bd: var(--cat-respiratory-rehabilitation-bd);
+}
+[data-category="pelvic-floor-rehabilitation"] {
+  --c: var(--cat-pelvic-floor-rehabilitation-c);
+  --tint: var(--cat-pelvic-floor-rehabilitation-tint);
+  --bd: var(--cat-pelvic-floor-rehabilitation-bd);
+}
+[data-category="favourites"] {
+  --c: var(--cat-favourites-c);
+  --tint: var(--cat-favourites-tint);
+  --bd: var(--cat-favourites-bd);
+}
+
+:root {
   /* ---------- Color: badge backgrounds (fixed, not theme-swapped) ----------
      A badge is its own small dark chip with light text — unlike every
      other color token here, it's deliberately declared once, outside
@@ -278,6 +394,64 @@
     --color-card-umber: #d9b48a;
     --color-card-plum: #c9a8d4;
   }
+  /* Clinical Tools category tokens — same lighten-tint-darken,
+     lighten-text transform as the card colors above, applied to the
+     10 category hues (see the light-mode block's own comment). */
+  :root:not([data-theme="light"]) [data-category="independence"] {
+    --c: #5ee1ee;
+    --tint: #163d41;
+    --bd: #336c70;
+  }
+  :root:not([data-theme="light"]) [data-category="balance-falls-risk"] {
+    --c: #81daae;
+    --tint: #1d3a28;
+    --bd: #386b4e;
+  }
+  :root:not([data-theme="light"]) [data-category="strength"] {
+    --c: #e79d9f;
+    --tint: #490d0d;
+    --bd: #7f2427;
+  }
+  :root:not([data-theme="light"]) [data-category="consciousness-cognition"] {
+    --c: #f1c262;
+    --tint: #4c380b;
+    --bd: #7c6227;
+  }
+  :root:not([data-theme="light"]) [data-category="spasticity"] {
+    --c: #b7aed6;
+    --tint: #211640;
+    --bd: #412e75;
+  }
+  :root:not([data-theme="light"]) [data-category="upper-limb-function"] {
+    --c: #a3b6e0;
+    --tint: #152441;
+    --bd: #344770;
+  }
+  :root:not([data-theme="light"]) [data-category="lower-limb-function"] {
+    --c: #d6d599;
+    --tint: #3b3b1c;
+    --bd: #6d6d36;
+  }
+  :root:not([data-theme="light"]) [data-category="peripheral-facial-palsy"] {
+    --c: #e2a1c3;
+    --tint: #411529;
+    --bd: #733054;
+  }
+  :root:not([data-theme="light"]) [data-category="respiratory-rehabilitation"] {
+    --c: #cea7d3;
+    --tint: #381a3d;
+    --bd: #643b68;
+  }
+  :root:not([data-theme="light"]) [data-category="pelvic-floor-rehabilitation"] {
+    --c: #d9b9ab;
+    --tint: #3d241a;
+    --bd: #704734;
+  }
+  :root:not([data-theme="light"]) [data-category="favourites"] {
+    --c: #f2d69c;
+    --tint: #4e3909;
+    --bd: #816423;
+  }
 }
 
 /* Explicit "dark" choice — same values as the media query above,
@@ -329,6 +503,61 @@
   --color-card-wine: #e8a8b7;
   --color-card-umber: #d9b48a;
   --color-card-plum: #c9a8d4;
+}
+:root[data-theme="dark"] [data-category="independence"] {
+  --c: #5ee1ee;
+  --tint: #163d41;
+  --bd: #336c70;
+}
+:root[data-theme="dark"] [data-category="balance-falls-risk"] {
+  --c: #81daae;
+  --tint: #1d3a28;
+  --bd: #386b4e;
+}
+:root[data-theme="dark"] [data-category="strength"] {
+  --c: #e79d9f;
+  --tint: #490d0d;
+  --bd: #7f2427;
+}
+:root[data-theme="dark"] [data-category="consciousness-cognition"] {
+  --c: #f1c262;
+  --tint: #4c380b;
+  --bd: #7c6227;
+}
+:root[data-theme="dark"] [data-category="spasticity"] {
+  --c: #b7aed6;
+  --tint: #211640;
+  --bd: #412e75;
+}
+:root[data-theme="dark"] [data-category="upper-limb-function"] {
+  --c: #a3b6e0;
+  --tint: #152441;
+  --bd: #344770;
+}
+:root[data-theme="dark"] [data-category="lower-limb-function"] {
+  --c: #d6d599;
+  --tint: #3b3b1c;
+  --bd: #6d6d36;
+}
+:root[data-theme="dark"] [data-category="peripheral-facial-palsy"] {
+  --c: #e2a1c3;
+  --tint: #411529;
+  --bd: #733054;
+}
+:root[data-theme="dark"] [data-category="respiratory-rehabilitation"] {
+  --c: #cea7d3;
+  --tint: #381a3d;
+  --bd: #643b68;
+}
+:root[data-theme="dark"] [data-category="pelvic-floor-rehabilitation"] {
+  --c: #d9b9ab;
+  --tint: #3d241a;
+  --bd: #704734;
+}
+:root[data-theme="dark"] [data-category="favourites"] {
+  --c: #f2d69c;
+  --tint: #4e3909;
+  --bd: #816423;
 }
 
 /* Homepage hero background photo — light-mode only (it's a near-white

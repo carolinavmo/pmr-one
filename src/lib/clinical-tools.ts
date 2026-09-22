@@ -1,3 +1,5 @@
+import { cache } from "react";
+import { unstable_cache } from "next/cache";
 import { pool } from "@/lib/db";
 import type { CardColor } from "@/lib/editorial-blocks";
 
@@ -160,53 +162,76 @@ function mapCategoryRow(r: {
   };
 }
 
-export async function getCalculatorCategories(): Promise<CalculatorCategory[]> {
-  const { rows } = await pool.query(
-    `SELECT id, slug, name, color, position
-     FROM clinical_calculator_category
-     ORDER BY position, name`
-  );
-  return rows.map(mapCategoryRow);
-}
+// Now read on every route (Pass 3 — the /clinical-tools sidebar
+// replaces the topic tree there, but Sidebar.tsx has no server-side
+// way to know it's on that route without middleware, so it always
+// fetches both). 10 categories, near-static reference content with no
+// live edit path (seeded only by migrations 0034-0038) — cheap to
+// cache with a plain time-based TTL, same shape as library-home.ts's
+// getLibraryForest, no invalidation tag needed since nothing ever
+// writes to this table at runtime.
+const getCalculatorCategoriesCached = unstable_cache(
+  async (): Promise<CalculatorCategory[]> => {
+    const { rows } = await pool.query(
+      `SELECT id, slug, name, color, position
+       FROM clinical_calculator_category
+       ORDER BY position, name`
+    );
+    return rows.map(mapCategoryRow);
+  },
+  ["clinical-tools-categories"],
+  { revalidate: 300 }
+);
+
+export const getCalculatorCategories = cache(getCalculatorCategoriesCached);
 
 // English (`locale === "en"`) always reads the source columns directly.
 // Any other locale LEFT JOINs the translation row for that locale and
 // falls back to the source column when no translation exists yet —
-// never blank, never a 404 for an untranslated calculator.
-export async function getAllCalculators(locale: string): Promise<CalculatorSummary[]> {
-  const { rows } = await pool.query(
-    `SELECT
-       c.id, c.slug,
-       cat.slug AS category_slug, cat.name AS category_name, cat.color AS category_color,
-       COALESCE(t.name, c.name) AS name,
-       c.abbreviation,
-       COALESCE(t.description, c.description) AS description,
-       c.population, c.estimated_minutes_min, c.estimated_minutes_max, c.is_public,
-       jsonb_array_length(COALESCE(t.definition, c.definition) -> 'items') AS item_count
-     FROM clinical_calculator c
-     JOIN clinical_calculator_category cat ON cat.id = c.category_id
-     LEFT JOIN clinical_calculator_translation t
-       ON t.calculator_id = c.id AND t.locale = $1
-     WHERE c.status = 'published'
-     ORDER BY cat.position, c.position, c.name`,
-    [locale]
-  );
-  return rows.map((r) => ({
-    id: r.id,
-    slug: r.slug,
-    categorySlug: r.category_slug,
-    categoryName: r.category_name,
-    categoryColor: r.category_color as CardColor,
-    name: r.name,
-    abbreviation: r.abbreviation,
-    description: r.description,
-    population: r.population,
-    itemCount: r.item_count,
-    estimatedMinutesMin: r.estimated_minutes_min,
-    estimatedMinutesMax: r.estimated_minutes_max,
-    isPublic: r.is_public,
-  }));
-}
+// never blank, never a 404 for an untranslated calculator. Cached the
+// same way as getCalculatorCategories above (see its comment) — this
+// one's cache key is keyed by `locale` automatically (unstable_cache
+// incorporates its call arguments), so each locale gets its own entry.
+const getAllCalculatorsCached = unstable_cache(
+  async (locale: string): Promise<CalculatorSummary[]> => {
+    const { rows } = await pool.query(
+      `SELECT
+         c.id, c.slug,
+         cat.slug AS category_slug, cat.name AS category_name, cat.color AS category_color,
+         COALESCE(t.name, c.name) AS name,
+         c.abbreviation,
+         COALESCE(t.description, c.description) AS description,
+         c.population, c.estimated_minutes_min, c.estimated_minutes_max, c.is_public,
+         jsonb_array_length(COALESCE(t.definition, c.definition) -> 'items') AS item_count
+       FROM clinical_calculator c
+       JOIN clinical_calculator_category cat ON cat.id = c.category_id
+       LEFT JOIN clinical_calculator_translation t
+         ON t.calculator_id = c.id AND t.locale = $1
+       WHERE c.status = 'published'
+       ORDER BY cat.position, c.position, c.name`,
+      [locale]
+    );
+    return rows.map((r) => ({
+      id: r.id,
+      slug: r.slug,
+      categorySlug: r.category_slug,
+      categoryName: r.category_name,
+      categoryColor: r.category_color as CardColor,
+      name: r.name,
+      abbreviation: r.abbreviation,
+      description: r.description,
+      population: r.population,
+      itemCount: r.item_count,
+      estimatedMinutesMin: r.estimated_minutes_min,
+      estimatedMinutesMax: r.estimated_minutes_max,
+      isPublic: r.is_public,
+    }));
+  },
+  ["clinical-tools-all-calculators"],
+  { revalidate: 300 }
+);
+
+export const getAllCalculators = cache(getAllCalculatorsCached);
 
 export async function getCalculatorBySlug(
   slug: string,

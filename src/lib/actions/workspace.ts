@@ -6,6 +6,7 @@ import {
   toggleSavedPearl,
   toggleDiseaseFavorite,
   toggleCalculatorFavorite,
+  logCalculatorUsage,
   saveReadingProgress,
   type ReadingProgress,
 } from "@/lib/workspace";
@@ -50,6 +51,20 @@ export async function toggleCalculatorFavoriteAction(formData: FormData) {
 
   await toggleCalculatorFavorite(session.user.id, calculatorId);
   revalidateClinicalToolsSurfaces();
+}
+
+// Plain-argument, same shape and reasoning as saveReadingProgressAction
+// below — fired once from a mount effect (CalculatorRunner.tsx), not a
+// <form>. No revalidate call: "Used N× this week" is a soft, eventually-
+// fresh signal (next natural navigation back to /clinical-tools already
+// re-renders it), not worth cache-busting the whole dashboard on every
+// single tool open the way a favorite toggle (a rarer, visible-result
+// action) justifies.
+export async function logCalculatorUsageAction(calculatorId: string) {
+  const session = await auth();
+  if (!session) return;
+
+  await logCalculatorUsage(session.user.id, calculatorId);
 }
 
 // Plain-argument Server Action rather than the FormData shape every

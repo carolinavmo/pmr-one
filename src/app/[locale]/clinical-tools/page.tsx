@@ -1,7 +1,7 @@
 import { getTranslations, getLocale } from "next-intl/server";
 import { auth } from "@/auth";
 import { getCalculatorCategories, getAllCalculators } from "@/lib/clinical-tools";
-import { getFavoritedCalculatorIds } from "@/lib/workspace";
+import { getFavoritedCalculatorIds, getRecentUsageCounts } from "@/lib/workspace";
 import { ClinicalToolsBrowser } from "@/components/clinical-tools/ClinicalToolsBrowser";
 
 // The browse/search part is public (a reference tool, not personal
@@ -11,10 +11,11 @@ import { ClinicalToolsBrowser } from "@/components/clinical-tools/ClinicalToolsB
 export default async function ClinicalToolsPage() {
   const locale = await getLocale();
   const session = await auth();
-  const [categories, calculators, favoritedIds] = await Promise.all([
+  const [categories, calculators, favoritedIds, usageCounts] = await Promise.all([
     getCalculatorCategories(),
     getAllCalculators(locale),
     session ? getFavoritedCalculatorIds(session.user.id) : Promise.resolve(new Set<string>()),
+    session ? getRecentUsageCounts(session.user.id) : Promise.resolve(new Map<string, number>()),
   ]);
   const t = await getTranslations("clinicalTools");
 
@@ -28,6 +29,7 @@ export default async function ClinicalToolsPage() {
         categories={categories}
         calculators={calculators}
         favoritedIds={favoritedIds}
+        usageCounts={usageCounts}
         isSignedIn={Boolean(session)}
       />
     </main>

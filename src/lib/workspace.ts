@@ -174,6 +174,32 @@ export async function toggleCalculatorFavorite(
   return true;
 }
 
+// TOOLS-DASHBOARD-SPEC.md's "Used 3× this week" chip — an append-only
+// open-event log (migration 0059), never gated on whether the open
+// actually produced a score. No-op for a signed-out reader (nothing to
+// attach the row to, mirrors every other per-user write in this file).
+export async function logCalculatorUsage(userId: string, calculatorId: string): Promise<void> {
+  await pool.query(
+    `INSERT INTO clinical_calculator_usage (user_id, calculator_id) VALUES ($1, $2)`,
+    [userId, calculatorId],
+  );
+}
+
+// One query for every calculator's count at once (the dashboard grid
+// needs all of them together) rather than N+1 per card — "this week"
+// is a rolling 7 days from now, not the calendar week, so the count
+// stays stable as you keep using a tool rather than resetting at an
+// arbitrary Sunday/Monday boundary.
+export async function getRecentUsageCounts(userId: string): Promise<Map<string, number>> {
+  const { rows } = await pool.query<{ calculator_id: string; count: string }>(
+    `SELECT calculator_id, count(*) FROM clinical_calculator_usage
+     WHERE user_id = $1 AND opened_at > now() - interval '7 days'
+     GROUP BY calculator_id`,
+    [userId],
+  );
+  return new Map(rows.map((r) => [r.calculator_id, Number(r.count)]));
+}
+
 export interface FavoriteCalculator {
   id: string;
   slug: string;

@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8">
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--navy:#14284A;--ink:#27344A;--mute:#5E6B80;--line:#D9DFE8;--soft:#F7F9FB;
+ --acc:#0E9BA6;--acc-ink:#0A7680;--acc-bg:#E1F4F5;--acc-bd:#B5E0E3;--acc-dk:#7FD3DA;
+ --amb:#8A5F08;--amb-bg:#FDF6E6;--neu:#5A479C;--grn:#1F7A4D;--red:#B8262B}
+body{font-family:'Roboto','Noto Sans CJK JP',sans-serif;color:var(--ink);background:#E9EDF1}
+.sheet{width:1600px;background:#fff;border-radius:14px;box-shadow:0 24px 64px rgba(20,40,74,.2);margin:0 auto 34px;padding:36px 40px 44px;position:relative;overflow:hidden}
+.tb{position:absolute;left:0;right:0;top:0;height:7px;display:flex}.tb i{flex:1}
+.bh{display:flex;align-items:center;gap:12px}.bh img{height:36px}.bh b{font-size:21px;font-weight:900;color:var(--navy)}
+h1.t{font-size:34px;font-weight:900;color:var(--navy);letter-spacing:-1px;margin-top:10px}
+.dek{font-size:16.5px;color:var(--mute);margin-top:6px;line-height:1.45;max-width:1150px}
+.dek b{color:var(--navy)}
+.frame{margin-top:22px;border:1px solid var(--line);border-radius:14px;overflow:hidden;box-shadow:0 10px 30px rgba(20,40,74,.10)}
+.nav{background:var(--navy);padding:13px 22px 11px}
+.nav .r1{display:flex;align-items:center;gap:16px}
+.nav .logo{display:flex;align-items:center;gap:9px;color:#fff;font-size:18px;font-weight:900}
+.nav .logo img{height:28px}.nav .logo span{color:var(--acc)}
+.nav .srch{flex:1;max-width:480px;margin:0 auto;height:34px;border-radius:17px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.18);display:flex;align-items:center;padding:0 16px;font-size:12.5px;color:#9DB0CA}
+.nav .ut{display:flex;align-items:center;gap:14px;color:#C2D2E6;font-size:12.5px;font-weight:700}
+.nav .av{width:30px;height:30px;border-radius:50%;background:var(--acc);color:#fff;font-size:11px;font-weight:900;display:flex;align-items:center;justify-content:center}
+.nav .r2{display:flex;align-items:center;gap:6px;margin-top:11px}
+.nav .lib{color:#C2D2E6;font-size:12.5px;font-weight:700;padding:6px 12px;border:2px solid transparent}
+.nav .on{border:2px solid var(--acc);background:rgba(14,155,166,.18);color:#fff;font-size:13px;font-weight:900;padding:6px 14px;border-radius:17px}
+.nav .dv{width:1px;height:20px;background:rgba(255,255,255,.2);margin:0 8px}
+.body{display:flex}
+/* sidebar = tool categories */
+.side{width:250px;flex:none;background:var(--soft);border-right:1px solid var(--line);padding:14px 10px}
+.side .fd{height:30px;background:#fff;border:1px solid var(--line);border-radius:9px;display:flex;align-items:center;padding:0 10px;font-size:12px;color:#A6B0BC;margin-bottom:8px}
+.side .g{font-size:9.5px;font-weight:900;letter-spacing:1.4px;color:#9AA5B4;padding:11px 8px 4px}
+.side .r{display:flex;align-items:center;gap:9px;font-size:12.5px;font-weight:700;color:var(--ink);padding:6px 8px;border-radius:8px;border-left:3px solid transparent}
+.side .r i{width:9px;height:9px;border-radius:3px;flex:none}
+.side .r .n{margin-left:auto;font-size:11px;color:#9AA5B4;font-weight:800}
+.side .r.on{background:var(--acc-bg);color:var(--acc-ink);font-weight:800}
+.side .rec{display:flex;align-items:center;gap:8px;font-size:12px;font-weight:700;color:var(--mute);padding:5px 8px}
+.side .rec b{font-size:9.5px;font-weight:900;color:var(--acc-ink);background:var(--acc-bg);border-radius:5px;padding:2px 5px}
+.main{flex:1;min-width:0;padding:30px 40px 44px}
+
+.hd h2{font-size:34px;font-weight:900;color:var(--navy);letter-spacing:-1.1px}
+.hd p{font-size:15px;color:var(--mute);margin-top:6px}
+.tools{display:flex;gap:12px;margin-top:18px;align-items:center}
+.big{flex:1;height:48px;border:1.5px solid var(--line);border-radius:13px;display:flex;align-items:center;padding:0 16px;gap:10px;font-size:14.5px;color:#A6B0BC;background:#fff}
+.big .kbd{margin-left:auto;font-family:ui-monospace,Menlo,monospace;font-size:11px;color:#8C97A6;border:1px solid var(--line);border-radius:6px;padding:3px 7px;background:var(--soft)}
+.seg{display:flex;background:var(--soft);border:1px solid var(--line);border-radius:11px;padding:3px}
+.seg a{font-size:12.5px;font-weight:800;color:var(--mute);padding:8px 13px;border-radius:8px}
+.seg a.on{background:#fff;color:var(--navy);box-shadow:0 1px 3px rgba(20,40,74,.1)}
+.hint{font-size:12.5px;color:#9AA5B4;margin-top:9px}
+.hint b{color:var(--mute);font-weight:700}
+
+.sec{margin-top:30px}
+.band{display:flex;align-items:center;gap:10px;border:1px solid;border-left-width:5px;border-radius:10px;padding:9px 14px;margin-bottom:12px}
+.bl{font-size:13.5px;font-weight:900;letter-spacing:.2px}
+.bn{font-size:12px;color:#9AA5B4;font-weight:700}
+.ba{margin-left:auto;font-size:12.5px;font-weight:800}
+.sh{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.sh h3{font-size:18px;font-weight:900;color:var(--navy);letter-spacing:-.3px}
+.sh span{font-size:12.5px;color:#9AA5B4;font-weight:700}
+.sh a{margin-left:auto;font-size:12.5px;font-weight:800;color:var(--acc-ink)}
+.cdot{width:10px;height:10px;border-radius:3px}
+.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.tc{display:block;border:1px solid;border-radius:14px;padding:14px 16px 13px;position:relative}
+.tc:hover{box-shadow:0 8px 20px rgba(20,40,74,.10)}
+.tt{display:flex;align-items:center;margin-bottom:9px}
+.ab{font-size:11px;font-weight:900;letter-spacing:.6px;color:#fff;border-radius:7px;padding:4px 9px}
+.st{margin-left:auto;font-size:17px;color:#C6CED8;line-height:1}
+.st.fav{color:#E8A317}
+.tc b{display:block;font-size:16px;font-weight:900;color:var(--navy);line-height:1.25;letter-spacing:-.2px}
+.tc p{font-size:13px;color:var(--mute);line-height:1.5;margin-top:5px;min-height:39px}
+.mt{display:flex;gap:10px;margin-top:10px;font-size:11.5px;font-weight:800;align-items:center;flex-wrap:wrap}
+.mt .used{border-radius:5px;padding:2px 7px;font-size:10.5px;font-weight:900}
+.pop{font-size:11.5px;color:var(--mute);opacity:.8;margin-top:9px;padding-top:9px;border-top:1px solid}
+
+/* favourites strip */
+.favwrap{background:linear-gradient(180deg,#FEF6E3,#FEFBF4);border:1px solid #F1E2BF;border-radius:16px;padding:14px 16px}
+.favwrap .cards{grid-template-columns:repeat(3,1fr)}
+
+
+/* notes */
+.notes{display:grid;grid-template-columns:1fr 1fr;gap:26px;margin-top:30px}
+.nb{border:1px solid var(--line);border-radius:14px;padding:18px 20px}
+.nb h4{font-size:12px;font-weight:900;letter-spacing:1.5px;margin-bottom:10px}
+.nb ol{padding-left:18px;font-size:14px;line-height:1.55;color:var(--mute)}
+.nb li{margin-bottom:7px}
+.nb li b{color:var(--navy)}
+.anat{display:flex;gap:30px;margin-top:22px;align-items:flex-start}
+.anat .w{width:330px;flex:none;position:relative}
+.pin{position:absolute;width:22px;height:22px;border-radius:50%;background:#D6336C;color:#fff;font-size:11px;font-weight:900;display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 2px #fff;z-index:3}
+.anat ul{list-style:none;font-size:15px;line-height:1.5;flex:1}
+.anat li{display:flex;gap:12px;margin-bottom:10px}
+.anat li>b{flex:none;width:23px;height:23px;border-radius:50%;background:#D6336C;color:#fff;font-size:11px;font-weight:900;display:flex;align-items:center;justify-content:center}
+.anat li span b{all:unset;font-weight:800;color:var(--navy)}
+h2.s{font-size:12.5px;font-weight:900;letter-spacing:2.4px;color:var(--acc-ink);margin-top:34px;padding-bottom:9px;border-bottom:2px solid var(--line)}
+
+.st3{display:grid;grid-template-columns:repeat(3,1fr);gap:26px;margin-top:20px}
+.mini{border:1px solid var(--line);border-radius:12px;background:var(--soft);padding:10px 8px;width:260px}
+.lvh{display:flex;align-items:center;gap:9px;font-size:17px;font-weight:900;color:var(--navy);margin-bottom:5px}
+.lvh .n{font-size:11px;font-weight:900;color:#fff;background:var(--navy);border-radius:5px;padding:3px 8px}
+.lvh em{font-style:normal;font-size:13px;font-weight:700;color:var(--acc-ink)}
+.lvd{font-size:13.5px;color:var(--mute);line-height:1.45;margin-bottom:12px;min-height:38px}
+
+/* expandable sidebar */
+.side.acc{padding:12px 9px}
+.side .hd{display:flex;align-items:center;gap:8px;font-size:12.5px;font-weight:800;color:var(--ink);padding:7px 8px;border-radius:8px;margin-top:3px}
+.side .hd i{width:9px;height:9px;border-radius:3px;flex:none}
+.side .hd .n{margin-left:auto;font-size:10.5px;font-weight:800;color:#9AA5B4}
+.side .hd .cv{font-size:11px;color:#AAB4C1;font-weight:900;margin-left:7px}
+.side .hd.fav{background:#FEF6E3;color:#8A5F08}
+.side .it{display:flex;align-items:center;gap:8px;font-size:11.5px;font-weight:600;color:var(--mute);padding:5px 8px 5px 10px;border-radius:7px;margin-left:12px;line-height:1.3}
+.side .it b{font-size:9px;font-weight:900;border-radius:4px;padding:2px 5px;flex:none;letter-spacing:.3px}
+.side .it:hover{background:#fff}
+.side .it.on{background:#fff;color:var(--navy);font-weight:800;box-shadow:0 1px 3px rgba(20,40,74,.08)}
+.side .pl{display:flex;align-items:center;font-size:12px;font-weight:700;color:var(--ink);padding:6px 8px;border-radius:8px}
+.side .pl .n{margin-left:auto;font-size:10.5px;color:#9AA5B4;font-weight:800}
+</style></head><body>
+<div class="sheet" id="d">
+ <div class="tb"><i style="background:var(--acc)"></i><i style="background:var(--navy)"></i></div>
+ <div class="bh"><img src="logo.png" alt=""><b>PM&amp;R <span style="color:var(--acc)">Explained</span></b></div>
+ <h1 class="t">Clinical tools — expandable sidebar</h1>
+ <div class="dek">The coloured cards, with the <b>expandable sidebar</b>: each category opens to the tools inside, so any calculator is reachable without touching the main list. Favourites sit at the top, populations at the bottom.</div>
+
+ <div class="frame">
+  <div class="nav">
+   <div class="r1"><div class="logo"><img src="logo.png" alt="">PM&amp;R <span>Explained</span></div>
+    <div class="srch">⌕&nbsp; Search conditions, exam maneuvers, calculators…</div>
+    <div class="ut"><span>🌐 EN ⌄</span><span>🔔</span><div class="av">CA</div></div></div>
+   <div class="r2"><span class="lib">▣ Explore library</span><span class="dv"></span><span class="on">▤ Clinical Tools</span><span class="lib">Study Planner</span><span class="lib">My Handbook</span><span class="lib">Flashcards</span><span class="lib">Question Bank</span><span class="lib">Courses</span></div>
+  </div>
+  <div class="body">
+   <div class="side acc">
+    <div class="fd">⌕ Find a calculator…</div>
+    <div class="hd fav"><i style="background:#E8A317"></i>★ Favourites<span class="n">2</span><span class="cv">⌄</span></div>
+    <div class="it"><b style="background:#E1F4F5;color:#0A7680">BI</b>Barthel Index</div>
+    <div class="it"><b style="background:#E1F4F5;color:#0A7680">FIM</b>Functional Independence Measure</div>
+    <div class="g">CATEGORIES</div>
+    <div class="hd" style="background:#F0FAFB;color:#0A7680"><i style="background:#0A7680"></i>Independence<span class="n">6</span><span class="cv">⌄</span></div>
+    <div class="it"><b style="background:#E1F4F5;color:#0A7680">BI</b>Barthel Index</div>
+    <div class="it"><b style="background:#E1F4F5;color:#0A7680">FIM</b>Functional Independence Measure</div>
+    <div class="it"><b style="background:#E1F4F5;color:#0A7680">FIM+FAM</b>Functional Assessment Measure</div>
+    <div class="it"><b style="background:#E1F4F5;color:#0A7680">Katz</b>Katz Index of ADL</div>
+    <div class="it"><b style="background:#E1F4F5;color:#0A7680">Lawton</b>Lawton–Brody IADL Scale</div>
+    <div class="it"><b style="background:#E1F4F5;color:#0A7680">mRS</b>Modified Rankin Scale</div>
+    <div class="hd"><i style="background:#5A479C"></i>Neurological<span class="n">4</span><span class="cv">›</span></div>
+    <div class="hd"><i style="background:#1F7A4D"></i>Mobility &amp; balance<span class="n">4</span><span class="cv">›</span></div>
+    <div class="hd"><i style="background:#B8262B"></i>Pain<span class="n">3</span><span class="cv">›</span></div>
+    <div class="hd"><i style="background:#8A5F08"></i>Cognition &amp; mood<span class="n">2</span><span class="cv">›</span></div>
+    <div class="g">BY POPULATION</div>
+    <div class="pl">Stroke<span class="n">6</span></div>
+    <div class="pl">Spinal cord injury<span class="n">3</span></div>
+    <div class="pl">Older adults<span class="n">5</span></div>
+    <div class="pl">Low back pain<span class="n">2</span></div>
+   </div>
+
+   <div class="main">
+    <div class="hd"><h2>Clinical tools</h2><p>19 interactive, evidence-based calculators for everyday PM&amp;R practice.</p></div>
+    <div class="tools">
+     <div class="big">⌕&nbsp; Search by name, abbreviation or what it measures…<span class="kbd">⌘ K</span></div>
+     <div class="seg"><a class="on">Cards</a><a>List</a></div>
+    </div>
+    <div class="hint"><b>Try:</b> "barthel", "BI", "balance", "stroke severity"</div>
+
+    <div class="sec">
+     <div class="band" style="background:#FEF6E3;border-color:#F1E2BF;border-left-color:#E8A317"><span class="bl" style="color:#8A5F08">★ Your favourites</span><span class="bn">2 calculators</span><a class="ba" style="color:#8A5F08">Manage ›</a></div>
+     <div class="favwrap"><div class="cards"><a class="tc" style="background:#F0FAFB;border-color:#CFE9EB">
+      <div class="tt"><span class="ab" style="background:#0A7680">BI</span><span class="st fav">★</span></div>
+      <b>Barthel Index</b>
+      <p>Ability to perform 10 basic activities of daily living, scored out of 100.</p>
+      <div class="mt" style="color:#0A7680"><span>▤ 10 items</span><span>◷ 5–10 min</span></div>
+      <div class="pop" style="border-top-color:#CFE9EB">Adults with functional impairment</div>
+    </a><a class="tc" style="background:#F0FAFB;border-color:#CFE9EB">
+      <div class="tt"><span class="ab" style="background:#0A7680">FIM</span><span class="st fav">★</span></div>
+      <b>Functional Independence Measure</b>
+      <p>Independence across 18 motor and cognitive items.</p>
+      <div class="mt" style="color:#0A7680"><span>▤ 18 items</span><span>◷ 20–30 min</span></div>
+      <div class="pop" style="border-top-color:#CFE9EB">Inpatient rehabilitation</div>
+    </a></div></div>
+    </div>
+
+    <div class="sec">
+     <div class="band" style="background:#F0FAFB;border-color:#CFE9EB;border-left-color:#0A7680">
+      <span class="bl" style="color:#0A7680">Independence</span><span class="bn">6 calculators</span><a class="ba" style="color:#0A7680">See all ›</a></div>
+     <div class="cards"><a class="tc" style="background:#F0FAFB;border-color:#CFE9EB">
+      <div class="tt"><span class="ab" style="background:#0A7680">BI</span><span class="st fav">★</span></div>
+      <b>Barthel Index</b>
+      <p>Ability to perform 10 basic activities of daily living, scored out of 100.</p>
+      <div class="mt" style="color:#0A7680"><span>▤ 10 items</span><span>◷ 5–10 min</span><span class="used" style="color:#0A7680;background:#fff;border:1px solid #CFE9EB">Used 3× this week</span></div>
+      <div class="pop" style="border-top-color:#CFE9EB">Adults with functional impairment</div>
+    </a><a class="tc" style="background:#F0FAFB;border-color:#CFE9EB">
+      <div class="tt"><span class="ab" style="background:#0A7680">FIM</span><span class="st fav">★</span></div>
+      <b>Functional Independence Measure</b>
+      <p>Independence across 18 motor and cognitive items.</p>
+      <div class="mt" style="color:#0A7680"><span>▤ 18 items</span><span>◷ 20–30 min</span></div>
+      <div class="pop" style="border-top-color:#CFE9EB">Inpatient rehabilitation</div>
+    </a><a class="tc" style="background:#F0FAFB;border-color:#CFE9EB">
+      <div class="tt"><span class="ab" style="background:#0A7680">FIM+FAM</span><span class="st ">☆</span></div>
+      <b>Functional Assessment Measure</b>
+      <p>Extends the FIM with 12 items for cognition, communication and community skills.</p>
+      <div class="mt" style="color:#0A7680"><span>▤ 30 items</span><span>◷ 30–40 min</span></div>
+      <div class="pop" style="border-top-color:#CFE9EB">Brain injury rehabilitation</div>
+    </a><a class="tc" style="background:#F0FAFB;border-color:#CFE9EB">
+      <div class="tt"><span class="ab" style="background:#0A7680">Katz</span><span class="st ">☆</span></div>
+      <b>Katz Index of ADL</b>
+      <p>Independence in six basic activities of daily living.</p>
+      <div class="mt" style="color:#0A7680"><span>▤ 6 items</span><span>◷ 3–5 min</span></div>
+      <div class="pop" style="border-top-color:#CFE9EB">Older adults</div>
+    </a><a class="tc" style="background:#F0FAFB;border-color:#CFE9EB">
+      <div class="tt"><span class="ab" style="background:#0A7680">Lawton</span><span class="st ">☆</span></div>
+      <b>Lawton–Brody IADL Scale</b>
+      <p>Independence in eight instrumental activities of daily living.</p>
+      <div class="mt" style="color:#0A7680"><span>▤ 8 items</span><span>◷ 5 min</span></div>
+      <div class="pop" style="border-top-color:#CFE9EB">Community-dwelling older adults</div>
+    </a><a class="tc" style="background:#F0FAFB;border-color:#CFE9EB">
+      <div class="tt"><span class="ab" style="background:#0A7680">mRS</span><span class="st ">☆</span></div>
+      <b>Modified Rankin Scale</b>
+      <p>Overall disability and dependence after stroke, 0 to 6.</p>
+      <div class="mt" style="color:#0A7680"><span>▤ 1 item</span><span>◷ 1–2 min</span></div>
+      <div class="pop" style="border-top-color:#CFE9EB">Stroke</div>
+    </a></div></div>
+    <div class="sec">
+     <div class="band" style="background:#F6F4FC;border-color:#DED7F1;border-left-color:#5A479C">
+      <span class="bl" style="color:#5A479C">Neurological</span><span class="bn">4 calculators</span><a class="ba" style="color:#5A479C">See all ›</a></div>
+     <div class="cards"><a class="tc" style="background:#F6F4FC;border-color:#DED7F1">
+      <div class="tt"><span class="ab" style="background:#5A479C">NIHSS</span><span class="st ">☆</span></div>
+      <b>NIH Stroke Scale</b>
+      <p>Severity of neurological deficit after acute stroke.</p>
+      <div class="mt" style="color:#5A479C"><span>▤ 11 items</span><span>◷ 5–10 min</span><span class="used" style="color:#5A479C;background:#fff;border:1px solid #DED7F1">Used yesterday</span></div>
+      <div class="pop" style="border-top-color:#DED7F1">Acute stroke</div>
+    </a><a class="tc" style="background:#F6F4FC;border-color:#DED7F1">
+      <div class="tt"><span class="ab" style="background:#5A479C">ASIA</span><span class="st ">☆</span></div>
+      <b>ASIA Impairment Scale</b>
+      <p>Level and completeness of a spinal cord injury.</p>
+      <div class="mt" style="color:#5A479C"><span>▤ Full exam</span><span>◷ 15–20 min</span></div>
+      <div class="pop" style="border-top-color:#DED7F1">Spinal cord injury</div>
+    </a><a class="tc" style="background:#F6F4FC;border-color:#DED7F1">
+      <div class="tt"><span class="ab" style="background:#5A479C">MAS</span><span class="st ">☆</span></div>
+      <b>Modified Ashworth Scale</b>
+      <p>Resistance to passive movement, graded 0 to 4.</p>
+      <div class="mt" style="color:#5A479C"><span>▤ 1 item</span><span>◷ 1 min</span></div>
+      <div class="pop" style="border-top-color:#DED7F1">Spasticity</div>
+    </a><a class="tc" style="background:#F6F4FC;border-color:#DED7F1">
+      <div class="tt"><span class="ab" style="background:#5A479C">GCS</span><span class="st ">☆</span></div>
+      <b>Glasgow Coma Scale</b>
+      <p>Level of consciousness from eye, verbal and motor responses.</p>
+      <div class="mt" style="color:#5A479C"><span>▤ 3 items</span><span>◷ 1–2 min</span></div>
+      <div class="pop" style="border-top-color:#DED7F1">Acute brain injury</div>
+    </a></div></div>
+    <div class="sec">
+     <div class="band" style="background:#F1F9F4;border-color:#CFE8DA;border-left-color:#1F7A4D">
+      <span class="bl" style="color:#1F7A4D">Mobility & balance</span><span class="bn">4 calculators</span><a class="ba" style="color:#1F7A4D">See all ›</a></div>
+     <div class="cards"><a class="tc" style="background:#F1F9F4;border-color:#CFE8DA">
+      <div class="tt"><span class="ab" style="background:#1F7A4D">BBS</span><span class="st ">☆</span></div>
+      <b>Berg Balance Scale</b>
+      <p>Balance across 14 tasks, predicting fall risk.</p>
+      <div class="mt" style="color:#1F7A4D"><span>▤ 14 items</span><span>◷ 15–20 min</span></div>
+      <div class="pop" style="border-top-color:#CFE8DA">Older adults, neurological patients</div>
+    </a><a class="tc" style="background:#F1F9F4;border-color:#CFE8DA">
+      <div class="tt"><span class="ab" style="background:#1F7A4D">TUG</span><span class="st ">☆</span></div>
+      <b>Timed Up and Go</b>
+      <p>Time to stand, walk three metres, turn and sit.</p>
+      <div class="mt" style="color:#1F7A4D"><span>▤ 1 item</span><span>◷ 2 min</span></div>
+      <div class="pop" style="border-top-color:#CFE8DA">Mobility and fall risk</div>
+    </a><a class="tc" style="background:#F1F9F4;border-color:#CFE8DA">
+      <div class="tt"><span class="ab" style="background:#1F7A4D">6MWT</span><span class="st ">☆</span></div>
+      <b>Six-Minute Walk Test</b>
+      <p>Distance walked in six minutes as a measure of endurance.</p>
+      <div class="mt" style="color:#1F7A4D"><span>▤ 1 item</span><span>◷ 6–10 min</span></div>
+      <div class="pop" style="border-top-color:#CFE8DA">Cardiopulmonary, neurological</div>
+    </a><a class="tc" style="background:#F1F9F4;border-color:#CFE8DA">
+      <div class="tt"><span class="ab" style="background:#1F7A4D">FGA</span><span class="st ">☆</span></div>
+      <b>Functional Gait Assessment</b>
+      <p>Gait stability across 10 walking tasks.</p>
+      <div class="mt" style="color:#1F7A4D"><span>▤ 10 items</span><span>◷ 10 min</span></div>
+      <div class="pop" style="border-top-color:#CFE8DA">Balance disorders</div>
+    </a></div></div>
+    <div class="sec">
+     <div class="band" style="background:#FEF5F5;border-color:#F6D9DA;border-left-color:#B8262B">
+      <span class="bl" style="color:#B8262B">Pain</span><span class="bn">3 calculators</span><a class="ba" style="color:#B8262B">See all ›</a></div>
+     <div class="cards"><a class="tc" style="background:#FEF5F5;border-color:#F6D9DA">
+      <div class="tt"><span class="ab" style="background:#B8262B">NPRS</span><span class="st ">☆</span></div>
+      <b>Numeric Pain Rating Scale</b>
+      <p>Pain intensity from 0 to 10.</p>
+      <div class="mt" style="color:#B8262B"><span>▤ 1 item</span><span>◷ 1 min</span></div>
+      <div class="pop" style="border-top-color:#F6D9DA">Any pain presentation</div>
+    </a><a class="tc" style="background:#FEF5F5;border-color:#F6D9DA">
+      <div class="tt"><span class="ab" style="background:#B8262B">ODI</span><span class="st ">☆</span></div>
+      <b>Oswestry Disability Index</b>
+      <p>Disability from low back pain across 10 sections.</p>
+      <div class="mt" style="color:#B8262B"><span>▤ 10 items</span><span>◷ 5 min</span></div>
+      <div class="pop" style="border-top-color:#F6D9DA">Low back pain</div>
+    </a><a class="tc" style="background:#FEF5F5;border-color:#F6D9DA">
+      <div class="tt"><span class="ab" style="background:#B8262B">DASH</span><span class="st ">☆</span></div>
+      <b>DASH / QuickDASH</b>
+      <p>Upper limb symptoms and function.</p>
+      <div class="mt" style="color:#B8262B"><span>▤ 30 items</span><span>◷ 5–10 min</span></div>
+      <div class="pop" style="border-top-color:#F6D9DA">Upper limb disorders</div>
+    </a></div></div>
+    <div class="sec">
+     <div class="band" style="background:#FEF9EE;border-color:#F0E3C6;border-left-color:#8A5F08">
+      <span class="bl" style="color:#8A5F08">Cognition & mood</span><span class="bn">2 calculators</span><a class="ba" style="color:#8A5F08">See all ›</a></div>
+     <div class="cards"><a class="tc" style="background:#FEF9EE;border-color:#F0E3C6">
+      <div class="tt"><span class="ab" style="background:#8A5F08">MoCA</span><span class="st ">☆</span></div>
+      <b>Montreal Cognitive Assessment</b>
+      <p>Screening for mild cognitive impairment.</p>
+      <div class="mt" style="color:#8A5F08"><span>▤ 8 items</span><span>◷ 10 min</span></div>
+      <div class="pop" style="border-top-color:#F0E3C6">Cognitive screening</div>
+    </a><a class="tc" style="background:#FEF9EE;border-color:#F0E3C6">
+      <div class="tt"><span class="ab" style="background:#8A5F08">HADS</span><span class="st ">☆</span></div>
+      <b>Hospital Anxiety and Depression Scale</b>
+      <p>Anxiety and depression in a hospital setting.</p>
+      <div class="mt" style="color:#8A5F08"><span>▤ 14 items</span><span>◷ 5 min</span></div>
+      <div class="pop" style="border-top-color:#F0E3C6">Any inpatient or outpatient</div>
+    </a></div></div>
+   </div>
+  </div>
+ </div>
+
+
+ <h2 class="s">HOW THE SIDEBAR BEHAVES</h2>
+ <div class="st3">
+  <div><div class="lvh"><span class="n">1</span>Closed</div><p class="lvd">Default: one row per category with its count. Short enough to see every category at once.</p>
+   <div class="mini side acc">
+    <div class="hd fav"><i style="background:#E8A317"></i>★ Favourites<span class="n">2</span><span class="cv">›</span></div>
+    <div class="g">CATEGORIES</div>
+    <div class="hd"><i style="background:#0A7680"></i>Independence<span class="n">6</span><span class="cv">›</span></div>
+    <div class="hd"><i style="background:#5A479C"></i>Neurological<span class="n">4</span><span class="cv">›</span></div>
+    <div class="hd"><i style="background:#1F7A4D"></i>Mobility &amp; balance<span class="n">4</span><span class="cv">›</span></div>
+    <div class="hd"><i style="background:#B8262B"></i>Pain<span class="n">3</span><span class="cv">›</span></div>
+    <div class="hd"><i style="background:#8A5F08"></i>Cognition &amp; mood<span class="n">2</span><span class="cv">›</span></div></div></div>
+  <div><div class="lvh"><span class="n">2</span>Open</div><p class="lvd">The header takes the category tint and its tools appear, each with its abbreviation chip. <b>One category open at a time.</b></p>
+   <div class="mini side acc">
+    <div class="hd" style="background:#F6F4FC;color:#5A479C"><i style="background:#5A479C"></i>Neurological<span class="n">4</span><span class="cv">⌄</span></div>
+    <div class="it"><b style="background:#ECE8F7;color:#5A479C">NIHSS</b>NIH Stroke Scale</div>
+    <div class="it"><b style="background:#ECE8F7;color:#5A479C">ASIA</b>ASIA Impairment Scale</div>
+    <div class="it"><b style="background:#ECE8F7;color:#5A479C">MAS</b>Modified Ashworth Scale</div>
+    <div class="it"><b style="background:#ECE8F7;color:#5A479C">GCS</b>Glasgow Coma Scale</div>
+    <div class="hd"><i style="background:#1F7A4D"></i>Mobility &amp; balance<span class="n">4</span><span class="cv">›</span></div></div></div>
+  <div><div class="lvh"><span class="n">3</span>Inside a tool</div><p class="lvd">Opening a calculator keeps the sidebar: its category is open and the tool itself is marked, so the neighbours stay one tap away.</p>
+   <div class="mini side acc">
+    <div class="hd" style="background:#F0FAFB;color:#0A7680"><i style="background:#0A7680"></i>Independence<span class="n">6</span><span class="cv">⌄</span></div>
+    <div class="it on"><b style="background:#0A7680;color:#fff">BI</b>Barthel Index</div>
+    <div class="it"><b style="background:#E1F4F5;color:#0A7680">FIM</b>Functional Independence Measure</div>
+    <div class="it"><b style="background:#E1F4F5;color:#0A7680">Katz</b>Katz Index of ADL</div>
+    <div class="it"><b style="background:#E1F4F5;color:#0A7680">Lawton</b>Lawton–Brody IADL Scale</div>
+    <div class="hd"><i style="background:#5A479C"></i>Neurological<span class="n">4</span><span class="cv">›</span></div></div></div>
+ </div>
+ <h2 class="s">THE CARD</h2>
+ <div class="anat">
+  <div class="w">
+   <a class="tc">
+    <div class="tt"><span class="ab" style="color:#0A7680;background:#E1F4F5;border-color:#B5E0E3">FIM</span><span class="st">☆</span></div>
+    <b>Functional Independence Measure</b>
+    <p>Independence across 18 motor and cognitive items.</p>
+    <div class="mt"><span>▤ 18 items</span><span>◷ 20–30 min</span></div>
+    <div class="pop">Inpatient rehabilitation</div>
+   </a>
+   <div class="pin" style="left:-11px;top:14px">1</div>
+   <div class="pin" style="right:-11px;top:14px">2</div>
+   <div class="pin" style="left:-11px;top:52px">3</div>
+   <div class="pin" style="left:-11px;top:120px">4</div>
+   <div class="pin" style="left:-11px;top:152px">5</div>
+  </div>
+  <ul>
+   <li><b>1</b><span><b>Abbreviation as a chip</b> — 11px / 900 in the category colour on its tint. It stops "BI - Barthel Index" repeating itself, and it is what people actually search for.</span></li>
+   <li><b>2</b><span><b>Star</b> — outline by default, amber when favourited. Tappable on the card; no need to open the tool.</span></li>
+   <li><b>3</b><span><b>Full name, never truncated</b> — 16px / 900, wraps to two lines. "Lawton–Brody IADL Scale", not "IADL - Lawton-Brody Instrume…".</span></li>
+   <li><b>4</b><span><b>Items and time</b> — already on the tool page; knowing a tool takes 30 minutes before opening it is the single most useful thing on the card.</span></li>
+   <li><b>5</b><span><b>Who it's for</b> — the population line, separated by a hairline. Answers "is this the right tool for this patient?"</span></li>
+  </ul>
+ </div>
+
+ <div class="notes">
+  <div class="nb"><h4 style="color:var(--red)">WHAT WAS WRONG</h4>
+   <ol>
+    <li><b>Titles cut mid-word</b> — "FIM - Functional Independenc…", "IADL - Lawton-Brody Instrume…". Descriptions too.</li>
+    <li><b>The abbreviation is repeated</b> in every title: "BI - Barthel Index", "mRS - Modified Rankin Scale".</li>
+    <li><b>The same icon on every card</b> — 40px that says nothing.</li>
+    <li><b>Favourites duplicate the cards below</b> with no sign they are the same tool.</li>
+    <li><b>The sidebar shows the library tree</b> while you are in Clinical Tools — no way to jump between categories.</li>
+    <li><b>No filtering or sorting</b>, and nothing on the card about length, time or population.</li>
+   </ol></div>
+  <div class="nb"><h4 style="color:var(--acc-ink)">WHAT CHANGED</h4>
+   <ol>
+    <li><b>Sidebar becomes the tool index</b> — all, favourites, categories with counts, recently used, and "by population" for the clinical question.</li>
+    <li><b>Cards carry real metadata</b>: items, time, population. Same data as the tool page header.</li>
+    <li><b>Category colour</b> on the abbreviation chip and the section dot, so a card is recognisable out of context.</li>
+    <li><b>Favourites in a tinted band</b>, and the same tools keep a filled star in their category below — duplicate, but visibly linked.</li>
+    <li><b>Search hints</b>: name, abbreviation, or what it measures. "Try: barthel, BI, balance, stroke severity".</li>
+    <li><b>Cards / List toggle</b> — a dense table for people who know what they want.</li>
+   </ol></div>
+ </div>
+</div>
+</body></html>

@@ -1,5 +1,8 @@
+import { getLocale } from "next-intl/server";
 import { auth } from "@/auth";
 import { getTopicTree } from "@/lib/topics";
+import { getCalculatorCategories, getAllCalculators } from "@/lib/clinical-tools";
+import { getFavoritedCalculatorIds } from "@/lib/workspace";
 import { SidebarFrame } from "./SidebarFrame";
 
 // Site-wide persistent nav (desktop, `lg`+ — SidebarFrame handles the
@@ -13,13 +16,22 @@ import { SidebarFrame } from "./SidebarFrame";
 export async function Sidebar() {
   const session = await auth();
   const canReview = session?.user.role === "editor" || session?.user.role === "admin";
-  const tree = await getTopicTree(canReview);
+  const locale = await getLocale();
+  const [tree, calculatorCategories, calculators, favoritedCalculatorIds] = await Promise.all([
+    getTopicTree(canReview),
+    getCalculatorCategories(),
+    getAllCalculators(locale),
+    session ? getFavoritedCalculatorIds(session.user.id) : Promise.resolve(new Set<string>()),
+  ]);
 
   return (
     <SidebarFrame
       tree={tree}
       userName={session?.user.name}
       userEmail={session?.user.email}
+      calculatorCategories={calculatorCategories}
+      calculators={calculators}
+      favoritedCalculatorIds={favoritedCalculatorIds}
     />
   );
 }

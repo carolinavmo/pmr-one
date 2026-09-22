@@ -5,7 +5,9 @@ import { useTranslations } from "next-intl";
 import { usePathname } from "@/i18n/navigation";
 import { PanelLeftClose, PanelLeftOpen } from "lucide-react";
 import type { TopicNode } from "@/lib/topics";
+import type { CalculatorCategory, CalculatorSummary } from "@/lib/clinical-tools";
 import { IndexSidebar } from "./IndexSidebar";
+import { ClinicalToolsSidebar } from "@/components/clinical-tools/ClinicalToolsSidebar";
 
 // Persisted app-wide (not per-page) — same collapsed/expanded
 // preference should hold as a reader moves around the site, same
@@ -38,6 +40,15 @@ interface SidebarFrameProps {
   tree: TopicNode[];
   userName: string | null | undefined;
   userEmail: string | null | undefined;
+  // Fetched unconditionally alongside the topic tree (Sidebar.tsx has
+  // no server-side way to know it's on /clinical-tools without
+  // middleware — see ClinicalToolsSidebar.tsx's own comment) — this
+  // component is the one place that already branches on `pathname`
+  // client-side, so it's the natural spot to pick which sidebar to
+  // actually mount.
+  calculatorCategories: CalculatorCategory[];
+  calculators: CalculatorSummary[];
+  favoritedCalculatorIds: Set<string>;
 }
 
 // The interactive shell around the server-fetched tree/session data —
@@ -45,11 +56,19 @@ interface SidebarFrameProps {
 // the collapse toggle (client-only state, read via useSyncExternalStore
 // for the same SSR-safety reasons as the old Contents-minimize toggle)
 // lives in this small client leaf instead.
-export function SidebarFrame({ tree, userName, userEmail }: SidebarFrameProps) {
+export function SidebarFrame({
+  tree,
+  userName,
+  userEmail,
+  calculatorCategories,
+  calculators,
+  favoritedCalculatorIds,
+}: SidebarFrameProps) {
   const collapsed = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
   const t = useTranslations("nav");
   const pathname = usePathname();
   const signedOut = !(userEmail || userName);
+  const isClinicalTools = pathname.startsWith("/clinical-tools");
 
   // The sidebar now sits in a row below TopBar (the brand wordmark
   // moved there) rather than spanning the full viewport height itself,
@@ -112,21 +131,40 @@ export function SidebarFrame({ tree, userName, userEmail }: SidebarFrameProps) {
           scrollable ancestor above it is exactly the kind of thing that
           silently breaks position: sticky. */}
       <div className="flex min-h-0 flex-1 flex-col px-3 py-3">
-        <IndexSidebar
-          tree={tree}
-          isSignedIn={!signedOut}
-          headerAction={
-            <button
-              type="button"
-              onClick={() => setCollapsed(true)}
-              aria-label={t("collapseSidebar")}
-              title={t("collapseSidebar")}
-              className="flex size-7 shrink-0 items-center justify-center rounded-[9px] border border-border text-secondary transition-colors duration-base hover:bg-border/40 hover:text-primary"
-            >
-              <PanelLeftClose className="size-3.5" aria-hidden="true" />
-            </button>
-          }
-        />
+        {isClinicalTools ? (
+          <ClinicalToolsSidebar
+            categories={calculatorCategories}
+            calculators={calculators}
+            favoritedIds={favoritedCalculatorIds}
+            headerAction={
+              <button
+                type="button"
+                onClick={() => setCollapsed(true)}
+                aria-label={t("collapseSidebar")}
+                title={t("collapseSidebar")}
+                className="flex size-7 shrink-0 items-center justify-center rounded-[9px] border border-border text-secondary transition-colors duration-base hover:bg-border/40 hover:text-primary"
+              >
+                <PanelLeftClose className="size-3.5" aria-hidden="true" />
+              </button>
+            }
+          />
+        ) : (
+          <IndexSidebar
+            tree={tree}
+            isSignedIn={!signedOut}
+            headerAction={
+              <button
+                type="button"
+                onClick={() => setCollapsed(true)}
+                aria-label={t("collapseSidebar")}
+                title={t("collapseSidebar")}
+                className="flex size-7 shrink-0 items-center justify-center rounded-[9px] border border-border text-secondary transition-colors duration-base hover:bg-border/40 hover:text-primary"
+              >
+                <PanelLeftClose className="size-3.5" aria-hidden="true" />
+              </button>
+            }
+          />
+        )}
       </div>
     </aside>
   );

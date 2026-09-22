@@ -20,10 +20,18 @@ export function revalidateDiseaseSurfaces() {
 // sidebar on every route, the catalog's `?topic=` filter, and every
 // disease page's breadcrumbs), the review queue, or the dashboard
 // hero (rendered on the homepage).
-// Called after a calculator favorite toggle — the only write /
-// clinical-tools itself needs to react to.
+// Called after a calculator favorite toggle. Also revalidates the root
+// layout (`"layout"`, not just `"page"`) — the sidebar's own ★
+// Favourites list (ClinicalToolsSidebar.tsx) is rendered by
+// Sidebar.tsx from the root `[locale]/layout.tsx`, a different cache
+// segment than the /clinical-tools page itself, so a toggle from a
+// dashboard card wouldn't otherwise reach it (TOOLS-DASHBOARD-SPEC.md:
+// "the same tools keep a filled star... duplicate, but visibly
+// linked" — the sidebar is a third place that duplicate has to hold).
 export function revalidateClinicalToolsSurfaces() {
   revalidatePath("/[locale]/clinical-tools", "page");
+  revalidatePath("/[locale]/clinical-tools/[slug]", "page");
+  revalidatePath("/[locale]", "layout");
 }
 
 // Called after any write to a member's own "My PM&R Atlas" pages/sections.
