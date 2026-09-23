@@ -417,6 +417,7 @@
     "exportPage": "Exportar",
     "exportAsPdf": "Exportar como PDF",
     "exportAsMarkdown": "Exportar como Markdown",
+    "exportAsWord": "Exportar como Word",
     "addTag": "+ etiqueta",
     "addTagPlaceholder": "Nombre de la etiqueta…",
     "removeTag": "Quitar etiqueta {tag}",
@@ -430,7 +431,6 @@
     "insertTable": "Insertar tabla",
     "insertImage": "Insertar imagen",
     "insertCard": "Insertar tarjeta",
-    "pullFromLibrary": "Traer de la biblioteca",
     "newTaskPlaceholder": "Nueva tarea",
     "tableHeaderPlaceholder": "Encabezado {n}",
     "cardBodyPlaceholder": "Escribe aquí…",
@@ -453,15 +453,8 @@
     "notFromTemplate": "Esta página no proviene de una plantilla.",
     "startFromTemplate": "Empezar desde una plantilla",
     "blankPage": "Página en blanco",
-    "pullFromLibraryTitle": "Traer de la biblioteca",
-    "searchLibraryPlaceholder": "Buscar condiciones…",
-    "chooseSectionPrompt": "Elige una sección para citar",
-    "insertQuote": "Insertar cita",
     "noLibraryResults": "No hay páginas coincidentes.",
-    "quotedFrom": "— {page}, {section}, revisado {date}",
-    "quotedFromNoDate": "— {page}, {section}",
-    "close": "Cerrar",
-    "backToSearch": "Volver a la búsqueda"
+    "close": "Cerrar"
   },
   "flashcards": {
     "pageTitle": "Tarjetas de Memoria",

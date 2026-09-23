@@ -8,7 +8,6 @@ import { EditModeProvider, useEditMode } from "@/components/disease-page/EditMod
 import { AtlasToolbar } from "./AtlasToolbar";
 import { AtlasPageHeader } from "./AtlasPageHeader";
 import { AtlasContextRail } from "./AtlasContextRail";
-import { AtlasPullFromLibraryModal } from "./AtlasPullFromLibraryModal";
 import { AtlasInternalLinkPicker } from "./AtlasInternalLinkPicker";
 import {
   savePageBodyAction,
@@ -135,7 +134,6 @@ function AtlasEditorInner({
   const editorRef = useRef<RichEditableTextHandle>(null);
   const [mode, setMode] = useState<"editing" | "reading">("editing");
   const [saveState, setSaveState] = useState<AtlasSaveState>("idle");
-  const [pullOpen, setPullOpen] = useState(false);
   const [linkPickerOpen, setLinkPickerOpen] = useState(false);
   const [linkedDisease, setLinkedDisease] = useState<LinkedDiseaseSummary | null>(null);
   const [backlinks, setBacklinks] = useState<AtlasBacklink[]>([]);
@@ -237,19 +235,6 @@ function AtlasEditorInner({
     }
   }
 
-  function insertPulledQuote(html: string) {
-    const wrapper = document.createElement("div");
-    wrapper.innerHTML = html;
-    // insertNode takes one Node — a DocumentFragment holding every
-    // top-level child inserts them all as siblings in one call, same
-    // as a single element would.
-    const fragment = document.createDocumentFragment();
-    while (wrapper.firstChild) fragment.appendChild(wrapper.firstChild);
-    editorRef.current?.insertNode(fragment);
-    notifyContentInserted();
-    setPullOpen(false);
-  }
-
   function insertInternalLink(pageId: string, title: string) {
     const a = document.createElement("a");
     a.href = "#";
@@ -281,7 +266,7 @@ function AtlasEditorInner({
     <EditModeProvider>
       <SyncEditingMode editing={mode === "editing"} />
       <div className="flex min-w-0 flex-1 justify-center overflow-y-auto lg:border-r lg:border-border">
-        <div className="flex w-full max-w-[680px] flex-col gap-3 p-6">
+        <div className="flex w-full max-w-[680px] flex-col gap-3 p-6 xl:max-w-[880px] 2xl:max-w-[1040px]">
           <AtlasPageHeader
             page={page}
             sections={sections}
@@ -302,7 +287,6 @@ function AtlasEditorInner({
           {mode === "editing" && (
             <AtlasToolbar
               editorRef={editorRef}
-              onOpenPullFromLibrary={() => setPullOpen(true)}
               onOpenInternalLinkPicker={() => setLinkPickerOpen(true)}
               onInserted={notifyContentInserted}
             />
@@ -344,10 +328,6 @@ function AtlasEditorInner({
         backlinks={backlinks}
         templateTitle={page.templatePageId ? pages.find((p) => p.id === page.templatePageId)?.title ?? null : null}
       />
-
-      {pullOpen && (
-        <AtlasPullFromLibraryModal onClose={() => setPullOpen(false)} onInsert={insertPulledQuote} />
-      )}
 
       {linkPickerOpen && (
         <AtlasInternalLinkPicker

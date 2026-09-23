@@ -417,6 +417,7 @@
     "exportPage": "Export",
     "exportAsPdf": "Export as PDF",
     "exportAsMarkdown": "Export as Markdown",
+    "exportAsWord": "Export as Word",
     "addTag": "+ tag",
     "addTagPlaceholder": "Tag name…",
     "removeTag": "Remove tag {tag}",
@@ -430,7 +431,6 @@
     "insertTable": "Insert table",
     "insertImage": "Insert image",
     "insertCard": "Insert card",
-    "pullFromLibrary": "Pull from library",
     "newTaskPlaceholder": "New task",
     "tableHeaderPlaceholder": "Header {n}",
     "cardBodyPlaceholder": "Write here…",
@@ -453,15 +453,8 @@
     "notFromTemplate": "This page isn't from a template.",
     "startFromTemplate": "Start from a template",
     "blankPage": "Blank page",
-    "pullFromLibraryTitle": "Pull from the library",
-    "searchLibraryPlaceholder": "Search conditions…",
-    "chooseSectionPrompt": "Choose a section to quote",
-    "insertQuote": "Insert quote",
     "noLibraryResults": "No matching pages.",
-    "quotedFrom": "— {page}, {section}, reviewed {date}",
-    "quotedFromNoDate": "— {page}, {section}",
-    "close": "Close",
-    "backToSearch": "Back to search"
+    "close": "Close"
   },
   "flashcards": {
     "pageTitle": "Flashcards",

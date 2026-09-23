@@ -8,10 +8,7 @@ import type { DiseaseCatalogEntry } from "@/lib/disease-catalog";
 import { searchLibraryPagesAction } from "@/lib/actions/library-pull";
 
 // HANDBOOK-SPEC.md Pass 4's "Library link" — a small search-and-pick
-// modal, same shape as AtlasPullFromLibraryModal.tsx's first step
-// (they'd share more code if this picked a section too, but linking
-// is a whole-page reference, not a section-level quote, so it stops
-// one step earlier).
+// modal over the disease catalog.
 export function AtlasLibraryLinkPicker({
   linkedDisease,
   onClose,

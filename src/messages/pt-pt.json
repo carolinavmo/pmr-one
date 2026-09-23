@@ -417,6 +417,7 @@
     "exportPage": "Exportar",
     "exportAsPdf": "Exportar como PDF",
     "exportAsMarkdown": "Exportar como Markdown",
+    "exportAsWord": "Exportar como Word",
     "addTag": "+ etiqueta",
     "addTagPlaceholder": "Nome da etiqueta…",
     "removeTag": "Remover etiqueta {tag}",
@@ -430,7 +431,6 @@
     "insertTable": "Inserir tabela",
     "insertImage": "Inserir imagem",
     "insertCard": "Inserir cartão",
-    "pullFromLibrary": "Puxar da biblioteca",
     "newTaskPlaceholder": "Nova tarefa",
     "tableHeaderPlaceholder": "Cabeçalho {n}",
     "cardBodyPlaceholder": "Escreva aqui…",
@@ -453,15 +453,8 @@
     "notFromTemplate": "Esta página não veio de um modelo.",
     "startFromTemplate": "Começar a partir de um modelo",
     "blankPage": "Página em branco",
-    "pullFromLibraryTitle": "Puxar da biblioteca",
-    "searchLibraryPlaceholder": "Pesquisar patologias…",
-    "chooseSectionPrompt": "Escolha uma secção para citar",
-    "insertQuote": "Inserir citação",
     "noLibraryResults": "Nenhuma página correspondente.",
-    "quotedFrom": "— {page}, {section}, revisto {date}",
-    "quotedFromNoDate": "— {page}, {section}",
-    "close": "Fechar",
-    "backToSearch": "Voltar à pesquisa"
+    "close": "Fechar"
   },
   "flashcards": {
     "pageTitle": "Cartões de Memória",

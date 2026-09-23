@@ -2,7 +2,7 @@
 
 import { useRef, useState, type RefObject } from "react";
 import { useTranslations } from "next-intl";
-import { Heading1, Heading2, Heading3, ListChecks, Table, ImagePlus, Sparkles, Library, Loader2, FileSymlink } from "lucide-react";
+import { Heading1, Heading2, Heading3, ListChecks, Table, ImagePlus, Sparkles, Loader2, FileSymlink } from "lucide-react";
 import type { RichEditableTextHandle } from "@/components/ui/RichEditableText";
 import {
   ATLAS_CARD_PRESET_ORDER,
@@ -15,8 +15,8 @@ import { CARD_COLOR_TINT, CARD_COLOR_TEXT } from "@/lib/card-colors";
 import { uploadPageImageAction } from "@/lib/actions/atlas";
 
 // HANDBOOK-SPEC.md Pass 3's toolbar — headings, tasks, a table, an
-// image, and the two platform actions (Insert card / Pull from
-// library). Deliberately a SEPARATE row above RichEditableText's own
+// image, and platform actions (Insert card / Link to a page).
+// Deliberately a SEPARATE row above RichEditableText's own
 // (compact) toolbar rather than 6 more buttons crammed into that
 // component's three already-parallel toolbar JSX blocks — see
 // RichEditableText.tsx's own comment on `insertNode`. Every insertion
@@ -31,12 +31,10 @@ import { uploadPageImageAction } from "@/lib/actions/atlas";
 // the instant a toolbar button is pressed.
 export function AtlasToolbar({
   editorRef,
-  onOpenPullFromLibrary,
   onOpenInternalLinkPicker,
   onInserted,
 }: {
   editorRef: RefObject<RichEditableTextHandle | null>;
-  onOpenPullFromLibrary: () => void;
   onOpenInternalLinkPicker: () => void;
   // insertNode mutates the live contentEditable DOM directly, bypassing
   // React — it never fires the native `input` event RichEditableText's
@@ -194,15 +192,6 @@ export function AtlasToolbar({
             className={btnClass}
           >
             <FileSymlink className="size-4" aria-hidden="true" />
-          </button>
-          <button
-            type="button"
-            onMouseDown={guard}
-            onClick={onOpenPullFromLibrary}
-            className="flex items-center gap-1.5 rounded-lg border border-acc-bd bg-acc-bg px-2.5 py-1.5 font-ui text-xs font-black text-acc-ink"
-          >
-            <Library className="size-3.5" aria-hidden="true" />
-            {t("pullFromLibrary")}
           </button>
         </div>
       </div>

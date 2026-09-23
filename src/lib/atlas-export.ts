@@ -1,8 +1,25 @@
 "use client";
 
-// HANDBOOK-SPEC.md Pass 6 — "Export a page to PDF and Markdown,
-// preserving headings, tasks, tables and cards." Both run entirely
-// client-side against the note's already-rendered HTML:
+import {
+  Document,
+  Packer,
+  Paragraph,
+  TextRun,
+  HeadingLevel,
+  Table,
+  TableRow,
+  TableCell,
+  WidthType,
+  ImageRun,
+  ShadingType,
+  AlignmentType,
+  LevelFormat,
+  BorderStyle,
+} from "docx";
+
+// HANDBOOK-SPEC.md Pass 6 — "Export a page to PDF, Markdown and Word,
+// preserving headings, tasks, tables and cards." All three run
+// entirely client-side against the note's already-rendered HTML:
 // - Markdown: a small hand-written HTML→MD converter, since the
 //   editor's whole tag vocabulary is fixed and known (rich-text.ts's
 //   ALLOWED_TAGS) — not worth a general-purpose HTML-to-Markdown
@@ -12,6 +29,8 @@
 //   server-side PDF-rendering dependency — "Save as PDF" from the
 //   system print dialog is what actually runs, not a server-generated
 //   file.
+// - Word: docx-js (client-side; Packer.toBlob runs entirely in the
+//   browser), a real .docx rather than an HTML-renamed-.doc trick.
 
 function textOf(node: ChildNode): string {
   if (node.nodeType === Node.TEXT_NODE) return node.textContent ?? "";
@@ -193,4 +212,267 @@ export function printPageAsPdf(title: string, html: string): void {
     win.focus();
     win.print();
   };
+}
+
+// Word export — a real .docx via docx-js (client-side; Packer.toBlob
+// runs in the browser), covering exactly the sanitizer's fixed tag
+// vocabulary (rich-text.ts's ALLOWED_TAGS), same "one converter per
+// export format" shape as htmlToMarkdown above. Images are fetched and
+// embedded as real ImageRuns (this app's own /api/uploads/ URLs are
+// same-origin, so a plain fetch works); an image whose extension isn't
+// one of docx's four supported raster types is skipped rather than
+// failing the whole export.
+const DOCX_TABLE_WIDTH_DXA = 9000;
+const DOCX_IMAGE_MAX_WIDTH_PX = 500;
+const DOCX_OL_NUMBERING_REFERENCE = "atlas-ol";
+
+interface DocxInlineStyle {
+  bold?: boolean;
+  italics?: boolean;
+  underline?: boolean;
+  strike?: boolean;
+}
+
+function docxInlineRuns(node: ChildNode, style: DocxInlineStyle = {}): InstanceType<typeof TextRun>[] {
+  if (node.nodeType === Node.TEXT_NODE) {
+    const text = node.textContent ?? "";
+    if (!text) return [];
+    return [
+      new TextRun({
+        text,
+        bold: style.bold,
+        italics: style.italics,
+        underline: style.underline ? {} : undefined,
+        strike: style.strike,
+      }),
+    ];
+  }
+  if (!(node instanceof HTMLElement)) return [];
+  if (node.tagName === "BR") return [new TextRun({ text: "", break: 1 })];
+  const next: DocxInlineStyle = { ...style };
+  switch (node.tagName) {
+    case "B":
+    case "STRONG":
+      next.bold = true;
+      break;
+    case "I":
+    case "EM":
+      next.italics = true;
+      break;
+    case "U":
+      next.underline = true;
+      break;
+    case "S":
+      next.strike = true;
+      break;
+    case "A":
+      // No functioning hyperlink field — an internal atlas-link-id
+      // anchor has no stable external URL to point Word at, so this
+      // just keeps the visual cue (underline) a link carries.
+      next.underline = true;
+      break;
+  }
+  return Array.from(node.childNodes).flatMap((c) => docxInlineRuns(c, next));
+}
+
+async function fetchImageForDocx(src: string): Promise<{ data: ArrayBuffer; type: "jpg" | "png" | "gif" | "bmp" } | null> {
+  const ext = src.split(".").pop()?.toLowerCase().split(/[?#]/)[0];
+  const type = ext === "jpeg" ? "jpg" : ext === "jpg" || ext === "png" || ext === "gif" || ext === "bmp" ? ext : null;
+  if (!type) return null;
+  try {
+    const res = await fetch(src);
+    if (!res.ok) return null;
+    const data = await res.arrayBuffer();
+    return { data, type };
+  } catch {
+    return null;
+  }
+}
+
+function loadImageDimensions(src: string): Promise<{ width: number; height: number } | null> {
+  return new Promise((resolve) => {
+    const img = new Image();
+    img.onload = () => resolve({ width: img.naturalWidth || 1, height: img.naturalHeight || 1 });
+    img.onerror = () => resolve(null);
+    img.src = src;
+  });
+}
+
+async function docxImageRun(el: HTMLElement): Promise<InstanceType<typeof ImageRun> | null> {
+  const src = el.getAttribute("src");
+  if (!src) return null;
+  const [file, dimensions] = await Promise.all([fetchImageForDocx(src), loadImageDimensions(src)]);
+  if (!file) return null;
+  const natural = dimensions ?? { width: DOCX_IMAGE_MAX_WIDTH_PX, height: DOCX_IMAGE_MAX_WIDTH_PX };
+  const width = Math.min(natural.width, DOCX_IMAGE_MAX_WIDTH_PX);
+  const height = Math.round(width * (natural.height / natural.width || 1));
+  return new ImageRun({ type: file.type, data: file.data, transformation: { width, height } });
+}
+
+function docxTableCell(el: HTMLElement, header: boolean, columnCount: number): InstanceType<typeof TableCell> {
+  return new TableCell({
+    width: { size: Math.floor(DOCX_TABLE_WIDTH_DXA / columnCount), type: WidthType.DXA },
+    shading: header ? { type: ShadingType.CLEAR, fill: "1B2A4A" } : undefined,
+    children: [
+      new Paragraph({
+        children: Array.from(el.childNodes).flatMap((c) => docxInlineRuns(c, header ? { bold: true } : {})),
+      }),
+    ],
+  });
+}
+
+async function docxTable(el: HTMLElement): Promise<InstanceType<typeof Table>> {
+  const rowEls = Array.from(el.querySelectorAll("tr"));
+  const columnCount = Math.max(1, ...rowEls.map((tr) => tr.children.length));
+  const rows = rowEls.map(
+    (tr) =>
+      new TableRow({
+        children: Array.from(tr.children).map((cell) =>
+          docxTableCell(cell as HTMLElement, cell.tagName === "TH", columnCount)
+        ),
+      })
+  );
+  return new Table({
+    width: { size: DOCX_TABLE_WIDTH_DXA, type: WidthType.DXA },
+    columnWidths: Array.from({ length: columnCount }, () => Math.floor(DOCX_TABLE_WIDTH_DXA / columnCount)),
+    rows,
+  });
+}
+
+// olInstance lets every <ol> in the page restart its own numbering —
+// all share one registered numbering definition (DOCX_OL_NUMBERING_REFERENCE),
+// distinguished by `instance`, rather than needing a separate
+// definition per list.
+async function docxBlock(el: HTMLElement, olInstance: { n: number }): Promise<InstanceType<typeof Paragraph | typeof Table>[]> {
+  switch (el.tagName) {
+    case "H1":
+      return [new Paragraph({ heading: HeadingLevel.HEADING_1, children: Array.from(el.childNodes).flatMap((c) => docxInlineRuns(c)) })];
+    case "H2":
+      return [new Paragraph({ heading: HeadingLevel.HEADING_2, children: Array.from(el.childNodes).flatMap((c) => docxInlineRuns(c)) })];
+    case "H3":
+      return [new Paragraph({ heading: HeadingLevel.HEADING_3, children: Array.from(el.childNodes).flatMap((c) => docxInlineRuns(c)) })];
+    case "P":
+      return [new Paragraph({ spacing: { after: 160 }, children: Array.from(el.childNodes).flatMap((c) => docxInlineRuns(c)) })];
+    case "BLOCKQUOTE":
+      return Array.from(el.children).map(
+        (child) =>
+          new Paragraph({
+            indent: { left: 480 },
+            border: { left: { style: BorderStyle.SINGLE, size: 12, color: "D9DFE8", space: 8 } },
+            children: Array.from(child.childNodes).flatMap((c) => docxInlineRuns(c, { italics: true })),
+          })
+      );
+    case "UL":
+      return Array.from(el.children).map(
+        (li) => new Paragraph({ bullet: { level: 0 }, children: Array.from(li.childNodes).flatMap((c) => docxInlineRuns(c)) })
+      );
+    case "OL": {
+      olInstance.n += 1;
+      const instance = olInstance.n;
+      return Array.from(el.children).map(
+        (li) =>
+          new Paragraph({
+            numbering: { reference: DOCX_OL_NUMBERING_REFERENCE, level: 0, instance },
+            children: Array.from(li.childNodes).flatMap((c) => docxInlineRuns(c)),
+          })
+      );
+    }
+    case "TABLE":
+      return [await docxTable(el)];
+    case "IMG": {
+      const run = await docxImageRun(el);
+      return run ? [new Paragraph({ children: [run] })] : [];
+    }
+    case "HR":
+      return [new Paragraph({ border: { bottom: { style: BorderStyle.SINGLE, size: 6, color: "D9DFE8" } }, children: [] })];
+    case "DIV": {
+      if (el.hasAttribute("data-checked")) {
+        const checked = el.getAttribute("data-checked") === "true";
+        return [
+          new Paragraph({
+            children: [
+              new TextRun({ text: checked ? "☑ " : "☐ " }),
+              ...Array.from(el.childNodes).flatMap((c) => docxInlineRuns(c, { strike: checked })),
+            ],
+          }),
+        ];
+      }
+      if (el.hasAttribute("data-card-preset")) {
+        const label = el.querySelector("span")?.textContent?.trim() ?? "";
+        const bodyEl = el.querySelector("p");
+        const shading = { type: ShadingType.CLEAR, fill: "F7F9FB" } as const;
+        const paragraphs = [
+          new Paragraph({ shading, spacing: { before: 120 }, children: [new TextRun({ text: label, bold: true })] }),
+        ];
+        if (bodyEl) {
+          paragraphs.push(
+            new Paragraph({ shading, spacing: { after: 120 }, children: Array.from(bodyEl.childNodes).flatMap((c) => docxInlineRuns(c)) })
+          );
+        }
+        return paragraphs;
+      }
+      // Unrecognised div (shouldn't occur given the sanitizer's fixed
+      // vocabulary) — degrade gracefully rather than drop content.
+      const nested: InstanceType<typeof Paragraph | typeof Table>[] = [];
+      for (const child of Array.from(el.children)) {
+        nested.push(...(await docxBlock(child as HTMLElement, olInstance)));
+      }
+      return nested;
+    }
+    default:
+      return [new Paragraph({ children: Array.from(el.childNodes).flatMap((c) => docxInlineRuns(c)) })];
+  }
+}
+
+export async function buildAtlasDocxBlob(title: string, html: string): Promise<Blob> {
+  const container = document.createElement("div");
+  container.innerHTML = html;
+  const olInstance = { n: 0 };
+  const children: InstanceType<typeof Paragraph | typeof Table>[] = [
+    new Paragraph({ heading: HeadingLevel.TITLE, children: [new TextRun({ text: title })] }),
+  ];
+  for (const child of Array.from(container.childNodes)) {
+    if (child instanceof HTMLElement) {
+      children.push(...(await docxBlock(child, olInstance)));
+    } else if (child.nodeType === Node.TEXT_NODE && child.textContent?.trim()) {
+      children.push(new Paragraph({ children: [new TextRun({ text: child.textContent })] }));
+    }
+  }
+
+  const doc = new Document({
+    numbering: {
+      config: [
+        {
+          reference: DOCX_OL_NUMBERING_REFERENCE,
+          levels: [
+            {
+              level: 0,
+              format: LevelFormat.DECIMAL,
+              text: "%1.",
+              alignment: AlignmentType.START,
+              style: { paragraph: { indent: { left: 720, hanging: 360 } } },
+            },
+          ],
+        },
+      ],
+    },
+    sections: [
+      {
+        properties: { page: { size: { width: 12240, height: 15840 } } },
+        children,
+      },
+    ],
+  });
+
+  return Packer.toBlob(doc);
+}
+
+export async function downloadWord(title: string, html: string): Promise<void> {
+  const blob = await buildAtlasDocxBlob(title, html);
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `${title.replace(/[^\w-]+/g, "-").toLowerCase() || "page"}.docx`;
+  a.click();
+  URL.revokeObjectURL(url);
 }

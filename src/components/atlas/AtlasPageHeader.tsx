@@ -16,10 +16,11 @@ import {
   Link2,
   X,
   Plus,
+  Loader2,
 } from "lucide-react";
 import type { AtlasPage, AtlasSection, LinkedDiseaseSummary } from "@/lib/atlas";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
-import { downloadMarkdown, printPageAsPdf } from "@/lib/atlas-export";
+import { downloadMarkdown, downloadWord, printPageAsPdf } from "@/lib/atlas-export";
 import { saveAsTemplateAction } from "@/lib/actions/atlas";
 import { AtlasLibraryLinkPicker } from "./AtlasLibraryLinkPicker";
 import type { AtlasSaveState } from "./AtlasEditor";
@@ -63,6 +64,7 @@ export function AtlasPageHeader({
   const [copied, setCopied] = useState(false);
   const [confirmingDelete, setConfirmingDelete] = useState(false);
   const [exportMenuOpen, setExportMenuOpen] = useState(false);
+  const [exportingWord, setExportingWord] = useState(false);
   const [moreMenuOpen, setMoreMenuOpen] = useState(false);
   const [addingTag, setAddingTag] = useState(false);
   const [tagDraft, setTagDraft] = useState("");
@@ -112,6 +114,16 @@ export function AtlasPageHeader({
     onUpdateTags(page.tags.filter((t2) => t2 !== tag));
   }
 
+  async function handleExportWord() {
+    setExportMenuOpen(false);
+    setExportingWord(true);
+    try {
+      await downloadWord(title || t("untitledPage"), page.body);
+    } finally {
+      setExportingWord(false);
+    }
+  }
+
   async function handleSaveAsTemplate() {
     setMoreMenuOpen(false);
     const templatesSectionName = t("defaultSectionTemplates");
@@ -140,7 +152,7 @@ export function AtlasPageHeader({
           onChange={(e) => setTitle(e.target.value)}
           onBlur={commitTitle}
           placeholder={t("untitledPage")}
-          className="w-full min-w-0 bg-transparent font-heading text-2xl font-bold text-accent outline-none placeholder:font-normal placeholder:text-secondary"
+          className="w-full min-w-0 bg-transparent font-heading text-2xl font-bold text-navy outline-none placeholder:font-normal placeholder:text-secondary"
         />
         <div className="flex shrink-0 items-center gap-1.5">
           <div className="relative">
@@ -176,6 +188,19 @@ export function AtlasPageHeader({
                 >
                   <FileText className="size-3.5" aria-hidden="true" />
                   {t("exportAsMarkdown")}
+                </button>
+                <button
+                  type="button"
+                  onClick={handleExportWord}
+                  disabled={exportingWord}
+                  className="flex items-center gap-2 rounded-lg px-2.5 py-1.5 text-left font-ui text-xs font-bold text-primary hover:bg-border/30 disabled:opacity-50"
+                >
+                  {exportingWord ? (
+                    <Loader2 className="size-3.5 animate-spin" aria-hidden="true" />
+                  ) : (
+                    <FileDown className="size-3.5" aria-hidden="true" />
+                  )}
+                  {t("exportAsWord")}
                 </button>
               </div>
             )}
