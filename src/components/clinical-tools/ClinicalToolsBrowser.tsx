@@ -163,29 +163,30 @@ export function ClinicalToolsBrowser({
   );
 }
 
-// TOOLS-DASHBOARD-SPEC.md's banded section header — --tint background,
-// --bd border, 5px left border in --c, title in --c. Reads the same
-// data-category-scoped tokens as the cards below it, set by the
-// section's own wrapper div, never a per-category class branch here.
+// Solid --c background, white text — a founder follow-up on the
+// spec's original Level 2 tinted band ("--tint background, title in
+// --c"): a dark, category-colored strip stands out more against the
+// tinted cards below it than a same-family tint-on-tint band did.
+// Closer to the spec's own Level 3 "Headed" option (a solid --c strip)
+// than Level 2, just without switching the cards themselves to that
+// level too. Reads the same data-category-scoped tokens as the cards
+// below it, set by the section's own wrapper div, never a per-category
+// class branch here.
 function SectionBand({ title, count }: { title: string; count: number }) {
   const t = useTranslations("clinicalTools");
   return (
     <div
-      className="mb-3 flex items-center gap-2.5 rounded-[10px] border border-l-[5px] px-3.5 py-2.5"
-      style={{ background: "var(--tint)", borderColor: "var(--bd)", borderLeftColor: "var(--c)" }}
+      className="mb-3 flex items-center gap-2.5 rounded-[10px] px-3.5 py-2.5"
+      style={{ background: "var(--c)" }}
     >
-      <span className="font-ui text-[13.5px] font-black tracking-[0.2px]" style={{ color: "var(--c)" }}>
-        {title}
-      </span>
-      <span className="font-ui text-xs font-semibold text-secondary/70">
+      <span className="font-ui text-[13.5px] font-black tracking-[0.2px] text-white">{title}</span>
+      <span className="font-ui text-xs font-semibold text-white/70">
         {t("calculatorCount", { count })}
       </span>
       {/* "See all ›" — inert until a per-category filtered view exists
           to link to; kept as a styled span, not a dead <a>. The List
           view (Pass 4) covers "I want the full sortable set" instead. */}
-      <span className="ml-auto font-ui text-xs font-extrabold" style={{ color: "var(--c)" }}>
-        {t("seeAll")}
-      </span>
+      <span className="ml-auto font-ui text-xs font-extrabold text-white">{t("seeAll")}</span>
     </div>
   );
 }
