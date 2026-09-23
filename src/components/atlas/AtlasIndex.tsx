@@ -1,11 +1,20 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { useTranslations } from "next-intl";
-import { Search, Plus, Pencil, Trash2, FileText, Folder, GripVertical, ChevronDown, ChevronRight, Check } from "lucide-react";
+import { useTranslations, useFormatter } from "next-intl";
+import {
+  Search,
+  Plus,
+  Pencil,
+  Trash2,
+  FileText,
+  GripVertical,
+  Check,
+  Star,
+} from "lucide-react";
 import type { AtlasSection, AtlasPage } from "@/lib/atlas";
 import type { CardColor } from "@/lib/editorial-blocks";
-import { CARD_COLOR_TINT, CARD_COLOR_TEXT } from "@/lib/card-colors";
+import { CARD_COLOR_TINT, CARD_COLOR_BORDER, CARD_COLOR_SWATCH } from "@/lib/card-colors";
 import { ColorSwatchPicker } from "@/components/ui/ColorSwatchPicker";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 
@@ -117,6 +126,34 @@ function dragRowClass(id: string, draggedId: string | null, overId: string | nul
   return classes.length ? classes.join(" ") : undefined;
 }
 
+// HANDBOOK-SPEC.md's rail rows: "a star when pinned, otherwise a
+// relative time" — a compact abbreviation ("2 d", "1 w", "3 w", "1 mo"),
+// distinct from AtlasEditor's own full-phrase "Edited 3 days ago" (the
+// 268px rail has no room for that). Not next-intl's relativeTime(),
+// which returns full phrases in every locale it supports — this is a
+// deliberately terse, locale-agnostic abbreviation for a narrow column.
+function compactRelativeTime(iso: string, now: Date): string {
+  const ms = now.getTime() - new Date(iso).getTime();
+  const minutes = Math.floor(ms / 60000);
+  if (minutes < 1) return "now";
+  if (minutes < 60) return `${minutes} m`;
+  const hours = Math.floor(minutes / 60);
+  if (hours < 24) return `${hours} h`;
+  const days = Math.floor(hours / 24);
+  if (days < 7) return `${days} d`;
+  const weeks = Math.floor(days / 7);
+  if (days < 30) return `${weeks} w`;
+  const months = Math.floor(days / 30);
+  if (days < 365) return `${months} mo`;
+  return `${Math.floor(days / 365)} y`;
+}
+
+type FilterKey = "all" | "pinned" | "recent";
+// "Recent" — no exact threshold in the spec; 14 days is this
+// implementation's own reasonable default for "still fresh in mind",
+// not a value the design doc states.
+const RECENT_WINDOW_MS = 14 * 24 * 60 * 60 * 1000;
+
 interface AtlasIndexProps {
   sections: AtlasSection[];
   pages: AtlasPage[];
@@ -127,8 +164,9 @@ interface AtlasIndexProps {
   onUpdateSectionColor: (sectionId: string, color: CardColor) => void;
   onDeleteSection: (sectionId: string) => void;
   onReorderSections: (orderedIds: string[]) => void;
-  onCreatePage: (sectionId: string) => void;
+  onCreatePage: (sectionId: string, templatePageId?: string) => void;
   onReorderPages: (sectionId: string, orderedIds: string[]) => void;
+  onTogglePinned: (pageId: string) => void;
 }
 
 export function AtlasIndex({
@@ -143,30 +181,110 @@ export function AtlasIndex({
   onReorderSections,
   onCreatePage,
   onReorderPages,
+  onTogglePinned,
 }: AtlasIndexProps) {
   const t = useTranslations("myAtlas");
+  const format = useFormatter();
   const [query, setQuery] = useState("");
+  const [filter, setFilter] = useState<FilterKey>("all");
   const [editMode, setEditMode] = useState(false);
   const sectionDrag = useReorderDrag(
     sections.map((s) => s.id),
     onReorderSections
   );
 
-  const filteredPages = useMemo(() => {
+  // Hydration-safe "now" (same reasoning as AtlasEditor.tsx's own —
+  // computing it inline would give SSR and the client's first paint two
+  // different instants, throwing a hydration mismatch on every relative
+  // time and the footer's "last sync").
+  const [now, setNow] = useState<Date | null>(null);
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- deliberate hydration-safe pattern, see AtlasEditor.tsx
+    setNow(new Date());
+  }, []);
+
+  const visiblePages = useMemo(() => {
     const q = query.trim().toLowerCase();
-    if (!q) return pages;
-    return pages.filter((p) => (p.title || t("untitledPage")).toLowerCase().includes(q));
-  }, [pages, query, t]);
+    let list = pages;
+    if (q) list = list.filter((p) => (p.title || t("untitledPage")).toLowerCase().includes(q));
+    if (filter === "pinned") list = list.filter((p) => p.isPinned);
+    if (filter === "recent" && now) {
+      list = list.filter((p) => now.getTime() - new Date(p.updatedAt).getTime() < RECENT_WINDOW_MS);
+    }
+    return list;
+  }, [pages, query, filter, now, t]);
+
+  const isFiltered = query.trim().length > 0 || filter !== "all";
+  const totalPages = pages.length;
+  // "Start from a template" (Pass 4) — the soft convention every
+  // default-seeded workspace already uses: pages currently sitting in
+  // whichever section is named exactly like the seeded Templates
+  // folder. A member who renames that folder just loses the popover
+  // (falls back to a plain blank page) rather than anything breaking —
+  // matches duplicatePageAsTemplate's own same-name-match-or-fallback
+  // shape in atlas.ts.
+  const templatesSection = sections.find((s) => s.name === t("defaultSectionTemplates"));
+  const templatePages = templatesSection ? pages.filter((p) => p.sectionId === templatesSection.id) : [];
+  const [newPagePickerOpen, setNewPagePickerOpen] = useState(false);
+  const lastSyncAt = useMemo(
+    () => pages.reduce<Date | null>((latest, p) => {
+      const d = new Date(p.updatedAt);
+      return !latest || d > latest ? d : latest;
+    }, null),
+    [pages]
+  );
 
   return (
-    <aside className="flex w-full flex-col gap-2 bg-surface-sunken p-3 lg:w-80 lg:shrink-0">
-      <p className="px-1 font-ui text-[11px] font-semibold tracking-wide text-secondary uppercase">
-        {t("indexLabel")}
-      </p>
+    <aside className="flex w-full shrink-0 flex-col gap-3 border-border bg-surface-sunken p-3 lg:w-[268px] lg:border-r">
+      <div className="relative">
+        <button
+          type="button"
+          onClick={() => {
+            if (templatePages.length > 0) setNewPagePickerOpen((v) => !v);
+            else onCreatePage(sections[0]?.id);
+          }}
+          disabled={!sections[0]}
+          className="flex w-full items-center justify-center gap-2 rounded-[10px] bg-navy px-3 py-2.5 font-ui text-[13.5px] font-extrabold text-white transition-colors duration-base hover:bg-navy/90 disabled:opacity-50"
+        >
+          <Plus className="size-4" aria-hidden="true" />
+          {t("newPage")}
+        </button>
+        {newPagePickerOpen && (
+          <div className="absolute top-full left-0 z-20 mt-1 flex w-full flex-col gap-0.5 rounded-xl border border-border bg-surface p-1.5 shadow-lg">
+            <p className="px-2 pt-1 pb-1.5 font-ui text-[10px] font-black tracking-wide text-secondary uppercase">
+              {t("startFromTemplate")}
+            </p>
+            <button
+              type="button"
+              onClick={() => {
+                onCreatePage(sections[0]?.id);
+                setNewPagePickerOpen(false);
+              }}
+              className="rounded-lg px-2.5 py-1.5 text-left font-ui text-xs font-bold text-primary hover:bg-border/30"
+            >
+              {t("blankPage")}
+            </button>
+            {templatePages.map((tpl) => (
+              <button
+                key={tpl.id}
+                type="button"
+                onClick={() => {
+                  onCreatePage(sections[0]?.id, tpl.id);
+                  setNewPagePickerOpen(false);
+                }}
+                className="truncate rounded-lg px-2.5 py-1.5 text-left font-ui text-xs font-bold text-primary hover:bg-border/30"
+              >
+                {tpl.title || t("untitledPage")}
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
+
       <div className="flex items-center gap-2">
         <div className="relative min-w-0 flex-1">
           <Search
-            className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-secondary"
+            className="pointer-events-none absolute top-1/2 left-3 size-3.5 -translate-y-1/2 text-secondary"
             aria-hidden="true"
           />
           <input
@@ -174,7 +292,7 @@ export function AtlasIndex({
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder={t("searchPlaceholder")}
-            className="w-full rounded-full border border-border bg-surface py-1.5 pr-3 pl-9 font-ui text-xs text-primary outline-none focus:border-accent"
+            className="w-full rounded-[9px] border border-border bg-surface py-1.5 pr-3 pl-8 font-ui text-xs text-primary outline-none focus:border-accent"
           />
         </div>
         <button
@@ -182,7 +300,7 @@ export function AtlasIndex({
           onClick={() => setEditMode((v) => !v)}
           aria-label={editMode ? t("doneEditingIndex") : t("editIndex")}
           title={editMode ? t("doneEditingIndex") : t("editIndex")}
-          className={`flex size-8 shrink-0 items-center justify-center rounded-full transition-colors duration-base ${
+          className={`flex size-8 shrink-0 items-center justify-center rounded-[9px] transition-colors duration-base ${
             editMode ? "bg-accent text-white" : "text-secondary hover:bg-border/40 hover:text-primary"
           }`}
         >
@@ -190,64 +308,111 @@ export function AtlasIndex({
         </button>
       </div>
 
-      <div className="flex flex-col gap-2">
-        {sections.map((section) => (
-          <div
-            key={section.id}
-            ref={sectionDrag.registerRow(section.id)}
-            className={dragRowClass(section.id, sectionDrag.draggedId, sectionDrag.overId)}
-          >
-            <AtlasSectionGroup
-              section={section}
-              pages={filteredPages.filter((p) => p.sectionId === section.id)}
-              selectedPageId={selectedPageId}
-              editMode={editMode}
-              onSelectPage={onSelectPage}
-              onRenameSection={onRenameSection}
-              onUpdateSectionColor={onUpdateSectionColor}
-              onDeleteSection={onDeleteSection}
-              onCreatePage={onCreatePage}
-              onReorderPages={onReorderPages}
-              onDragHandleStart={sectionDrag.startDrag(section.id)}
-            />
-          </div>
-        ))}
+      <div className="flex flex-wrap gap-1.5">
+        <FilterChip label={t("filterAll")} active={filter === "all"} onClick={() => setFilter("all")} />
+        <FilterChip
+          label={`★ ${t("filterPinned")}`}
+          active={filter === "pinned"}
+          onClick={() => setFilter("pinned")}
+        />
+        <FilterChip label={t("filterRecent")} active={filter === "recent"} onClick={() => setFilter("recent")} />
       </div>
 
-      {editMode && <NewSectionButton onCreateSection={onCreateSection} />}
+      <div className="flex min-h-0 flex-1 flex-col gap-2 overflow-y-auto">
+        {sections.map((section) => {
+          const sectionPages = visiblePages.filter((p) => p.sectionId === section.id);
+          if (isFiltered && sectionPages.length === 0) return null;
+          return (
+            <div
+              key={section.id}
+              ref={sectionDrag.registerRow(section.id)}
+              className={dragRowClass(section.id, sectionDrag.draggedId, sectionDrag.overId)}
+            >
+              <AtlasSectionGroup
+                section={section}
+                pages={sectionPages}
+                totalCount={pages.filter((p) => p.sectionId === section.id).length}
+                selectedPageId={selectedPageId}
+                editMode={editMode}
+                now={now}
+                onSelectPage={onSelectPage}
+                onRenameSection={onRenameSection}
+                onUpdateSectionColor={onUpdateSectionColor}
+                onDeleteSection={onDeleteSection}
+                onCreatePage={onCreatePage}
+                onReorderPages={onReorderPages}
+                onTogglePinned={onTogglePinned}
+                onDragHandleStart={sectionDrag.startDrag(section.id)}
+              />
+            </div>
+          );
+        })}
+        {editMode && <NewSectionButton onCreateSection={onCreateSection} />}
+      </div>
+
+      <div className="flex shrink-0 items-center gap-2 border-t border-border pt-2.5 font-ui text-[11.5px] font-semibold text-secondary">
+        <span>{t("totalPages", { count: totalPages })}</span>
+        <span aria-hidden="true">·</span>
+        <span>{lastSyncAt && now ? t("lastSync", { time: format.relativeTime(lastSyncAt, now) }) : ""}</span>
+      </div>
     </aside>
+  );
+}
+
+function FilterChip({ label, active, onClick }: { label: string; active: boolean; onClick: () => void }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      aria-pressed={active}
+      className={`rounded-full border px-2.5 py-1 font-ui text-[11px] font-extrabold transition-colors duration-base ${
+        active ? "border-acc-bd bg-acc-bg text-acc-ink" : "border-border bg-surface text-secondary hover:text-primary"
+      }`}
+    >
+      {label}
+    </button>
   );
 }
 
 function AtlasSectionGroup({
   section,
   pages,
+  totalCount,
   selectedPageId,
   editMode,
+  now,
   onSelectPage,
   onRenameSection,
   onUpdateSectionColor,
   onDeleteSection,
   onCreatePage,
   onReorderPages,
+  onTogglePinned,
   onDragHandleStart,
 }: {
   section: AtlasSection;
   pages: AtlasPage[];
+  totalCount: number;
   selectedPageId: string | null;
   editMode: boolean;
+  now: Date | null;
   onSelectPage: (pageId: string) => void;
   onRenameSection: (sectionId: string, name: string) => void;
   onUpdateSectionColor: (sectionId: string, color: CardColor) => void;
   onDeleteSection: (sectionId: string) => void;
   onCreatePage: (sectionId: string) => void;
   onReorderPages: (sectionId: string, orderedIds: string[]) => void;
+  onTogglePinned: (pageId: string) => void;
   onDragHandleStart: (e: React.PointerEvent) => void;
 }) {
   const t = useTranslations("myAtlas");
   const [renaming, setRenaming] = useState(false);
   const [name, setName] = useState(section.name);
   const [colorPickerOpen, setColorPickerOpen] = useState(false);
+  // No chevron in the default (non-edit) look, matching the spec's
+  // mockup exactly — collapsing still works, just triggered by
+  // clicking the folder name itself rather than a dedicated icon, so
+  // the capability isn't lost, just not visually called out.
   const [collapsed, setCollapsed] = useState(false);
   const [confirmingDelete, setConfirmingDelete] = useState(false);
   const pageDrag = useReorderDrag(
@@ -266,43 +431,39 @@ function AtlasSectionGroup({
 
   return (
     <div className="flex flex-col gap-0.5">
-      <div className="group flex items-center gap-1.5 px-1">
+      <div className="group flex items-center gap-2 px-1.5 py-1">
         {editMode && (
           <button
             type="button"
             aria-label={t("dragToReorder")}
             onPointerDown={onDragHandleStart}
-            className="flex size-6 shrink-0 touch-none cursor-grab items-center justify-center text-secondary hover:bg-border/40 active:cursor-grabbing"
+            className="flex size-5 shrink-0 touch-none cursor-grab items-center justify-center text-secondary hover:bg-border/40 active:cursor-grabbing"
           >
             <GripVertical className="size-3.5" aria-hidden="true" />
           </button>
         )}
-        {editMode ? (
-          <div className="relative shrink-0">
-            <button
-              type="button"
-              aria-label={t("sectionColor")}
-              title={t("sectionColor")}
-              onClick={() => setColorPickerOpen((open) => !open)}
-              className={`flex items-center justify-center ${CARD_COLOR_TEXT[section.color]}`}
-            >
-              <Folder className="size-4 fill-current" aria-hidden="true" />
-            </button>
-            {colorPickerOpen && (
-              <ColorSwatchPicker
-                className="absolute top-6 left-0 z-10 w-44"
-                onPick={(color) => {
-                  onUpdateSectionColor(section.id, color);
-                  setColorPickerOpen(false);
-                }}
-              />
-            )}
-          </div>
-        ) : (
-          <span className={`flex shrink-0 items-center justify-center ${CARD_COLOR_TEXT[section.color]}`}>
-            <Folder className="size-4 fill-current" aria-hidden="true" />
-          </span>
-        )}
+        {/* The spec's "coloured tile" — a small solid-tinted square per
+            folder (pages teal, protocols purple, templates amber by
+            default), not the generic Folder icon the old rail used.
+            Doubles as the recolor trigger in edit mode, same as before. */}
+        <div className="relative shrink-0">
+          <button
+            type="button"
+            onClick={() => editMode && setColorPickerOpen((open) => !open)}
+            aria-label={t("sectionColor")}
+            title={editMode ? t("sectionColor") : undefined}
+            className={`size-3.5 rounded-[4px] border ${CARD_COLOR_TINT[section.color]} ${CARD_COLOR_BORDER[section.color]}`}
+          />
+          {editMode && colorPickerOpen && (
+            <ColorSwatchPicker
+              className="absolute top-6 left-0 z-10 w-44"
+              onPick={(color) => {
+                onUpdateSectionColor(section.id, color);
+                setColorPickerOpen(false);
+              }}
+            />
+          )}
+        </div>
         {renaming ? (
           <input
             autoFocus
@@ -312,16 +473,17 @@ function AtlasSectionGroup({
             onKeyDown={(e) => {
               if (e.key === "Enter") commitRename();
             }}
-            className="min-w-0 flex-1 rounded border border-accent bg-surface px-1.5 py-0.5 font-ui text-xs font-semibold text-primary outline-none"
+            className="min-w-0 flex-1 rounded border border-accent bg-surface px-1.5 py-0.5 font-ui text-[10.5px] font-black tracking-wide text-primary outline-none"
           />
         ) : (
           <span
             onClick={() => setCollapsed((c) => !c)}
-            className="min-w-0 flex-1 cursor-pointer truncate font-ui text-[11px] font-semibold tracking-wide text-secondary uppercase"
+            className="min-w-0 flex-1 cursor-pointer truncate font-ui text-[10.5px] font-black tracking-[1.1px] text-secondary uppercase"
           >
             {section.name}
           </span>
         )}
+        <span className="shrink-0 font-ui text-[10.5px] font-extrabold text-[#B4BDC8]">{totalCount}</span>
         {editMode && (
           <div className="flex shrink-0 items-center gap-0.5">
             <button
@@ -353,25 +515,12 @@ function AtlasSectionGroup({
         >
           <Plus className="size-4" aria-hidden="true" />
         </button>
-        <button
-          type="button"
-          aria-label={collapsed ? t("expandSection") : t("collapseSection")}
-          title={collapsed ? t("expandSection") : t("collapseSection")}
-          onClick={() => setCollapsed((c) => !c)}
-          className="flex size-4 shrink-0 items-center justify-center text-secondary hover:text-primary"
-        >
-          {collapsed ? (
-            <ChevronRight className="size-3.5" aria-hidden="true" />
-          ) : (
-            <ChevronDown className="size-3.5" aria-hidden="true" />
-          )}
-        </button>
       </div>
 
       {collapsed ? null : pages.length === 0 ? (
         <p className="px-2 py-0.5 pl-8 font-ui text-xs text-secondary italic">{t("emptySectionPrompt")}</p>
       ) : (
-        <ul className="flex flex-col pl-8">
+        <ul className="flex flex-col pl-6">
           {pages.map((page) => (
             <li
               key={page.id}
@@ -379,10 +528,10 @@ function AtlasSectionGroup({
               className={dragRowClass(page.id, pageDrag.draggedId, pageDrag.overId)}
             >
               <div
-                className={`group/page flex w-full items-center gap-1 rounded-md px-1.5 py-1 transition-colors duration-base ${
+                className={`group/page flex w-full items-center gap-1.5 rounded-md px-1.5 py-1.5 font-ui text-[12.5px] font-semibold transition-colors duration-base ${
                   selectedPageId === page.id
-                    ? `${CARD_COLOR_TINT[section.color]} ${CARD_COLOR_TEXT[section.color]}`
-                    : "text-secondary hover:bg-border/40 hover:text-primary"
+                    ? "bg-surface text-navy shadow-[0_1px_3px_rgba(20,40,74,0.09)]"
+                    : "text-primary hover:bg-border/40"
                 }`}
               >
                 {editMode && (
@@ -390,19 +539,41 @@ function AtlasSectionGroup({
                     type="button"
                     aria-label={t("dragToReorder")}
                     onPointerDown={pageDrag.startDrag(page.id)}
-                    className="flex size-6 shrink-0 touch-none cursor-grab items-center justify-center hover:bg-border/40 active:cursor-grabbing"
+                    className="flex size-5 shrink-0 touch-none cursor-grab items-center justify-center text-secondary hover:bg-border/40 active:cursor-grabbing"
                   >
                     <GripVertical className="size-3.5" aria-hidden="true" />
                   </button>
                 )}
+                <span
+                  className={`size-1.5 shrink-0 rounded-[2px] ${
+                    selectedPageId === page.id ? CARD_COLOR_SWATCH[section.color] : "bg-[#C6CED8]"
+                  }`}
+                  aria-hidden="true"
+                />
                 <button
                   type="button"
                   onClick={() => onSelectPage(page.id)}
                   className="flex min-w-0 flex-1 items-center gap-1.5 text-left"
                 >
-                  <FileText className="size-3.5 shrink-0" aria-hidden="true" />
-                  <span className="truncate font-ui text-xs">{page.title || t("untitledPage")}</span>
+                  <FileText className="size-3.5 shrink-0 text-secondary" aria-hidden="true" />
+                  <span className="truncate">{page.title || t("untitledPage")}</span>
                 </button>
+                <button
+                  type="button"
+                  onClick={() => onTogglePinned(page.id)}
+                  aria-label={page.isPinned ? t("unpinPage") : t("pinPage")}
+                  title={page.isPinned ? t("unpinPage") : t("pinPage")}
+                  className={`flex size-5 shrink-0 items-center justify-center ${
+                    page.isPinned ? "text-insight opacity-100" : "text-[#C6CED8] opacity-0 group-hover/page:opacity-100 hover:text-insight"
+                  }`}
+                >
+                  <Star className="size-3" fill={page.isPinned ? "currentColor" : "none"} aria-hidden="true" />
+                </button>
+                {!page.isPinned && now && (
+                  <span className="shrink-0 font-ui text-[10px] font-bold text-[#B4BDC8] group-hover/page:hidden">
+                    {compactRelativeTime(page.updatedAt, now)}
+                  </span>
+                )}
               </div>
             </li>
           ))}

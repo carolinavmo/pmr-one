@@ -38,6 +38,7 @@ export function MobileIndexDrawerFrame({
   const tTools = useTranslations("clinicalTools");
   const pathname = usePathname();
   const isClinicalTools = pathname.startsWith("/clinical-tools");
+  const isMyHandbook = pathname.startsWith("/my-atlas");
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
@@ -50,6 +51,11 @@ export function MobileIndexDrawerFrame({
   }, [open]);
 
   const label = isClinicalTools ? tTools("categoriesGroup") : t("explore");
+
+  // HANDBOOK-SPEC.md: no library tree on this route at all, and the
+  // handbook's own rail lives inline in the page content (not behind a
+  // drawer trigger) — nothing for this button to open here.
+  if (isMyHandbook) return null;
 
   return (
     <>

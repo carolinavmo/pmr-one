@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8">
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--navy:#14284A;--ink:#27344A;--mute:#5E6B80;--line:#D9DFE8;--soft:#F7F9FB;
+ --acc:#0E9BA6;--acc-ink:#0A7680;--acc-bg:#E1F4F5;--acc-bd:#B5E0E3;--acc-dk:#7FD3DA;
+ --amb:#8A5F08;--amb-bg:#FDF6E6;--amb-bd:#F1E2BF;--pur:#5A479C;--pur-bg:#F4F1FB;--grn:#1F7A4D;--grn-bg:#EEF8F2;--red:#B8262B;--red-bg:#FDF0F0}
+body{font-family:'Roboto','Noto Sans CJK JP',sans-serif;color:var(--ink);background:#E9EDF1}
+.sheet{width:1600px;background:#fff;border-radius:14px;box-shadow:0 24px 64px rgba(20,40,74,.2);margin:0 auto 34px;padding:36px 40px 44px;position:relative;overflow:hidden}
+.tb{position:absolute;left:0;right:0;top:0;height:7px;display:flex}.tb i{flex:1}
+.bh{display:flex;align-items:center;gap:12px}.bh img{height:36px}.bh b{font-size:21px;font-weight:900;color:var(--navy)}
+h1.t{font-size:34px;font-weight:900;color:var(--navy);letter-spacing:-1px;margin-top:10px}
+.dek{font-size:16.5px;color:var(--mute);margin-top:6px;line-height:1.45;max-width:1150px}
+.dek b{color:var(--navy)}
+.frame{margin-top:22px;border:1px solid var(--line);border-radius:14px;overflow:hidden;box-shadow:0 10px 30px rgba(20,40,74,.10)}
+.nav{background:var(--navy);padding:12px 20px 10px}
+.nav .r1{display:flex;align-items:center;gap:16px}
+.nav .logo{display:flex;align-items:center;gap:9px;color:#fff;font-size:17px;font-weight:900}
+.nav .logo img{height:26px}.nav .logo span{color:var(--acc)}
+.nav .srch{flex:1;max-width:440px;margin:0 auto;height:32px;border-radius:16px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.18);display:flex;align-items:center;padding:0 14px;font-size:12px;color:#9DB0CA}
+.nav .ut{display:flex;align-items:center;gap:12px;color:#C2D2E6;font-size:12px;font-weight:700}
+.nav .av{width:28px;height:28px;border-radius:50%;background:var(--acc);color:#fff;font-size:10.5px;font-weight:900;display:flex;align-items:center;justify-content:center}
+.nav .r2{display:flex;align-items:center;gap:6px;margin-top:10px}
+.nav .pl{color:#C2D2E6;font-size:12px;font-weight:700;padding:6px 10px}
+.nav .on{border:2px solid var(--acc);background:rgba(14,155,166,.18);color:#fff;font-size:12.5px;font-weight:900;padding:5px 13px;border-radius:16px}
+.nav .dv{width:1px;height:18px;background:rgba(255,255,255,.2);margin:0 6px}
+.body{display:flex;min-height:940px}
+
+/* index rail */
+.rail{width:268px;flex:none;background:var(--soft);border-right:1px solid var(--line);padding:14px 12px;display:flex;flex-direction:column}
+.newbtn{background:var(--navy);color:#fff;border-radius:10px;padding:11px 12px;font-size:13.5px;font-weight:800;display:flex;align-items:center;gap:8px;justify-content:center}
+.fd{height:32px;background:#fff;border:1px solid var(--line);border-radius:9px;display:flex;align-items:center;padding:0 10px;font-size:12px;color:#A6B0BC;margin-top:10px}
+.chips{display:flex;gap:5px;margin-top:10px;flex-wrap:wrap}
+.chips a{font-size:11px;font-weight:800;color:var(--mute);border:1px solid var(--line);border-radius:12px;padding:4px 9px;background:#fff}
+.chips a.on{background:var(--acc-bg);border-color:var(--acc-bd);color:var(--acc-ink)}
+.gh{display:flex;align-items:center;gap:8px;font-size:9.5px;font-weight:900;letter-spacing:1.3px;color:#9AA5B4;padding:14px 6px 5px}
+.gh i{width:14px;height:14px;border-radius:4px;flex:none}
+.gh .n{margin-left:auto;font-weight:800;color:#B4BDC8}
+.gh .pl{color:#AAB4C1;font-size:14px;font-weight:900}
+.r{display:flex;align-items:center;gap:8px;font-size:12.5px;font-weight:600;color:var(--ink);padding:7px 8px;border-radius:8px}
+.r .d{width:6px;height:6px;border-radius:2px;background:#C6CED8;flex:none}
+.r.on{background:#fff;font-weight:800;color:var(--navy);box-shadow:0 1px 3px rgba(20,40,74,.09)}
+.r.on .d{background:var(--acc)}
+.r .st{margin-left:auto;font-size:11px;color:#E8A317}
+.r .tm{margin-left:auto;font-size:10.5px;color:#B4BDC8;font-weight:700}
+.railfoot{margin-top:auto;border-top:1px solid var(--line);padding-top:10px;font-size:11.5px;color:#9AA5B4;font-weight:700;display:flex;gap:10px}
+
+/* editor */
+.doc{flex:1;min-width:0;display:flex;flex-direction:column}
+.dhead{border-bottom:1px solid var(--line);padding:16px 30px 0}
+.crumb{display:flex;align-items:center;gap:8px;font-size:12px;color:#9AA5B4;font-weight:700}
+.crumb b{color:var(--mute)}
+.dtitle{display:flex;align-items:flex-start;gap:14px;margin-top:8px}
+.dtitle h2{font-size:31px;font-weight:900;color:var(--navy);letter-spacing:-.8px;flex:1}
+.acts{display:flex;gap:8px}
+.acts span{border:1px solid var(--line);border-radius:9px;padding:7px 11px;font-size:12px;font-weight:800;color:var(--mute);background:#fff}
+.acts .pri{background:var(--acc);border-color:var(--acc);color:#fff}
+.meta{display:flex;align-items:center;gap:10px;margin-top:9px;flex-wrap:wrap;font-size:12px;color:#9AA5B4;font-weight:700}
+.meta .sv{color:var(--grn)}
+.tag{font-size:11.5px;font-weight:800;border-radius:12px;padding:4px 10px}
+.tag.lib{background:var(--acc-bg);color:var(--acc-ink);border:1px solid var(--acc-bd)}
+.tag.pl{background:#EEF1F5;color:var(--mute)}
+.toolbar{display:flex;align-items:center;gap:4px;padding:10px 30px;border-bottom:1px solid var(--line);background:var(--soft);flex-wrap:wrap}
+.toolbar b{font-size:13px;font-weight:900;color:var(--mute);border-radius:7px;padding:6px 9px;background:#fff;border:1px solid var(--line)}
+.toolbar .sep{width:1px;height:20px;background:var(--line);margin:0 5px}
+.toolbar .ins{background:var(--amb-bg);border:1px solid var(--amb-bd);color:var(--amb);font-size:12px;font-weight:900;border-radius:8px;padding:6px 11px}
+.toolbar .lib{background:var(--acc-bg);border:1px solid var(--acc-bd);color:var(--acc-ink);font-size:12px;font-weight:900;border-radius:8px;padding:6px 11px;margin-left:auto}
+.dbody{flex:1;display:flex;min-width:0}
+.page{flex:1;padding:26px 30px 40px;min-width:0}
+.page .w{max-width:680px}
+.page h3{font-size:20px;font-weight:900;color:var(--navy);margin:22px 0 8px;letter-spacing:-.3px}
+.page h3:first-child{margin-top:0}
+.page p{font-size:15.5px;line-height:1.62}
+.page p b{font-weight:800;color:var(--navy)}
+.page ul{margin:8px 0 0 20px;font-size:15.5px;line-height:1.6}
+.page li{margin-bottom:5px}
+.hc{background:var(--amb-bg);border-radius:16px;padding:15px 20px 16px;margin:16px 0}
+.hc .lb{font-size:10.5px;font-weight:900;letter-spacing:1.4px;color:var(--amb);margin-bottom:6px}
+.hc p{font-size:15.5px;line-height:1.6}
+.chk{display:flex;align-items:flex-start;gap:10px;font-size:15.5px;line-height:1.5;margin-top:8px}
+.chk i{width:18px;height:18px;border-radius:5px;border:2px solid #B8C1CD;flex:none;margin-top:2px;background:#fff}
+.chk i.on{background:var(--acc);border-color:var(--acc)}
+/* right rail */
+.side{width:250px;flex:none;border-left:1px solid var(--line);padding:22px 18px;background:#fff}
+.side .k{font-size:9.5px;font-weight:900;letter-spacing:1.3px;color:#9AA5B4;margin-bottom:9px}
+.out a{display:block;font-size:12.5px;color:var(--mute);padding:5px 0 5px 10px;border-left:2px solid var(--line);font-weight:600}
+.out a.on{color:var(--acc-ink);border-left-color:var(--acc);font-weight:800}
+.side .box{margin-top:22px;border:1px solid var(--line);border-radius:12px;padding:12px 13px}
+.side .box .t{font-size:12.5px;font-weight:800;color:var(--navy)}
+.side .box .s{font-size:11.5px;color:#9AA5B4;margin-top:3px;font-weight:600}
+.side .box .go{font-size:11.5px;font-weight:800;color:var(--acc-ink);margin-top:8px;display:block}
+
+/* annotations */
+.pin{position:absolute;width:26px;height:26px;border-radius:50%;background:#D6336C;color:#fff;font-size:12.5px;font-weight:900;display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 3px #fff;z-index:20}
+.notes{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:28px}
+.nb{border:1px solid var(--line);border-radius:14px;padding:16px 18px}
+.nb b{display:flex;align-items:center;gap:9px;font-size:12px;font-weight:900;letter-spacing:1.1px;color:var(--navy);margin-bottom:7px}
+.nb b i{width:22px;height:22px;border-radius:50%;background:#D6336C;color:#fff;font-size:11.5px;font-style:normal;display:flex;align-items:center;justify-content:center}
+.nb p{font-size:14.5px;line-height:1.5;color:var(--mute)}
+.nb p em{font-style:normal;color:var(--navy);font-weight:800}
+h2.s{font-size:12.5px;font-weight:900;letter-spacing:2.4px;color:var(--acc-ink);margin-top:34px;padding-bottom:9px;border-bottom:2px solid var(--line)}
+</style></head><body>
+<div class="sheet" id="d">
+ <div class="tb"><i style="background:var(--acc)"></i><i style="background:var(--navy)"></i></div>
+ <div class="bh"><img src="logo.png" alt=""><b>PM&amp;R <span style="color:var(--acc)">Explained</span></b></div>
+ <h1 class="t">My Handbook — improved</h1>
+ <div class="dek">The library tree gave way to the <b>handbook's own index</b>, the note gained a <b>writing toolbar and an outline</b>, and every note can now be <b>linked to the library page it came from</b>. Pink circles are annotations, not part of the design.</div>
+
+ <div class="frame" style="position:relative">
+  <div class="nav">
+   <div class="r1"><div class="logo"><img src="logo.png" alt="">PM&amp;R <span>Explained</span></div>
+    <div class="srch">⌕&nbsp; Search conditions, exam maneuvers, calculators…</div>
+    <div class="ut"><span>🌐 EN ⌄</span><span>🔔</span><div class="av">CA</div></div></div>
+   <div class="r2"><span class="pl">▣ Explore library</span><span class="dv"></span><span class="pl">Clinical Tools</span><span class="pl">Study Planner</span><span class="on">✎ My Handbook</span><span class="pl">Flashcards</span><span class="pl">Question Bank</span><span class="pl">Courses</span></div>
+  </div>
+
+  <div class="body">
+   <div class="rail">
+    <div class="newbtn">＋ New page</div>
+    <div class="fd">⌕ Search your handbook…</div>
+    <div class="chips"><a class="on">All</a><a>★ Pinned</a><a>Recent</a><a>Shared</a></div>
+
+    <div class="gh"><i style="background:var(--acc-bg);border:1px solid var(--acc-bd)"></i>MY PAGES<span class="n">6</span><span class="pl">＋</span></div>
+    <div class="r on"><span class="d"></span>Lateral epicondylopathy<span class="st">★</span></div>
+    <div class="r"><span class="d"></span>Rotator cuff — my approach<span class="tm">2 d</span></div>
+    <div class="r"><span class="d"></span>Spasticity ladder<span class="tm">1 w</span></div>
+    <div class="r"><span class="d"></span>Cauda equina — checklist<span class="tm">3 w</span></div>
+
+    <div class="gh"><i style="background:var(--pur-bg);border:1px solid #D3CAEC"></i>MY PROTOCOLS<span class="n">4</span><span class="pl">＋</span></div>
+    <div class="r"><span class="d"></span>Lateral epicondylopathy rehab<span class="tm">1 mo</span></div>
+    <div class="r"><span class="d"></span>Post-op TKA · weeks 0–6<span class="tm">2 mo</span></div>
+
+    <div class="gh"><i style="background:var(--amb-bg);border:1px solid var(--amb-bd)"></i>TEMPLATES<span class="n">3</span><span class="pl">＋</span></div>
+    <div class="r"><span class="d"></span>Condition note</div>
+    <div class="r"><span class="d"></span>First consultation</div>
+    <div class="r"><span class="d"></span>Rehab protocol</div>
+
+    <div class="railfoot"><span>28 pages</span><span>·</span><span>Last sync 2 min ago</span></div>
+   </div>
+
+   <div class="doc">
+    <div class="dhead">
+     <div class="crumb">My Handbook <span>›</span> <b>My pages</b> <span>›</span> <b>Lateral epicondylopathy</b></div>
+     <div class="dtitle"><h2>Lateral epicondylopathy</h2>
+      <div class="acts"><span>⤓ Export</span><span>↗ Share</span><span class="pri">✎ Editing</span><span>⋯</span></div></div>
+     <div class="meta">
+      <span class="tag lib">🔗 Linked · MSK › Elbow › Lateral epicondylopathy</span>
+      <span class="tag pl">elbow</span><span class="tag pl">tendinopathy</span><span class="tag pl">+ tag</span>
+      <span>·</span><span>Edited 1 month ago</span><span>·</span><span class="sv">✓ Saved</span><span>·</span><span>720 words · 4 min</span>
+     </div>
+     <div style="height:14px"></div>
+    </div>
+
+    <div class="toolbar">
+     <b>H1</b><b>H2</b><b>H3</b><span class="sep"></span><b>B</b><b>I</b><b>U</b><span class="sep"></span><b>• List</b><b>1. List</b><b>☑ Tasks</b><span class="sep"></span><b>▦ Table</b><b>⧉ Image</b><b>🔗 Link</b>
+     <span class="ins">＋ Insert card</span>
+     <span class="lib">＋ Pull from library</span>
+    </div>
+
+    <div class="dbody">
+     <div class="page"><div class="w">
+      <h3>Overview</h3>
+      <p>Lateral epicondylopathy ("tennis elbow") is an overuse tendinopathy of the common extensor origin, predominantly involving the <b>extensor carpi radialis brevis (ECRB)</b> tendon at the lateral epicondyle. Peak incidence is age 35–54; common in racquet sports and repetitive gripping or wrist-extension work.</p>
+
+      <div class="hc"><div class="lb">MY PEARL</div>
+       <p>If there is <b>night pain or true neurological symptoms</b>, stop and rethink — this is not tennis elbow until proven otherwise.</p></div>
+
+      <h3>Presentation</h3>
+      <ul>
+       <li>Insidious lateral elbow pain, worse with gripping or lifting with the elbow extended</li>
+       <li>Pain shaking hands, turning a doorknob, or on a backhand stroke</li>
+       <li>No true neurological symptoms — numbness or tingling should prompt reconsidering the diagnosis</li>
+      </ul>
+
+      <h3>Exam findings</h3>
+      <div class="chk"><i class="on"></i><span>Point tenderness ~1 cm distal and anterior to the lateral epicondyle, over the ECRB origin</span></div>
+      <div class="chk"><i class="on"></i><span>Pain reproduced with resisted wrist extension (elbow extended, forearm pronated)</span></div>
+      <div class="chk"><i></i><span>Cozen's test and Mill's test</span></div>
+      <div class="chk"><i></i><span>Grip strength with a dynamometer, both sides, at baseline</span></div>
+
+      <h3>Working diagnosis</h3>
+      <p>Clinical diagnosis — imaging (ultrasound or MRI) is reserved for atypical presentations, suspected tear, or failure to progress after a full course of conservative management.</p>
+     </div></div>
+
+     <div class="side">
+      <div class="k">ON THIS PAGE</div>
+      <div class="out">
+       <a class="on">Overview</a><a>Presentation</a><a>Exam findings</a><a>Working diagnosis</a><a>Management</a><a>What I tell patients</a>
+      </div>
+      <div class="box"><div class="t">🔗 From the library</div>
+       <div class="s">Lateral epicondylopathy — reviewed Aug 2026</div>
+       <span class="go">Open the source page ›</span></div>
+      <div class="box"><div class="t">Linked from</div>
+       <div class="s">Lateral epicondylopathy rehab protocol</div>
+       <div class="s">Elbow — clinic checklist</div></div>
+      <div class="box" style="background:var(--soft)"><div class="t">Templates</div>
+       <div class="s">This page uses <b>Condition note</b></div>
+       <span class="go">Save as template ›</span></div>
+     </div>
+    </div>
+   </div>
+  </div>
+
+ </div>
+
+ <div class="notes">
+  <div class="nb"><b><i>1</i>THE RAIL IS THE HANDBOOK</b><p>The library tree is gone from this page — it navigated somewhere else entirely. In its place: <em>New page</em>, search, filters (pinned, recent, shared) and the three folders with counts.</p></div>
+  <div class="nb"><b><i>2</i>A REAL PAGE HEADER</b><p>Breadcrumb, title, and actions that were hidden behind two small icons: <em>Export, Share, Editing/Reading toggle</em> and an overflow menu.</p></div>
+  <div class="nb"><b><i>3</i>LINKED TO THE LIBRARY</b><p>A note can name the page it came from. Tags sit beside it, with word count and reading time — so a long protocol shows its length before you open it.</p></div>
+  <div class="nb"><b><i>4</i>A WRITING TOOLBAR</b><p>Headings, lists, tasks, tables, images — plus <em>Insert card</em> for the highlight blocks used across the platform, so notes look like the rest of the site.</p></div>
+  <div class="nb"><b><i>5</i>OUTLINE AND BACKLINKS</b><p>The note's own headings on the right, what it is <em>linked from</em>, and the template it uses. Long protocols become navigable instead of a scroll.</p></div>
+  <div class="nb"><b><i>6</i>PULL FROM THE LIBRARY</b><p>The feature that makes a handbook worth keeping: <em>quote a section, a pearl or a calculator result</em> straight into your note, with the source attached.</p></div>
+ </div>
+</div>
+
+<script>
+const targets=[['.newbtn',1,'left'],['.acts',2,'left'],['.tag.lib',3,'left'],
+ ['.toolbar .ins',4,'left'],['.out',5,'left'],['.toolbar .lib',6,'left']];
+const frame=document.querySelector('.frame');
+const fr=frame.getBoundingClientRect();
+targets.forEach(([sel,n])=>{
+  const el=document.querySelector(sel); if(!el) return;
+  const r=el.getBoundingClientRect();
+  const p=document.createElement('div'); p.className='pin'; p.textContent=n;
+  p.style.left=(r.left-fr.left-14)+'px';
+  p.style.top=(r.top-fr.top-12)+'px';
+  frame.appendChild(p);
+});
+</script>
+</body></html>

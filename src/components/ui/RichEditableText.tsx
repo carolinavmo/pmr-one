@@ -1,6 +1,6 @@
 "use client";
 
-import { createElement, useEffect, useRef, useState, type ElementType } from "react";
+import { createElement, forwardRef, useEffect, useImperativeHandle, useRef, useState, type ElementType } from "react";
 import {
   Bold,
   Italic,
@@ -84,6 +84,26 @@ interface RichEditableTextProps {
   // stays translation-agnostic like every other label here; a caller
   // that cares about locale (AtlasEditor) passes its own t() string.
   saveLabel?: string;
+  // Fires on every keystroke/DOM mutation while editing (raw, not
+  // debounced) — My Handbook's own debounced-autosave-with-visible-
+  // state policy (AtlasEditor.tsx) owns the timing; this component
+  // stays a dumb "here's the current HTML" signal. Every other caller
+  // omits it and keeps the existing blur-only commit unchanged.
+  onChange?: (html: string) => void;
+}
+
+// Imperative escape hatch for a caller that needs to insert a whole
+// DOM node (a heading, a task item, a table skeleton, an image, a
+// platform card) at the current cursor position — none of that is
+// expressible as a prop, and this component's own toolbar only ever
+// formats the existing selection or inserts plain characters
+// (insertSymbol). Exposed rather than adding 6+ more toolbar buttons
+// into the already-crowded compact toolbar's three parallel JSX
+// blocks (narrow-flyout / wide-row / non-compact) — AtlasToolbar.tsx
+// renders its own row of buttons that call `insertNode` on this
+// handle instead.
+export interface RichEditableTextHandle {
+  insertNode: (node: Node) => void;
 }
 
 // Raw <ul>/<ol>/<blockquote> tags (inserted via execCommand, so they
@@ -98,8 +118,25 @@ interface RichEditableTextProps {
 // force every level (indent/outdent, execCommand("indent"), can nest
 // arbitrarily deep) to the same disc marker, which is how a plain
 // `list-style` reset normally reads as "flat" even once nesting works.
+// h1-h3/p/table styling added for AtlasToolbar.tsx's headings/table
+// insertions (My Handbook only — every other caller's content simply
+// never contains these tags, so this is additive/inert elsewhere).
+// The task-checkbox glyph (`[data-checked]`) uses the exact same
+// `content:` pseudo-element technique the placeholder below already
+// established (`empty:before:content-[attr(data-placeholder)]`) —
+// ☐/☑ swapped via the attribute's own value, no JS-rendered icon.
 const PROSE_CONTENT_CLASS =
-  "[&_ul]:list-disc [&_ul]:pl-5 [&_ul_ul]:list-[circle] [&_ul_ul_ul]:list-[square] [&_ol]:list-decimal [&_ol]:pl-5 [&_li]:my-0.5 [&_blockquote]:border-l-2 [&_blockquote]:border-border [&_blockquote]:pl-3 [&_blockquote]:italic [&_blockquote]:text-secondary";
+  "[&_ul]:list-disc [&_ul]:pl-5 [&_ul_ul]:list-[circle] [&_ul_ul_ul]:list-[square] [&_ol]:list-decimal [&_ol]:pl-5 [&_li]:my-0.5 [&_blockquote]:border-l-2 [&_blockquote]:border-border [&_blockquote]:pl-3 [&_blockquote]:italic [&_blockquote]:text-secondary" +
+  " [&_h1]:font-heading [&_h1]:text-2xl [&_h1]:font-black [&_h1]:text-navy [&_h1]:mt-5 [&_h1]:mb-2" +
+  " [&_h2]:font-heading [&_h2]:text-xl [&_h2]:font-black [&_h2]:text-navy [&_h2]:mt-4 [&_h2]:mb-2" +
+  " [&_h3]:font-heading [&_h3]:text-lg [&_h3]:font-black [&_h3]:text-navy [&_h3]:mt-3 [&_h3]:mb-1.5" +
+  " [&_p]:my-2 [&_p:first-child]:mt-0" +
+  " [&_table]:w-full [&_table]:border-collapse [&_table]:my-3 [&_th]:border [&_th]:border-border [&_th]:bg-surface-sunken [&_th]:p-2 [&_th]:text-left [&_th]:font-bold [&_td]:border [&_td]:border-border [&_td]:p-2 [&_td]:align-top" +
+  " [&_img]:my-3 [&_img]:max-w-full [&_img]:rounded-lg" +
+  " [&_[data-checked]]:relative [&_[data-checked]]:block [&_[data-checked]]:cursor-pointer [&_[data-checked]]:py-0.5 [&_[data-checked]]:pl-6" +
+  " [&_[data-checked]]:before:absolute [&_[data-checked]]:before:left-0 [&_[data-checked]]:before:top-0.5" +
+  " [&_[data-checked='false']]:before:content-['☐'] [&_[data-checked='false']]:before:text-secondary" +
+  " [&_[data-checked='true']]:before:content-['☑'] [&_[data-checked='true']]:before:text-accent [&_[data-checked='true']]:line-through [&_[data-checked='true']]:text-secondary";
 
 const SAFE_URL_PATTERN = /^https?:\/\//i;
 
@@ -162,7 +199,7 @@ const SYMBOLS = [
 // with a *different* __html value while editing, which is what keeps
 // React from stomping the user's cursor/selection mid-edit (the
 // standard hazard of mixing contentEditable with a virtual DOM).
-export function RichEditableText({
+export const RichEditableText = forwardRef<RichEditableTextHandle, RichEditableTextProps>(function RichEditableText({
   value,
   onSave,
   as: Tag = "p",
@@ -174,7 +211,8 @@ export function RichEditableText({
   autoEdit = false,
   compact = false,
   saveLabel = "Save",
-}: RichEditableTextProps) {
+  onChange,
+}, ref) {
   const { editing: editModeOn } = useEditMode();
   const [isEditing, setIsEditing] = useState(autoEdit);
   const [popover, setPopover] = useState<"size" | "color" | "bg" | "symbols" | "link" | null>(null);
@@ -197,6 +235,50 @@ export function RichEditableText({
   // it's a sub-step of the same edit. This flag tells onBlur to
   // stand down for that one, expected blur.
   const suppressBlurRef = useRef(false);
+
+  // insertNode: reuses the exact Range-surgery shape confirmLink already
+  // uses for a real selection (deleteContents → insertNode → collapse
+  // the caret after it) — the collapsed-selection case (no prior click
+  // inside the field, e.g. right after autoEdit mounts) falls back to
+  // "the end of the content" via selectNodeContents+collapse(false),
+  // same fallback `insertSymbol` doesn't need (it never runs before a
+  // real edit session starts) but a toolbar button external to this
+  // component genuinely can hit.
+  useImperativeHandle(
+    ref,
+    () => ({
+      insertNode(node: Node) {
+        const el = editableRef.current;
+        if (!el) return;
+        el.focus();
+        const selection = window.getSelection();
+        let range: Range;
+        if (selection && selection.rangeCount > 0 && el.contains(selection.getRangeAt(0).commonAncestorContainer)) {
+          range = selection.getRangeAt(0);
+        } else {
+          range = document.createRange();
+          range.selectNodeContents(el);
+          range.collapse(false);
+        }
+        range.deleteContents();
+        // A DocumentFragment is emptied on insert — its children move
+        // into the tree and the fragment itself is left childless and
+        // parentless, so setStartAfter(node) on the fragment throws
+        // InvalidNodeTypeError. Anchor on its last child (captured
+        // before insertion moves it) instead; a plain node anchors on
+        // itself as before.
+        const anchor = node.nodeType === Node.DOCUMENT_FRAGMENT_NODE ? node.lastChild : node;
+        range.insertNode(node);
+        if (anchor) {
+          range.setStartAfter(anchor);
+          range.collapse(true);
+        }
+        selection?.removeAllRanges();
+        selection?.addRange(range);
+      },
+    }),
+    []
+  );
 
   // React's `autoFocus` prop doesn't reliably focus a contentEditable
   // element (unlike a plain `<input>`/`<textarea>`, which is why
@@ -1422,6 +1504,21 @@ export function RichEditableText({
         contentEditable: true,
         suppressContentEditableWarning: true,
         onBlur: commit,
+        onInput: () => onChange?.(editableRef.current?.innerHTML ?? ""),
+        // A task item (AtlasToolbar.tsx's Tasks button, `data-checked`
+        // divs) toggles on click anywhere in its row rather than needing
+        // a real `<input type="checkbox">` — see rich-text.ts's own
+        // comment on why a raw `<input>` isn't in the sanitizer's
+        // vocabulary. `onInput` doesn't fire for an attribute mutation
+        // like this (it's not a text-input event), so the toggle calls
+        // onChange itself to feed the same autosave signal.
+        onClickCapture: (e: React.MouseEvent) => {
+          const target = (e.target as HTMLElement).closest("[data-checked]");
+          if (!target) return;
+          const next = target.getAttribute("data-checked") !== "true";
+          target.setAttribute("data-checked", String(next));
+          onChange?.(editableRef.current?.innerHTML ?? "");
+        },
         onKeyDown: (e: React.KeyboardEvent) => {
           if (e.key === "Enter" && !isWithinList()) {
             e.preventDefault();
@@ -1450,4 +1547,4 @@ export function RichEditableText({
       })}
     </div>
   );
-}
+});

@@ -14,7 +14,10 @@ import {
   renamePageAction,
   movePageAction,
   reorderPagesAction,
+  togglePagePinnedAction,
   deletePageAction,
+  updatePageTagsAction,
+  setPageLinkedDiseaseAction,
 } from "@/lib/actions/atlas";
 import { AtlasIndex } from "./AtlasIndex";
 import { AtlasEditor } from "./AtlasEditor";
@@ -77,8 +80,8 @@ export function AtlasWorkspace({
     await deleteSectionAction(sectionId);
   }
 
-  async function handleCreatePage(sectionId: string) {
-    const page = await createPageAction(sectionId, t("untitledPage"));
+  async function handleCreatePage(sectionId: string, templatePageId?: string) {
+    const page = await createPageAction(sectionId, t("untitledPage"), templatePageId);
     setPages((prev) => [...prev, page]);
     setSelectedPageId(page.id);
   }
@@ -126,8 +129,38 @@ export function AtlasWorkspace({
     await deletePageAction(pageId);
   }
 
+  // Optimistic — the star should flip the instant it's clicked, not
+  // wait on a round trip, same "patch local state, let the action
+  // confirm in the background" shape every other handler here uses.
+  async function handleTogglePinned(pageId: string) {
+    setPages((prev) => prev.map((p) => (p.id === pageId ? { ...p, isPinned: !p.isPinned } : p)));
+    await togglePagePinnedAction(pageId);
+  }
+
+  async function handleUpdateTags(pageId: string, tags: string[]) {
+    setPages((prev) => prev.map((p) => (p.id === pageId ? { ...p, tags } : p)));
+    await updatePageTagsAction(pageId, tags);
+  }
+
+  async function handleSetLinkedDisease(pageId: string, diseaseId: string | null) {
+    setPages((prev) => prev.map((p) => (p.id === pageId ? { ...p, linkedDiseaseId: diseaseId } : p)));
+    await setPageLinkedDiseaseAction(pageId, diseaseId);
+  }
+
+  // "Save as template" (Pass 4) already performed its own write
+  // server-side (AtlasPageHeader.tsx's ⋯ menu calls the action
+  // directly, since it needs the real created row back) — this just
+  // folds the resulting new page into workspace state, same as
+  // handleCreatePage does for an ordinary new page.
+  function handleSavedAsTemplate(page: AtlasPage) {
+    setPages((prev) => [...prev, page]);
+  }
+
   return (
-    <div className="flex flex-1 flex-col gap-6 lg:flex-row lg:gap-0">
+    // HANDBOOK-SPEC.md's three columns: index rail 268px, editor
+    // (fluid, text capped at 680px), context rail 250px — stacked
+    // below `lg` the same way the previous two-column layout was.
+    <div className="flex min-h-0 flex-1 flex-col gap-6 lg:flex-row lg:gap-0">
       <AtlasIndex
         sections={sections}
         pages={pages}
@@ -140,14 +173,20 @@ export function AtlasWorkspace({
         onReorderSections={handleReorderSections}
         onCreatePage={handleCreatePage}
         onReorderPages={handleReorderPages}
+        onTogglePinned={handleTogglePinned}
       />
       <AtlasEditor
         page={selectedPage}
         sections={sections}
+        pages={pages}
         onRenamePage={handleRenamePage}
         onMovePage={handleMovePage}
         onDeletePage={handleDeletePage}
         onBodySaved={handleBodySaved}
+        onUpdateTags={handleUpdateTags}
+        onSetLinkedDisease={handleSetLinkedDisease}
+        onSavedAsTemplate={handleSavedAsTemplate}
+        onNavigateToPage={setSelectedPageId}
       />
     </div>
   );

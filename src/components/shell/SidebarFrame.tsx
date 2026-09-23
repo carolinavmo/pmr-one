@@ -69,6 +69,7 @@ export function SidebarFrame({
   const pathname = usePathname();
   const signedOut = !(userEmail || userName);
   const isClinicalTools = pathname.startsWith("/clinical-tools");
+  const isMyHandbook = pathname.startsWith("/my-atlas");
 
   // The sidebar now sits in a row below TopBar (the brand wordmark
   // moved there) rather than spanning the full viewport height itself,
@@ -95,6 +96,14 @@ export function SidebarFrame({
   // and every signed-in visitor, still gets the persistent sidebar.
   // Below every hook so this early return never changes hook order.
   if (signedOut && pathname === "/") {
+    return null;
+  }
+  // HANDBOOK-SPEC.md: "The library tree does not appear on this route
+  // at all — the rail is the handbook's own index." Unlike
+  // /clinical-tools (which swaps in a different sidebar), My Handbook
+  // has no sidebar slot at all — its own 268px index rail lives inside
+  // the page content itself.
+  if (isMyHandbook) {
     return null;
   }
 
