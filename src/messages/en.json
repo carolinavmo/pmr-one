@@ -647,7 +647,8 @@
     "addFirstTopic": "Add my first topic",
     "buildADeck": "Build a deck",
     "pageSubtitleLibrary": "Spaced repetition, built from the library.",
-    "fromTheLibraryRailHeading": "From the library"
+    "fromTheLibraryRailHeading": "From the library",
+    "manageTopicLabel": "Manage {name}"
   },
   "courses": {
     "pageTitle": "Courses",

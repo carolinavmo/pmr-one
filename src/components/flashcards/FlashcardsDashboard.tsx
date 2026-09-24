@@ -164,7 +164,7 @@ export function FlashcardsDashboard({
             (FLASHCARDS-DASHBOARD-STATES.md rule 5) — always rendered
             when there's anything to add, first visit or not. */}
         <div id="add-from-library" className="scroll-mt-6">
-          <AddFromLibrary topics={libraryTopics} isSignedIn={isSignedIn} />
+          <AddFromLibrary topics={libraryTopics} isSignedIn={isSignedIn} isEditor={isEditor} />
         </div>
 
         {/* Scroll target for the "My decks" virtual tile above — these

@@ -647,7 +647,8 @@
     "addFirstTopic": "Añadir mi primer tema",
     "buildADeck": "Crear un mazo",
     "pageSubtitleLibrary": "Repetición espaciada, creada a partir de la biblioteca.",
-    "fromTheLibraryRailHeading": "Desde la biblioteca"
+    "fromTheLibraryRailHeading": "Desde la biblioteca",
+    "manageTopicLabel": "Gestionar {name}"
   },
   "courses": {
     "pageTitle": "Cursos",

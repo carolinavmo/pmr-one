@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useTranslations } from "next-intl";
-import { Loader2 } from "lucide-react";
+import { Loader2, Settings } from "lucide-react";
 import { Link } from "@/i18n/navigation";
 import type { LibraryTopic } from "@/lib/flashcards";
 import { addLibraryTopicAction, undoAddLibraryTopicAction } from "@/lib/actions/flashcards";
@@ -20,7 +20,7 @@ const SNACKBAR_MS = 10_000;
 // a deck-of-cards stack per system topic, not yet copied into the
 // user's own account. Owns the optimistic add/undo flow itself since
 // nothing else on the dashboard needs it.
-export function AddFromLibrary({ topics, isSignedIn }: { topics: LibraryTopic[]; isSignedIn: boolean }) {
+export function AddFromLibrary({ topics, isSignedIn, isEditor }: { topics: LibraryTopic[]; isSignedIn: boolean; isEditor: boolean }) {
   const t = useTranslations("flashcards");
   const [addedIds, setAddedIds] = useState<Set<string>>(new Set());
   const [addingId, setAddingId] = useState<string | null>(null);
@@ -70,6 +70,7 @@ export function AddFromLibrary({ topics, isSignedIn }: { topics: LibraryTopic[];
             key={topic.id}
             topic={topic}
             isSignedIn={isSignedIn}
+            isEditor={isEditor}
             isAdded={topic.isAdded || addedIds.has(topic.id)}
             isAdding={addingId === topic.id}
             onAdd={() => handleAdd(topic)}
@@ -106,12 +107,14 @@ export function AddFromLibrary({ topics, isSignedIn }: { topics: LibraryTopic[];
 function LibraryTopicCard({
   topic,
   isSignedIn,
+  isEditor,
   isAdded,
   isAdding,
   onAdd,
 }: {
   topic: LibraryTopic;
   isSignedIn: boolean;
+  isEditor: boolean;
   isAdded: boolean;
   isAdding: boolean;
   onAdd: () => void;
@@ -138,10 +141,28 @@ function LibraryTopicCard({
             {t("cardCount", { count: topic.cardCount })}
           </span>
         )}
-
-        <h3 id={`library-topic-${topic.id}`} className="font-heading text-base font-black text-navy">
-          {topic.name}
-        </h3>
+        <div className="flex items-start justify-between gap-2">
+          <h3 id={`library-topic-${topic.id}`} className="font-heading text-base font-black text-navy">
+            {topic.name}
+          </h3>
+          {isEditor && (
+            // The card itself is deliberately not a link
+            // (FLASHCARDS-ADD-TOPIC-IMPLEMENTATION.md rule 5: "do not
+            // make the card clickable, or people will add topics by
+            // accident") — this is the "secondary Preview text
+            // button" the doc allows for, scoped to editors
+            // specifically since it's the only remaining path to the
+            // real system topic's Settings/Manage-cards pages now
+            // that it's not auto-listed in "Your topics".
+            <Link
+              href={`/flashcards/category/${topic.id}`}
+              aria-label={t("manageTopicLabel", { name: topic.name })}
+              className="flex size-6 shrink-0 items-center justify-center rounded-full text-secondary hover:text-primary"
+            >
+              <Settings className="size-3.5" aria-hidden="true" />
+            </Link>
+          )}
+        </div>
         <p className="mt-1 font-ui text-xs font-bold text-secondary">
           {isComingSoon ? t("comingSoon") : t("deckCount", { count: topic.deckCount })}
         </p>
