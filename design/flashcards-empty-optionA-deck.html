@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8">
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--navy:#14284A;--ink:#27344A;--mute:#5E6B80;--line:#D9DFE8;--soft:#F7F9FB;
+ --acc:#0E9BA6;--acc-ink:#0A7680;--acc-bg:#E1F4F5;--acc-bd:#B5E0E3;--acc-dk:#7FD3DA;
+ --new:#E8564B;--kn:#4FBF86;--gold:#E8A317;--red:#B8262B;--grn:#1F7A4D}
+[data-colour="orange"]{--topic:#FF8A3D;--topic-bg:#FFF1E4;--topic-bd:#FFD6B8}
+[data-colour="pink"]{--topic:#F0569A;--topic-bg:#FFEAF3;--topic-bd:#FFC6DD}
+[data-colour="violet"]{--topic:#7B61FF;--topic-bg:#F0ECFF;--topic-bd:#D6CCFF}
+[data-colour="mint"]{--topic:#17BF9A;--topic-bg:#E1FBF4;--topic-bd:#B3F0E1}
+[data-colour="sky"]{--topic:#2EA8FF;--topic-bg:#E6F4FF;--topic-bd:#BCE0FF}
+[data-colour="sunny"]{--topic:#FFC53D;--topic-bg:#FFF7E0;--topic-bd:#F7E3AE}
+[data-colour="coral"]{--topic:#FF6B6B;--topic-bg:#FFECEC;--topic-bd:#FFC9C9}
+[data-colour="lime"]{--topic:#9BD24A;--topic-bg:#F1FAE2;--topic-bd:#D8EDB4}
+body{font-family:'Roboto','Noto Sans CJK JP',sans-serif;color:var(--ink);background:#E9EDF1}
+.sheet{width:1600px;background:#fff;border-radius:14px;box-shadow:0 24px 64px rgba(20,40,74,.2);margin:0 auto 32px;padding:34px 38px 42px;position:relative;overflow:hidden}
+.tb{position:absolute;left:0;right:0;top:0;height:7px;display:flex}.tb i{flex:1}
+.bh{display:flex;align-items:center;gap:12px}.bh img{height:34px}.bh b{font-size:20px;font-weight:900;color:var(--navy)}
+h1.t{font-size:32px;font-weight:900;color:var(--navy);letter-spacing:-1px;margin-top:9px}
+.dek{font-size:16px;color:var(--mute);margin-top:6px;line-height:1.45;max-width:1150px}
+.dek b{color:var(--navy)}
+.frame{margin-top:18px;border:1px solid var(--line);border-radius:14px;overflow:hidden;box-shadow:0 10px 30px rgba(20,40,74,.10)}
+.nav{background:var(--navy);padding:11px 18px 9px}
+.nav .r1{display:flex;align-items:center;gap:14px}
+.nav .logo{display:flex;align-items:center;gap:8px;color:#fff;font-size:16px;font-weight:900}
+.nav .logo img{height:24px}.nav .logo span{color:var(--acc)}
+.nav .srch{flex:1;max-width:420px;margin:0 auto;height:30px;border-radius:15px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.18);display:flex;align-items:center;padding:0 13px;font-size:11.5px;color:#9DB0CA}
+.nav .ut{display:flex;align-items:center;gap:11px;color:#C2D2E6;font-size:11.5px;font-weight:700}
+.nav .av{width:26px;height:26px;border-radius:50%;background:var(--acc);color:#fff;font-size:10px;font-weight:900;display:flex;align-items:center;justify-content:center}
+.nav .r2{display:flex;align-items:center;gap:5px;margin-top:9px}
+.nav .pl{color:#C2D2E6;font-size:11.5px;font-weight:700;padding:5px 9px}
+.nav .on{border:2px solid var(--acc);background:rgba(14,155,166,.18);color:#fff;font-size:12px;font-weight:900;padding:4px 12px;border-radius:15px}
+.nav .dv{width:1px;height:17px;background:rgba(255,255,255,.2);margin:0 5px}
+.body{display:flex;min-height:840px}
+.rail{width:246px;flex:none;background:var(--soft);border-right:1px solid var(--line);padding:13px 10px;display:flex;flex-direction:column}
+.newbtn{background:var(--navy);color:#fff;border-radius:10px;padding:10px;font-size:13px;font-weight:800;text-align:center}
+.fd{height:30px;background:#fff;border:1px solid var(--line);border-radius:9px;display:flex;align-items:center;padding:0 10px;font-size:11.5px;color:#A6B0BC;margin-top:9px}
+.g{font-size:9px;font-weight:900;letter-spacing:1.3px;color:#9AA5B4;padding:13px 7px 5px;display:flex}
+.g .pl{margin-left:auto;color:#AAB4C1;font-size:13px}
+.r{display:flex;align-items:center;gap:9px;font-size:12.5px;font-weight:700;color:var(--ink);padding:6px 8px;border-radius:8px}
+.r i{width:9px;height:9px;border-radius:3px;flex:none}
+.r .n{margin-left:auto;font-size:10.5px;font-weight:800;color:#9AA5B4}
+.r .due{margin-left:auto;font-size:10.5px;font-weight:900;color:#fff;background:var(--red);border-radius:10px;padding:2px 7px}
+.r.on{background:var(--acc-bg);color:var(--acc-ink);font-weight:800}
+.r.mut{color:#AAB4C1;font-weight:600}
+.railfoot{margin-top:auto;border-top:1px solid var(--line);padding-top:9px;font-size:11px;color:#9AA5B4;font-weight:700}
+.main{flex:1;min-width:0;padding:24px 28px 36px}
+.hd h2{font-size:30px;font-weight:900;color:var(--navy);letter-spacing:-1px}
+.hd p{font-size:14.5px;color:var(--mute);margin-top:4px}
+/* start panel */
+.start{background:var(--navy);border-radius:16px;padding:22px 26px;margin-top:16px;display:flex;align-items:center;gap:20px}
+.start .k{font-size:10px;font-weight:900;letter-spacing:1.5px;color:var(--acc-dk)}
+.start h3{font-size:27px;font-weight:900;color:#fff;letter-spacing:-.7px;margin-top:4px}
+.start p{font-size:14px;color:#9DB0CA;margin-top:7px;line-height:1.45;max-width:560px}
+.start .l{flex:1}
+.start .btn{background:var(--acc);color:#fff;font-size:15px;font-weight:900;border-radius:11px;padding:13px 22px;white-space:nowrap}
+.start .btn2{border:1px solid rgba(255,255,255,.28);color:#fff;font-size:12.5px;font-weight:800;border-radius:10px;padding:12px 16px;white-space:nowrap}
+.sh{display:flex;align-items:baseline;gap:10px;margin-top:24px;margin-bottom:12px}
+.sh h4{font-size:17px;font-weight:900;color:var(--navy)}
+.sh span{font-size:12px;color:#9AA5B4;font-weight:700}
+.sh a{margin-left:auto;font-size:12px;font-weight:800;color:var(--acc-ink)}
+/* library topic tiles */
+.tiles{display:grid;grid-template-columns:repeat(4,1fr);gap:13px}
+.lt{border:2px solid var(--topic-bd);background:var(--topic-bg);border-radius:16px;padding:15px 15px 14px;position:relative}
+.lt .ic{width:38px;height:38px;border-radius:12px;background:var(--topic);display:flex;align-items:center;justify-content:center;color:#fff;font-size:17px;font-weight:900}
+.lt b{display:block;font-size:16px;font-weight:900;color:var(--navy);margin-top:11px;letter-spacing:-.3px;line-height:1.15}
+.lt .s{font-size:11.5px;color:#9AA5B4;font-weight:700;margin-top:4px}
+.lt .ex{font-size:12px;color:var(--mute);font-weight:600;margin-top:8px;line-height:1.35}
+.lt .add{margin-top:12px;display:block;text-align:center;background:#fff;border:1.5px solid var(--topic);color:var(--topic);font-size:13px;font-weight:900;border-radius:10px;padding:9px 0}
+.lt .added{margin-top:12px;display:block;text-align:center;background:var(--topic);color:#fff;font-size:13px;font-weight:900;border-radius:10px;padding:9px 0}
+/* started tile */
+.tile{border:2px solid var(--topic-bd);background:var(--topic-bg);border-radius:18px;padding:16px 14px 15px;text-align:center}
+.ring{width:84px;height:84px;border-radius:50%;margin:0 auto;display:flex;align-items:center;justify-content:center;position:relative;background:conic-gradient(var(--topic) var(--pct),var(--topic-bd) 0)}
+.ring::after{content:"";position:absolute;width:64px;height:64px;border-radius:50%;background:#fff}
+.ring em{position:relative;z-index:2;font-style:normal;font-size:19px;font-weight:900;color:var(--navy)}
+.ring em small{display:block;font-size:8.5px;font-weight:900;letter-spacing:1px;color:#9AA5B4}
+.tile b{display:block;font-size:15.5px;font-weight:900;color:var(--navy);margin-top:10px}
+.tile .s{font-size:11px;color:#9AA5B4;font-weight:700;margin-top:3px}
+.tile .st{display:flex;gap:4px;justify-content:center;margin-top:9px}
+.tile .st i{height:6px;border-radius:3px;display:block}
+.tile .dd{display:inline-block;margin-top:10px;font-size:11px;font-weight:900;color:#fff;background:var(--topic);border-radius:11px;padding:4px 11px}
+.tile .dd.ok{background:#fff;color:var(--grn);border:1px solid #BFE3D0}
+.hint{font-size:13px;color:#9AA5B4;font-weight:700;margin-top:12px}
+.notes{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:24px}
+.nb{border:1px solid var(--line);border-radius:14px;padding:15px 17px}
+.nb b{display:block;font-size:12px;font-weight:900;letter-spacing:1.1px;color:var(--navy);margin-bottom:6px}
+.nb p{font-size:14px;line-height:1.5;color:var(--mute)}
+.nb p em{font-style:normal;color:var(--navy);font-weight:800}
+
+/* option 3 — deck of cards */
+.w3{position:relative;padding-top:10px}
+.w3 .e1,.w3 .e2{position:absolute;border-radius:15px;border:2px solid var(--topic-bd);background:#fff}
+.w3 .e1{top:0;left:12px;right:12px;height:30px;opacity:.6}
+.w3 .e2{top:5px;left:6px;right:6px;height:30px;opacity:.85}
+.c3{position:relative;border:2px solid var(--topic-bd);background:var(--topic-bg);border-radius:16px;padding:15px}
+.c3 .cnt{position:absolute;top:-11px;right:12px;background:var(--topic);color:#fff;font-size:11px;font-weight:900;border-radius:11px;padding:4px 10px}
+.c3 .name{font-size:16px;font-weight:900;color:var(--navy);letter-spacing:-.3px;line-height:1.15}
+.c3 .sub{font-size:11.5px;color:#9AA5B4;font-weight:700;margin-top:4px}
+.c3 .ex{font-size:12px;color:var(--mute);font-weight:600;margin-top:8px;line-height:1.35;min-height:32px}
+.c3 .add{display:block;text-align:center;background:#fff;border:1.5px solid var(--topic);color:var(--topic);font-size:13px;font-weight:900;border-radius:10px;padding:9px 0;margin-top:12px}
+/* option 6 — colour block */
+.c6{background:var(--topic);border-radius:16px;padding:16px 16px 15px;color:#fff}
+.c6 .big{font-size:34px;font-weight:900;letter-spacing:-1.1px;line-height:1}
+.c6 .big small{font-size:13px;font-weight:800;opacity:.85;margin-left:6px}
+.c6 .name{font-size:16.5px;font-weight:900;margin-top:9px;letter-spacing:-.3px;line-height:1.15}
+.c6 .sub{font-size:11.5px;color:rgba(255,255,255,.82);font-weight:700;margin-top:4px}
+.c6 .ex{font-size:12px;color:rgba(255,255,255,.85);font-weight:600;margin-top:8px;line-height:1.35;min-height:32px}
+.c6 .addw{display:block;text-align:center;background:#fff;color:var(--topic);font-size:13px;font-weight:900;border-radius:10px;padding:10px 0;margin-top:12px}
+</style></head><body>
+
+
+<div class="sheet" id="oA">
+ <div class="tb"><i style="background:#FF8A3D"></i><i style="background:#7B61FF"></i><i style="background:#17BF9A"></i><i style="background:#2EA8FF"></i></div>
+ <div class="bh"><img src="logo.png" alt=""><b>PM&amp;R <span style="color:var(--acc)">Explained</span></b></div>
+ <h1 class="t">Option 3 — deck of cards</h1>
+ <div class="dek">The first-visit dashboard, with each library topic as a <b>stack of cards</b>: pale tint, the count on the corner, and an outlined Add.</div>
+
+ <div class="frame">
+  <div class="nav">
+   <div class="r1"><div class="logo"><img src="logo.png" alt="">PM&amp;R <span>Explained</span></div>
+    <div class="srch">⌕&nbsp; Search conditions, exam maneuvers, calculators…</div>
+    <div class="ut"><span>🌐 EN ⌄</span><span>🔔</span><div class="av">CA</div></div></div>
+   <div class="r2"><span class="pl">▣ Explore library</span><span class="dv"></span><span class="pl">Clinical Tools</span><span class="pl">Study Planner</span><span class="pl">My Handbook</span><span class="on">◈ Flashcards</span><span class="pl">Question Bank</span><span class="pl">Courses</span></div>
+  </div>
+  <div class="body">
+   <div class="rail">
+    <div class="newbtn">＋ New deck</div>
+    <div class="fd">⌕ Search decks and cards…</div>
+    <div class="g">STUDY</div>
+    <div class="r mut"><i style="background:#DDE3EA"></i>Due today<span class="n">0</span></div>
+    <div class="r mut"><i style="background:#DDE3EA"></i>All decks<span class="n">0</span></div>
+    <div class="g">TOPICS</div>
+    <div class="r mut" style="line-height:1.4;font-size:11.5px">Add a topic to see it here</div>
+    <div class="g">FROM THE LIBRARY</div>
+    <div class="r"><i style="background:#FF8A3D"></i>MSK<span class="n">184</span></div>
+    <div class="r"><i style="background:#7B61FF"></i>Neurology<span class="n">96</span></div>
+    <div class="r"><i style="background:#17BF9A"></i>Basic sciences<span class="n">72</span></div>
+    <div class="railfoot">0 cards · nothing due</div>
+   </div>
+
+   <div class="main">
+    <div class="hd"><h2>Flashcards</h2><p>Spaced repetition, built from the library.</p></div>
+
+    <div class="start">
+     <div class="l"><div class="k">START HERE</div>
+      <h3>Pick a topic and the cards are ready</h3>
+      <p>Every library region comes with a deck already written and reviewed. Add one and you can study in the next minute — or build your own deck from scratch.</p></div>
+     <div class="btn">Add my first topic</div>
+     <div class="btn2">＋ Build a deck</div>
+    </div>
+
+    <div class="sh"><h4>Topics from the library</h4><span>352 cards across 8 topics</span><a>See all ›</a></div>
+    <div class="tiles">
+     <div class="w3" data-colour="orange"><div class="e1"></div><div class="e2"></div>
+      <div class="c3"><span class="cnt">84 cards</span><div class="name">Foot & ankle</div><div class="sub">3 decks</div>
+       <div class="ex">Achilles · plantar fasciopathy · ankle sprain</div><span class="add">＋ Add topic</span></div></div>
+     <div class="w3" data-colour="pink"><div class="e1"></div><div class="e2"></div>
+      <div class="c3"><span class="cnt">61 cards</span><div class="name">Knee & hip</div><div class="sub">2 decks</div>
+       <div class="ex">Knee OA · patellofemoral pain · FAI</div><span class="add">＋ Add topic</span></div></div>
+     <div class="w3" data-colour="violet"><div class="e1"></div><div class="e2"></div>
+      <div class="c3"><span class="cnt">96 cards</span><div class="name">Neurology</div><div class="sub">4 decks</div>
+       <div class="ex">Stroke · spinal cord injury · Bell's palsy</div><span class="add">＋ Add topic</span></div></div>
+     <div class="w3" data-colour="mint"><div class="e1"></div><div class="e2"></div>
+      <div class="c3"><span class="cnt">40 cards</span><div class="name">Basic sciences</div><div class="sub">2 decks</div>
+       <div class="ex">Anatomy · biomechanics · ICF</div><span class="add">＋ Add topic</span></div></div>
+     <div class="w3" data-colour="sunny"><div class="e1"></div><div class="e2"></div>
+      <div class="c3"><span class="cnt">52 cards</span><div class="name">Shoulder</div><div class="sub">3 decks</div>
+       <div class="ex">Rotator cuff · instability · frozen shoulder</div><span class="add">＋ Add topic</span></div></div>
+     <div class="w3" data-colour="coral"><div class="e1"></div><div class="e2"></div>
+      <div class="c3"><span class="cnt">48 cards</span><div class="name">Spine</div><div class="sub">2 decks</div>
+       <div class="ex">Low back pain · radiculopathy · red flags</div><span class="add">＋ Add topic</span></div></div>
+     <div class="w3" data-colour="sky"><div class="e1"></div><div class="e2"></div>
+      <div class="c3"><span class="cnt">26 cards</span><div class="name">Wrist & hand</div><div class="sub">1 decks</div>
+       <div class="ex">Carpal tunnel · De Quervain's</div><span class="add">＋ Add topic</span></div></div>
+     <div class="w3" data-colour="lime"><div class="e1"></div><div class="e2"></div>
+      <div class="c3"><span class="cnt">45 cards</span><div class="name">Rehabilitation</div><div class="sub">2 decks</div>
+       <div class="ex">Amputees · paediatric · pelvic floor</div><span class="add">＋ Add topic</span></div></div>
+    </div>
+    <div class="hint">Adding a topic copies its decks into your account — you can edit any card, and your progress is yours.</div>
+   </div>
+  </div>
+ </div>
+</div>
+
+</body></html>

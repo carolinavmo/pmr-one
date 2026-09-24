@@ -75,7 +75,7 @@ export function DashboardDeckCard({ deck, isSignedIn, now }: { deck: TopicDeckRo
         </span>
       </Link>
 
-      <TopicStateBar newCount={deck.newCount} learningCount={deck.learningCount} reviewCount={deck.reviewCount} topicColor={null} height={6} />
+      <TopicStateBar newCount={deck.newCount} learningCount={deck.learningCount} reviewCount={deck.reviewCount} knownCount={deck.knownCount} topicColor={null} height={6} />
 
       <div className="flex items-center justify-between font-ui text-xs text-secondary">
         <span>{t("known")} {knownPercent}%</span>

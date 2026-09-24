@@ -55,7 +55,7 @@ export function TopicDeckRowItem({ deck, topicColor, now }: { deck: TopicDeckRow
       </div>
 
       <div className="hidden w-32 shrink-0 sm:block">
-        <TopicStateBar newCount={deck.newCount} learningCount={deck.learningCount} reviewCount={deck.reviewCount} topicColor={topicColor} height={6} />
+        <TopicStateBar newCount={deck.newCount} learningCount={deck.learningCount} reviewCount={deck.reviewCount} knownCount={deck.knownCount} topicColor={topicColor} height={6} />
       </div>
 
       <span className="w-10 shrink-0 text-right font-ui text-xs font-bold text-secondary">{knownPercent}%</span>

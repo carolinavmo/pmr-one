@@ -116,6 +116,7 @@ export function TopicPageTabs({
                     newCount={deckRows.reduce((sum, d) => sum + d.newCount, 0)}
                     learningCount={deckRows.reduce((sum, d) => sum + d.learningCount, 0)}
                     reviewCount={deckRows.reduce((sum, d) => sum + d.reviewCount, 0)}
+                    knownCount={deckRows.reduce((sum, d) => sum + d.knownCount, 0)}
                     topicColor={topicColor}
                     showLegend
                   />

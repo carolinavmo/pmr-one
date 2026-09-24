@@ -372,16 +372,17 @@ export async function getStudyCardsForCategory(userId: string, categoryId: strin
   return rows.map(mapStudyCardRow);
 }
 
-// Every due card across every deck this user can reach (the
-// dashboard's own "Start review" button, FLASHCARDS-SPEC.md rule 2:
-// "never offer a session that doesn't exist" — this is the one entry
-// point with no single deck/topic to scope to). No ownership check
-// needed: unlike getStudyCardsForDeck/getStudyCardsForCategory, the
-// accessible-deck condition is baked directly into the WHERE clause
-// rather than checked against one row first.
+// Every due card across every deck this user owns (the dashboard's
+// own "Start review" button, FLASHCARDS-SPEC.md rule 2: "never offer
+// a session that doesn't exist" — this is the one entry point with no
+// single deck/topic to scope to). Owned-only, not "system or owned" —
+// FLASHCARDS-ADD-TOPIC-IMPLEMENTATION.md's copy-on-add model: system
+// content isn't "yours" to study from the dashboard until Add Topic
+// has copied it in, so this stays consistent with what "Your topics"
+// itself shows.
 export async function getStudyCardsForAccount(userId: string, includeNotDue = false): Promise<StudyCard[]> {
   const { rows } = await pool.query(
-    `${STUDY_CARD_SELECT} WHERE (d.owner_type = 'system' OR d.user_id = $1) ${includeNotDue ? "" : STUDY_CARD_DUE_FILTER} ORDER BY d.position, f.position, f.created_at`,
+    `${STUDY_CARD_SELECT} WHERE d.user_id = $1 ${includeNotDue ? "" : STUDY_CARD_DUE_FILTER} ORDER BY d.position, f.position, f.created_at`,
     [userId]
   );
   return rows.map(mapStudyCardRow);
@@ -671,9 +672,11 @@ export interface DashboardMetrics {
   estimatedMinutes: number;
 }
 
-// Every deck this user can reach: presets (open to anyone signed in)
-// plus their own. Same accessible-deck definition getStudyCardsForDeck's
-// ownership check uses, just applied account-wide instead of to one deck.
+// Every deck this user owns. Not "system or owned" —
+// FLASHCARDS-ADD-TOPIC-IMPLEMENTATION.md's copy-on-add model means
+// system content isn't part of the account until Add Topic copies it
+// in, so the dashboard's own figures only ever count what's actually
+// been added.
 export async function getDashboardMetrics(userId: string, todayYmd: string): Promise<DashboardMetrics> {
   const [countRows, retentionRows, streak] = await Promise.all([
     pool.query<{ total_cards: number; due_today: number; new_count: number; learning_count: number; review_count: number }>(
@@ -686,7 +689,7 @@ export async function getDashboardMetrics(userId: string, todayYmd: string): Pro
        FROM flashcard f
        JOIN flashcard_deck d ON d.id = f.deck_id
        LEFT JOIN flashcard_sm2_progress p ON p.flashcard_id = f.id AND p.user_id = $1
-       WHERE d.owner_type = 'system' OR d.user_id = $1`,
+       WHERE d.user_id = $1`,
       [userId]
     ),
     pool.query<{ total: number; correct: number }>(
@@ -694,7 +697,7 @@ export async function getDashboardMetrics(userId: string, todayYmd: string): Pro
        FROM flashcard_review_log rl
        JOIN flashcard_deck d ON d.id = rl.deck_id
        WHERE rl.user_id = $1 AND rl.state_before = 'review' AND rl.reviewed_at > now() - interval '30 days'
-         AND (d.owner_type = 'system' OR d.user_id = $1)`,
+         AND d.user_id = $1`,
       [userId]
     ),
     getUserStreak(userId, todayYmd),
@@ -729,7 +732,7 @@ export async function getSevenDayForecast(userId: string, todayYmd: string): Pro
      FROM flashcard f
      JOIN flashcard_deck d ON d.id = f.deck_id
      JOIN flashcard_sm2_progress p ON p.flashcard_id = f.id AND p.user_id = $1
-     WHERE (d.owner_type = 'system' OR d.user_id = $1)
+     WHERE d.user_id = $1
        AND p.due_at >= $2::date AND p.due_at < $2::date + interval '7 days'
      GROUP BY day`,
     [userId, todayYmd]
@@ -755,6 +758,12 @@ export async function getSevenDayForecast(userId: string, todayYmd: string): Pro
 // naturally empty since `... = NULL` never matches in SQL. Same
 // `f.id IS NOT NULL` guard on every FILTER as getTopicDeckRows, for
 // the same empty-deck phantom-row reason.
+// Signed-in sees only owned decks, not system ones — copy-on-add
+// (FLASHCARDS-ADD-TOPIC-IMPLEMENTATION.md) means system content only
+// enters the account via Add Topic, which always assigns a category,
+// so it can never actually land here unfiled; signed-out still
+// browses unfiled system decks directly (there is no account to add
+// them to).
 export async function getDashboardDeckRows(userId: string | null): Promise<TopicDeckRow[]> {
   const { rows } = await pool.query(
     `SELECT d.id, d.name, d.color, d.icon_url,
@@ -771,7 +780,7 @@ export async function getDashboardDeckRows(userId: string | null): Promise<Topic
      LEFT JOIN disease dis ON dis.id = d.source_disease_id
      LEFT JOIN flashcard f ON f.deck_id = d.id
      LEFT JOIN flashcard_sm2_progress p ON p.flashcard_id = f.id AND p.user_id = $1
-     WHERE d.category_id IS NULL AND (d.owner_type = 'system' OR d.user_id = $1)
+     WHERE d.category_id IS NULL AND ((d.owner_type = 'system' AND $1::uuid IS NULL) OR (d.owner_type = 'user' AND d.user_id = $1))
      GROUP BY d.id, dis.canonical_name, dis.slug
      ORDER BY d.position, d.name`,
     [userId]
@@ -807,7 +816,7 @@ export async function getFolderDueBadges(userId: string | null): Promise<Map<str
      JOIN flashcard_deck d ON d.id = f.deck_id
      LEFT JOIN flashcard_sm2_progress p ON p.flashcard_id = f.id AND p.user_id = $1
      WHERE d.category_id IS NOT NULL
-       AND (d.owner_type = 'system' OR d.user_id = $1)
+       AND d.user_id = $1
        AND (p.due_at IS NULL OR p.due_at <= now())
      GROUP BY d.category_id`,
     [userId]
@@ -933,7 +942,7 @@ export async function updateCard(
   isEditor: boolean
 ): Promise<void> {
   await pool.query(
-    `UPDATE flashcard f SET question = $1, answer = $2
+    `UPDATE flashcard f SET question = $1, answer = $2, updated_at = now()
      FROM flashcard_deck d
      WHERE f.id = $3 AND f.deck_id = d.id
        AND ((d.owner_type = 'user' AND d.user_id = $4) OR (d.owner_type = 'system' AND $5))`,
@@ -1092,6 +1101,23 @@ export async function toggleDeckFavorite(userId: string, deckId: string): Promis
   return true;
 }
 
+// Mirrors toggleDeckFavorite exactly — a topic (flashcard_category)
+// gets the same personal per-user star a deck already has, backing
+// "Your topics"'s favourites-first ordering.
+export async function toggleCategoryFavorite(userId: string, categoryId: string): Promise<boolean> {
+  const { rows } = await pool.query(
+    `DELETE FROM flashcard_category_favorite WHERE user_id = $1 AND category_id = $2 RETURNING 1`,
+    [userId, categoryId]
+  );
+  if (rows.length > 0) return false;
+
+  await pool.query(`INSERT INTO flashcard_category_favorite (user_id, category_id) VALUES ($1, $2)`, [
+    userId,
+    categoryId,
+  ]);
+  return true;
+}
+
 function mapCategoryRow(r: {
   id: string;
   owner_type: DeckOwnerType;
@@ -1142,6 +1168,242 @@ export async function getCategories(
     systemCategories: systemRows.map(mapCategoryRow),
     userCategories: userRows.map(mapCategoryRow),
   };
+}
+
+export interface TopicTile {
+  id: string;
+  name: string;
+  topicColor: TopicColor | null;
+  isPublic: boolean;
+  isFavorited: boolean;
+  deckCount: number;
+  cardCount: number;
+  newCount: number;
+  learningCount: number;
+  reviewCount: number;
+  knownCount: number;
+  dueCount: number;
+}
+
+// "Your topics" — the dashboard's own progress-tile grid
+// (flashcards-progress-tiles.html, the spec's "source of truth" for
+// this layout): every topic the visitor can see, ring + state bar +
+// due badge, whether or not they've studied a single card in it yet —
+// a brand-new account with untouched topics still gets 0%/"up to
+// date" tiles rather than an empty dashboard. userId nullable, same
+// "system-only, `... = NULL` never matches" convention as
+// getCategories. Same `f.id IS NOT NULL` phantom-row guard as
+// getTopicDeckRows — here it also covers a topic with zero decks at
+// all, since an empty LEFT JOIN chain leaves f null either way.
+// Ordered favourites first, then most due, then alphabetical
+// (FLASHCARDS-TOPICS-SECTION.md) — no manual drag-reorder UI exists
+// for topics, so there's no "unless the user set a manual order" tier
+// to honour yet.
+// Signed-in sees only topics they've added (copy-on-add —
+// FLASHCARDS-ADD-TOPIC-IMPLEMENTATION.md); a signed-out visitor still
+// browses system topics directly, same as before — there's no account
+// for them to add anything into.
+export async function getDashboardTopicTiles(userId: string | null): Promise<TopicTile[]> {
+  const { rows } = await pool.query(
+    `SELECT c.id, c.name, c.topic_color, c.owner_type, c.is_public,
+       EXISTS (SELECT 1 FROM flashcard_category_favorite fav WHERE fav.category_id = c.id AND fav.user_id = $1) AS is_favorited,
+       COUNT(DISTINCT d.id)::int AS deck_count,
+       COUNT(f.id)::int AS card_count,
+       COUNT(*) FILTER (WHERE f.id IS NOT NULL AND (p.state IS NULL OR p.state = 'new'))::int AS new_count,
+       COUNT(*) FILTER (WHERE f.id IS NOT NULL AND p.state = 'learning')::int AS learning_count,
+       COUNT(*) FILTER (WHERE f.id IS NOT NULL AND p.state = 'review')::int AS review_count,
+       COUNT(*) FILTER (WHERE f.id IS NOT NULL AND p.state = 'review' AND p.interval_days >= ${KNOWN_INTERVAL_THRESHOLD_DAYS})::int AS known_count,
+       COUNT(*) FILTER (WHERE f.id IS NOT NULL AND (p.due_at IS NULL OR p.due_at <= now()))::int AS due_count
+     FROM flashcard_category c
+     LEFT JOIN flashcard_deck d ON d.category_id = c.id
+     LEFT JOIN flashcard f ON f.deck_id = d.id
+     LEFT JOIN flashcard_sm2_progress p ON p.flashcard_id = f.id AND p.user_id = $1
+     WHERE (c.owner_type = 'system' AND $1::uuid IS NULL) OR (c.owner_type = 'user' AND c.user_id = $1)
+     GROUP BY c.id
+     ORDER BY is_favorited DESC, due_count DESC, c.name`,
+    [userId]
+  );
+  return rows.map((r) => ({
+    id: r.id,
+    name: r.name,
+    topicColor: isTopicColor(r.topic_color) ? r.topic_color : null,
+    isPublic: r.owner_type === "user" ? true : Boolean(r.is_public),
+    isFavorited: r.is_favorited,
+    deckCount: r.deck_count,
+    cardCount: r.card_count,
+    newCount: r.new_count,
+    learningCount: r.learning_count,
+    reviewCount: r.review_count,
+    knownCount: r.known_count,
+    dueCount: r.due_count,
+  }));
+}
+
+// ============================================================
+// Add from the library (FLASHCARDS-ADD-TOPIC-IMPLEMENTATION.md)
+// ============================================================
+
+export interface LibraryTopic {
+  id: string;
+  name: string;
+  topicColor: TopicColor | null;
+  deckCount: number;
+  cardCount: number;
+  // First three deck names, in position order — "so the topic is
+  // concrete" rather than a bare count.
+  sampleDeckTitles: string[];
+  isAdded: boolean;
+}
+
+// Every system topic, whether or not this user has copied it in yet —
+// "a catalogue of library topics", computed live off the existing
+// system categories/decks/cards rather than a separately denormalized
+// table: this app's actual catalogue size (a handful of topics) makes
+// a per-request grouped query cheap, so the cache-and-invalidate
+// layer the doc describes isn't worth the added moving parts. `isAdded`
+// is one indexed lookup against source_category_id (migration 0065),
+// not a diff over copied card sets.
+export async function getLibraryTopics(userId: string | null): Promise<LibraryTopic[]> {
+  const { rows } = await pool.query(
+    `SELECT c.id, c.name, c.topic_color,
+       COUNT(DISTINCT d.id)::int AS deck_count,
+       COUNT(f.id)::int AS card_count,
+       (SELECT array_agg(t.name) FROM (SELECT name FROM flashcard_deck WHERE category_id = c.id ORDER BY position LIMIT 3) t) AS sample_deck_titles,
+       EXISTS (SELECT 1 FROM flashcard_category WHERE source_category_id = c.id AND user_id = $1) AS is_added
+     FROM flashcard_category c
+     LEFT JOIN flashcard_deck d ON d.category_id = c.id
+     LEFT JOIN flashcard f ON f.deck_id = d.id
+     WHERE c.owner_type = 'system'
+     GROUP BY c.id
+     ORDER BY c.position, c.name`,
+    [userId]
+  );
+  return rows.map((r) => ({
+    id: r.id,
+    name: r.name,
+    topicColor: isTopicColor(r.topic_color) ? r.topic_color : null,
+    deckCount: r.deck_count,
+    cardCount: r.card_count,
+    sampleDeckTitles: r.sample_deck_titles ?? [],
+    isAdded: r.is_added,
+  }));
+}
+
+export interface AddedLibraryTopic {
+  category: FlashcardCategory;
+  deckCount: number;
+  cardCount: number;
+}
+
+// Copies a system topic's decks and cards into a brand-new topic the
+// user owns — "copy on add" (recommended over a live subscription:
+// the copy is the user's own from the moment it lands, no confusing
+// "is this mine or the library's" edit semantics). Every copied card
+// keeps source_card_id and a source_version snapshot (the source's
+// own updated_at at copy time), so a future "N cards were updated in
+// the library" feature is possible without another migration. Whole
+// thing runs in one transaction — a half-copied topic on failure
+// would be worse than the add simply not happening.
+export async function addLibraryTopic(userId: string, libraryCategoryId: string): Promise<AddedLibraryTopic | null> {
+  const client = await pool.connect();
+  try {
+    await client.query("BEGIN");
+
+    const { rows: sourceRows } = await client.query<{ name: string; color: CardColor; topic_color: string | null }>(
+      `SELECT name, color, topic_color FROM flashcard_category WHERE id = $1 AND owner_type = 'system'`,
+      [libraryCategoryId]
+    );
+    const source = sourceRows[0];
+    if (!source) {
+      await client.query("ROLLBACK");
+      return null;
+    }
+
+    // Free-colour assignment scoped to the user's own topics only —
+    // system topics aren't "the user's palette" to compete against.
+    const { rows: siblingRows } = await client.query<{ topic_color: string | null }>(
+      `SELECT topic_color FROM flashcard_category WHERE owner_type = 'user' AND user_id = $1`,
+      [userId]
+    );
+    const usedColors = siblingRows.map((r) => r.topic_color as TopicColor | null);
+    const sourceColor = isTopicColor(source.topic_color) ? source.topic_color : null;
+    const topicColor = sourceColor && !usedColors.includes(sourceColor) ? sourceColor : pickFreeTopicColor(usedColors);
+
+    const { rows: newCategoryRows } = await client.query(
+      `INSERT INTO flashcard_category (owner_type, user_id, name, color, topic_color, position, source_category_id)
+       VALUES ('user', $1, $2, $3, $4, $5, $6)
+       RETURNING id, owner_type, name, color, topic_color, icon`,
+      [userId, source.name, source.color, topicColor, siblingRows.length, libraryCategoryId]
+    );
+    const newCategory = newCategoryRows[0];
+
+    const { rows: sourceDecks } = await client.query<{
+      id: string;
+      name: string;
+      description: string;
+      color: CardColor;
+      source_disease_id: string | null;
+      position: number;
+    }>(
+      `SELECT id, name, description, color, source_disease_id, position FROM flashcard_deck WHERE category_id = $1 ORDER BY position`,
+      [libraryCategoryId]
+    );
+
+    let cardCount = 0;
+    for (const deck of sourceDecks) {
+      const { rows: newDeckRows } = await client.query<{ id: string }>(
+        `INSERT INTO flashcard_deck (owner_type, user_id, name, description, color, source_disease_id, category_id, position)
+         VALUES ('user', $1, $2, $3, $4, $5, $6, $7)
+         RETURNING id`,
+        [userId, deck.name, deck.description, deck.color, deck.source_disease_id, newCategory.id, deck.position]
+      );
+      const { rowCount } = await client.query(
+        `INSERT INTO flashcard (deck_id, question, answer, position, source_card_id, source_version)
+         SELECT $1, question, answer, position, id, updated_at FROM flashcard WHERE deck_id = $2`,
+        [newDeckRows[0].id, deck.id]
+      );
+      cardCount += rowCount ?? 0;
+    }
+
+    await client.query("COMMIT");
+    return {
+      category: mapCategoryRow({ ...newCategory, deck_count: String(sourceDecks.length) }),
+      deckCount: sourceDecks.length,
+      cardCount,
+    };
+  } catch (err) {
+    await client.query("ROLLBACK");
+    throw err;
+  } finally {
+    client.release();
+  }
+}
+
+// Deletes a just-copied topic and the decks/cards Add Topic created
+// for it — not the general-purpose deleteCategory, which only
+// unassigns a folder's decks (ON DELETE SET NULL) rather than
+// removing them, and would leave the copies behind as unfiled junk.
+// The source_category_id IS NOT NULL check keeps this from ever
+// touching a topic the user built by hand.
+export async function undoAddLibraryTopic(userId: string, categoryId: string): Promise<void> {
+  const client = await pool.connect();
+  try {
+    await client.query("BEGIN");
+    const { rows } = await client.query(
+      `SELECT 1 FROM flashcard_category WHERE id = $1 AND owner_type = 'user' AND user_id = $2 AND source_category_id IS NOT NULL`,
+      [categoryId, userId]
+    );
+    if (rows.length > 0) {
+      await client.query(`DELETE FROM flashcard_deck WHERE category_id = $1 AND user_id = $2`, [categoryId, userId]);
+      await client.query(`DELETE FROM flashcard_category WHERE id = $1 AND user_id = $2`, [categoryId, userId]);
+    }
+    await client.query("COMMIT");
+  } catch (err) {
+    await client.query("ROLLBACK");
+    throw err;
+  } finally {
+    client.release();
+  }
 }
 
 // A "user" folder 404s (returns null) for anyone but its owner — same

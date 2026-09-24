@@ -23,6 +23,7 @@ import {
   resetDeckProgress,
   saveReviewPosition,
   toggleDeckFavorite,
+  toggleCategoryFavorite,
   createCategory,
   renameCategory,
   updateCategoryColor,
@@ -34,11 +35,14 @@ import {
   recordSm2Review,
   getUserStreak,
   getTopicKnownPercent,
+  addLibraryTopic,
+  undoAddLibraryTopic,
   type DeckOwnerType,
   type DeckSummary,
   type FlashcardCard,
   type FlashcardCategory,
   type StudyCard,
+  type AddedLibraryTopic,
 } from "@/lib/flashcards";
 
 // Every signed-in member can create/edit their own decks — no role
@@ -195,6 +199,13 @@ export async function toggleDeckFavoriteAction(deckId: string): Promise<void> {
   revalidateFlashcardSurfaces();
 }
 
+// Fire-and-forget from the client, same idiom as toggleDeckFavoriteAction.
+export async function toggleCategoryFavoriteAction(categoryId: string): Promise<void> {
+  const { userId } = await requireUserId();
+  await toggleCategoryFavorite(userId, categoryId);
+  revalidateFlashcardSurfaces();
+}
+
 // A "system" folder is admin-curated content — creating one still
 // needs isEditor. A "user" folder is a member's own personal
 // organization, so any signed-in member can create one.
@@ -287,4 +298,26 @@ export async function getUserStreakAction(todayYmd: string): Promise<number> {
 export async function getTopicKnownPercentAction(categoryId: string): Promise<number> {
   const { userId } = await requireUserId();
   return getTopicKnownPercent(userId, categoryId);
+}
+
+// ============================================================
+// Add from the library (FLASHCARDS-ADD-TOPIC-IMPLEMENTATION.md)
+// ============================================================
+
+// Awaited by AddFromLibrary.tsx before flipping its optimistic button
+// state to "✓ Added" — the copy itself (decks + cards, one INSERT per
+// deck) is what "insert in one statement... must not block the button
+// for two seconds" is about, not this round trip.
+export async function addLibraryTopicAction(libraryCategoryId: string): Promise<AddedLibraryTopic | null> {
+  const { userId } = await requireUserId();
+  const result = await addLibraryTopic(userId, libraryCategoryId);
+  revalidateFlashcardSurfaces();
+  return result;
+}
+
+// The 10-second Undo on the add-topic snackbar.
+export async function undoAddLibraryTopicAction(categoryId: string): Promise<void> {
+  const { userId } = await requireUserId();
+  await undoAddLibraryTopic(userId, categoryId);
+  revalidateFlashcardSurfaces();
 }

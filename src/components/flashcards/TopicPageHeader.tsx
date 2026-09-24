@@ -22,6 +22,7 @@ export function TopicPageHeader({
   newCount,
   learningCount,
   reviewCount,
+  knownCount,
   onNewDeckClick,
 }: {
   categoryId: string;
@@ -34,6 +35,7 @@ export function TopicPageHeader({
   newCount: number;
   learningCount: number;
   reviewCount: number;
+  knownCount: number;
   onNewDeckClick: () => void;
 }) {
   const t = useTranslations("flashcards");
@@ -48,7 +50,7 @@ export function TopicPageHeader({
           <p className="font-ui text-sm text-secondary">{t("deckAndCardCount", { decks: deckCount, cards: cardCount })}</p>
         </div>
 
-        <TopicStateBar newCount={newCount} learningCount={learningCount} reviewCount={reviewCount} topicColor={topicColor} showLegend />
+        <TopicStateBar newCount={newCount} learningCount={learningCount} reviewCount={reviewCount} knownCount={knownCount} topicColor={topicColor} showLegend />
 
         <div className="flex flex-wrap items-center gap-2">
           <Link

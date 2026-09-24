@@ -49,6 +49,7 @@ export function TopicPageClient({
   const newCount = deckRows.reduce((sum, d) => sum + d.newCount, 0);
   const learningCount = deckRows.reduce((sum, d) => sum + d.learningCount, 0);
   const reviewCount = deckRows.reduce((sum, d) => sum + d.reviewCount, 0);
+  const knownCount = deckRows.reduce((sum, d) => sum + d.knownCount, 0);
 
   return (
     <div className="flex flex-col gap-5">
@@ -63,6 +64,7 @@ export function TopicPageClient({
         newCount={newCount}
         learningCount={learningCount}
         reviewCount={reviewCount}
+        knownCount={knownCount}
         onNewDeckClick={() => setTab("decks")}
       />
 

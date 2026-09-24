@@ -1,5 +1,13 @@
 import { auth } from "@/auth";
-import { getDashboardDeckRows, getDashboardMetrics, getSevenDayForecast, getFolderDueBadges, getCategories } from "@/lib/flashcards";
+import {
+  getDashboardDeckRows,
+  getDashboardMetrics,
+  getSevenDayForecast,
+  getFolderDueBadges,
+  getCategories,
+  getDashboardTopicTiles,
+  getLibraryTopics,
+} from "@/lib/flashcards";
 import { FlashcardsDashboard } from "@/components/flashcards/FlashcardsDashboard";
 
 // Public browse (Clinical-Tools idiom, not Study-Planner's hard
@@ -22,12 +30,14 @@ export default async function FlashcardsPage() {
   const isEditor = session?.user.role === "editor" || session?.user.role === "admin";
   const todayYmd = new Date().toISOString().slice(0, 10);
 
-  const [deckRows, { systemCategories, userCategories }, metrics, forecast, folderDueBadgesMap] = await Promise.all([
+  const [deckRows, { systemCategories, userCategories }, metrics, forecast, folderDueBadgesMap, topics, libraryTopics] = await Promise.all([
     getDashboardDeckRows(userId),
     getCategories(userId),
     userId ? getDashboardMetrics(userId, todayYmd) : null,
     userId ? getSevenDayForecast(userId, todayYmd) : Promise.resolve([]),
     getFolderDueBadges(userId),
+    getDashboardTopicTiles(userId),
+    getLibraryTopics(userId),
   ]);
 
   const folderDueBadges = Object.fromEntries(folderDueBadgesMap);
@@ -38,6 +48,8 @@ export default async function FlashcardsPage() {
         metrics={metrics}
         forecast={forecast}
         deckRows={deckRows}
+        topics={topics}
+        libraryTopics={libraryTopics}
         systemCategories={systemCategories}
         userCategories={userCategories}
         folderDueBadges={folderDueBadges}

@@ -190,3 +190,48 @@ deck returns.
 3. **Keyboard 1–4 grade**; every action reachable without the mouse.
 4. **Every card names its source** and links to it.
 5. **Finishing is a moment**, not a dead end — always offer what comes next.
+
+
+---
+
+# Empty and early states
+
+Reference: `FLASHCARDS-empty-first-visit.png` · `FLASHCARDS-empty-few-topics.png`
+Source: `flashcards-empty-states.html`
+
+**The dashboard is never empty.** With nothing studied, its job changes from "what is due" to
+"what is there to learn", and the library's topics become the page.
+
+## First visit — no decks at all
+| Region | Contents |
+|---|---|
+| Rail | Due today and All decks greyed at 0; under TOPICS, one line: "Add a topic to see it here"; **From the library** lists subjects with their card counts |
+| Start panel | navy, `START HERE` → **"Pick a topic and the cards are ready"**, one paragraph, **Add my first topic** and **＋ Build a deck** |
+| Topics from the library | every library topic as a tile: coloured icon, name, "3 decks · 84 cards", three example deck titles, and **＋ Add topic** |
+| Footnote | "Adding a topic copies its decks into your account — you can edit any card, and your progress is yours." |
+
+No session panel, no forecast, no streak — none of them have data, and showing them at zero
+teaches nothing.
+
+## Library topic tile
+Same colours as a real topic, different content: **an icon, not a ring** (there is no progress
+yet), the deck and card counts, up to three deck titles so the topic is concrete, and the add
+button. Once added it becomes **✓ Added** (filled) and the real tile appears above.
+
+## Early — one to three topics
+Once anything is started:
+- The **session panel returns**, sized to what exists ("9 cards due · about 2 min").
+- **Your topics** shows what was added, with "2 of 8" beside the heading.
+- **Add from the library** stays underneath, with the remaining topics — the page keeps offering
+  the next thing instead of looking finished.
+- The rail shows added topics under TOPICS and the rest under FROM THE LIBRARY.
+
+Keep the library section visible until the user has added **five topics or more**, then collapse
+it to a single row: "Add from the library · 3 topics left ›".
+
+## Rules
+1. **Never show a blank slate.** If there is nothing of the user's, show the library's.
+2. **Never show a statistic at zero.** No 0% ring, no empty forecast, no "0-day streak".
+3. **One tap to start.** Add topic → decks copied → study immediately; no wizard.
+4. **Say what adding does** — copied, editable, progress is theirs.
+5. The first tile a user creates should look exactly like the ones they will have later.
