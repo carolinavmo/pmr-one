@@ -64,6 +64,14 @@ export function NavbarFrame({
   const tCommon = useTranslations("common");
   const pathname = usePathname();
 
+  // FLASHCARDS-SPEC.md's study screen — "no navbar, no sidebar." Same
+  // per-route chrome opt-out SidebarFrame.tsx already uses for My
+  // Handbook, mirrored here since the study screen needs the navbar
+  // gone too, not just the sidebar.
+  if (pathname.startsWith("/flashcards/study")) {
+    return null;
+  }
+
   const activeTool = TOOLS.find(
     (tool) => pathname === tool.href || pathname.startsWith(`${tool.href}/`)
   );

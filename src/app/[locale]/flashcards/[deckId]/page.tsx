@@ -59,6 +59,19 @@ export default async function FlashcardDeckPage({ params }: DeckPageProps) {
         </div>
       </div>
 
+      {/* FLASHCARDS-IMPLEMENTATION.md Pass 2 — the new SM-2-backed
+          study screen, reachable here while it's not yet wired into
+          the (still Pass 3/4) dashboard/topic-page "Study N due"
+          buttons. Signed-in only, same gate the route itself enforces. */}
+      {session && (
+        <Link
+          href={`/flashcards/study?deck=${deck.id}`}
+          className="self-start rounded-lg border border-accent bg-acc-bg px-3 py-1.5 font-ui text-xs font-bold text-acc-ink hover:bg-acc-bg/70"
+        >
+          {t("studyNewScreen")}
+        </Link>
+      )}
+
       {canManage ? (
         <DeckWorkspace
           deckId={deck.id}

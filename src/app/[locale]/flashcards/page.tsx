@@ -1,88 +1,49 @@
-import { getTranslations } from "next-intl/server";
-import { Layers, BookOpen, Repeat, CheckCircle2 } from "lucide-react";
 import { auth } from "@/auth";
-import { getDeckSummaries, getFavoritedDeckIds, getCategories } from "@/lib/flashcards";
-import { FlashcardsBrowser } from "@/components/flashcards/FlashcardsBrowser";
+import { getDashboardDeckRows, getDashboardMetrics, getSevenDayForecast, getFolderDueBadges, getCategories } from "@/lib/flashcards";
+import { FlashcardsDashboard } from "@/components/flashcards/FlashcardsDashboard";
 
 // Public browse (Clinical-Tools idiom, not Study-Planner's hard
-// redirect) — preset decks are reference content anyone can look at
-// and click through; only "My Decks" (creating/owning a deck) needs a
-// session, same split clinical-tools/page.tsx uses for favorites.
+// redirect) — preset decks are reference content anyone can look at;
+// only the personal layer (streak, retention, the session panel, due
+// badges) needs a session, same split the pre-Pass-4 page used for its
+// stat tiles.
+//
+// FLASHCARDS-IMPLEMENTATION.md Pass 4 — the dashboard. todayYmd here
+// is the server's own UTC calendar day, not the user's local one
+// (unlike StudySession.tsx's client-computed Intl "en-CA" day) — a
+// deliberate simplification: streak/forecast day-bucketing can be off
+// by one for a user far from UTC only in the hours around their local
+// midnight, self-corrects on the next page load, and every other
+// figure on this page (due counts, retention) reads off absolute
+// timestamps rather than a day string.
 export default async function FlashcardsPage() {
   const session = await auth();
-  const { presetDecks, userDecks } = await getDeckSummaries(session?.user.id ?? null);
-  const favoritedDeckIds = session ? await getFavoritedDeckIds(session.user.id) : new Set<string>();
-  const { systemCategories, userCategories } = await getCategories(session?.user.id ?? null);
+  const userId = session?.user.id ?? null;
   const isEditor = session?.user.role === "editor" || session?.user.role === "admin";
-  const t = await getTranslations("flashcards");
+  const todayYmd = new Date().toISOString().slice(0, 10);
 
-  const allDecks = [...presetDecks, ...userDecks];
-  const totalCards = allDecks.reduce((sum, d) => sum + d.cardCount, 0);
-  // In-progress/completed only mean something once there's a session
-  // to score against (masteredCount is null otherwise) — shown as
-  // real counts, never a fabricated zero for a signed-out visitor.
-  const inProgress = allDecks.filter(
-    (d) => d.masteredCount !== null && d.masteredCount > 0 && d.masteredCount < d.cardCount
-  ).length;
-  const completed = allDecks.filter(
-    (d) => d.masteredCount !== null && d.cardCount > 0 && d.masteredCount === d.cardCount
-  ).length;
+  const [deckRows, { systemCategories, userCategories }, metrics, forecast, folderDueBadgesMap] = await Promise.all([
+    getDashboardDeckRows(userId),
+    getCategories(userId),
+    userId ? getDashboardMetrics(userId, todayYmd) : null,
+    userId ? getSevenDayForecast(userId, todayYmd) : Promise.resolve([]),
+    getFolderDueBadges(userId),
+  ]);
+
+  const folderDueBadges = Object.fromEntries(folderDueBadgesMap);
 
   return (
-    <main className="mx-auto flex w-full max-w-6xl flex-col gap-8 px-6 py-16">
-      <div className="flex items-center gap-3">
-        <span className="flex size-11 shrink-0 items-center justify-center rounded-full bg-accent/10 text-accent">
-          <Layers className="size-5" aria-hidden="true" />
-        </span>
-        <div>
-          <h1 className="font-heading text-3xl text-primary">{t("pageTitle")}</h1>
-          <p className="mt-1 font-ui text-sm text-secondary">{t("pageSubtitle")}</p>
-        </div>
-      </div>
-
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-        <StatTile icon={Layers} value={allDecks.length} label={t("statsTotalDecks")} />
-        <StatTile icon={BookOpen} value={totalCards} label={t("statsTotalCards")} />
-        {session && (
-          <>
-            <StatTile icon={Repeat} value={inProgress} label={t("statsInProgress")} />
-            <StatTile icon={CheckCircle2} value={completed} label={t("statsCompleted")} />
-          </>
-        )}
-      </div>
-
-      <FlashcardsBrowser
-        presetDecks={presetDecks}
-        userDecks={userDecks}
+    <main className="mx-auto flex w-full max-w-7xl flex-col px-6 py-16">
+      <FlashcardsDashboard
+        metrics={metrics}
+        forecast={forecast}
+        deckRows={deckRows}
         systemCategories={systemCategories}
         userCategories={userCategories}
-        favoritedCount={favoritedDeckIds.size}
-        favoritedDeckIds={favoritedDeckIds}
+        folderDueBadges={folderDueBadges}
         isSignedIn={Boolean(session)}
         isEditor={isEditor}
       />
     </main>
-  );
-}
-
-function StatTile({
-  icon: Icon,
-  value,
-  label,
-}: {
-  icon: typeof Layers;
-  value: number;
-  label: string;
-}) {
-  return (
-    <div className="flex items-center gap-3 rounded-xl border border-border bg-surface-card p-3">
-      <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-accent/10 text-accent">
-        <Icon className="size-4.5" aria-hidden="true" />
-      </span>
-      <div className="flex flex-col">
-        <span className="font-heading text-xl font-semibold text-primary tabular-nums">{value}</span>
-        <span className="font-ui text-xs text-secondary">{label}</span>
-      </div>
-    </div>
   );
 }

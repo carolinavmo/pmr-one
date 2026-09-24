@@ -226,6 +226,95 @@
 }
 
 :root {
+  /* ---------- Color: Flashcards Candy topic palette ----------
+     FLASHCARDS-SPEC.md — "eight topics, each with --topic, --topic-bg,
+     --topic-bd. A topic stores a palette key, not a hex value." A
+     flashcard_category row IS the topic (folders and topics are the
+     same entity) — its topic_color column holds one of these 8 keys,
+     and a `[data-topic-color="<key>"]` wrapper resolves it to the
+     plain --topic/--topic-bg/--topic-bd names components read, same
+     indirection as the Clinical Tools --cat-* tokens above. The first
+     5 (orange/pink/violet/mint/sky) are the spec's own hexes verbatim;
+     sunny/coral/lime are its named "spare" hues with no border given —
+     their border tones are derived here (interpolated between tint
+     and ring, matching the other 5's own tint→ring relationship), not
+     from the spec text.
+     State colours (new #E8564B, known #4FBF86, learning = the topic's
+     own --topic) are fixed and never swapped per topic — see
+     --flash-new/--flash-known below. */
+  --topic-orange-c: #ff8a3d;
+  --topic-orange-tint: #fff1e4;
+  --topic-orange-bd: #ffd6b8;
+  --topic-pink-c: #f0569a;
+  --topic-pink-tint: #ffeaf3;
+  --topic-pink-bd: #ffc6dd;
+  --topic-violet-c: #7b61ff;
+  --topic-violet-tint: #f0ecff;
+  --topic-violet-bd: #d6ccff;
+  --topic-mint-c: #17bf9a;
+  --topic-mint-tint: #e1fbf4;
+  --topic-mint-bd: #b3f0e1;
+  --topic-sky-c: #2ea8ff;
+  --topic-sky-tint: #e6f4ff;
+  --topic-sky-bd: #bce0ff;
+  --topic-sunny-c: #ffc53d;
+  --topic-sunny-tint: #fff7e0;
+  --topic-sunny-bd: #ffe9b0;
+  --topic-coral-c: #ff6b6b;
+  --topic-coral-tint: #ffecec;
+  --topic-coral-bd: #ffcaca;
+  --topic-lime-c: #9bd24a;
+  --topic-lime-tint: #f1fae2;
+  --topic-lime-bd: #d7eeb3;
+
+  /* Fixed spaced-repetition state colours (Pass 1's "fixed state
+     colours" — new/known never change per topic; "learning" isn't a
+     separate token, it reads the active --topic value directly). */
+  --flash-new: #e8564b;
+  --flash-known: #4fbf86;
+}
+[data-topic-color="orange"] {
+  --topic: var(--topic-orange-c);
+  --topic-bg: var(--topic-orange-tint);
+  --topic-bd: var(--topic-orange-bd);
+}
+[data-topic-color="pink"] {
+  --topic: var(--topic-pink-c);
+  --topic-bg: var(--topic-pink-tint);
+  --topic-bd: var(--topic-pink-bd);
+}
+[data-topic-color="violet"] {
+  --topic: var(--topic-violet-c);
+  --topic-bg: var(--topic-violet-tint);
+  --topic-bd: var(--topic-violet-bd);
+}
+[data-topic-color="mint"] {
+  --topic: var(--topic-mint-c);
+  --topic-bg: var(--topic-mint-tint);
+  --topic-bd: var(--topic-mint-bd);
+}
+[data-topic-color="sky"] {
+  --topic: var(--topic-sky-c);
+  --topic-bg: var(--topic-sky-tint);
+  --topic-bd: var(--topic-sky-bd);
+}
+[data-topic-color="sunny"] {
+  --topic: var(--topic-sunny-c);
+  --topic-bg: var(--topic-sunny-tint);
+  --topic-bd: var(--topic-sunny-bd);
+}
+[data-topic-color="coral"] {
+  --topic: var(--topic-coral-c);
+  --topic-bg: var(--topic-coral-tint);
+  --topic-bd: var(--topic-coral-bd);
+}
+[data-topic-color="lime"] {
+  --topic: var(--topic-lime-c);
+  --topic-bg: var(--topic-lime-tint);
+  --topic-bd: var(--topic-lime-bd);
+}
+
+:root {
   /* ---------- Color: badge backgrounds (fixed, not theme-swapped) ----------
      A badge is its own small dark chip with light text — unlike every
      other color token here, it's deliberately declared once, outside

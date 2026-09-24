@@ -6,6 +6,8 @@ import path from "path";
 import { auth } from "@/auth";
 import { revalidateFlashcardSurfaces } from "@/lib/revalidation";
 import type { CardColor } from "@/lib/editorial-blocks";
+import type { TopicColor } from "@/lib/flashcard-topic-colors";
+import type { Grade, Sm2State, Sm2Outcome } from "@/lib/flashcard-sm2";
 import {
   createDeck,
   renameDeck,
@@ -24,12 +26,19 @@ import {
   createCategory,
   renameCategory,
   updateCategoryColor,
+  updateCategoryTopicColor,
   deleteCategory,
   setDeckCategory,
+  getStudyCardsForDeck,
+  getStudyCardsForCategory,
+  recordSm2Review,
+  getUserStreak,
+  getTopicKnownPercent,
   type DeckOwnerType,
   type DeckSummary,
   type FlashcardCard,
   type FlashcardCategory,
+  type StudyCard,
 } from "@/lib/flashcards";
 
 // Every signed-in member can create/edit their own decks — no role
@@ -218,6 +227,12 @@ export async function updateCategoryColorAction(categoryId: string, color: CardC
   revalidateFlashcardSurfaces();
 }
 
+export async function updateCategoryTopicColorAction(categoryId: string, topicColor: TopicColor): Promise<void> {
+  const { userId, isEditor } = await requireUserId();
+  await updateCategoryTopicColor(userId, categoryId, topicColor, isEditor);
+  revalidateFlashcardSurfaces();
+}
+
 export async function deleteCategoryAction(categoryId: string): Promise<void> {
   const { userId, isEditor } = await requireUserId();
   await deleteCategory(userId, categoryId, isEditor);
@@ -228,4 +243,48 @@ export async function setDeckCategoryAction(deckId: string, categoryId: string |
   const { userId, isEditor } = await requireUserId();
   await setDeckCategory(userId, deckId, categoryId, isEditor);
   revalidateFlashcardSurfaces();
+}
+
+// ============================================================
+// Pass 2 — the study screen
+// ============================================================
+
+export async function getStudyCardsForDeckAction(deckId: string): Promise<StudyCard[] | null> {
+  const { userId } = await requireUserId();
+  return getStudyCardsForDeck(userId, deckId);
+}
+
+export async function getStudyCardsForCategoryAction(categoryId: string): Promise<StudyCard[] | null> {
+  const { userId } = await requireUserId();
+  return getStudyCardsForCategory(userId, categoryId);
+}
+
+// Fire-and-forget from StudySession.tsx (Pass 5: the UI advances off
+// the client-computed applyGrade() outcome, not this call's return
+// value — see StudySession.tsx's own comment) — also called directly,
+// awaited, from flashcard-review-queue.ts's flush when a grade
+// couldn't reach the server the first time. Revalidates so the
+// dashboard/topic aggregates (due counts, known %, retention) aren't
+// stale the next time either page renders — Pass 5's "counts …
+// recomputed on review."
+export async function recordSm2ReviewAction(
+  flashcardId: string,
+  deckId: string,
+  current: Sm2State,
+  grade: Grade
+): Promise<Sm2Outcome> {
+  const { userId } = await requireUserId();
+  const outcome = await recordSm2Review(userId, flashcardId, deckId, current, grade);
+  revalidateFlashcardSurfaces();
+  return outcome;
+}
+
+export async function getUserStreakAction(todayYmd: string): Promise<number> {
+  const { userId } = await requireUserId();
+  return getUserStreak(userId, todayYmd);
+}
+
+export async function getTopicKnownPercentAction(categoryId: string): Promise<number> {
+  const { userId } = await requireUserId();
+  return getTopicKnownPercent(userId, categoryId);
 }

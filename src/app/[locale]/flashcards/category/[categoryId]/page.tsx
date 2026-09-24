@@ -3,10 +3,17 @@ import { getTranslations } from "next-intl/server";
 import { Lock } from "lucide-react";
 import { auth } from "@/auth";
 import { Link } from "@/i18n/navigation";
-import { getCategoryWithDecks, getDeckSummaries, getFavoritedDeckIds } from "@/lib/flashcards";
-import { DeckTable } from "@/components/flashcards/DeckTable";
-import { CategoryHeader } from "@/components/flashcards/CategoryHeader";
-import { CategoryDeckManager } from "@/components/flashcards/CategoryDeckManager";
+import {
+  getCategoryWithDecks,
+  getDeckSummaries,
+  getTopicDeckRows,
+  getTopicMetrics,
+  getTopicWeakCards,
+  getTopicAllCards,
+  type FlashcardCategory,
+  type DeckSummary,
+} from "@/lib/flashcards";
+import { TopicPageClient } from "@/components/flashcards/TopicPageClient";
 
 interface CategoryPageProps {
   params: Promise<{ categoryId: string }>;
@@ -17,6 +24,13 @@ interface CategoryPageProps {
 // getCategoryWithDecks) — so if this page resolved a "user" category
 // at all, the caller already IS its owner, same reasoning the deck
 // detail page's canManage comment uses.
+//
+// FLASHCARDS-IMPLEMENTATION.md Pass 3 — "the topic page." A
+// flashcard_category row IS the topic (Pass 1's own finding), so this
+// rebuilds the existing /flashcards/category/:id route in place
+// rather than forking a parallel /flashcards/topic/:id that would
+// need every existing link (the rail, "My folders", the dashboard
+// tiles) re-pointed at it.
 export default async function FlashcardCategoryPage({ params }: CategoryPageProps) {
   const { categoryId } = await params;
   const session = await auth();
@@ -27,7 +41,6 @@ export default async function FlashcardCategoryPage({ params }: CategoryPageProp
   const isEditor = session?.user.role === "editor" || session?.user.role === "admin";
   const canManage = category.ownerType === "user" || isEditor;
   const canBrowseFolder = category.isPublic || Boolean(session);
-  const favoritedDeckIds = session ? await getFavoritedDeckIds(session.user.id) : new Set<string>();
   const t = await getTranslations("flashcards");
   const tCommon = await getTranslations("common");
   const tAuth = await getTranslations("auth");
@@ -48,12 +61,6 @@ export default async function FlashcardCategoryPage({ params }: CategoryPageProp
       <Link href="/flashcards" className="font-ui text-sm text-secondary hover:text-accent">
         {t("backToDecks")}
       </Link>
-
-      <CategoryHeader category={category} canManage={canManage} />
-
-      {canManage && (
-        <CategoryDeckManager categoryId={category.id} decksInFolder={decks} assignableDecks={assignableDecks} />
-      )}
 
       {!canBrowseFolder ? (
         <div className="flex items-start gap-3 rounded-xl border border-insight/30 bg-insight/5 p-4">
@@ -77,13 +84,43 @@ export default async function FlashcardCategoryPage({ params }: CategoryPageProp
             </div>
           </div>
         </div>
-      ) : decks.length === 0 ? (
-        <p className="rounded-xl border border-dashed border-border p-6 text-center font-ui text-sm text-secondary">
-          {t("noDecksInFolder")}
-        </p>
       ) : (
-        <DeckTable decks={decks} isSignedIn={Boolean(session)} favoritedDeckIds={favoritedDeckIds} />
+        <TopicPageBody category={category} decks={decks} canManage={canManage} assignableDecks={assignableDecks} userId={session?.user.id ?? null} />
       )}
     </main>
+  );
+}
+
+async function TopicPageBody({
+  category,
+  decks,
+  canManage,
+  assignableDecks,
+  userId,
+}: {
+  category: FlashcardCategory;
+  decks: DeckSummary[];
+  canManage: boolean;
+  assignableDecks: DeckSummary[];
+  userId: string | null;
+}) {
+  const deckRows = await getTopicDeckRows(userId, category.id);
+  const cardCount = deckRows.reduce((sum, d) => sum + d.cardCount, 0);
+  const [metrics, weakCards, allCards] = userId
+    ? await Promise.all([getTopicMetrics(userId, category.id), getTopicWeakCards(userId, category.id), getTopicAllCards(userId, category.id)])
+    : [null, [], null];
+
+  return (
+    <TopicPageClient
+      category={category}
+      deckRows={deckRows}
+      cardCount={cardCount}
+      allCards={allCards}
+      metrics={metrics}
+      weakCards={weakCards}
+      canManage={canManage}
+      decksInFolder={decks}
+      assignableDecks={assignableDecks}
+    />
   );
 }

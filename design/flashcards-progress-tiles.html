@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8">
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--navy:#14284A;--ink:#27344A;--mute:#5E6B80;--line:#D9DFE8;--soft:#F7F9FB;
+ --acc:#0E9BA6;--acc-ink:#0A7680;--acc-bg:#E1F4F5;--acc-bd:#B5E0E3;--acc-dk:#7FD3DA;
+ --amb:#FF8A3D;--amb-d:#F0569A;--amb-bg:#FFF1E4;--amb-bd:#FFD6B8;--pur:#7B61FF;--pur-bg:#F0ECFF;--pur-bd:#D6CCFF;
+ --bs:#17BF9A;--bs-bg:#E1FBF4;--grn:#1F7A4D;--red:#B8262B;--gold:#E8A317;--new:#E8564B;--lrn:#0E9BA6;--kn:#4FBF86}
+body{font-family:'Roboto','Noto Sans CJK JP',sans-serif;color:var(--ink);background:#E9EDF1;padding:24px}
+.sheet{width:1600px;background:#fff;border-radius:14px;box-shadow:0 24px 64px rgba(20,40,74,.2);margin:0 auto 30px;padding:34px 38px 40px;position:relative;overflow:hidden}
+.tb{position:absolute;left:0;right:0;top:0;height:7px;display:flex}.tb i{flex:1}
+.bh{display:flex;align-items:center;gap:12px}.bh img{height:34px}.bh b{font-size:20px;font-weight:900;color:var(--navy)}
+h1.t{font-size:32px;font-weight:900;color:var(--navy);letter-spacing:-1px;margin-top:9px}
+.dek{font-size:16px;color:var(--mute);margin-top:6px;line-height:1.45;max-width:1150px}
+.dek b{color:var(--navy)}
+.frame{margin-top:20px;border:1px solid var(--line);border-radius:14px;overflow:hidden;box-shadow:0 10px 30px rgba(20,40,74,.10)}
+.nav{background:var(--navy);padding:11px 18px 9px}
+.nav .r1{display:flex;align-items:center;gap:14px}
+.nav .logo{display:flex;align-items:center;gap:8px;color:#fff;font-size:16px;font-weight:900}
+.nav .logo img{height:24px}.nav .logo span{color:var(--acc)}
+.nav .srch{flex:1;max-width:420px;margin:0 auto;height:30px;border-radius:15px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.18);display:flex;align-items:center;padding:0 13px;font-size:11.5px;color:#9DB0CA}
+.nav .ut{display:flex;align-items:center;gap:11px;color:#C2D2E6;font-size:11.5px;font-weight:700}
+.nav .av{width:26px;height:26px;border-radius:50%;background:var(--acc);color:#fff;font-size:10px;font-weight:900;display:flex;align-items:center;justify-content:center}
+.nav .r2{display:flex;align-items:center;gap:5px;margin-top:9px}
+.nav .pl{color:#C2D2E6;font-size:11.5px;font-weight:700;padding:5px 9px}
+.nav .on{border:2px solid var(--acc);background:rgba(14,155,166,.18);color:#fff;font-size:12px;font-weight:900;padding:4px 12px;border-radius:15px}
+.nav .dv{width:1px;height:17px;background:rgba(255,255,255,.2);margin:0 5px}
+.body{display:flex;min-height:900px}
+.rail{width:246px;flex:none;background:var(--soft);border-right:1px solid var(--line);padding:13px 10px;display:flex;flex-direction:column}
+.newbtn{background:var(--navy);color:#fff;border-radius:10px;padding:10px;font-size:13px;font-weight:800;text-align:center}
+.fd{height:30px;background:#fff;border:1px solid var(--line);border-radius:9px;display:flex;align-items:center;padding:0 10px;font-size:11.5px;color:#A6B0BC;margin-top:9px}
+.g{font-size:9px;font-weight:900;letter-spacing:1.3px;color:#9AA5B4;padding:13px 7px 5px;display:flex}
+.g .pl{margin-left:auto;color:#AAB4C1;font-size:13px}
+.r{display:flex;align-items:center;gap:9px;font-size:12.5px;font-weight:700;color:var(--ink);padding:6px 8px;border-radius:8px}
+.r i{width:9px;height:9px;border-radius:3px;flex:none}
+.r .n{margin-left:auto;font-size:10.5px;font-weight:800;color:#9AA5B4}
+.r .due{margin-left:auto;font-size:10.5px;font-weight:900;color:#fff;background:var(--red);border-radius:10px;padding:2px 7px}
+.r.on{background:var(--acc-bg);color:var(--acc-ink);font-weight:800}
+.railfoot{margin-top:auto;border-top:1px solid var(--line);padding-top:9px;font-size:11px;color:#9AA5B4;font-weight:700}
+.main{flex:1;min-width:0;padding:24px 28px 36px}
+.hd{display:flex;align-items:flex-start;gap:16px}
+.hd h2{font-size:30px;font-weight:900;color:var(--navy);letter-spacing:-1px}
+.hd p{font-size:14.5px;color:var(--mute);margin-top:4px}
+.streak{margin-left:auto;display:flex;gap:9px}
+.streak div{border:1px solid var(--line);border-radius:12px;padding:8px 13px;text-align:center;background:#fff}
+.streak b{display:block;font-size:19px;font-weight:900;color:var(--navy)}
+.streak span{font-size:10.5px;color:#9AA5B4;font-weight:700}
+.sess{display:flex;gap:16px;background:var(--navy);border-radius:16px;padding:18px 22px;margin-top:16px;align-items:center}
+.sess .l{flex:1}
+.sess .k{font-size:10px;font-weight:900;letter-spacing:1.5px;color:var(--acc-dk)}
+.sess h3{font-size:29px;font-weight:900;color:#fff;letter-spacing:-.7px;margin-top:4px}
+.sess .brk{display:flex;gap:16px;margin-top:10px}
+.sess .brk div{font-size:12.5px;color:#9DB0CA;font-weight:700;display:flex;align-items:center;gap:6px}
+.sess .brk i{width:9px;height:9px;border-radius:3px;display:block}
+.sess .btn{background:var(--acc);color:#fff;font-size:15px;font-weight:900;border-radius:11px;padding:13px 22px;white-space:nowrap}
+.sess .btn2{border:1px solid rgba(255,255,255,.28);color:#fff;font-size:12.5px;font-weight:800;border-radius:10px;padding:12px 15px;white-space:nowrap}
+.fc{width:220px;flex:none;border-left:1px solid rgba(255,255,255,.14);padding-left:18px}
+.fc .k{font-size:9px;font-weight:900;letter-spacing:1.2px;color:#7E93B4;margin-bottom:8px}
+.bars{display:flex;align-items:flex-end;gap:6px;height:48px}
+.bars div{flex:1;background:var(--acc-dk);border-radius:4px 4px 0 0;opacity:.85}
+.fc .days{display:flex;gap:6px;margin-top:5px;font-size:9.5px;color:#7E93B4;font-weight:800}
+.fc .days span{flex:1;text-align:center}
+.sh{display:flex;align-items:baseline;gap:10px;margin-top:24px;margin-bottom:12px}
+.sh h4{font-size:17px;font-weight:900;color:var(--navy)}
+.sh span{font-size:12px;color:#9AA5B4;font-weight:700}
+.sh a{margin-left:auto;font-size:12px;font-weight:800;color:var(--acc-ink)}
+/* topic tiles */
+.tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.tile{border:2px solid;border-radius:18px;padding:18px 16px 16px;text-align:center;position:relative}
+.ring{width:96px;height:96px;border-radius:50%;margin:0 auto;display:flex;align-items:center;justify-content:center;position:relative}
+.ring::after{content:"";position:absolute;width:74px;height:74px;border-radius:50%;background:#fff}
+.ring em{position:relative;z-index:2;font-style:normal;font-size:23px;font-weight:900;color:var(--navy)}
+.ring em small{display:block;font-size:9.5px;font-weight:900;letter-spacing:1px;color:#9AA5B4;margin-top:1px}
+.tile b{display:block;font-size:17px;font-weight:900;color:var(--navy);margin-top:12px;letter-spacing:-.3px}
+.tile .s{font-size:11.5px;color:#9AA5B4;font-weight:700;margin-top:4px}
+.tile .st{display:flex;gap:5px;justify-content:center;margin-top:10px}
+.tile .st i{height:6px;border-radius:3px;display:block}
+.tile .dd{display:inline-block;margin-top:11px;font-size:11.5px;font-weight:900;color:#fff;background:var(--red);border-radius:11px;padding:4px 11px}
+.tile .dd.ok{background:#fff;color:var(--grn);border:1px solid #BFE3D0}
+.tile .star{position:absolute;top:14px;right:14px;font-size:15px;color:var(--gold)}
+/* weakest */
+.lrow{display:flex;align-items:center;gap:12px;border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin-bottom:9px}
+.lrow .sw{width:10px;height:34px;border-radius:5px;flex:none}
+.lrow .t{flex:1;min-width:0}
+.lrow .t b{display:block;font-size:14px;font-weight:900;color:var(--navy)}
+.lrow .t span{font-size:11.5px;color:#9AA5B4;font-weight:700}
+.lrow .bar{width:110px;height:7px;background:#EEF1F5;border-radius:4px;display:flex;overflow:hidden}
+.lrow .bar i{height:7px;display:block}
+.lrow .pc{font-size:12.5px;font-weight:900;color:var(--mute);width:48px;text-align:right}
+.lrow .btn{font-size:12px;font-weight:900;color:#fff;background:var(--acc);border-radius:9px;padding:8px 13px}
+.lrow .btn.sec{background:#fff;border:1px solid var(--line);color:var(--mute)}
+/* folder page */
+.crumb{display:flex;align-items:center;gap:8px;font-size:12.5px;color:#9AA5B4;font-weight:700}
+.crumb b{color:var(--mute)}
+.fhead{display:flex;gap:24px;align-items:center;border:2px solid var(--amb-bd);background:var(--amb-bg);border-radius:20px;padding:22px 26px;margin-top:12px}
+.fhead .rw{flex:1}
+.fhead h2{font-size:34px;font-weight:900;color:var(--navy);letter-spacing:-1px}
+.fhead .s{font-size:14px;color:var(--mute);font-weight:700;margin-top:5px}
+.fhead .st{display:flex;gap:6px;margin-top:12px;max-width:420px}
+.fhead .st i{height:9px;border-radius:5px;display:block}
+.fhead .lg{display:flex;gap:16px;margin-top:9px;font-size:12px;font-weight:800;color:var(--mute)}
+.fhead .lg span{display:flex;align-items:center;gap:6px}
+.fhead .lg i{width:9px;height:9px;border-radius:3px;display:block}
+.fhead .acts{display:flex;flex-direction:column;gap:9px;width:210px;flex:none}
+.fhead .acts .pri{background:var(--acc);color:#fff;font-size:15px;font-weight:900;border-radius:12px;padding:14px 0;text-align:center}
+.fhead .acts .sec{background:#fff;border:1px solid var(--amb-bd);color:var(--mute);font-size:12.5px;font-weight:800;border-radius:10px;padding:10px 0;text-align:center}
+.mrow{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:16px}
+.mt{border:1px solid var(--line);border-radius:13px;padding:13px 15px}
+.mt b{display:block;font-size:21px;font-weight:900;color:var(--navy)}
+.mt span{font-size:11.5px;color:#9AA5B4;font-weight:700}
+.tabs{display:flex;gap:4px;margin-top:22px;border-bottom:1px solid var(--line)}
+.tabs a{font-size:13.5px;font-weight:800;color:var(--mute);padding:10px 14px;border-bottom:3px solid transparent;margin-bottom:-1px}
+.tabs a.on{color:var(--navy);border-bottom-color:var(--amb)}
+</style></head><body>
+
+<!-- ===================== DASHBOARD ===================== -->
+<div class="sheet" id="d1">
+ <div class="tb"><i style="background:var(--acc)"></i><i style="background:var(--navy)"></i></div>
+ <div class="bh"><img src="logo.png" alt=""><b>PM&amp;R <span style="color:var(--acc)">Explained</span></b></div>
+ <h1 class="t">Flashcards — vivid topic colours</h1>
+ <div class="dek">Topics are <b>rings, not folders</b>: how much of each you know, how many are due, and what to fix first. Each topic now has <b>its own bright colour</b> — five topics read as five colours, not three ambers.</div>
+
+ <div class="frame">
+  <div class="nav">
+   <div class="r1"><div class="logo"><img src="logo.png" alt="">PM&amp;R <span>Explained</span></div>
+    <div class="srch">⌕&nbsp; Search conditions, exam maneuvers, calculators…</div>
+    <div class="ut"><span>🌐 EN ⌄</span><span>🔔</span><div class="av">CA</div></div></div>
+   <div class="r2"><span class="pl">▣ Explore library</span><span class="dv"></span><span class="pl">Clinical Tools</span><span class="pl">Study Planner</span><span class="pl">My Handbook</span><span class="on">◈ Flashcards</span><span class="pl">Question Bank</span><span class="pl">Courses</span></div>
+  </div>
+  <div class="body">
+   <div class="rail">
+    <div class="newbtn">＋ New deck</div>
+    <div class="fd">⌕ Search decks and cards…</div>
+    <div class="g">STUDY</div>
+    <div class="r on"><i style="background:var(--acc)"></i>Due today<span class="due">34</span></div>
+    <div class="r"><i style="background:#C6CED8"></i>All decks<span class="n">9</span></div>
+    <div class="r"><i style="background:var(--gold)"></i>★ Favourites<span class="n">2</span></div>
+    <div class="g">TOPICS<span class="pl">＋</span></div>
+    <div class="r"><i style="background:var(--amb)"></i>Foot &amp; ankle<span class="due">12</span></div>
+    <div class="r"><i style="background:var(--amb-d)"></i>Knee &amp; hip<span class="due">9</span></div>
+    <div class="r"><i style="background:var(--pur)"></i>Neurology<span class="due">7</span></div>
+    <div class="r"><i style="background:#17BF9A"></i>Basic sciences<span class="n">0</span></div>
+    <div class="r"><i style="background:#2EA8FF"></i>My decks<span class="due">3</span></div>
+    <div class="g">FROM THE LIBRARY</div>
+    <div class="r"><i style="background:var(--amb)"></i>MSK<span class="n">18</span></div>
+    <div class="r"><i style="background:var(--pur)"></i>Neurology<span class="n">9</span></div>
+    <div class="railfoot">307 cards · 34 due · 7-day streak</div>
+   </div>
+
+   <div class="main">
+    <div class="hd"><div><h2>Flashcards</h2><p>Spaced repetition across your topics and the library.</p></div>
+     <div class="streak"><div><b>7</b><span>day streak</span></div><div><b>86%</b><span>retention</span></div><div><b>307</b><span>cards</span></div></div></div>
+
+    <div class="sess">
+     <div class="l"><div class="k">TODAY'S SESSION</div><h3>34 cards due · about 9 min</h3>
+      <div class="brk"><div><i style="background:var(--new)"></i>12 new</div><div><i style="background:var(--lrn)"></i>17 learning</div><div><i style="background:var(--kn)"></i>5 review</div></div></div>
+     <div class="btn">▶ Start review</div><div class="btn2">Custom session</div>
+     <div class="fc"><div class="k">NEXT 7 DAYS</div>
+      <div class="bars"><div style="height:100%"></div><div style="height:52%"></div><div style="height:66%"></div><div style="height:38%"></div><div style="height:74%"></div><div style="height:28%"></div><div style="height:44%"></div></div>
+      <div class="days"><span>Today</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span><span>Mon</span></div></div>
+    </div>
+
+    <div class="sh"><h4>Your topics</h4><span>how much you know · 5 topics</span><a>Manage topics ›</a></div>
+    <div class="tiles">
+     <div class="tile" style="border-color:var(--amb-bd);background:var(--amb-bg)"><span class="star">★</span>
+      <div class="ring" style="background:conic-gradient(#FF8A3D 58%,#FFD6B8 0)"><em>58%<small>KNOWN</small></em></div>
+      <b>Foot &amp; ankle</b><div class="s">3 decks · 84 cards</div>
+      <div class="st"><i style="width:22%;background:var(--new)"></i><i style="width:20%;background:var(--lrn)"></i><i style="width:58%;background:var(--kn)"></i></div>
+      <span class="dd">12 due</span></div>
+
+     <div class="tile" style="border-color:var(--amb-bd);background:var(--amb-bg)">
+      <div class="ring" style="background:conic-gradient(#F0569A 71%,#FFC6DD 0)"><em>71%<small>KNOWN</small></em></div>
+      <b>Knee &amp; hip</b><div class="s">2 decks · 61 cards</div>
+      <div class="st"><i style="width:10%;background:var(--new)"></i><i style="width:19%;background:var(--lrn)"></i><i style="width:71%;background:var(--kn)"></i></div>
+      <span class="dd">9 due</span></div>
+
+     <div class="tile" style="border-color:var(--pur-bd);background:var(--pur-bg)">
+      <div class="ring" style="background:conic-gradient(#7B61FF 64%,#D6CCFF 0)"><em>64%<small>KNOWN</small></em></div>
+      <b>Neurology</b><div class="s">4 decks · 96 cards</div>
+      <div class="st"><i style="width:14%;background:var(--new)"></i><i style="width:22%;background:var(--lrn)"></i><i style="width:64%;background:var(--kn)"></i></div>
+      <span class="dd">7 due</span></div>
+
+     <div class="tile" style="border-color:#B3F0E1;background:var(--bs-bg)">
+      <div class="ring" style="background:conic-gradient(#17BF9A 40%,#B3F0E1 0)"><em>40%<small>KNOWN</small></em></div>
+      <b>Basic sciences</b><div class="s">2 decks · 40 cards</div>
+      <div class="st"><i style="width:35%;background:var(--new)"></i><i style="width:25%;background:var(--lrn)"></i><i style="width:40%;background:var(--kn)"></i></div>
+      <span class="dd ok">✓ up to date</span></div>
+
+     <div class="tile" style="border-color:#BCE0FF;background:#E6F4FF"><span class="star">★</span>
+      <div class="ring" style="background:conic-gradient(#2EA8FF 83%,#BCE0FF 0)"><em>83%<small>KNOWN</small></em></div>
+      <b>My decks</b><div class="s">2 decks · 26 cards</div>
+      <div class="st"><i style="width:12%;background:var(--new)"></i><i style="width:5%;background:var(--lrn)"></i><i style="width:83%;background:var(--kn)"></i></div>
+      <span class="dd">3 due</span></div>
+
+     <div class="tile" style="border-style:dashed;border-color:var(--line);display:flex;flex-direction:column;align-items:center;justify-content:center;color:#9AA5B4">
+      <div style="font-size:30px;font-weight:900">＋</div><b style="color:#9AA5B4">New topic</b>
+      <div class="s" style="padding:0 14px">group decks, or generate one from a library region</div></div>
+    </div>
+
+    <div class="sh"><h4>Fix these first</h4><span>where the lapses are</span><a>Why these? ›</a></div>
+    <div class="lrow"><span class="sw" style="background:#17BF9A"></span><div class="t"><b>Biomechanics — basics</b><span>Basic sciences · 8 lapses this week</span></div>
+     <div class="bar"><i style="width:35%;background:var(--new)"></i><i style="width:25%;background:var(--lrn)"></i><i style="width:40%;background:var(--kn)"></i></div><span class="pc">40%</span><span class="btn">Study 6</span></div>
+    <div class="lrow"><span class="sw" style="background:#7B61FF"></span><div class="t"><b>Spasticity — drugs and doses</b><span>Neurology · 5 lapses this week</span></div>
+     <div class="bar"><i style="width:18%;background:var(--new)"></i><i style="width:24%;background:var(--lrn)"></i><i style="width:58%;background:var(--kn)"></i></div><span class="pc">58%</span><span class="btn">Study 4</span></div>
+    <div class="lrow"><span class="sw" style="background:#FF8A3D"></span><div class="t"><b>Achilles tendinopathy</b><span>Foot &amp; ankle · 3 lapses this week</span></div>
+     <div class="bar"><i style="width:21%;background:var(--new)"></i><i style="width:21%;background:var(--lrn)"></i><i style="width:58%;background:var(--kn)"></i></div><span class="pc">58%</span><span class="btn sec">Later</span></div>
+   </div>
+  </div>
+ </div>
+</div>
+
+<!-- ===================== INSIDE A TOPIC ===================== -->
+<div class="sheet" id="d2">
+ <div class="tb"><i style="background:var(--amb)"></i><i style="background:var(--navy)"></i></div>
+ <div class="bh"><img src="logo.png" alt=""><b>PM&amp;R <span style="color:var(--acc)">Explained</span></b></div>
+ <h1 class="t">Inside a topic</h1>
+ <div class="dek">The tile opens into the same shape, larger: <b>the ring, then the decks</b>. The topic's colour runs through the page, and every button says how many cards it will show you.</div>
+
+ <div class="frame">
+  <div class="nav">
+   <div class="r1"><div class="logo"><img src="logo.png" alt="">PM&amp;R <span>Explained</span></div>
+    <div class="srch">⌕&nbsp; Search conditions, exam maneuvers, calculators…</div>
+    <div class="ut"><span>🌐 EN ⌄</span><span>🔔</span><div class="av">CA</div></div></div>
+   <div class="r2"><span class="pl">▣ Explore library</span><span class="dv"></span><span class="pl">Clinical Tools</span><span class="pl">Study Planner</span><span class="pl">My Handbook</span><span class="on">◈ Flashcards</span><span class="pl">Question Bank</span><span class="pl">Courses</span></div>
+  </div>
+  <div class="body">
+   <div class="rail">
+    <div class="newbtn">＋ New deck</div>
+    <div class="fd">⌕ Search decks and cards…</div>
+    <div class="g">STUDY</div>
+    <div class="r"><i style="background:var(--acc)"></i>Due today<span class="due">34</span></div>
+    <div class="r"><i style="background:#C6CED8"></i>All decks<span class="n">9</span></div>
+    <div class="r"><i style="background:var(--gold)"></i>★ Favourites<span class="n">2</span></div>
+    <div class="g">TOPICS<span class="pl">＋</span></div>
+    <div class="r on"><i style="background:#FF8A3D"></i>Foot &amp; ankle<span class="due">12</span></div>
+    <div class="r"><i style="background:var(--amb-d)"></i>Knee &amp; hip<span class="due">9</span></div>
+    <div class="r"><i style="background:var(--pur)"></i>Neurology<span class="due">7</span></div>
+    <div class="r"><i style="background:#17BF9A"></i>Basic sciences<span class="n">0</span></div>
+    <div class="r"><i style="background:#2EA8FF"></i>My decks<span class="due">3</span></div>
+    <div class="railfoot">307 cards · 34 due · 7-day streak</div>
+   </div>
+
+   <div class="main">
+    <div class="crumb">Flashcards <span>›</span> <b>Topics</b> <span>›</span> <b>Foot &amp; ankle</b></div>
+
+    <div class="fhead">
+     <div class="ring" style="background:conic-gradient(#FF8A3D 58%,#FFD6B8 0);width:124px;height:124px"><em style="font-size:29px">58%<small>KNOWN</small></em></div>
+     <div class="rw">
+      <h2>Foot &amp; ankle</h2>
+      <div class="s">3 decks · 84 cards · from MSK in the library</div>
+      <div class="st"><i style="width:22%;background:var(--new)"></i><i style="width:20%;background:var(--lrn)"></i><i style="width:58%;background:var(--kn)"></i></div>
+      <div class="lg"><span><i style="background:var(--new)"></i>18 new</span><span><i style="background:var(--lrn)"></i>17 learning</span><span><i style="background:var(--kn)"></i>49 known</span></div>
+     </div>
+     <div class="acts">
+      <div class="pri">▶ Study 12 due</div>
+      <div class="sec">Custom session</div>
+      <div class="sec">＋ New deck · ⋯</div>
+     </div>
+    </div>
+
+    <div class="mrow">
+     <div class="mt"><b>12</b><span>due today</span></div>
+     <div class="mt"><b>81%</b><span>retention here</span></div>
+     <div class="mt"><b>Tomorrow</b><span>next 9 cards</span></div>
+     <div class="mt"><b>3</b><span>lapses this week</span></div>
+    </div>
+
+    <div class="tabs"><a class="on">Decks · 3</a><a>All cards · 84</a><a>Statistics</a><a>Settings</a></div>
+
+    <div class="sh"><h4>Decks</h4><span>sorted by due</span><a>Sort ⌄</a></div>
+
+    <div class="lrow"><span class="sw" style="background:#FF8A3D"></span>
+     <div class="t"><b>Achilles tendinopathy ★</b><span>28 cards · from the library · studied yesterday</span></div>
+     <div class="bar"><i style="width:21%;background:var(--new)"></i><i style="width:21%;background:var(--lrn)"></i><i style="width:58%;background:var(--kn)"></i></div><span class="pc">58%</span>
+     <span class="btn">Study 12</span><span class="btn sec">⋯</span></div>
+
+    <div class="lrow"><span class="sw" style="background:#FF8A3D"></span>
+     <div class="t"><b>Plantar fasciopathy</b><span>26 cards · from the library · done today</span></div>
+     <div class="bar"><i style="width:8%;background:var(--new)"></i><i style="width:14%;background:var(--lrn)"></i><i style="width:78%;background:var(--kn)"></i></div><span class="pc">78%</span>
+     <span class="btn sec">Review early</span><span class="btn sec">⋯</span></div>
+
+    <div class="lrow"><span class="sw" style="background:#FF8A3D"></span>
+     <div class="t"><b>Ankle sprain</b><span>30 cards · created by you · due in 2 days</span></div>
+     <div class="bar"><i style="width:30%;background:var(--new)"></i><i style="width:10%;background:var(--lrn)"></i><i style="width:60%;background:var(--kn)"></i></div><span class="pc">60%</span>
+     <span class="btn sec">Open</span><span class="btn sec">⋯</span></div>
+
+    <div class="lrow" style="border-style:dashed;color:#9AA5B4;justify-content:center;font-weight:900">＋ New deck in Foot &amp; ankle &nbsp;·&nbsp; or generate one from a library page</div>
+
+    <div class="sh"><h4>Weak cards in this topic</h4><span>3 with repeated lapses</span><a>Study these 3 ›</a></div>
+    <div class="lrow"><span class="sw" style="background:var(--new)"></span>
+     <div class="t"><b>"Which tendon is loaded in a heel raise?"</b><span>Achilles tendinopathy · failed 3 times</span></div>
+     <span class="btn sec">Edit</span><span class="btn">Study</span></div>
+    <div class="lrow"><span class="sw" style="background:var(--new)"></span>
+     <div class="t"><b>"First-line loading protocol for mid-portion tendinopathy?"</b><span>Achilles tendinopathy · failed 2 times</span></div>
+     <span class="btn sec">Edit</span><span class="btn">Study</span></div>
+   </div>
+  </div>
+ </div>
+</div>
+
+</body></html>

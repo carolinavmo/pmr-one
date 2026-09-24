@@ -2,6 +2,16 @@ import { pool } from "@/lib/db";
 import type { CardColor } from "@/lib/editorial-blocks";
 import { nextBox, computeDueAt, MASTERY_BOX } from "@/lib/flashcard-scoring";
 import type { CardIconName } from "@/components/ui/cardIcons";
+import { type TopicColor, isTopicColor, pickFreeTopicColor } from "@/lib/flashcard-topic-colors";
+import {
+  type CardState,
+  type Grade,
+  type Sm2State,
+  type Sm2Outcome,
+  NEW_CARD_STATE,
+  applyGrade,
+  KNOWN_INTERVAL_THRESHOLD_DAYS,
+} from "@/lib/flashcard-sm2";
 
 // Preset ("system") decks + member-created ("user") decks, sharing one
 // table set — see db/migrations/0041_flashcards.sql for why this is a
@@ -22,6 +32,12 @@ export interface FlashcardCategory {
   ownerType: DeckOwnerType;
   name: string;
   color: CardColor;
+  // The Candy palette key (flashcard-topic-colors.ts) — separate from
+  // `color` above, which stays the app-wide CardColor used for the
+  // folder's icon chip until a later pass moves the dashboard itself
+  // onto the topic palette. Nullable only for rows inserted before
+  // migration 0062; every category created since gets one assigned.
+  topicColor: TopicColor | null;
   icon: CardIconName | undefined;
   deckCount: number;
   // True for the one open sample folder a signed-out visitor can fully
@@ -237,6 +253,566 @@ export async function getDeckWithCards(
       dueAt: r.due_at,
     })),
   };
+}
+
+// ============================================================
+// Pass 2 — the study screen. A parallel data path from everything
+// above: reads flashcard_sm2_progress/flashcard_review_log (0063),
+// not flashcard_progress (0041, still backing the old inline
+// /flashcards/[deckId] reviewer until a later pass cuts that over).
+// ============================================================
+
+export interface StudyCard {
+  id: string;
+  question: string;
+  answer: string;
+  deckId: string;
+  deckName: string;
+  deckColor: CardColor;
+  categoryId: string | null;
+  topicColor: TopicColor | null;
+  topicName: string | null;
+  sourceDiseaseName: string | null;
+  sourceDiseaseSlug: string | null;
+  sourceReviewedAt: string | null;
+  sm2: Sm2State;
+}
+
+function mapStudyCardRow(r: {
+  id: string;
+  question: string;
+  answer: string;
+  deck_id: string;
+  deck_name: string;
+  deck_color: CardColor;
+  category_id: string | null;
+  topic_color: string | null;
+  category_name: string | null;
+  source_disease_name: string | null;
+  source_disease_slug: string | null;
+  source_reviewed_at: string | null;
+  state: CardState | null;
+  ease_factor: number | null;
+  interval_days: number | null;
+  repetitions: number | null;
+}): StudyCard {
+  return {
+    id: r.id,
+    question: r.question,
+    answer: r.answer,
+    deckId: r.deck_id,
+    deckName: r.deck_name,
+    deckColor: r.deck_color,
+    categoryId: r.category_id,
+    topicColor: isTopicColor(r.topic_color) ? r.topic_color : null,
+    topicName: r.category_name,
+    sourceDiseaseName: r.source_disease_name,
+    sourceDiseaseSlug: r.source_disease_slug,
+    sourceReviewedAt: r.source_reviewed_at,
+    sm2:
+      r.state && r.ease_factor !== null && r.interval_days !== null && r.repetitions !== null
+        ? { state: r.state, easeFactor: r.ease_factor, intervalDays: r.interval_days, repetitions: r.repetitions }
+        : NEW_CARD_STATE,
+  };
+}
+
+const STUDY_CARD_SELECT = `
+  SELECT f.id, f.question, f.answer, f.deck_id,
+    d.name AS deck_name, d.color AS deck_color, d.category_id,
+    c.name AS category_name, c.topic_color,
+    dis.canonical_name AS source_disease_name, dis.slug AS source_disease_slug, dis.reviewed_at AS source_reviewed_at,
+    p.state, p.ease_factor, p.interval_days, p.repetitions
+  FROM flashcard f
+  JOIN flashcard_deck d ON d.id = f.deck_id
+  LEFT JOIN flashcard_category c ON c.id = d.category_id
+  LEFT JOIN disease dis ON dis.id = d.source_disease_id
+  LEFT JOIN flashcard_sm2_progress p ON p.flashcard_id = f.id AND p.user_id = $1
+`;
+
+// Due now: never studied (no progress row) or due_at has passed. Cards
+// still short-interval "learning"/"relearning" get requeued by the
+// client within the same session (StudySession.tsx) rather than
+// re-querying the DB — see flashcard-sm2.ts's own module comment.
+const STUDY_CARD_DUE_FILTER = `AND (p.due_at IS NULL OR p.due_at <= now())`;
+
+// One deck's due cards — `deckId` ownership-checked the same way
+// getDeckWithCards does (a private user deck 404s for anyone but its
+// owner; a system deck is open to any signed-in user). `includeNotDue`
+// backs the deck row's "Review early" action (FLASHCARDS-SPEC.md) —
+// studying every card regardless of due_at, for a deck already
+// finished today.
+export async function getStudyCardsForDeck(userId: string, deckId: string, includeNotDue = false): Promise<StudyCard[] | null> {
+  const { rows: ownerCheck } = await pool.query(
+    `SELECT 1 FROM flashcard_deck WHERE id = $1 AND (owner_type = 'system' OR user_id = $2)`,
+    [deckId, userId]
+  );
+  if (ownerCheck.length === 0) return null;
+
+  const { rows } = await pool.query(
+    `${STUDY_CARD_SELECT} WHERE f.deck_id = $2 ${includeNotDue ? "" : STUDY_CARD_DUE_FILTER} ORDER BY f.position, f.created_at`,
+    [userId, deckId]
+  );
+  return rows.map(mapStudyCardRow);
+}
+
+// A whole topic's due cards across every deck in it — same ownership
+// rule as getCategoryWithDecks (a private user folder 404s for
+// anyone but its owner).
+export async function getStudyCardsForCategory(userId: string, categoryId: string, includeNotDue = false): Promise<StudyCard[] | null> {
+  const { rows: ownerCheck } = await pool.query(
+    `SELECT 1 FROM flashcard_category WHERE id = $1 AND (owner_type = 'system' OR user_id = $2)`,
+    [categoryId, userId]
+  );
+  if (ownerCheck.length === 0) return null;
+
+  const { rows } = await pool.query(
+    `${STUDY_CARD_SELECT} WHERE d.category_id = $2 ${includeNotDue ? "" : STUDY_CARD_DUE_FILTER} ORDER BY d.position, f.position, f.created_at`,
+    [userId, categoryId]
+  );
+  return rows.map(mapStudyCardRow);
+}
+
+// Every due card across every deck this user can reach (the
+// dashboard's own "Start review" button, FLASHCARDS-SPEC.md rule 2:
+// "never offer a session that doesn't exist" — this is the one entry
+// point with no single deck/topic to scope to). No ownership check
+// needed: unlike getStudyCardsForDeck/getStudyCardsForCategory, the
+// accessible-deck condition is baked directly into the WHERE clause
+// rather than checked against one row first.
+export async function getStudyCardsForAccount(userId: string, includeNotDue = false): Promise<StudyCard[]> {
+  const { rows } = await pool.query(
+    `${STUDY_CARD_SELECT} WHERE (d.owner_type = 'system' OR d.user_id = $1) ${includeNotDue ? "" : STUDY_CARD_DUE_FILTER} ORDER BY d.position, f.position, f.created_at`,
+    [userId]
+  );
+  return rows.map(mapStudyCardRow);
+}
+
+// Write-before-advance (FLASHCARDS-IMPLEMENTATION.md: "Write the
+// review log on every grade, before the UI advances") — one
+// transaction covering both the log insert and the progress upsert,
+// so a mid-write failure can never leave one without the other.
+export async function recordSm2Review(
+  userId: string,
+  flashcardId: string,
+  deckId: string,
+  current: Sm2State,
+  grade: Grade
+): Promise<Sm2Outcome> {
+  const outcome = applyGrade(current, grade);
+  const dueAt = new Date(Date.now() + outcome.dueInMinutes * 60_000);
+
+  const client = await pool.connect();
+  try {
+    await client.query("BEGIN");
+    await client.query(
+      `INSERT INTO flashcard_sm2_progress (user_id, flashcard_id, state, ease_factor, interval_days, repetitions, due_at, last_reviewed_at)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, now())
+       ON CONFLICT (user_id, flashcard_id) DO UPDATE
+       SET state = $3, ease_factor = $4, interval_days = $5, repetitions = $6, due_at = $7, last_reviewed_at = now()`,
+      [userId, flashcardId, outcome.next.state, outcome.next.easeFactor, outcome.next.intervalDays, outcome.next.repetitions, dueAt]
+    );
+    await client.query(
+      `INSERT INTO flashcard_review_log (user_id, flashcard_id, deck_id, grade, state_before, state_after, interval_before_days, interval_after_days)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`,
+      [userId, flashcardId, deckId, grade, current.state, outcome.next.state, current.intervalDays, outcome.next.intervalDays]
+    );
+    await client.query("COMMIT");
+  } catch (err) {
+    await client.query("ROLLBACK");
+    throw err;
+  } finally {
+    client.release();
+  }
+
+  return outcome;
+}
+
+// Consecutive days (in the user's own local calendar day — the
+// caller passes today's Y-M-D string, e.g. from the browser's
+// Intl.DateTimeFormat, not the server's UTC day) with at least one
+// review logged. Walks backward from today; stops at the first gap.
+export async function getUserStreak(userId: string, todayYmd: string): Promise<number> {
+  const { rows } = await pool.query<{ day: string }>(
+    `SELECT DISTINCT (reviewed_at AT TIME ZONE 'UTC')::date::text AS day
+     FROM flashcard_review_log WHERE user_id = $1
+     ORDER BY day DESC LIMIT 400`,
+    [userId]
+  );
+  const reviewedDays = new Set(rows.map((r) => r.day));
+  let streak = 0;
+  const cursor = new Date(`${todayYmd}T00:00:00Z`);
+  while (reviewedDays.has(cursor.toISOString().slice(0, 10))) {
+    streak += 1;
+    cursor.setUTCDate(cursor.getUTCDate() - 1);
+  }
+  return streak;
+}
+
+// "Known %" (FLASHCARDS-SPEC.md — reused verbatim by the dashboard in
+// a later pass): cards in review with interval >= 21 days, over every
+// card in the topic (including ones never studied).
+export async function getTopicKnownPercent(userId: string, categoryId: string): Promise<number> {
+  const { rows } = await pool.query<{ total: string; known: string }>(
+    `SELECT
+       COUNT(*)::int AS total,
+       COUNT(*) FILTER (WHERE p.state = 'review' AND p.interval_days >= ${KNOWN_INTERVAL_THRESHOLD_DAYS})::int AS known
+     FROM flashcard f
+     JOIN flashcard_deck d ON d.id = f.deck_id
+     LEFT JOIN flashcard_sm2_progress p ON p.flashcard_id = f.id AND p.user_id = $1
+     WHERE d.category_id = $2`,
+    [userId, categoryId]
+  );
+  const { total, known } = rows[0] ?? { total: "0", known: "0" };
+  return Number(total) === 0 ? 0 : Math.round((Number(known) / Number(total)) * 100);
+}
+
+// ============================================================
+// Pass 3 — the topic page
+// ============================================================
+
+export interface TopicDeckRow {
+  id: string;
+  name: string;
+  color: CardColor;
+  iconUrl: string | null;
+  isFavorited: boolean;
+  cardCount: number;
+  newCount: number;
+  learningCount: number;
+  reviewCount: number;
+  knownCount: number;
+  dueCount: number;
+  lastStudiedAt: string | null;
+  sourceDiseaseName: string | null;
+  sourceDiseaseSlug: string | null;
+}
+
+// Per-deck rollup for the topic page's deck rows. last_studied_at is a
+// scalar subquery rather than a third join — joining flashcard_review_log
+// (many rows per card) alongside flashcard/flashcard_sm2_progress (one
+// row per card) in the same GROUP BY would fan out and inflate every
+// COUNT() in this query. Every FILTER also checks `f.id IS NOT NULL`:
+// without it, a deck with zero cards still gets one row out of the
+// LEFT JOIN chain (f and p both null), and `p.state IS NULL` /
+// `p.due_at IS NULL` read as true for that phantom row — miscounting
+// an empty deck as 1 new/due card.
+// userId is nullable — a signed-out visitor to a public topic still
+// sees the deck list (canBrowseFolder), just with every personal
+// column (due/known/favourite/last-studied) naturally coming back
+// empty, since `p.user_id = NULL` / `... = NULL` never matches in SQL
+// rather than needing a second no-session query shape.
+export async function getTopicDeckRows(userId: string | null, categoryId: string): Promise<TopicDeckRow[]> {
+  const { rows } = await pool.query(
+    `SELECT d.id, d.name, d.color, d.icon_url,
+       dis.canonical_name AS source_disease_name, dis.slug AS source_disease_slug,
+       COUNT(f.id)::int AS card_count,
+       COUNT(*) FILTER (WHERE f.id IS NOT NULL AND (p.state IS NULL OR p.state = 'new'))::int AS new_count,
+       COUNT(*) FILTER (WHERE f.id IS NOT NULL AND p.state = 'learning')::int AS learning_count,
+       COUNT(*) FILTER (WHERE f.id IS NOT NULL AND p.state = 'review')::int AS review_count,
+       COUNT(*) FILTER (WHERE f.id IS NOT NULL AND p.state = 'review' AND p.interval_days >= ${KNOWN_INTERVAL_THRESHOLD_DAYS})::int AS known_count,
+       COUNT(*) FILTER (WHERE f.id IS NOT NULL AND (p.due_at IS NULL OR p.due_at <= now()))::int AS due_count,
+       (SELECT MAX(reviewed_at) FROM flashcard_review_log WHERE deck_id = d.id AND user_id = $1) AS last_studied_at,
+       EXISTS (SELECT 1 FROM flashcard_deck_favorite WHERE deck_id = d.id AND user_id = $1) AS is_favorited
+     FROM flashcard_deck d
+     LEFT JOIN disease dis ON dis.id = d.source_disease_id
+     LEFT JOIN flashcard f ON f.deck_id = d.id
+     LEFT JOIN flashcard_sm2_progress p ON p.flashcard_id = f.id AND p.user_id = $1
+     WHERE d.category_id = $2
+     GROUP BY d.id, dis.canonical_name, dis.slug
+     ORDER BY d.position, d.name`,
+    [userId, categoryId]
+  );
+  return rows.map((r) => ({
+    id: r.id,
+    name: r.name,
+    color: r.color,
+    iconUrl: r.icon_url,
+    isFavorited: r.is_favorited,
+    cardCount: r.card_count,
+    newCount: r.new_count,
+    learningCount: r.learning_count,
+    reviewCount: r.review_count,
+    knownCount: r.known_count,
+    dueCount: r.due_count,
+    lastStudiedAt: r.last_studied_at,
+    sourceDiseaseName: r.source_disease_name,
+    sourceDiseaseSlug: r.source_disease_slug,
+  }));
+}
+
+export interface TopicMetrics {
+  dueToday: number;
+  // null when there's no review history yet to compute a rate from —
+  // never a fabricated 0%, same "null means no data" rule the rest of
+  // this app's aggregates already follow.
+  retentionPercent: number | null;
+  nextReviewAt: string | null;
+  lapsesThisWeek: number;
+  knownPercent: number;
+}
+
+export async function getTopicMetrics(userId: string, categoryId: string): Promise<TopicMetrics> {
+  const [dueRows, retentionRows, nextReviewRows, lapseRows, knownPercent] = await Promise.all([
+    pool.query<{ due_count: string }>(
+      `SELECT COUNT(*)::int AS due_count
+       FROM flashcard f
+       JOIN flashcard_deck d ON d.id = f.deck_id
+       LEFT JOIN flashcard_sm2_progress p ON p.flashcard_id = f.id AND p.user_id = $1
+       WHERE d.category_id = $2 AND (p.due_at IS NULL OR p.due_at <= now())`,
+      [userId, categoryId]
+    ),
+    // Retention: correct (not "again") ÷ total, over review-state
+    // answers only in the last 30 days — same "correct = not a lapse"
+    // split Session Complete's own accuracy uses (SessionCompleteView.tsx).
+    pool.query<{ total: string; correct: string }>(
+      `SELECT COUNT(*)::int AS total, COUNT(*) FILTER (WHERE rl.grade != 'again')::int AS correct
+       FROM flashcard_review_log rl
+       JOIN flashcard_deck d ON d.id = rl.deck_id
+       WHERE d.category_id = $2 AND rl.user_id = $1 AND rl.state_before = 'review'
+         AND rl.reviewed_at > now() - interval '30 days'`,
+      [userId, categoryId]
+    ),
+    pool.query<{ next_review_at: string | null }>(
+      `SELECT MIN(p.due_at) AS next_review_at
+       FROM flashcard f
+       JOIN flashcard_deck d ON d.id = f.deck_id
+       JOIN flashcard_sm2_progress p ON p.flashcard_id = f.id AND p.user_id = $1
+       WHERE d.category_id = $2 AND p.due_at > now()`,
+      [userId, categoryId]
+    ),
+    pool.query<{ lapses: string }>(
+      `SELECT COUNT(*)::int AS lapses
+       FROM flashcard_review_log rl
+       JOIN flashcard_deck d ON d.id = rl.deck_id
+       WHERE d.category_id = $2 AND rl.user_id = $1 AND rl.grade = 'again'
+         AND rl.reviewed_at > now() - interval '7 days'`,
+      [userId, categoryId]
+    ),
+    getTopicKnownPercent(userId, categoryId),
+  ]);
+
+  const retentionTotal = Number(retentionRows.rows[0]?.total ?? 0);
+  return {
+    dueToday: Number(dueRows.rows[0]?.due_count ?? 0),
+    retentionPercent:
+      retentionTotal === 0 ? null : Math.round((Number(retentionRows.rows[0].correct) / retentionTotal) * 100),
+    nextReviewAt: nextReviewRows.rows[0]?.next_review_at ?? null,
+    lapsesThisWeek: Number(lapseRows.rows[0]?.lapses ?? 0),
+    knownPercent,
+  };
+}
+
+export interface WeakCard {
+  id: string;
+  deckId: string;
+  deckName: string;
+  question: string;
+  lapses: number;
+}
+
+// "The actual questions that keep failing" (FLASHCARDS-SPEC.md) —
+// same "lapses in the last 7 days" ranking Pass 4's dashboard-level
+// "Fix these first" reuses, just scoped to one topic instead of the
+// whole account.
+export async function getTopicWeakCards(userId: string, categoryId: string, limit = 5): Promise<WeakCard[]> {
+  const { rows } = await pool.query(
+    `SELECT f.id, f.deck_id, d.name AS deck_name, f.question, COUNT(rl.id)::int AS lapses
+     FROM flashcard_review_log rl
+     JOIN flashcard f ON f.id = rl.flashcard_id
+     JOIN flashcard_deck d ON d.id = f.deck_id
+     WHERE d.category_id = $2 AND rl.user_id = $1 AND rl.grade = 'again'
+       AND rl.reviewed_at > now() - interval '7 days'
+     GROUP BY f.id, d.name, f.question
+     ORDER BY lapses DESC, f.question
+     LIMIT $3`,
+    [userId, categoryId, limit]
+  );
+  return rows.map((r) => ({ id: r.id, deckId: r.deck_id, deckName: r.deck_name, question: r.question, lapses: r.lapses }));
+}
+
+export interface TopicCardRow {
+  id: string;
+  deckId: string;
+  deckName: string;
+  question: string;
+  state: CardState;
+}
+
+// The "All cards" tab — every card in the topic, flattened across its
+// decks, for a scan-the-whole-topic view rather than one deck at a
+// time.
+export async function getTopicAllCards(userId: string, categoryId: string): Promise<TopicCardRow[]> {
+  const { rows } = await pool.query(
+    `SELECT f.id, f.deck_id, d.name AS deck_name, f.question, p.state
+     FROM flashcard f
+     JOIN flashcard_deck d ON d.id = f.deck_id
+     LEFT JOIN flashcard_sm2_progress p ON p.flashcard_id = f.id AND p.user_id = $1
+     WHERE d.category_id = $2
+     ORDER BY d.position, d.name, f.position`,
+    [userId, categoryId]
+  );
+  return rows.map((r) => ({ id: r.id, deckId: r.deck_id, deckName: r.deck_name, question: r.question, state: r.state ?? "new" }));
+}
+
+// ============================================================
+// Pass 4 — the dashboard
+// ============================================================
+
+export interface DashboardMetrics {
+  streak: number;
+  retentionPercent: number | null;
+  totalCards: number;
+  dueToday: number;
+  newCount: number;
+  learningCount: number;
+  reviewCount: number;
+  // "estimated time = cards x 6s, rounded to the minute"
+  // (FLASHCARDS-IMPLEMENTATION.md) — 0 only when dueToday is itself 0.
+  estimatedMinutes: number;
+}
+
+// Every deck this user can reach: presets (open to anyone signed in)
+// plus their own. Same accessible-deck definition getStudyCardsForDeck's
+// ownership check uses, just applied account-wide instead of to one deck.
+export async function getDashboardMetrics(userId: string, todayYmd: string): Promise<DashboardMetrics> {
+  const [countRows, retentionRows, streak] = await Promise.all([
+    pool.query<{ total_cards: number; due_today: number; new_count: number; learning_count: number; review_count: number }>(
+      `SELECT
+         COUNT(f.id)::int AS total_cards,
+         COUNT(*) FILTER (WHERE p.due_at IS NULL OR p.due_at <= now())::int AS due_today,
+         COUNT(*) FILTER (WHERE p.state IS NULL OR p.state = 'new')::int AS new_count,
+         COUNT(*) FILTER (WHERE p.state = 'learning')::int AS learning_count,
+         COUNT(*) FILTER (WHERE p.state = 'review')::int AS review_count
+       FROM flashcard f
+       JOIN flashcard_deck d ON d.id = f.deck_id
+       LEFT JOIN flashcard_sm2_progress p ON p.flashcard_id = f.id AND p.user_id = $1
+       WHERE d.owner_type = 'system' OR d.user_id = $1`,
+      [userId]
+    ),
+    pool.query<{ total: number; correct: number }>(
+      `SELECT COUNT(*)::int AS total, COUNT(*) FILTER (WHERE rl.grade != 'again')::int AS correct
+       FROM flashcard_review_log rl
+       JOIN flashcard_deck d ON d.id = rl.deck_id
+       WHERE rl.user_id = $1 AND rl.state_before = 'review' AND rl.reviewed_at > now() - interval '30 days'
+         AND (d.owner_type = 'system' OR d.user_id = $1)`,
+      [userId]
+    ),
+    getUserStreak(userId, todayYmd),
+  ]);
+
+  const c = countRows.rows[0];
+  const r = retentionRows.rows[0];
+  const dueToday = Number(c?.due_today ?? 0);
+  return {
+    streak,
+    retentionPercent: !r || Number(r.total) === 0 ? null : Math.round((Number(r.correct) / Number(r.total)) * 100),
+    totalCards: Number(c?.total_cards ?? 0),
+    dueToday,
+    newCount: Number(c?.new_count ?? 0),
+    learningCount: Number(c?.learning_count ?? 0),
+    reviewCount: Number(c?.review_count ?? 0),
+    estimatedMinutes: dueToday === 0 ? 0 : Math.max(1, Math.round((dueToday * 6) / 60)),
+  };
+}
+
+export interface ForecastDay {
+  date: string;
+  count: number;
+}
+
+// Seven bars, today first — cards whose current due_at falls on each
+// of the next 7 days. Days with nothing due still get a zero-count
+// entry (a bar with no height), never an absent day.
+export async function getSevenDayForecast(userId: string, todayYmd: string): Promise<ForecastDay[]> {
+  const { rows } = await pool.query<{ day: string; count: string }>(
+    `SELECT (p.due_at AT TIME ZONE 'UTC')::date::text AS day, COUNT(*)::int AS count
+     FROM flashcard f
+     JOIN flashcard_deck d ON d.id = f.deck_id
+     JOIN flashcard_sm2_progress p ON p.flashcard_id = f.id AND p.user_id = $1
+     WHERE (d.owner_type = 'system' OR d.user_id = $1)
+       AND p.due_at >= $2::date AND p.due_at < $2::date + interval '7 days'
+     GROUP BY day`,
+    [userId, todayYmd]
+  );
+  const counts = new Map(rows.map((r) => [r.day, Number(r.count)]));
+  const start = new Date(`${todayYmd}T00:00:00Z`);
+  return Array.from({ length: 7 }, (_, i) => {
+    const d = new Date(start);
+    d.setUTCDate(d.getUTCDate() + i);
+    const dayStr = d.toISOString().slice(0, 10);
+    return { date: dayStr, count: counts.get(dayStr) ?? 0 };
+  });
+}
+
+// Same shape as TopicDeckRow (id/name/color/iconUrl/isFavorited/
+// cardCount/new-learning-review/knownCount/dueCount/lastStudiedAt/
+// source*) — the dashboard grid only ever shows unfiled decks
+// (category_id IS NULL, the same "a filed deck only shows in its
+// folder, not duplicated here" rule FlashcardsBrowser.tsx already
+// followed), so there is no topic/category to carry per row. `userId`
+// is nullable — a signed-out visitor still browses preset decks (same
+// convention as getTopicDeckRows), just with every personal column
+// naturally empty since `... = NULL` never matches in SQL. Same
+// `f.id IS NOT NULL` guard on every FILTER as getTopicDeckRows, for
+// the same empty-deck phantom-row reason.
+export async function getDashboardDeckRows(userId: string | null): Promise<TopicDeckRow[]> {
+  const { rows } = await pool.query(
+    `SELECT d.id, d.name, d.color, d.icon_url,
+       dis.canonical_name AS source_disease_name, dis.slug AS source_disease_slug,
+       COUNT(f.id)::int AS card_count,
+       COUNT(*) FILTER (WHERE f.id IS NOT NULL AND (p.state IS NULL OR p.state = 'new'))::int AS new_count,
+       COUNT(*) FILTER (WHERE f.id IS NOT NULL AND p.state = 'learning')::int AS learning_count,
+       COUNT(*) FILTER (WHERE f.id IS NOT NULL AND p.state = 'review')::int AS review_count,
+       COUNT(*) FILTER (WHERE f.id IS NOT NULL AND p.state = 'review' AND p.interval_days >= ${KNOWN_INTERVAL_THRESHOLD_DAYS})::int AS known_count,
+       COUNT(*) FILTER (WHERE f.id IS NOT NULL AND (p.due_at IS NULL OR p.due_at <= now()))::int AS due_count,
+       (SELECT MAX(reviewed_at) FROM flashcard_review_log WHERE deck_id = d.id AND user_id = $1) AS last_studied_at,
+       EXISTS (SELECT 1 FROM flashcard_deck_favorite WHERE deck_id = d.id AND user_id = $1) AS is_favorited
+     FROM flashcard_deck d
+     LEFT JOIN disease dis ON dis.id = d.source_disease_id
+     LEFT JOIN flashcard f ON f.deck_id = d.id
+     LEFT JOIN flashcard_sm2_progress p ON p.flashcard_id = f.id AND p.user_id = $1
+     WHERE d.category_id IS NULL AND (d.owner_type = 'system' OR d.user_id = $1)
+     GROUP BY d.id, dis.canonical_name, dis.slug
+     ORDER BY d.position, d.name`,
+    [userId]
+  );
+  return rows.map((r) => ({
+    id: r.id,
+    name: r.name,
+    color: r.color,
+    iconUrl: r.icon_url,
+    isFavorited: r.is_favorited,
+    cardCount: r.card_count,
+    newCount: r.new_count,
+    learningCount: r.learning_count,
+    reviewCount: r.review_count,
+    knownCount: r.known_count,
+    dueCount: r.due_count,
+    lastStudiedAt: r.last_studied_at,
+    sourceDiseaseName: r.source_disease_name,
+    sourceDiseaseSlug: r.source_disease_slug,
+  }));
+}
+
+// One batched query for every folder's due badge (FLASHCARDS-SPEC.md
+// rule 5: "due counts appear everywhere they are actionable — rail,
+// folder, deck") rather than one query per folder. A signed-out
+// visitor gets an empty map (every badge naturally 0) the same way
+// getDashboardDeckRows handles a null userId.
+export async function getFolderDueBadges(userId: string | null): Promise<Map<string, number>> {
+  if (!userId) return new Map();
+  const { rows } = await pool.query<{ category_id: string; due_count: number }>(
+    `SELECT d.category_id, COUNT(*)::int AS due_count
+     FROM flashcard f
+     JOIN flashcard_deck d ON d.id = f.deck_id
+     LEFT JOIN flashcard_sm2_progress p ON p.flashcard_id = f.id AND p.user_id = $1
+     WHERE d.category_id IS NOT NULL
+       AND (d.owner_type = 'system' OR d.user_id = $1)
+       AND (p.due_at IS NULL OR p.due_at <= now())
+     GROUP BY d.category_id`,
+    [userId]
+  );
+  return new Map(rows.map((r) => [r.category_id, Number(r.due_count)]));
 }
 
 export async function createDeck(userId: string, name: string, color: CardColor): Promise<DeckSummary> {
@@ -521,6 +1097,7 @@ function mapCategoryRow(r: {
   owner_type: DeckOwnerType;
   name: string;
   color: CardColor;
+  topic_color?: string | null;
   icon: string | null;
   deck_count: string;
   is_public?: boolean;
@@ -530,6 +1107,7 @@ function mapCategoryRow(r: {
     ownerType: r.owner_type,
     name: r.name,
     color: r.color,
+    topicColor: isTopicColor(r.topic_color) ? r.topic_color : null,
     icon: (r.icon as CardIconName | null) ?? undefined,
     deckCount: Number(r.deck_count),
     isPublic: r.owner_type === "user" ? true : Boolean(r.is_public),
@@ -540,7 +1118,7 @@ export async function getCategories(
   userId: string | null
 ): Promise<{ systemCategories: FlashcardCategory[]; userCategories: FlashcardCategory[] }> {
   const { rows: systemRows } = await pool.query(
-    `SELECT c.id, c.owner_type, c.name, c.color, c.icon, c.is_public,
+    `SELECT c.id, c.owner_type, c.name, c.color, c.topic_color, c.icon, c.is_public,
        (SELECT COUNT(*) FROM flashcard_deck d WHERE d.category_id = c.id) AS deck_count
      FROM flashcard_category c
      WHERE c.owner_type = 'system'
@@ -552,7 +1130,7 @@ export async function getCategories(
   }
 
   const { rows: userRows } = await pool.query(
-    `SELECT c.id, c.owner_type, c.name, c.color, c.icon,
+    `SELECT c.id, c.owner_type, c.name, c.color, c.topic_color, c.icon,
        (SELECT COUNT(*) FROM flashcard_deck d WHERE d.category_id = c.id) AS deck_count
      FROM flashcard_category c
      WHERE c.owner_type = 'user' AND c.user_id = $1
@@ -575,7 +1153,7 @@ export async function getCategoryWithDecks(
   userId: string | null
 ): Promise<{ category: FlashcardCategory; decks: DeckSummary[] } | null> {
   const { rows: categoryRows } = await pool.query(
-    `SELECT c.id, c.owner_type, c.user_id, c.name, c.color, c.icon, c.is_public,
+    `SELECT c.id, c.owner_type, c.user_id, c.name, c.color, c.topic_color, c.icon, c.is_public,
        (SELECT COUNT(*) FROM flashcard_deck d WHERE d.category_id = c.id) AS deck_count
      FROM flashcard_category c
      WHERE c.id = $1`,
@@ -622,16 +1200,21 @@ export async function createCategory(
   name: string,
   color: CardColor
 ): Promise<FlashcardCategory> {
-  const { rows: countRows } = await pool.query(
-    `SELECT COUNT(*)::int AS count FROM flashcard_category
+  const { rows: siblingRows } = await pool.query<{ topic_color: string | null }>(
+    `SELECT topic_color FROM flashcard_category
      WHERE owner_type = $1 AND ($1 = 'system' OR user_id = $2)`,
     [ownerType, userId]
   );
+  // "Assign a free one on creation" (FLASHCARDS-SPEC.md) — scoped the
+  // same way the position count above is: system topics compete for a
+  // free color against other system topics, a member's own topics
+  // against only their own.
+  const topicColor = pickFreeTopicColor(siblingRows.map((r) => r.topic_color as TopicColor | null));
   const { rows } = await pool.query(
-    `INSERT INTO flashcard_category (owner_type, user_id, name, color, position)
-     VALUES ($1, $2, $3, $4, $5)
-     RETURNING id, owner_type, name, color, icon`,
-    [ownerType, userId, name, color, countRows[0].count]
+    `INSERT INTO flashcard_category (owner_type, user_id, name, color, topic_color, position)
+     VALUES ($1, $2, $3, $4, $5, $6)
+     RETURNING id, owner_type, name, color, topic_color, icon`,
+    [ownerType, userId, name, color, topicColor, siblingRows.length]
   );
   return mapCategoryRow({ ...rows[0], deck_count: "0" });
 }
@@ -662,6 +1245,21 @@ export async function updateCategoryColor(
     `UPDATE flashcard_category SET color = $1
      WHERE id = $2 AND ((owner_type = 'user' AND user_id = $3) OR (owner_type = 'system' AND $4))`,
     [color, categoryId, userId, isEditor]
+  );
+}
+
+// "let the user change it" (FLASHCARDS-SPEC.md) — same ownership guard
+// as updateCategoryColor above, just against the topic_color column.
+export async function updateCategoryTopicColor(
+  userId: string,
+  categoryId: string,
+  topicColor: TopicColor,
+  isEditor: boolean
+): Promise<void> {
+  await pool.query(
+    `UPDATE flashcard_category SET topic_color = $1
+     WHERE id = $2 AND ((owner_type = 'user' AND user_id = $3) OR (owner_type = 'system' AND $4))`,
+    [topicColor, categoryId, userId, isEditor]
   );
 }
 
