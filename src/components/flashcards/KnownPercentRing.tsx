@@ -34,7 +34,7 @@ export function KnownPercentRing({
       style={{ width: size, height: size }}
     >
       <svg viewBox={`0 0 ${size} ${size}`} width={size} height={size} className="-rotate-90" aria-hidden="true">
-        <circle cx={center} cy={center} r={radius} fill="none" stroke="var(--color-border)" strokeWidth={stroke} />
+        <circle cx={center} cy={center} r={radius} fill="none" stroke={topicColor ? "var(--topic-bd)" : "var(--color-border)"} strokeWidth={stroke} />
         <circle
           cx={center}
           cy={center}
