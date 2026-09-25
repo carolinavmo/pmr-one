@@ -3,7 +3,6 @@ import {
   getDashboardDeckRows,
   getDashboardMetrics,
   getSevenDayForecast,
-  getFolderDueBadges,
   getCategories,
   getDashboardTopicTiles,
   getLibraryTopicTiles,
@@ -32,18 +31,16 @@ export default async function FlashcardsPage() {
   const isEditor = session?.user.role === "editor" || session?.user.role === "admin";
   const todayYmd = new Date().toISOString().slice(0, 10);
 
-  const [deckRows, { systemCategories, userCategories }, metrics, forecast, folderDueBadgesMap, topics, libraryTopics, progress] = await Promise.all([
+  const [deckRows, { systemCategories, userCategories }, metrics, forecast, topics, libraryTopics, progress] = await Promise.all([
     getDashboardDeckRows(userId),
     getCategories(userId),
     userId ? getDashboardMetrics(userId, todayYmd) : null,
     userId ? getSevenDayForecast(userId, todayYmd) : Promise.resolve([]),
-    getFolderDueBadges(userId),
     getDashboardTopicTiles(userId),
     getLibraryTopicTiles(userId),
     userId ? getDashboardProgress(userId, todayYmd) : null,
   ]);
 
-  const folderDueBadges = Object.fromEntries(folderDueBadgesMap);
   const libraryGroups = groupLibraryTopicsBySubject(libraryTopics);
 
   return (
@@ -58,7 +55,6 @@ export default async function FlashcardsPage() {
         progress={progress}
         systemCategories={systemCategories}
         userCategories={userCategories}
-        folderDueBadges={folderDueBadges}
         isSignedIn={Boolean(session)}
         isEditor={isEditor}
       />

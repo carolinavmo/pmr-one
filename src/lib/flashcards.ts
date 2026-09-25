@@ -889,6 +889,32 @@ export async function getFolderDueBadges(userId: string | null): Promise<Map<str
   return new Map(rows.map((r) => [r.category_id, Number(r.due_count)]));
 }
 
+// The persistent Flashcards sidebar's "Favourites" badge — a plain
+// count, not the full favorited deck list getDashboardDeckRows'
+// isFavorited flag would require fetching just to sum.
+export async function getFavoritedDeckCount(userId: string | null): Promise<number> {
+  if (!userId) return 0;
+  const { rows } = await pool.query<{ count: number }>(`SELECT COUNT(*)::int AS count FROM flashcard_deck_favorite WHERE user_id = $1`, [userId]);
+  return rows[0]?.count ?? 0;
+}
+
+// The persistent Flashcards sidebar's "Due today" badge — same count
+// getDashboardMetrics computes, pulled out on its own so mounting the
+// sidebar site-wide doesn't also pull in that function's retention and
+// streak queries on every single page.
+export async function getDueTodayCount(userId: string | null): Promise<number> {
+  if (!userId) return 0;
+  const { rows } = await pool.query<{ due_today: number }>(
+    `SELECT COUNT(*) FILTER (WHERE p.due_at IS NULL OR p.due_at <= now())::int AS due_today
+     FROM flashcard f
+     JOIN flashcard_deck d ON d.id = f.deck_id AND d.status = 'published' AND d.archived_at IS NULL
+     LEFT JOIN flashcard_sm2_progress p ON p.flashcard_id = f.id AND p.user_id = $1
+     WHERE (d.owner_type = 'system' OR d.user_id = $1) AND f.status = 'published' AND f.deleted_at IS NULL`,
+    [userId]
+  );
+  return rows[0]?.due_today ?? 0;
+}
+
 export async function createDeck(userId: string, name: string, color: CardColor): Promise<DeckSummary> {
   const { rows: countRows } = await pool.query(
     `SELECT COUNT(*)::int AS count FROM flashcard_deck WHERE owner_type = 'user' AND user_id = $1`,

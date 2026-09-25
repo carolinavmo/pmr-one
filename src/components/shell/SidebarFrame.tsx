@@ -6,8 +6,10 @@ import { usePathname } from "@/i18n/navigation";
 import { PanelLeftClose, PanelLeftOpen } from "lucide-react";
 import type { TopicNode } from "@/lib/topics";
 import type { CalculatorCategory, CalculatorSummary } from "@/lib/clinical-tools";
+import type { FlashcardCategory, TopicTile } from "@/lib/flashcards";
 import { IndexSidebar } from "./IndexSidebar";
 import { ClinicalToolsSidebar } from "@/components/clinical-tools/ClinicalToolsSidebar";
+import { FlashcardsSidebar } from "@/components/flashcards/FlashcardsSidebar";
 
 // Persisted app-wide (not per-page) — same collapsed/expanded
 // preference should hold as a reader moves around the site, same
@@ -49,6 +51,13 @@ interface SidebarFrameProps {
   calculatorCategories: CalculatorCategory[];
   calculators: CalculatorSummary[];
   favoritedCalculatorIds: Set<string>;
+  flashcardsDueToday: number;
+  flashcardsFavoritedCount: number;
+  flashcardsTopics: TopicTile[];
+  flashcardsLibraryTopics: TopicTile[];
+  flashcardsSystemCategories: FlashcardCategory[];
+  flashcardsFolderDueBadges: Record<string, number>;
+  isEditor: boolean;
 }
 
 // The interactive shell around the server-fetched tree/session data —
@@ -63,6 +72,13 @@ export function SidebarFrame({
   calculatorCategories,
   calculators,
   favoritedCalculatorIds,
+  flashcardsDueToday,
+  flashcardsFavoritedCount,
+  flashcardsTopics,
+  flashcardsLibraryTopics,
+  flashcardsSystemCategories,
+  flashcardsFolderDueBadges,
+  isEditor,
 }: SidebarFrameProps) {
   const collapsed = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
   const t = useTranslations("nav");
@@ -70,7 +86,8 @@ export function SidebarFrame({
   const signedOut = !(userEmail || userName);
   const isClinicalTools = pathname.startsWith("/clinical-tools");
   const isMyHandbook = pathname.startsWith("/my-atlas");
-  const isFlashcards = pathname.startsWith("/flashcards");
+  const isFlashcardsStudy = pathname.startsWith("/flashcards/study");
+  const isFlashcards = pathname.startsWith("/flashcards") && !isFlashcardsStudy;
 
   // The sidebar now sits in a row below TopBar (the brand wordmark
   // moved there) rather than spanning the full viewport height itself,
@@ -107,16 +124,8 @@ export function SidebarFrame({
   if (isMyHandbook) {
     return null;
   }
-  // FLASHCARDS-SPEC.md Pass 4 rule 4: "the rail is the deck index, not
-  // the library tree" — the condition-browsing tree this sidebar shows
-  // everywhere else has no relevance inside Flashcards, whose every
-  // route (dashboard, study screen, a topic page, a deck page) is
-  // already scoped to flashcards and carries its own in-page navigation
-  // (FlashcardsRail's rail, a topic page's own deck list/tabs). Applies
-  // to the whole /flashcards subtree, not just the dashboard's exact
-  // route — a topic/deck page showing the disease-library tree here
-  // read as stray leftover chrome, unrelated to what's on the page.
-  if (isFlashcards) {
+  // FLASHCARDS-SPEC.md's study screen — "no navbar, no sidebar."
+  if (isFlashcardsStudy) {
     return null;
   }
 
@@ -153,40 +162,40 @@ export function SidebarFrame({
           scrollable ancestor above it is exactly the kind of thing that
           silently breaks position: sticky. */}
       <div className="flex min-h-0 flex-1 flex-col px-3 py-3">
-        {isClinicalTools ? (
-          <ClinicalToolsSidebar
-            categories={calculatorCategories}
-            calculators={calculators}
-            favoritedIds={favoritedCalculatorIds}
-            headerAction={
-              <button
-                type="button"
-                onClick={() => setCollapsed(true)}
-                aria-label={t("collapseSidebar")}
-                title={t("collapseSidebar")}
-                className="flex size-7 shrink-0 items-center justify-center rounded-[9px] border border-border text-secondary transition-colors duration-base hover:bg-border/40 hover:text-primary"
-              >
-                <PanelLeftClose className="size-3.5" aria-hidden="true" />
-              </button>
-            }
-          />
-        ) : (
-          <IndexSidebar
-            tree={tree}
-            isSignedIn={!signedOut}
-            headerAction={
-              <button
-                type="button"
-                onClick={() => setCollapsed(true)}
-                aria-label={t("collapseSidebar")}
-                title={t("collapseSidebar")}
-                className="flex size-7 shrink-0 items-center justify-center rounded-[9px] border border-border text-secondary transition-colors duration-base hover:bg-border/40 hover:text-primary"
-              >
-                <PanelLeftClose className="size-3.5" aria-hidden="true" />
-              </button>
-            }
-          />
-        )}
+        {(() => {
+          const collapseButton = (
+            <button
+              type="button"
+              onClick={() => setCollapsed(true)}
+              aria-label={t("collapseSidebar")}
+              title={t("collapseSidebar")}
+              className="flex size-7 shrink-0 items-center justify-center rounded-[9px] border border-border text-secondary transition-colors duration-base hover:bg-border/40 hover:text-primary"
+            >
+              <PanelLeftClose className="size-3.5" aria-hidden="true" />
+            </button>
+          );
+          if (isClinicalTools) {
+            return (
+              <ClinicalToolsSidebar categories={calculatorCategories} calculators={calculators} favoritedIds={favoritedCalculatorIds} headerAction={collapseButton} />
+            );
+          }
+          if (isFlashcards) {
+            return (
+              <FlashcardsSidebar
+                dueToday={flashcardsDueToday}
+                favoritedCount={flashcardsFavoritedCount}
+                topics={flashcardsTopics}
+                libraryTopics={flashcardsLibraryTopics}
+                systemCategories={flashcardsSystemCategories}
+                folderDueBadges={flashcardsFolderDueBadges}
+                isSignedIn={!signedOut}
+                isEditor={isEditor}
+                headerAction={collapseButton}
+              />
+            );
+          }
+          return <IndexSidebar tree={tree} isSignedIn={!signedOut} headerAction={collapseButton} />;
+        })()}
       </div>
     </aside>
   );

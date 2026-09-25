@@ -3,6 +3,7 @@ import { auth } from "@/auth";
 import { getTopicTree } from "@/lib/topics";
 import { getCalculatorCategories, getAllCalculators } from "@/lib/clinical-tools";
 import { getFavoritedCalculatorIds } from "@/lib/workspace";
+import { getDashboardTopicTiles, getLibraryTopicTiles, getCategories, getFolderDueBadges, getFavoritedDeckCount, getDueTodayCount } from "@/lib/flashcards";
 import { SidebarFrame } from "./SidebarFrame";
 
 // Site-wide persistent nav (desktop, `lg`+ — SidebarFrame handles the
@@ -16,13 +17,21 @@ import { SidebarFrame } from "./SidebarFrame";
 export async function Sidebar() {
   const session = await auth();
   const canReview = session?.user.role === "editor" || session?.user.role === "admin";
+  const userId = session?.user.id ?? null;
   const locale = await getLocale();
-  const [tree, calculatorCategories, calculators, favoritedCalculatorIds] = await Promise.all([
-    getTopicTree(canReview),
-    getCalculatorCategories(),
-    getAllCalculators(locale),
-    session ? getFavoritedCalculatorIds(session.user.id) : Promise.resolve(new Set<string>()),
-  ]);
+  const [tree, calculatorCategories, calculators, favoritedCalculatorIds, dueToday, favoritedDeckCount, flashcardTopics, libraryTopics, { systemCategories }, folderDueBadgesMap] =
+    await Promise.all([
+      getTopicTree(canReview),
+      getCalculatorCategories(),
+      getAllCalculators(locale),
+      session ? getFavoritedCalculatorIds(session.user.id) : Promise.resolve(new Set<string>()),
+      getDueTodayCount(userId),
+      getFavoritedDeckCount(userId),
+      getDashboardTopicTiles(userId),
+      getLibraryTopicTiles(userId),
+      getCategories(userId),
+      getFolderDueBadges(userId),
+    ]);
 
   return (
     <SidebarFrame
@@ -32,6 +41,13 @@ export async function Sidebar() {
       calculatorCategories={calculatorCategories}
       calculators={calculators}
       favoritedCalculatorIds={favoritedCalculatorIds}
+      flashcardsDueToday={dueToday}
+      flashcardsFavoritedCount={favoritedDeckCount}
+      flashcardsTopics={flashcardTopics}
+      flashcardsLibraryTopics={libraryTopics}
+      flashcardsSystemCategories={systemCategories}
+      flashcardsFolderDueBadges={Object.fromEntries(folderDueBadgesMap)}
+      isEditor={canReview}
     />
   );
 }
