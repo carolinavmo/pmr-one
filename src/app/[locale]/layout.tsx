@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Roboto, Poppins } from "next/font/google";
+import { Roboto } from "next/font/google";
 import { notFound } from "next/navigation";
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages } from "next-intl/server";
@@ -56,17 +56,6 @@ const fontBrand = Roboto({
   weight: ["900"],
 });
 
-// Requested one-off exception, flashcards topic-page title only
-// (TopicPageHeader.tsx) — DESIGN-BRIEF.md's "Roboto only" rule stays
-// the default everywhere else; this doesn't reopen the earlier
-// Poppins-everywhere/Caveat-Brush experiments this file used to warn
-// against reverting from.
-const fontTopicTitle = Poppins({
-  variable: "--font-topic-title",
-  subsets: ["latin"],
-  weight: ["700"],
-});
-
 export const metadata: Metadata = {
   title: "PM&R Explained",
   description:
@@ -92,7 +81,7 @@ export default async function RootLayout({ children, params }: LayoutProps<"/[lo
   return (
     <html
       lang={LOCALE_META[locale].bcp47}
-      className={`${fontUI.variable} ${fontReading.variable} ${fontHeading.variable} ${fontSectionHeading.variable} ${fontBrand.variable} ${fontTopicTitle.variable} h-full scroll-smooth antialiased`}
+      className={`${fontUI.variable} ${fontReading.variable} ${fontHeading.variable} ${fontSectionHeading.variable} ${fontBrand.variable} h-full scroll-smooth antialiased`}
       suppressHydrationWarning
     >
       <head>
