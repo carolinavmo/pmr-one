@@ -156,6 +156,7 @@ export function StudySession({ initialCards, backHref }: { initialCards: StudyCa
       if (done || grading) return;
       if (e.key === "Escape") {
         router.push(backHref);
+        router.refresh();
         return;
       }
       if (e.key === " ") {
@@ -211,7 +212,10 @@ export function StudySession({ initialCards, backHref }: { initialCards: StudyCa
         <p className="font-ui text-lg font-bold text-primary">{t("studyNothingDue")}</p>
         <button
           type="button"
-          onClick={() => router.push(backHref)}
+          onClick={() => {
+            router.push(backHref);
+            router.refresh();
+          }}
           className="rounded-lg bg-accent px-4 py-2 font-ui text-sm font-bold text-white"
         >
           {t("studyBackToDeck")}
@@ -238,7 +242,10 @@ export function StudySession({ initialCards, backHref }: { initialCards: StudyCa
       <div className="flex items-center justify-between px-4 py-3 sm:px-8">
         <button
           type="button"
-          onClick={() => router.push(backHref)}
+          onClick={() => {
+            router.push(backHref);
+            router.refresh();
+          }}
           aria-label={t("studyClose")}
           className="flex size-[34px] items-center justify-center rounded-full border border-border bg-surface text-secondary hover:text-primary"
         >

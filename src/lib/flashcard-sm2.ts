@@ -109,10 +109,14 @@ export function previewGrades(current: Sm2State): Record<Grade, Sm2Outcome> {
 
 // "Known" (FLASHCARDS-SPEC.md's progress-tile ring, and Pass 4's
 // dashboard definition, reused verbatim so it means the same thing
-// everywhere): a review-state card with an interval of at least 21
-// days — i.e. one SM-2 has confirmed the learner reliably remembers,
-// not just graduated out of the learning phase.
-export const KNOWN_INTERVAL_THRESHOLD_DAYS = 21;
+// everywhere): a review-state card — i.e. graduated out of the
+// learning phase at least once. Lowered from a 21-day-interval bar
+// (requiring real time to pass before any card could count) after
+// user feedback that finishing a deck should move the ring
+// immediately, not days later. Every consumer reads this one
+// constant, so the ring and the state bar can never disagree with
+// each other regardless of where the bar sits.
+export const KNOWN_INTERVAL_THRESHOLD_DAYS = 1;
 export function isKnown(state: Sm2State): boolean {
   return state.state === "review" && state.intervalDays >= KNOWN_INTERVAL_THRESHOLD_DAYS;
 }

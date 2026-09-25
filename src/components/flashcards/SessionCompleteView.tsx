@@ -76,7 +76,16 @@ export function SessionCompleteView({
 
       <button
         type="button"
-        onClick={() => router.push(backHref)}
+        onClick={() => {
+          // router.push() alone can land on a client-cached copy of the
+          // destination page from before this session's grades landed —
+          // revalidateFlashcardSurfaces() already told the server the
+          // data changed, but refresh() is what actually makes this
+          // specific navigation re-fetch it instead of reusing what was
+          // cached client-side before the session started.
+          router.push(backHref);
+          router.refresh();
+        }}
         className="rounded-lg bg-accent px-5 py-2.5 font-ui text-sm font-bold text-white"
       >
         {t("studyBackToDeck")}
