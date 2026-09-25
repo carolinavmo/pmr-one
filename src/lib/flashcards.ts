@@ -355,6 +355,16 @@ const STUDY_CARD_SELECT = `
 // re-querying the DB — see flashcard-sm2.ts's own module comment.
 const STUDY_CARD_DUE_FILTER = `AND (p.due_at IS NULL OR p.due_at <= now())`;
 
+// The topic a deck belongs to — used to send a finished deck-scoped
+// study session back to its topic page rather than the legacy
+// /flashcards/[deckId] reviewer. Queried directly rather than read off
+// the study session's own cards, since those are empty whenever the
+// deck has nothing due (e.g. just finished studying it).
+export async function getDeckCategoryId(deckId: string): Promise<string | null> {
+  const { rows } = await pool.query(`SELECT category_id FROM flashcard_deck WHERE id = $1`, [deckId]);
+  return rows[0]?.category_id ?? null;
+}
+
 // One deck's due cards — `deckId` ownership-checked the same way
 // getDeckWithCards does (a private user deck 404s for anyone but its
 // owner; a system deck is open to any signed-in user). `includeNotDue`

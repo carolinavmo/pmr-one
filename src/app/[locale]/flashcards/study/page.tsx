@@ -2,7 +2,7 @@ import { getLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
 import { redirect } from "@/i18n/navigation";
 import { auth } from "@/auth";
-import { getStudyCardsForDeck, getStudyCardsForCategory, getStudyCardsForAccount, getWeakStudyCardsForCategory } from "@/lib/flashcards";
+import { getStudyCardsForDeck, getStudyCardsForCategory, getStudyCardsForAccount, getWeakStudyCardsForCategory, getDeckCategoryId } from "@/lib/flashcards";
 import { StudySession } from "@/components/flashcards/StudySession";
 
 interface StudyPageProps {
@@ -36,6 +36,22 @@ export default async function FlashcardsStudyPage({ searchParams }: StudyPagePro
           : await getStudyCardsForAccount(session.user.id, includeNotDue);
   if (cards === null) notFound();
 
-  const backHref = deckId ? `/flashcards/${deckId}` : categoryId ? `/flashcards/category/${categoryId}` : "/flashcards";
+  // A deck-scoped session (?deck=) used to send "Back" to the deck's own
+  // /flashcards/[deckId] page — the old box-based reviewer, not anywhere
+  // showing the new ring/state-bar the user just finished updating. When
+  // the deck belongs to a topic, prefer the topic page instead — the
+  // deck still shows there as a row. Looked up directly (not read off
+  // `cards`) since `cards` is empty whenever nothing is due, which is
+  // exactly the state right after finishing the deck. Only an unfiled
+  // personal deck (no category) falls back to its own page, since
+  // there's no topic to return to.
+  const deckCategoryId = deckId ? await getDeckCategoryId(deckId) : null;
+  const backHref = deckCategoryId
+    ? `/flashcards/category/${deckCategoryId}`
+    : deckId
+      ? `/flashcards/${deckId}`
+      : categoryId
+        ? `/flashcards/category/${categoryId}`
+        : "/flashcards";
   return <StudySession initialCards={cards} backHref={backHref} />;
 }
