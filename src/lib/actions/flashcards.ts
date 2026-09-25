@@ -7,7 +7,6 @@ import { auth } from "@/auth";
 import { revalidateFlashcardSurfaces } from "@/lib/revalidation";
 import type { CardColor } from "@/lib/editorial-blocks";
 import type { TopicColor } from "@/lib/flashcard-topic-colors";
-import type { FlashcardSubject } from "@/lib/flashcard-subjects";
 import type { Grade, Sm2State, Sm2Outcome } from "@/lib/flashcard-sm2";
 import {
   createDeck,
@@ -243,9 +242,9 @@ export async function updateCategoryTopicColorAction(categoryId: string, topicCo
   revalidateFlashcardSurfaces();
 }
 
-export async function updateCategorySubjectAction(categoryId: string, subject: FlashcardSubject): Promise<void> {
+export async function updateCategorySubjectAction(categoryId: string, subjectId: string): Promise<void> {
   const { userId, isEditor } = await requireUserId();
-  await updateCategorySubject(userId, categoryId, subject, isEditor);
+  await updateCategorySubject(userId, categoryId, subjectId, isEditor);
   revalidateFlashcardSurfaces();
 }
 

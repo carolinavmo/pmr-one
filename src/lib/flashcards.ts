@@ -3,7 +3,6 @@ import type { CardColor } from "@/lib/editorial-blocks";
 import { nextBox, computeDueAt, MASTERY_BOX } from "@/lib/flashcard-scoring";
 import type { CardIconName } from "@/components/ui/cardIcons";
 import { type TopicColor, isTopicColor, pickFreeTopicColor } from "@/lib/flashcard-topic-colors";
-import { type FlashcardSubject, isFlashcardSubject, SUBJECT_ORDER } from "@/lib/flashcard-subjects";
 import { sanitizeRichText } from "@/lib/rich-text";
 import {
   type CardState,
@@ -40,12 +39,15 @@ export interface FlashcardCategory {
   // onto the topic palette. Nullable only for rows inserted before
   // migration 0062; every category created since gets one assigned.
   topicColor: TopicColor | null;
-  // The Browse-the-library grouping (flashcard-subjects.ts) — a coarser,
-  // fixed 4-way classification distinct from topicColor above. Only
+  // The Browse-the-library grouping — an admin-managed table
+  // (flashcard_subject), distinct from topicColor above. Only
   // meaningful for system topics (only they render in "Browse the
-  // library"), but every row carries one since the column defaults
-  // every topic to 'other'.
-  subject: FlashcardSubject;
+  // library"), but every row carries one since the column is NOT
+  // NULL. Denormalized here (name/color alongside the id) so a
+  // consumer never needs a second lookup just to render a label.
+  subjectId: string;
+  subjectName: string;
+  subjectColor: CardColor;
   icon: CardIconName | undefined;
   deckCount: number;
   // True for the one open sample folder a signed-out visitor can fully
@@ -1217,13 +1219,20 @@ export async function toggleCategoryFavorite(userId: string, categoryId: string)
   return true;
 }
 
+// Every mapCategoryRow caller joins flashcard_subject the same way —
+// one fragment so the alias/column names can't drift between queries.
+const CATEGORY_SUBJECT_JOIN = `LEFT JOIN flashcard_subject s ON s.id = c.subject_id`;
+const CATEGORY_SUBJECT_SELECT = `s.id AS subject_id, s.name AS subject_name, s.color AS subject_color`;
+
 function mapCategoryRow(r: {
   id: string;
   owner_type: DeckOwnerType;
   name: string;
   color: CardColor;
   topic_color?: string | null;
-  subject?: string | null;
+  subject_id: string;
+  subject_name: string;
+  subject_color: CardColor;
   icon: string | null;
   deck_count: string;
   is_public?: boolean;
@@ -1234,7 +1243,9 @@ function mapCategoryRow(r: {
     name: r.name,
     color: r.color,
     topicColor: isTopicColor(r.topic_color) ? r.topic_color : null,
-    subject: isFlashcardSubject(r.subject) ? r.subject : "other",
+    subjectId: r.subject_id,
+    subjectName: r.subject_name,
+    subjectColor: r.subject_color,
     icon: (r.icon as CardIconName | null) ?? undefined,
     deckCount: Number(r.deck_count),
     isPublic: r.owner_type === "user" ? true : Boolean(r.is_public),
@@ -1245,9 +1256,10 @@ export async function getCategories(
   userId: string | null
 ): Promise<{ systemCategories: FlashcardCategory[]; userCategories: FlashcardCategory[] }> {
   const { rows: systemRows } = await pool.query(
-    `SELECT c.id, c.owner_type, c.name, c.color, c.topic_color, c.subject, c.icon, c.is_public,
+    `SELECT c.id, c.owner_type, c.name, c.color, c.topic_color, c.icon, c.is_public, ${CATEGORY_SUBJECT_SELECT},
        (SELECT COUNT(*) FROM flashcard_deck d WHERE d.category_id = c.id AND d.status = 'published' AND d.archived_at IS NULL) AS deck_count
      FROM flashcard_category c
+     ${CATEGORY_SUBJECT_JOIN}
      WHERE c.owner_type = 'system'
      ORDER BY c.position, c.name`
   );
@@ -1257,9 +1269,10 @@ export async function getCategories(
   }
 
   const { rows: userRows } = await pool.query(
-    `SELECT c.id, c.owner_type, c.name, c.color, c.topic_color, c.subject, c.icon,
+    `SELECT c.id, c.owner_type, c.name, c.color, c.topic_color, c.icon, ${CATEGORY_SUBJECT_SELECT},
        (SELECT COUNT(*) FROM flashcard_deck d WHERE d.category_id = c.id) AS deck_count
      FROM flashcard_category c
+     ${CATEGORY_SUBJECT_JOIN}
      WHERE c.owner_type = 'user' AND c.user_id = $1
      ORDER BY c.position, c.name`,
     [userId]
@@ -1277,7 +1290,7 @@ export interface TopicTile {
   topicColor: TopicColor | null;
   // Populated only by getLibraryTopicTiles — "Your topics" tiles don't
   // group by subject, so they leave this undefined.
-  subject?: FlashcardSubject;
+  subjectId?: string;
   isPublic: boolean;
   isFavorited: boolean;
   deckCount: number;
@@ -1359,7 +1372,7 @@ export async function getDashboardTopicTiles(userId: string | null): Promise<Top
 // progress against the original cards — nothing is copied.
 export async function getLibraryTopicTiles(userId: string | null): Promise<TopicTile[]> {
   const { rows } = await pool.query(
-    `SELECT c.id, c.name, c.topic_color, c.subject, c.is_public,
+    `SELECT c.id, c.name, c.topic_color, c.subject_id, c.is_public,
        EXISTS (SELECT 1 FROM flashcard_category_favorite fav WHERE fav.category_id = c.id AND fav.user_id = $1) AS is_favorited,
        COUNT(DISTINCT d.id)::int AS deck_count,
        COUNT(f.id)::int AS card_count,
@@ -1382,7 +1395,7 @@ export async function getLibraryTopicTiles(userId: string | null): Promise<Topic
     id: r.id,
     name: r.name,
     topicColor: isTopicColor(r.topic_color) ? r.topic_color : null,
-    subject: isFlashcardSubject(r.subject) ? r.subject : "other",
+    subjectId: r.subject_id,
     isPublic: Boolean(r.is_public),
     isFavorited: r.is_favorited,
     deckCount: r.deck_count,
@@ -1397,7 +1410,7 @@ export async function getLibraryTopicTiles(userId: string | null): Promise<Topic
 }
 
 export interface LibrarySubjectGroup {
-  subject: FlashcardSubject;
+  subject: FlashcardSubjectRow;
   topics: TopicTile[];
   topicCount: number;
   cardCount: number;
@@ -1405,26 +1418,97 @@ export interface LibrarySubjectGroup {
 
 // Groups getLibraryTopicTiles's flat list by subject in JS — a pure
 // transform over the one query's rows, not a second DB round trip
-// (FLASHCARDS-SPEC.md: "Counts come from one grouped query"). Fixed
-// SUBJECT_ORDER, and a subject with no topics simply doesn't appear —
-// there's nothing to separate.
-export function groupLibraryTopicsBySubject(topics: TopicTile[]): LibrarySubjectGroup[] {
-  const groups = new Map<FlashcardSubject, TopicTile[]>();
+// (FLASHCARDS-SPEC.md: "Counts come from one grouped query"). `subjects`
+// is the admin-managed list (getSubjects, already ordered by position)
+// — a subject with no topics simply doesn't appear, there's nothing to
+// separate.
+export function groupLibraryTopicsBySubject(topics: TopicTile[], subjects: FlashcardSubjectRow[]): LibrarySubjectGroup[] {
+  const groups = new Map<string, TopicTile[]>();
   for (const topic of topics) {
-    const subject = topic.subject ?? "other";
-    const existing = groups.get(subject);
+    if (!topic.subjectId) continue;
+    const existing = groups.get(topic.subjectId);
     if (existing) existing.push(topic);
-    else groups.set(subject, [topic]);
+    else groups.set(topic.subjectId, [topic]);
   }
-  return SUBJECT_ORDER.filter((subject) => groups.has(subject)).map((subject) => {
-    const subjectTopics = groups.get(subject)!;
-    return {
-      subject,
-      topics: subjectTopics,
-      topicCount: subjectTopics.length,
-      cardCount: subjectTopics.reduce((sum, t) => sum + t.cardCount, 0),
-    };
-  });
+  return subjects
+    .filter((subject) => groups.has(subject.id))
+    .map((subject) => {
+      const subjectTopics = groups.get(subject.id)!;
+      return {
+        subject,
+        topics: subjectTopics,
+        topicCount: subjectTopics.length,
+        cardCount: subjectTopics.reduce((sum, t) => sum + t.cardCount, 0),
+      };
+    });
+}
+
+// ============================================================
+// Flashcard subjects — the "Browse the library" section headers
+// (FLASHCARDS-SPEC.md "The dashboard — final order" § Browse the
+// library). Admin-managed since migration 0068 (was a fixed 4-value
+// CHECK constraint before) — create/rename/recolor/reorder/delete,
+// same CRUD shape as flashcard_category itself.
+// ============================================================
+
+export interface FlashcardSubjectRow {
+  id: string;
+  name: string;
+  color: CardColor;
+  position: number;
+  // How many topics currently use this subject — 0 is what makes a
+  // subject safely deletable (deleteSubject enforces this itself, this
+  // is just what the admin UI reads to decide whether to show the
+  // delete button as enabled).
+  categoryCount: number;
+}
+
+export async function getSubjects(): Promise<FlashcardSubjectRow[]> {
+  const { rows } = await pool.query(
+    `SELECT s.id, s.name, s.color, s.position,
+       (SELECT COUNT(*) FROM flashcard_category c WHERE c.subject_id = s.id)::int AS category_count
+     FROM flashcard_subject s
+     ORDER BY s.position, s.name`
+  );
+  return rows.map((r) => ({ id: r.id, name: r.name, color: r.color, position: r.position, categoryCount: r.category_count }));
+}
+
+export async function createSubject(name: string, color: CardColor): Promise<FlashcardSubjectRow> {
+  const { rows: countRows } = await pool.query(`SELECT COUNT(*)::int AS count FROM flashcard_subject`);
+  const { rows } = await pool.query(
+    `INSERT INTO flashcard_subject (name, color, position) VALUES ($1, $2, $3) RETURNING id, name, color, position`,
+    [name.trim() || "Untitled subject", color, countRows[0].count]
+  );
+  return { ...rows[0], categoryCount: 0 };
+}
+
+export async function renameSubject(subjectId: string, name: string): Promise<void> {
+  await pool.query(`UPDATE flashcard_subject SET name = $1 WHERE id = $2`, [name.trim() || "Untitled subject", subjectId]);
+}
+
+export async function updateSubjectColor(subjectId: string, color: CardColor): Promise<void> {
+  await pool.query(`UPDATE flashcard_subject SET color = $1 WHERE id = $2`, [color, subjectId]);
+}
+
+export async function reorderSubjects(orderedIds: string[]): Promise<void> {
+  for (let i = 0; i < orderedIds.length; i++) {
+    await pool.query(`UPDATE flashcard_subject SET position = $1 WHERE id = $2`, [i, orderedIds[i]]);
+  }
+}
+
+// Refused (not silently reassigned) when a topic still uses this
+// subject, or when it's the last subject left — createCategory falls
+// back to "whichever subject has the lowest position" for a new
+// system folder, which only works if at least one always exists.
+export async function deleteSubject(subjectId: string): Promise<{ ok: boolean; reason?: "in-use" | "last-subject" }> {
+  const { rows: totalRows } = await pool.query(`SELECT COUNT(*)::int AS count FROM flashcard_subject`);
+  if (Number(totalRows[0].count) <= 1) return { ok: false, reason: "last-subject" };
+
+  const { rows: usageRows } = await pool.query(`SELECT COUNT(*)::int AS count FROM flashcard_category WHERE subject_id = $1`, [subjectId]);
+  if (Number(usageRows[0].count) > 0) return { ok: false, reason: "in-use" };
+
+  await pool.query(`DELETE FROM flashcard_subject WHERE id = $1`, [subjectId]);
+  return { ok: true };
 }
 
 // Editor-only — same ownership guard as updateCategoryTopicColor, but
@@ -1434,13 +1518,13 @@ export function groupLibraryTopicsBySubject(topics: TopicTile[]): LibrarySubject
 export async function updateCategorySubject(
   userId: string,
   categoryId: string,
-  subject: FlashcardSubject,
+  subjectId: string,
   isEditor: boolean
 ): Promise<void> {
   await pool.query(
-    `UPDATE flashcard_category SET subject = $1
+    `UPDATE flashcard_category SET subject_id = $1
      WHERE id = $2 AND ((owner_type = 'user' AND user_id = $3) OR (owner_type = 'system' AND $4))`,
-    [subject, categoryId, userId, isEditor]
+    [subjectId, categoryId, userId, isEditor]
   );
 }
 
@@ -1453,9 +1537,10 @@ export async function getCategoryWithDecks(
   userId: string | null
 ): Promise<{ category: FlashcardCategory; decks: DeckSummary[] } | null> {
   const { rows: categoryRows } = await pool.query(
-    `SELECT c.id, c.owner_type, c.user_id, c.name, c.color, c.topic_color, c.subject, c.icon, c.is_public,
+    `SELECT c.id, c.owner_type, c.user_id, c.name, c.color, c.topic_color, c.icon, c.is_public, ${CATEGORY_SUBJECT_SELECT},
        (SELECT COUNT(*) FROM flashcard_deck d WHERE d.category_id = c.id AND d.status = 'published' AND d.archived_at IS NULL) AS deck_count
      FROM flashcard_category c
+     ${CATEGORY_SUBJECT_JOIN}
      WHERE c.id = $1`,
     [categoryId]
   );
@@ -1510,13 +1595,28 @@ export async function createCategory(
   // free color against other system topics, a member's own topics
   // against only their own.
   const topicColor = pickFreeTopicColor(siblingRows.map((r) => r.topic_color as TopicColor | null));
-  const { rows } = await pool.query(
-    `INSERT INTO flashcard_category (owner_type, user_id, name, color, topic_color, position)
-     VALUES ($1, $2, $3, $4, $5, $6)
-     RETURNING id, owner_type, name, color, topic_color, icon`,
-    [ownerType, userId, name, color, topicColor, siblingRows.length]
+  // A brand-new folder starts on whichever subject sorts first —
+  // deleteSubject refuses to remove the last one left, so this always
+  // finds a row. Fetched here (not a subquery inside the INSERT) so the
+  // same values can feed the returned FlashcardCategory without a
+  // third round trip.
+  const { rows: subjectRows } = await pool.query<{ id: string; name: string; color: CardColor }>(
+    `SELECT id, name, color FROM flashcard_subject ORDER BY position, name LIMIT 1`
   );
-  return mapCategoryRow({ ...rows[0], deck_count: "0" });
+  const fallbackSubject = subjectRows[0];
+  const { rows } = await pool.query(
+    `INSERT INTO flashcard_category (owner_type, user_id, name, color, topic_color, subject_id, position)
+     VALUES ($1, $2, $3, $4, $5, $6, $7)
+     RETURNING id, owner_type, name, color, topic_color, icon`,
+    [ownerType, userId, name, color, topicColor, fallbackSubject.id, siblingRows.length]
+  );
+  return mapCategoryRow({
+    ...rows[0],
+    subject_id: fallbackSubject.id,
+    subject_name: fallbackSubject.name,
+    subject_color: fallbackSubject.color,
+    deck_count: "0",
+  });
 }
 
 // isEditor widens the ownership check to also match any system folder

@@ -5,7 +5,7 @@ import { useRouter } from "@/i18n/navigation";
 import { Link } from "@/i18n/navigation";
 import { Plus, Copy, Archive, ArchiveRestore } from "lucide-react";
 import type { AdminDeckRow } from "@/lib/flashcards-admin";
-import type { FlashcardCategory } from "@/lib/flashcards";
+import type { FlashcardCategory, FlashcardSubjectRow } from "@/lib/flashcards";
 import {
   createAdminDeckAction,
   publishAdminDeckAction,
@@ -14,7 +14,8 @@ import {
   unarchiveAdminDeckAction,
   duplicateAdminDeckAction,
 } from "@/lib/actions/flashcards-admin";
-import { SUBJECT_ORDER, SUBJECT_LABEL, SUBJECT_COLOR } from "@/lib/flashcard-subjects";
+import { CARD_COLOR_SWATCH, CARD_COLOR_TEXT } from "@/lib/card-colors";
+import type { CardColor } from "@/lib/editorial-blocks";
 import { Button } from "@/components/ui/Button";
 import { ClinicalBadge } from "@/components/ui/ClinicalBadge";
 
@@ -30,7 +31,15 @@ function needsReview(reviewedAt: string | null): boolean {
   return monthsAgo >= NEEDS_REVIEW_MONTHS;
 }
 
-export function AdminFlashcardsDeckList({ decks, categories }: { decks: AdminDeckRow[]; categories: FlashcardCategory[] }) {
+export function AdminFlashcardsDeckList({
+  decks,
+  categories,
+  subjects,
+}: {
+  decks: AdminDeckRow[];
+  categories: FlashcardCategory[];
+  subjects: FlashcardSubjectRow[];
+}) {
   const router = useRouter();
   const [, startTransition] = useTransition();
   const [newDeckOpen, setNewDeckOpen] = useState(false);
@@ -49,17 +58,23 @@ export function AdminFlashcardsDeckList({ decks, categories }: { decks: AdminDec
 
   // Group by subject (the category's own field), then by category
   // within it — an uncategorized deck falls into its own "No topic"
-  // bucket under "Other" rather than being dropped.
+  // bucket, kept separate from every real subject rather than folded
+  // into whichever one happens to sort first.
+  const NO_TOPIC = "__no_topic__";
   const categoryById = new Map(categories.map((c) => [c.id, c]));
   const visibleDecks = needsReviewOnly ? decks.filter((d) => d.status === "published" && needsReview(d.reviewedAt)) : decks;
   const bySubject = new Map<string, AdminDeckRow[]>();
   for (const deck of visibleDecks) {
     const category = deck.categoryId ? categoryById.get(deck.categoryId) : null;
-    const subject = category?.subject ?? "other";
-    const list = bySubject.get(subject);
+    const subjectKey = category?.subjectId ?? NO_TOPIC;
+    const list = bySubject.get(subjectKey);
     if (list) list.push(deck);
-    else bySubject.set(subject, [deck]);
+    else bySubject.set(subjectKey, [deck]);
   }
+  const sections: { key: string; label: string; color: CardColor | null; decks: AdminDeckRow[] }[] = [
+    ...subjects.filter((s) => bySubject.has(s.id)).map((s) => ({ key: s.id, label: s.name, color: s.color, decks: bySubject.get(s.id)! })),
+    ...(bySubject.has(NO_TOPIC) ? [{ key: NO_TOPIC, label: "No topic", color: null, decks: bySubject.get(NO_TOPIC)! }] : []),
+  ];
 
   return (
     <div className="flex flex-col gap-6">
@@ -116,18 +131,18 @@ export function AdminFlashcardsDeckList({ decks, categories }: { decks: AdminDec
         </p>
       )}
 
-      {SUBJECT_ORDER.filter((s) => bySubject.has(s)).map((subject) => (
-        <div key={subject} className="flex flex-col gap-2.5">
+      {sections.map((section) => (
+        <div key={section.key} className="flex flex-col gap-2.5">
           <div className="flex items-center gap-2.5">
-            <span className="size-2.5 shrink-0 rounded-[3px]" style={{ backgroundColor: SUBJECT_COLOR[subject] }} />
-            <span className="font-ui text-xs font-black tracking-[1.6px] uppercase" style={{ color: SUBJECT_COLOR[subject] }}>
-              {SUBJECT_LABEL[subject]}
+            <span className={`size-2.5 shrink-0 rounded-[3px] ${section.color ? CARD_COLOR_SWATCH[section.color] : "bg-border"}`} />
+            <span className={`font-ui text-xs font-black tracking-[1.6px] uppercase ${section.color ? CARD_COLOR_TEXT[section.color] : "text-secondary"}`}>
+              {section.label}
             </span>
             <span className="h-px flex-1 bg-border" />
           </div>
 
           <div className="flex flex-col divide-y divide-border overflow-hidden rounded-xl border border-border shadow-sm">
-            {bySubject.get(subject)!.map((deck) => (
+            {section.decks.map((deck) => (
               <DeckRow key={deck.id} deck={deck} startTransition={startTransition} />
             ))}
           </div>

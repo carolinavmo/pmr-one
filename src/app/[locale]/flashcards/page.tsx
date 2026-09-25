@@ -7,6 +7,7 @@ import {
   getDashboardTopicTiles,
   getLibraryTopicTiles,
   groupLibraryTopicsBySubject,
+  getSubjects,
   getDashboardProgress,
 } from "@/lib/flashcards";
 import { FlashcardsDashboard } from "@/components/flashcards/FlashcardsDashboard";
@@ -31,7 +32,7 @@ export default async function FlashcardsPage() {
   const isEditor = session?.user.role === "editor" || session?.user.role === "admin";
   const todayYmd = new Date().toISOString().slice(0, 10);
 
-  const [deckRows, { systemCategories, userCategories }, metrics, forecast, topics, libraryTopics, progress] = await Promise.all([
+  const [deckRows, { systemCategories, userCategories }, metrics, forecast, topics, libraryTopics, progress, subjects] = await Promise.all([
     getDashboardDeckRows(userId),
     getCategories(userId),
     userId ? getDashboardMetrics(userId, todayYmd) : null,
@@ -39,9 +40,10 @@ export default async function FlashcardsPage() {
     getDashboardTopicTiles(userId),
     getLibraryTopicTiles(userId),
     userId ? getDashboardProgress(userId, todayYmd) : null,
+    getSubjects(),
   ]);
 
-  const libraryGroups = groupLibraryTopicsBySubject(libraryTopics);
+  const libraryGroups = groupLibraryTopicsBySubject(libraryTopics, subjects);
 
   return (
     <main className="mx-auto flex w-full max-w-7xl flex-col px-6 py-16">

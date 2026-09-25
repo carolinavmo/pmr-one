@@ -1,7 +1,6 @@
 import { pool } from "@/lib/db";
 import { sanitizeRichText } from "@/lib/rich-text";
 import { type TopicColor, isTopicColor } from "@/lib/flashcard-topic-colors";
-import { type FlashcardSubject, isFlashcardSubject } from "@/lib/flashcard-subjects";
 
 // ============================================================
 // The editor side — FLASHCARDS-IMPLEMENTATION.md Pass 5-6.
@@ -20,7 +19,6 @@ export interface AdminDeckRow {
   categoryId: string | null;
   categoryName: string | null;
   topicColor: TopicColor | null;
-  subject: FlashcardSubject;
   reviewedAt: string | null;
   reviewedByName: string | null;
   sourceDiseaseName: string | null;
@@ -31,7 +29,7 @@ export interface AdminDeckRow {
 export async function getAdminDeckList(): Promise<AdminDeckRow[]> {
   const { rows } = await pool.query(
     `SELECT d.id, d.name, d.status, d.archived_at, d.reviewed_at, d.position,
-       d.category_id, c.name AS category_name, c.topic_color, c.subject,
+       d.category_id, c.name AS category_name, c.topic_color,
        u.name AS reviewed_by_name,
        dis.canonical_name AS source_disease_name,
        COUNT(f.id) FILTER (WHERE f.deleted_at IS NULL)::int AS card_count,
@@ -42,7 +40,7 @@ export async function getAdminDeckList(): Promise<AdminDeckRow[]> {
      LEFT JOIN disease dis ON dis.id = d.source_disease_id
      LEFT JOIN flashcard f ON f.deck_id = d.id
      WHERE d.owner_type = 'system'
-     GROUP BY d.id, c.name, c.topic_color, c.subject, c.position, u.name, dis.canonical_name
+     GROUP BY d.id, c.name, c.topic_color, c.position, u.name, dis.canonical_name
      ORDER BY c.position NULLS LAST, c.name NULLS LAST, d.position, d.name`
   );
   return rows.map((r) => ({
@@ -54,7 +52,6 @@ export async function getAdminDeckList(): Promise<AdminDeckRow[]> {
     categoryId: r.category_id,
     categoryName: r.category_name,
     topicColor: isTopicColor(r.topic_color) ? r.topic_color : null,
-    subject: isFlashcardSubject(r.subject) ? r.subject : "other",
     reviewedAt: r.reviewed_at,
     reviewedByName: r.reviewed_by_name,
     sourceDiseaseName: r.source_disease_name,

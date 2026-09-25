@@ -4,14 +4,15 @@ import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import type { TopicTile, LibrarySubjectGroup } from "@/lib/flashcards";
-import { SUBJECT_COLOR, SUBJECT_LABEL_KEY } from "@/lib/flashcard-subjects";
+import { CARD_COLOR_SWATCH, CARD_COLOR_TEXT } from "@/lib/card-colors";
 
 const CARDS_PER_GROUP = 4;
 
 // "Browse the library" (FLASHCARDS-SPEC.md "The dashboard — final
 // order" § Browse the library) — every system topic, grouped by its
-// fixed subject (flashcard-subjects.ts), each group introduced by a
-// separator row. "There is no 'add topic' step": every card is a plain
+// admin-managed subject (flashcard_subject table), each group
+// introduced by a separator row. "There is no 'add topic' step": every
+// card is a plain
 // link straight to the topic page — same stack-of-cards visual this
 // section has always used, now with a footer naming where the visitor
 // is in it ("12 due" / "✓ up to date" / "Not started").
@@ -33,7 +34,7 @@ export function LibraryTopicsGrid({ groups, isSignedIn }: { groups: LibrarySubje
       </div>
 
       {groups.map((group) => (
-        <LibrarySubjectSection key={group.subject} group={group} isSignedIn={isSignedIn} />
+        <LibrarySubjectSection key={group.subject.id} group={group} isSignedIn={isSignedIn} />
       ))}
     </div>
   );
@@ -42,17 +43,14 @@ export function LibraryTopicsGrid({ groups, isSignedIn }: { groups: LibrarySubje
 function LibrarySubjectSection({ group, isSignedIn }: { group: LibrarySubjectGroup; isSignedIn: boolean }) {
   const t = useTranslations("flashcards");
   const [expanded, setExpanded] = useState(false);
-  const color = SUBJECT_COLOR[group.subject];
   const visibleTopics = expanded ? group.topics : group.topics.slice(0, CARDS_PER_GROUP);
   const hasMore = group.topics.length > CARDS_PER_GROUP;
 
   return (
     <div className="flex flex-col">
       <div className="mt-5 mb-2.5 flex items-center gap-2.5">
-        <span aria-hidden="true" className="size-2.5 shrink-0 rounded-[3px]" style={{ backgroundColor: color }} />
-        <span className="font-ui text-xs font-black tracking-[1.6px]" style={{ color }}>
-          {t(SUBJECT_LABEL_KEY[group.subject]).toUpperCase()}
-        </span>
+        <span aria-hidden="true" className={`size-2.5 shrink-0 rounded-[3px] ${CARD_COLOR_SWATCH[group.subject.color]}`} />
+        <span className={`font-ui text-xs font-black tracking-[1.6px] uppercase ${CARD_COLOR_TEXT[group.subject.color]}`}>{group.subject.name}</span>
         <span className="font-ui text-xs font-bold text-secondary">
           {t("librarySubjectCount", { count: group.topicCount, cards: group.cardCount })}
         </span>

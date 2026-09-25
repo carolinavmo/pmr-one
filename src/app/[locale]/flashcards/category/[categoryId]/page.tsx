@@ -10,6 +10,7 @@ import {
   getTopicMetrics,
   getTopicWeakCards,
   getTopicAllCards,
+  getSubjects,
   type FlashcardCategory,
   type DeckSummary,
 } from "@/lib/flashcards";
@@ -109,6 +110,11 @@ async function TopicPageBody({
   const [metrics, weakCards, allCards] = userId
     ? await Promise.all([getTopicMetrics(userId, category.id), getTopicWeakCards(userId, category.id), getTopicAllCards(userId, category.id)])
     : [null, [], null];
+  // Only fetched when the Settings tab can actually render (same
+  // "canManage-gated extra query" pattern assignableDecks above uses) —
+  // a plain visitor or a system topic's non-editor viewer never sees
+  // the subject picker.
+  const subjects = canManage ? await getSubjects() : [];
 
   return (
     <TopicPageClient
@@ -121,6 +127,7 @@ async function TopicPageBody({
       canManage={canManage}
       decksInFolder={decks}
       assignableDecks={assignableDecks}
+      subjects={subjects}
     />
   );
 }

@@ -4,7 +4,6 @@ import { useTranslations } from "next-intl";
 import { Play, Plus } from "lucide-react";
 import { Link } from "@/i18n/navigation";
 import type { TopicColor } from "@/lib/flashcard-topic-colors";
-import { SUBJECT_LABEL_KEY, type FlashcardSubject } from "@/lib/flashcard-subjects";
 import type { DeckOwnerType } from "@/lib/flashcards";
 import { KnownPercentRing } from "./KnownPercentRing";
 import { TopicStateBar } from "./TopicStateBar";
@@ -18,7 +17,7 @@ export function TopicPageHeader({
   name,
   topicColor,
   ownerType,
-  subject,
+  subjectName,
   deckCount,
   cardCount,
   knownPercent,
@@ -33,7 +32,7 @@ export function TopicPageHeader({
   name: string;
   topicColor: TopicColor | null;
   ownerType: DeckOwnerType;
-  subject: FlashcardSubject;
+  subjectName: string;
   deckCount: number;
   cardCount: number;
   knownPercent: number;
@@ -63,7 +62,7 @@ export function TopicPageHeader({
             <h1 className="font-heading text-3xl font-black text-primary">{name}</h1>
             <p className="font-ui text-sm text-secondary">
               {ownerType === "system"
-                ? t("deckAndCardCountFromLibrary", { decks: deckCount, cards: cardCount, subject: t(SUBJECT_LABEL_KEY[subject]) })
+                ? t("deckAndCardCountFromLibrary", { decks: deckCount, cards: cardCount, subject: subjectName })
                 : t("deckAndCardCount", { decks: deckCount, cards: cardCount })}
             </p>
           </div>

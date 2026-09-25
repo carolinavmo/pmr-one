@@ -15,8 +15,7 @@ import type { CardColor } from "@/lib/editorial-blocks";
 import { ColorSwatchPicker } from "@/components/ui/ColorSwatchPicker";
 import { TopicColorPicker } from "./TopicColorPicker";
 import type { TopicColor } from "@/lib/flashcard-topic-colors";
-import { SUBJECT_ORDER, SUBJECT_LABEL, type FlashcardSubject } from "@/lib/flashcard-subjects";
-import type { FlashcardCategory } from "@/lib/flashcards";
+import type { FlashcardCategory, FlashcardSubjectRow } from "@/lib/flashcards";
 
 // The "Settings" tab (FLASHCARDS-IMPLEMENTATION.md Pass 3) — rename,
 // recolour (both the decorative `color` still used for the folder's
@@ -26,10 +25,15 @@ import type { FlashcardCategory } from "@/lib/flashcards";
 // directly (CategoryHeader.tsx, now folded into this panel).
 export function TopicSettingsPanel({
   category,
+  subjects,
   onRenamed,
   onTopicColorChanged,
 }: {
   category: FlashcardCategory;
+  // Only passed for a system topic — a user folder's Settings tab has
+  // no subject picker at all (see the `category.ownerType === "system"`
+  // guard below), so there's nothing for an empty array to render.
+  subjects: FlashcardSubjectRow[];
   onRenamed: (name: string) => void;
   onTopicColorChanged: (color: TopicColor) => void;
 }) {
@@ -38,7 +42,7 @@ export function TopicSettingsPanel({
   const [draft, setDraft] = useState(category.name);
   const [colorPickerOpen, setColorPickerOpen] = useState(false);
   const [topicColorPickerOpen, setTopicColorPickerOpen] = useState(false);
-  const [subject, setSubject] = useState(category.subject);
+  const [subjectId, setSubjectId] = useState(category.subjectId);
   const [, startTransition] = useTransition();
 
   function handleSaveName() {
@@ -64,8 +68,8 @@ export function TopicSettingsPanel({
     });
   }
 
-  function handleSubjectChange(next: FlashcardSubject) {
-    setSubject(next);
+  function handleSubjectChange(next: string) {
+    setSubjectId(next);
     startTransition(() => {
       updateCategorySubjectAction(category.id, next);
     });
@@ -129,13 +133,13 @@ export function TopicSettingsPanel({
           <div className="flex flex-col gap-1.5">
             <span className="font-ui text-xs font-bold text-secondary">{t("subjectLabel")}</span>
             <select
-              value={subject}
-              onChange={(e) => handleSubjectChange(e.target.value as FlashcardSubject)}
+              value={subjectId}
+              onChange={(e) => handleSubjectChange(e.target.value)}
               className="rounded-lg border border-border bg-surface-raised px-3 py-2 font-ui text-xs font-bold text-secondary outline-none focus:border-accent"
             >
-              {SUBJECT_ORDER.map((s) => (
-                <option key={s} value={s}>
-                  {SUBJECT_LABEL[s]}
+              {subjects.map((s) => (
+                <option key={s.id} value={s.id}>
+                  {s.name}
                 </option>
               ))}
             </select>

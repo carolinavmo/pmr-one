@@ -2,8 +2,9 @@ import { getLocale } from "next-intl/server";
 import { redirect, Link } from "@/i18n/navigation";
 import { auth } from "@/auth";
 import { getAdminDeckList } from "@/lib/flashcards-admin";
-import { getCategories } from "@/lib/flashcards";
+import { getCategories, getSubjects } from "@/lib/flashcards";
 import { AdminFlashcardsDeckList } from "@/components/admin/AdminFlashcardsDeckList";
+import { AdminSubjectManager } from "@/components/admin/AdminSubjectManager";
 
 // /admin/flashcards — Pass 5's deck list: "grouped by subject and
 // topic, same separators as the reader's page." Same auth-gate shape
@@ -21,7 +22,7 @@ export default async function AdminFlashcardsPage() {
     return;
   }
 
-  const [decks, { systemCategories }] = await Promise.all([getAdminDeckList(), getCategories(null)]);
+  const [decks, { systemCategories }, subjects] = await Promise.all([getAdminDeckList(), getCategories(null), getSubjects()]);
 
   return (
     <main className="mx-auto flex w-full max-w-5xl flex-col gap-6 px-6 py-10">
@@ -36,7 +37,8 @@ export default async function AdminFlashcardsPage() {
           Card health →
         </Link>
       </div>
-      <AdminFlashcardsDeckList decks={decks} categories={systemCategories} />
+      <AdminSubjectManager subjects={subjects} />
+      <AdminFlashcardsDeckList decks={decks} categories={systemCategories} subjects={subjects} />
     </main>
   );
 }

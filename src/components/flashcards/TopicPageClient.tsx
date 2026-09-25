@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import type { DeckSummary, FlashcardCategory, TopicDeckRow, TopicCardRow, TopicMetrics, WeakCard } from "@/lib/flashcards";
+import type { DeckSummary, FlashcardCategory, TopicDeckRow, TopicCardRow, TopicMetrics, WeakCard, FlashcardSubjectRow } from "@/lib/flashcards";
 import type { TopicColor } from "@/lib/flashcard-topic-colors";
 import { TopicPageHeader } from "./TopicPageHeader";
 import { TopicMetricTiles } from "./TopicMetricTiles";
@@ -22,6 +22,7 @@ export function TopicPageClient({
   canManage,
   decksInFolder,
   assignableDecks,
+  subjects,
 }: {
   category: FlashcardCategory;
   deckRows: TopicDeckRow[];
@@ -32,6 +33,7 @@ export function TopicPageClient({
   canManage: boolean;
   decksInFolder: DeckSummary[];
   assignableDecks: DeckSummary[];
+  subjects: FlashcardSubjectRow[];
 }) {
   const [name, setName] = useState(category.name);
   const [topicColor, setTopicColor] = useState<TopicColor | null>(category.topicColor);
@@ -58,7 +60,7 @@ export function TopicPageClient({
         name={name}
         topicColor={topicColor}
         ownerType={category.ownerType}
-        subject={category.subject}
+        subjectName={category.subjectName}
         deckCount={deckRows.length}
         cardCount={cardCount}
         knownPercent={metrics?.knownPercent ?? 0}
@@ -83,6 +85,7 @@ export function TopicPageClient({
         canManage={canManage}
         decksInFolder={decksInFolder}
         assignableDecks={assignableDecks}
+        subjects={subjects}
         onTopicColorChanged={setTopicColor}
         onRenamed={setName}
         onNewDeckClick={() => setTab("decks")}

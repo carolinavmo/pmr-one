@@ -2,7 +2,7 @@
 
 import { useTranslations } from "next-intl";
 import { Plus } from "lucide-react";
-import type { DeckSummary, FlashcardCategory, TopicDeckRow, TopicCardRow, TopicMetrics } from "@/lib/flashcards";
+import type { DeckSummary, FlashcardCategory, TopicDeckRow, TopicCardRow, TopicMetrics, FlashcardSubjectRow } from "@/lib/flashcards";
 import type { TopicColor } from "@/lib/flashcard-topic-colors";
 import { CategoryDeckManager } from "./CategoryDeckManager";
 import { TopicDeckRowItem } from "./TopicDeckRowItem";
@@ -22,6 +22,7 @@ export function TopicPageTabs({
   canManage,
   decksInFolder,
   assignableDecks,
+  subjects,
   onTopicColorChanged,
   onRenamed,
   onNewDeckClick,
@@ -37,6 +38,7 @@ export function TopicPageTabs({
   canManage: boolean;
   decksInFolder: DeckSummary[];
   assignableDecks: DeckSummary[];
+  subjects: FlashcardSubjectRow[];
   onTopicColorChanged: (color: TopicColor) => void;
   onRenamed: (name: string) => void;
   onNewDeckClick: () => void;
@@ -160,7 +162,7 @@ export function TopicPageTabs({
       )}
 
       {tab === "settings" && canManage && (
-        <TopicSettingsPanel category={category} onRenamed={onRenamed} onTopicColorChanged={onTopicColorChanged} />
+        <TopicSettingsPanel category={category} subjects={subjects} onRenamed={onRenamed} onTopicColorChanged={onTopicColorChanged} />
       )}
     </div>
   );

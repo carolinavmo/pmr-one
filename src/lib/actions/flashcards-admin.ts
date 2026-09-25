@@ -26,6 +26,8 @@ import {
 } from "@/lib/flashcards-admin";
 import { parseCardImport } from "@/lib/csv-parse";
 import { getPublishedDiseases, type DiseaseCatalogEntry } from "@/lib/disease-catalog";
+import { createSubject, renameSubject, updateSubjectColor, reorderSubjects, deleteSubject, type FlashcardSubjectRow } from "@/lib/flashcards";
+import type { CardColor } from "@/lib/editorial-blocks";
 
 // Same shape as admin/actions.ts's own requireReviewer() — editor or
 // admin only. Redefined locally rather than shared/exported: every
@@ -194,4 +196,38 @@ export async function generateCardsFromDiseaseAction(
 export async function getCardHealthReportAction() {
   await requireReviewer();
   return getCardHealthReport();
+}
+
+// ---------- Subjects ("Browse the library" section headers) ----------
+
+export async function createSubjectAction(name: string, color: CardColor): Promise<FlashcardSubjectRow> {
+  await requireReviewer();
+  const subject = await createSubject(name, color);
+  revalidateFlashcardAdminSurfaces();
+  return subject;
+}
+
+export async function renameSubjectAction(subjectId: string, name: string): Promise<void> {
+  await requireReviewer();
+  await renameSubject(subjectId, name);
+  revalidateFlashcardAdminSurfaces();
+}
+
+export async function updateSubjectColorAction(subjectId: string, color: CardColor): Promise<void> {
+  await requireReviewer();
+  await updateSubjectColor(subjectId, color);
+  revalidateFlashcardAdminSurfaces();
+}
+
+export async function reorderSubjectsAction(orderedIds: string[]): Promise<void> {
+  await requireReviewer();
+  await reorderSubjects(orderedIds);
+  revalidateFlashcardAdminSurfaces();
+}
+
+export async function deleteSubjectAction(subjectId: string): Promise<{ ok: boolean; reason?: "in-use" | "last-subject" }> {
+  await requireReviewer();
+  const result = await deleteSubject(subjectId);
+  if (result.ok) revalidateFlashcardAdminSurfaces();
+  return result;
 }
