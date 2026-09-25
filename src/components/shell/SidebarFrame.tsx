@@ -70,8 +70,7 @@ export function SidebarFrame({
   const signedOut = !(userEmail || userName);
   const isClinicalTools = pathname.startsWith("/clinical-tools");
   const isMyHandbook = pathname.startsWith("/my-atlas");
-  const isFlashcardsStudy = pathname.startsWith("/flashcards/study");
-  const isFlashcardsDashboard = pathname === "/flashcards";
+  const isFlashcards = pathname.startsWith("/flashcards");
 
   // The sidebar now sits in a row below TopBar (the brand wordmark
   // moved there) rather than spanning the full viewport height itself,
@@ -108,18 +107,16 @@ export function SidebarFrame({
   if (isMyHandbook) {
     return null;
   }
-  // FLASHCARDS-SPEC.md's study screen — "no navbar, no sidebar."
-  if (isFlashcardsStudy) {
-    return null;
-  }
   // FLASHCARDS-SPEC.md Pass 4 rule 4: "the rail is the deck index, not
-  // the library tree." Unlike /clinical-tools (which swaps in a
-  // different sidebar here), the dashboard has no sidebar slot at all
-  // on this exact route — its own 252px rail (FlashcardsRail.tsx)
-  // lives inside the page content, same as My Handbook's index rail
-  // above. Sub-routes (/flashcards/[deckId], /flashcards/category/…)
-  // keep the normal library-tree sidebar, hence the exact match.
-  if (isFlashcardsDashboard) {
+  // the library tree" — the condition-browsing tree this sidebar shows
+  // everywhere else has no relevance inside Flashcards, whose every
+  // route (dashboard, study screen, a topic page, a deck page) is
+  // already scoped to flashcards and carries its own in-page navigation
+  // (FlashcardsRail's rail, a topic page's own deck list/tabs). Applies
+  // to the whole /flashcards subtree, not just the dashboard's exact
+  // route — a topic/deck page showing the disease-library tree here
+  // read as stray leftover chrome, unrelated to what's on the page.
+  if (isFlashcards) {
     return null;
   }
 
