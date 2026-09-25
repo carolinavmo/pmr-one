@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8">
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--navy:#14284A;--ink:#27344A;--mute:#5E6B80;--line:#D9DFE8;--soft:#F7F9FB;
+ --acc:#0E9BA6;--acc-ink:#0A7680;--acc-bg:#E1F4F5;--acc-bd:#B5E0E3;--acc-dk:#7FD3DA;
+ --new:#E8564B;--kn:#4FBF86;--gold:#E8A317;--red:#B8262B;--grn:#1F7A4D}
+[data-colour="orange"]{--topic:#FF8A3D;--topic-bg:#FFF1E4;--topic-bd:#FFD6B8}
+[data-colour="pink"]{--topic:#F0569A;--topic-bg:#FFEAF3;--topic-bd:#FFC6DD}
+[data-colour="violet"]{--topic:#7B61FF;--topic-bg:#F0ECFF;--topic-bd:#D6CCFF}
+[data-colour="mint"]{--topic:#17BF9A;--topic-bg:#E1FBF4;--topic-bd:#B3F0E1}
+[data-colour="sky"]{--topic:#2EA8FF;--topic-bg:#E6F4FF;--topic-bd:#BCE0FF}
+body{font-family:'Roboto','Noto Sans CJK JP',sans-serif;color:var(--ink);background:#E9EDF1}
+.sheet{width:1600px;background:#fff;border-radius:14px;box-shadow:0 24px 64px rgba(20,40,74,.2);margin:0 auto 32px;padding:34px 38px 42px;position:relative;overflow:hidden}
+.tb{position:absolute;left:0;right:0;top:0;height:7px;display:flex}.tb i{flex:1}
+.bh{display:flex;align-items:center;gap:12px}.bh img{height:34px}.bh b{font-size:20px;font-weight:900;color:var(--navy)}
+h1.t{font-size:32px;font-weight:900;color:var(--navy);letter-spacing:-1px;margin-top:9px}
+.dek{font-size:16px;color:var(--mute);margin-top:6px;line-height:1.45;max-width:1150px}
+.dek b{color:var(--navy)}
+.frame{margin-top:18px;border:1px solid var(--line);border-radius:14px;overflow:hidden;box-shadow:0 10px 30px rgba(20,40,74,.10)}
+.nav{background:var(--navy);padding:11px 18px 9px}
+.nav .r1{display:flex;align-items:center;gap:14px}
+.nav .logo{display:flex;align-items:center;gap:8px;color:#fff;font-size:16px;font-weight:900}
+.nav .logo img{height:24px}.nav .logo span{color:var(--acc)}
+.nav .srch{flex:1;max-width:420px;margin:0 auto;height:30px;border-radius:15px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.18);display:flex;align-items:center;padding:0 13px;font-size:11.5px;color:#9DB0CA}
+.nav .ut{display:flex;align-items:center;gap:11px;color:#C2D2E6;font-size:11.5px;font-weight:700}
+.nav .av{width:26px;height:26px;border-radius:50%;background:var(--acc);color:#fff;font-size:10px;font-weight:900;display:flex;align-items:center;justify-content:center}
+.nav .r2{display:flex;align-items:center;gap:5px;margin-top:9px}
+.nav .pl{color:#C2D2E6;font-size:11.5px;font-weight:700;padding:5px 9px}
+.nav .on{border:2px solid var(--acc);background:rgba(14,155,166,.18);color:#fff;font-size:12px;font-weight:900;padding:4px 12px;border-radius:15px}
+.nav .dv{width:1px;height:17px;background:rgba(255,255,255,.2);margin:0 5px}
+.body{display:flex;min-height:900px}
+.rail{width:246px;flex:none;background:var(--soft);border-right:1px solid var(--line);padding:13px 10px;display:flex;flex-direction:column}
+.newbtn{background:var(--navy);color:#fff;border-radius:10px;padding:10px;font-size:13px;font-weight:800;text-align:center}
+.fd{height:30px;background:#fff;border:1px solid var(--line);border-radius:9px;display:flex;align-items:center;padding:0 10px;font-size:11.5px;color:#A6B0BC;margin-top:9px}
+.g{font-size:9px;font-weight:900;letter-spacing:1.3px;color:#9AA5B4;padding:13px 7px 5px;display:flex}
+.g .pl{margin-left:auto;color:#AAB4C1;font-size:13px}
+.r{display:flex;align-items:center;gap:9px;font-size:12.5px;font-weight:700;color:var(--ink);padding:6px 8px;border-radius:8px}
+.r i{width:9px;height:9px;border-radius:3px;flex:none}
+.r .n{margin-left:auto;font-size:10.5px;font-weight:800;color:#9AA5B4}
+.r .due{margin-left:auto;font-size:10.5px;font-weight:900;color:#fff;background:var(--red);border-radius:10px;padding:2px 7px}
+.r.on{background:var(--acc-bg);color:var(--acc-ink);font-weight:800}
+.railfoot{margin-top:auto;border-top:1px solid var(--line);padding-top:9px;font-size:11px;color:#9AA5B4;font-weight:700}
+.main{flex:1;min-width:0;padding:24px 28px 36px}
+.hd{display:flex;align-items:flex-start;gap:16px}
+.hd h2{font-size:30px;font-weight:900;color:var(--navy);letter-spacing:-1px}
+.hd p{font-size:14.5px;color:var(--mute);margin-top:4px}
+.sess{display:flex;gap:16px;background:var(--navy);border-radius:16px;padding:18px 22px;margin-top:16px;align-items:center}
+.sess .l{flex:1}
+.sess .k{font-size:10px;font-weight:900;letter-spacing:1.5px;color:var(--acc-dk)}
+.sess h3{font-size:28px;font-weight:900;color:#fff;letter-spacing:-.7px;margin-top:4px}
+.sess .brk{display:flex;gap:16px;margin-top:10px}
+.sess .brk div{font-size:12.5px;color:#9DB0CA;font-weight:700;display:flex;align-items:center;gap:6px}
+.sess .brk i{width:9px;height:9px;border-radius:3px;display:block}
+.sess .btn{background:var(--acc);color:#fff;font-size:15px;font-weight:900;border-radius:11px;padding:13px 22px;white-space:nowrap}
+.sess .btn2{border:1px solid rgba(255,255,255,.28);color:#fff;font-size:12.5px;font-weight:800;border-radius:10px;padding:12px 15px;white-space:nowrap}
+.sh{display:flex;align-items:baseline;gap:10px;margin-top:24px;margin-bottom:12px}
+.sh h4{font-size:17px;font-weight:900;color:var(--navy)}
+.sh span{font-size:12px;color:#9AA5B4;font-weight:700}
+.sh a{margin-left:auto;font-size:12px;font-weight:800;color:var(--acc-ink)}
+/* progress panel */
+.pgrid{display:grid;grid-template-columns:1.05fr 1.5fr 1fr;gap:13px}
+.pc{border:1px solid var(--line);border-radius:15px;padding:16px 18px}
+.pc .k{font-size:9.5px;font-weight:900;letter-spacing:1.3px;color:#9AA5B4;margin-bottom:10px}
+.mast{display:flex;align-items:center;gap:16px}
+.ring{width:104px;height:104px;border-radius:50%;background:conic-gradient(var(--kn) 46%,#EEF1F5 0);display:flex;align-items:center;justify-content:center;position:relative;flex:none}
+.ring::after{content:"";position:absolute;width:80px;height:80px;border-radius:50%;background:#fff}
+.ring em{position:relative;z-index:2;font-style:normal;font-size:24px;font-weight:900;color:var(--navy)}
+.ring em small{display:block;font-size:9px;font-weight:900;letter-spacing:1px;color:#9AA5B4;margin-top:1px}
+.mast b{display:block;font-size:19px;font-weight:900;color:var(--navy)}
+.mast span{display:block;font-size:12.5px;color:var(--mute);margin-top:5px}
+.mast .up{color:var(--grn);font-weight:800}
+.bars{display:flex;align-items:flex-end;gap:5px;height:96px;margin-top:4px}
+.bars i{flex:1;background:var(--acc-dk);border-radius:3px 3px 0 0;display:block}
+.bars i.hi{background:var(--acc)}
+.axis{display:flex;justify-content:space-between;font-size:10.5px;color:#9AA5B4;font-weight:800;margin-top:7px}
+.mini{display:flex;gap:18px;margin-top:12px;border-top:1px solid #F0F2F5;padding-top:11px}
+.mini div b{display:block;font-size:17px;font-weight:900;color:var(--navy)}
+.mini div span{font-size:11px;color:#9AA5B4;font-weight:700}
+.heat{display:flex;gap:4px}
+.wk{display:flex;flex-direction:column;gap:4px}
+.wk i{width:13px;height:13px;border-radius:4px;display:block}
+.hl{display:flex;align-items:center;gap:4px;margin-top:9px;font-size:10.5px;color:#9AA5B4;font-weight:700}
+.hl i{width:11px;height:11px;border-radius:3px;display:block}
+.streak{font-size:12.5px;color:var(--mute);margin-top:9px;font-weight:700}
+.streak b{color:var(--navy)}
+/* topic rows */
+.trow{display:flex;align-items:center;gap:13px;border:1px solid var(--line);border-radius:12px;padding:12px 15px;margin-bottom:9px}
+.trow .sw{width:10px;height:36px;border-radius:5px;background:var(--topic);flex:none}
+.trow .t{width:170px;flex:none}
+.trow .t b{display:block;font-size:14px;font-weight:900;color:var(--navy)}
+.trow .t span{font-size:11px;color:#9AA5B4;font-weight:700}
+.trow .bar{flex:1;height:10px;background:#EEF1F5;border-radius:5px;display:flex;overflow:hidden}
+.trow .bar i{height:10px;display:block}
+.trow .pc2{width:52px;text-align:right;font-size:13px;font-weight:900;color:var(--navy)}
+.trow .dd{width:74px;text-align:right;font-size:11.5px;font-weight:900;color:var(--red)}
+.trow .dd.ok{color:var(--grn)}
+.lg{display:flex;gap:18px;font-size:11.5px;font-weight:800;color:var(--mute);margin:2px 0 12px 2px}
+.lg span{display:flex;align-items:center;gap:7px}
+.lg i{width:10px;height:10px;border-radius:3px;display:block}
+.notes{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:24px}
+.nb{border:1px solid var(--line);border-radius:14px;padding:15px 17px}
+.nb b{display:block;font-size:12px;font-weight:900;letter-spacing:1.1px;color:var(--navy);margin-bottom:6px}
+.nb p{font-size:14px;line-height:1.5;color:var(--mute)}
+.nb p em{font-style:normal;color:var(--navy);font-weight:800}
+
+/* library topic cards — deck of cards */
+.libgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:13px}
+.w3{position:relative;padding-top:10px}
+.w3 .e1,.w3 .e2{position:absolute;border-radius:15px;border:2px solid var(--topic-bd);background:#fff;pointer-events:none}
+.w3 .e1{top:0;left:12px;right:12px;height:30px;opacity:.6}
+.w3 .e2{top:5px;left:6px;right:6px;height:30px;opacity:.85}
+.c3{position:relative;border:2px solid var(--topic-bd);background:var(--topic-bg);border-radius:16px;padding:14px}
+.c3 .cnt{position:absolute;top:-11px;right:12px;background:var(--topic);color:#fff;font-size:11px;font-weight:900;border-radius:11px;padding:4px 10px}
+.c3 .nm{font-size:15.5px;font-weight:900;color:var(--navy);letter-spacing:-.3px;line-height:1.15}
+.c3 .sb{font-size:11px;color:#9AA5B4;font-weight:700;margin-top:3px}
+.c3 .ex{font-size:11.5px;color:var(--mute);font-weight:600;margin-top:7px;line-height:1.35;min-height:30px}
+.c3 .foot{display:flex;align-items:center;gap:8px;margin-top:11px;padding-top:10px;border-top:1px solid var(--topic-bd)}
+.c3 .foot .st{font-size:11.5px;font-weight:900;color:var(--topic)}
+.c3 .foot .st.mut{color:#9AA5B4;font-weight:800}
+.c3 .foot .go{margin-left:auto;font-size:12.5px;font-weight:900;color:var(--navy)}
+.c3:hover{box-shadow:0 8px 20px rgba(20,40,74,.10)}
+.sep{display:flex;align-items:center;gap:10px;margin:20px 0 11px}
+.sep i{width:11px;height:11px;border-radius:4px}
+.sep b{font-size:12px;font-weight:900;letter-spacing:1.6px}
+.sep span{font-size:11.5px;color:#9AA5B4;font-weight:700}
+.sep .ln{flex:1;height:1px;background:var(--line)}
+.sep a{font-size:11.5px;font-weight:800;color:var(--acc-ink)}
+</style></head><body>
+<div class="sheet" id="d">
+ <div class="tb"><i style="background:var(--acc)"></i><i style="background:var(--navy)"></i></div>
+ <div class="bh"><img src="logo.png" alt=""><b>PM&amp;R <span style="color:var(--acc)">Explained</span></b></div>
+ <h1 class="t">Flashcards — browse, then study</h1>
+ <div class="dek">No "add" step: the library is <b>grouped by subject</b> and every topic card opens the topic, where you pick a deck and study it. Progress sits underneath.</div>
+
+ <div class="frame">
+  <div class="nav">
+   <div class="r1"><div class="logo"><img src="logo.png" alt="">PM&amp;R <span>Explained</span></div>
+    <div class="srch">⌕&nbsp; Search conditions, exam maneuvers, calculators…</div>
+    <div class="ut"><span>🌐 EN ⌄</span><span>🔔</span><div class="av">CA</div></div></div>
+   <div class="r2"><span class="pl">▣ Explore library</span><span class="dv"></span><span class="pl">Clinical Tools</span><span class="pl">Study Planner</span><span class="pl">My Handbook</span><span class="on">◈ Flashcards</span><span class="pl">Question Bank</span><span class="pl">Courses</span></div>
+  </div>
+  <div class="body">
+   <div class="rail">
+    <div class="newbtn">＋ New deck</div>
+    <div class="fd">⌕ Search decks and cards…</div>
+    <div class="g">STUDY</div>
+    <div class="r on"><i style="background:var(--acc)"></i>Due today<span class="due">34</span></div>
+    <div class="r"><i style="background:#C6CED8"></i>All decks<span class="n">9</span></div>
+    <div class="r"><i style="background:var(--gold)"></i>★ Favourites<span class="n">2</span></div>
+    <div class="g">TOPICS<span class="pl">＋</span></div>
+    <div class="r"><i style="background:#FF8A3D"></i>Foot &amp; ankle<span class="due">12</span></div>
+    <div class="r"><i style="background:#F0569A"></i>Knee &amp; hip<span class="due">9</span></div>
+    <div class="r"><i style="background:#7B61FF"></i>Neurology<span class="due">7</span></div>
+    <div class="r"><i style="background:#17BF9A"></i>Basic sciences<span class="n">0</span></div>
+    <div class="r"><i style="background:#2EA8FF"></i>My decks<span class="due">3</span></div>
+    <div class="railfoot">307 cards · 34 due · 7-day streak</div>
+   </div>
+
+   <div class="main">
+    <div class="hd"><div><h2>Flashcards</h2><p>Spaced repetition across your topics and the library.</p></div></div>
+
+    <div class="sess">
+     <div class="l"><div class="k">TODAY'S SESSION</div><h3>34 cards due · about 9 min</h3>
+      <div class="brk"><div><i style="background:var(--new)"></i>12 new</div><div><i style="background:var(--acc-dk)"></i>17 learning</div><div><i style="background:var(--kn)"></i>5 review</div></div></div>
+     <div class="btn">▶ Start review</div><div class="btn2">Custom session</div>
+    </div>
+
+    <div class="sh"><h4>Browse the library</h4><span>9 topics · 486 cards, written and reviewed</span><a>Open the library ›</a></div>
+    <div class="sep"><i style="background:#A8760F"></i><b style="color:#A8760F">MSK</b><span>4 topics · 245 cards</span><span class="ln"></span><a>See all ›</a></div>
+    <div class="libgrid">
+     <div class="w3" style="--topic:#FF8A3D;--topic-bg:#FFF1E4;--topic-bd:#FFD6B8"><div class="e1"></div><div class="e2"></div>
+      <div class="c3"><span class="cnt">84 cards</span><div class="nm">Foot &amp; ankle</div><div class="sb">3 decks</div>
+       <div class="ex">Achilles · plantar fasciopathy · ankle sprain</div>
+       <div class="foot"><span class="st" style="color:#B8262B">12 due</span><span class="go">Open ›</span></div></div></div><div class="w3" style="--topic:#F0569A;--topic-bg:#FFEAF3;--topic-bd:#FFC6DD"><div class="e1"></div><div class="e2"></div>
+      <div class="c3"><span class="cnt">61 cards</span><div class="nm">Knee &amp; hip</div><div class="sb">2 decks</div>
+       <div class="ex">Knee OA · patellofemoral pain · FAI</div>
+       <div class="foot"><span class="st" style="color:#B8262B">9 due</span><span class="go">Open ›</span></div></div></div><div class="w3" style="--topic:#FFC53D;--topic-bg:#FFF7E0;--topic-bd:#F7E3AE"><div class="e1"></div><div class="e2"></div>
+      <div class="c3"><span class="cnt">52 cards</span><div class="nm">Shoulder</div><div class="sb">3 decks</div>
+       <div class="ex">Rotator cuff · instability · frozen shoulder</div>
+       <div class="foot"><span class="st mut">Not started</span><span class="go">Open ›</span></div></div></div><div class="w3" style="--topic:#FF6B6B;--topic-bg:#FFECEC;--topic-bd:#FFC9C9"><div class="e1"></div><div class="e2"></div>
+      <div class="c3"><span class="cnt">48 cards</span><div class="nm">Spine</div><div class="sb">2 decks</div>
+       <div class="ex">Low back pain · radiculopathy · red flags</div>
+       <div class="foot"><span class="st mut">Not started</span><span class="go">Open ›</span></div></div></div>
+    </div>
+    <div class="sep"><i style="background:#5A479C"></i><b style="color:#5A479C">NEUROLOGY</b><span>2 topics · 130 cards</span><span class="ln"></span><a>See all ›</a></div>
+    <div class="libgrid">
+     <div class="w3" style="--topic:#7B61FF;--topic-bg:#F0ECFF;--topic-bd:#D6CCFF"><div class="e1"></div><div class="e2"></div>
+      <div class="c3"><span class="cnt">96 cards</span><div class="nm">Neurology</div><div class="sb">4 decks</div>
+       <div class="ex">Stroke · spinal cord injury · Bell's palsy</div>
+       <div class="foot"><span class="st" style="color:#B8262B">7 due</span><span class="go">Open ›</span></div></div></div><div class="w3" style="--topic:#9B87FF;--topic-bg:#F4F1FF;--topic-bd:#DFD8FF"><div class="e1"></div><div class="e2"></div>
+      <div class="c3"><span class="cnt">34 cards</span><div class="nm">Mononeuropathies</div><div class="sb">2 decks</div>
+       <div class="ex">Carpal tunnel · ulnar neuropathy</div>
+       <div class="foot"><span class="st mut">Not started</span><span class="go">Open ›</span></div></div></div>
+    </div>
+    <div class="sep"><i style="background:#0F8A6E"></i><b style="color:#0F8A6E">BASIC SCIENCES</b><span>2 topics · 66 cards</span><span class="ln"></span><a>See all ›</a></div>
+    <div class="libgrid">
+     <div class="w3" style="--topic:#17BF9A;--topic-bg:#E1FBF4;--topic-bd:#B3F0E1"><div class="e1"></div><div class="e2"></div>
+      <div class="c3"><span class="cnt">40 cards</span><div class="nm">Basic sciences</div><div class="sb">2 decks</div>
+       <div class="ex">Anatomy · biomechanics · ICF</div>
+       <div class="foot"><span class="st" style="color:#1F7A4D">✓ up to date</span><span class="go">Open ›</span></div></div></div><div class="w3" style="--topic:#2EA8FF;--topic-bg:#E6F4FF;--topic-bd:#BCE0FF"><div class="e1"></div><div class="e2"></div>
+      <div class="c3"><span class="cnt">26 cards</span><div class="nm">Physical agents</div><div class="sb">1 deck</div>
+       <div class="ex">Heat · cold · electrotherapy</div>
+       <div class="foot"><span class="st mut">Not started</span><span class="go">Open ›</span></div></div></div>
+    </div>
+    <div class="sep"><i style="background:#1F7A4D"></i><b style="color:#1F7A4D">OTHER TOPICS</b><span>1 topic · 45 cards</span><span class="ln"></span><a>See all ›</a></div>
+    <div class="libgrid">
+     <div class="w3" style="--topic:#9BD24A;--topic-bg:#F1FAE2;--topic-bd:#D8EDB4"><div class="e1"></div><div class="e2"></div>
+      <div class="c3"><span class="cnt">45 cards</span><div class="nm">Rehabilitation</div><div class="sb">2 decks</div>
+       <div class="ex">Amputees · paediatric · pelvic floor</div>
+       <div class="foot"><span class="st mut">Not started</span><span class="go">Open ›</span></div></div></div>
+    </div>
+
+    <div class="sh"><h4>Your progress</h4><span>since you started, 3 months ago</span><a>Full statistics ›</a></div>
+    <div class="pgrid">
+     <div class="pc"><div class="k">WHAT YOU KNOW</div>
+      <div class="mast"><div class="ring"><em>46%<small>KNOWN</small></em></div>
+       <div><b>142 of 307</b><span>cards known</span><span class="up">▲ 38 this month</span></div></div>
+      <div class="mini"><div><b>98</b><span>learning</span></div><div><b>67</b><span>not started</span></div></div>
+      <div style="margin-top:14px;border-top:1px solid #F0F2F5;padding-top:12px">
+       <div class="k" style="margin-bottom:7px">NEXT MILESTONE</div>
+       <div style="font-size:13.5px;font-weight:800;color:var(--navy)">150 cards known</div>
+       <div class="bar" style="height:8px;background:#EEF1F5;border-radius:4px;margin-top:7px;overflow:hidden"><i style="display:block;height:8px;width:95%;background:var(--kn)"></i></div>
+       <div style="font-size:11.5px;color:#9AA5B4;font-weight:700;margin-top:6px">8 to go · about 2 sessions</div>
+      </div>
+     </div>
+
+     <div class="pc"><div class="k">CARDS REVIEWED · LAST 16 WEEKS</div>
+      <div class="bars"><i style="height:38%"></i><i style="height:62%"></i><i style="height:25%"></i><i style="height:80%"></i><i style="height:55%"></i><i style="height:92%"></i><i style="height:44%"></i><i style="height:70%"></i><i style="height:35%"></i><i style="height:88%"></i><i style="height:60%"></i><i style="height:48%"></i><i style="height:75%"></i><i style="height:30%"></i><i style="height:66%"></i><i style="height:84%"></i></div>
+      <div class="axis"><span>16 weeks ago</span><span>this week</span></div>
+      <div class="mini"><div><b>1,284</b><span>reviews in total</span></div><div><b>62</b><span>a week on average</span></div><div><b>Tue</b><span>your best day</span></div></div>
+     </div>
+
+     <div class="pc"><div class="k">HOW WELL IT STICKS</div>
+      <div style="display:flex;align-items:baseline;gap:9px"><b style="font-size:34px;font-weight:900;color:var(--navy);letter-spacing:-1px">86%</b><span style="font-size:12.5px;color:var(--grn);font-weight:800">▲ 4 pts</span></div>
+      <div style="font-size:12.5px;color:var(--mute);margin-top:3px">retention over the last 30 days</div>
+      <div style="margin-top:14px"><div class="k" style="margin-bottom:8px">STUDY DAYS · 12 WEEKS</div>
+       <div class="heat"><div class="wk"><i style="background:#CFEDE6"></i><i style="background:#8FDCCB"></i><i style="background:#3FC9A9"></i><i style="background:#CFEDE6"></i><i style="background:#CFEDE6"></i><i style="background:#8FDCCB"></i><i style="background:#EEF1F5"></i></div><div class="wk"><i style="background:#CFEDE6"></i><i style="background:#8FDCCB"></i><i style="background:#3FC9A9"></i><i style="background:#EEF1F5"></i><i style="background:#EEF1F5"></i><i style="background:#EEF1F5"></i><i style="background:#3FC9A9"></i></div><div class="wk"><i style="background:#8FDCCB"></i><i style="background:#EEF1F5"></i><i style="background:#17BF9A"></i><i style="background:#17BF9A"></i><i style="background:#8FDCCB"></i><i style="background:#8FDCCB"></i><i style="background:#EEF1F5"></i></div><div class="wk"><i style="background:#EEF1F5"></i><i style="background:#CFEDE6"></i><i style="background:#EEF1F5"></i><i style="background:#EEF1F5"></i><i style="background:#EEF1F5"></i><i style="background:#EEF1F5"></i><i style="background:#CFEDE6"></i></div><div class="wk"><i style="background:#CFEDE6"></i><i style="background:#3FC9A9"></i><i style="background:#CFEDE6"></i><i style="background:#8FDCCB"></i><i style="background:#CFEDE6"></i><i style="background:#8FDCCB"></i><i style="background:#CFEDE6"></i></div><div class="wk"><i style="background:#EEF1F5"></i><i style="background:#17BF9A"></i><i style="background:#17BF9A"></i><i style="background:#3FC9A9"></i><i style="background:#8FDCCB"></i><i style="background:#EEF1F5"></i><i style="background:#EEF1F5"></i></div><div class="wk"><i style="background:#EEF1F5"></i><i style="background:#EEF1F5"></i><i style="background:#8FDCCB"></i><i style="background:#CFEDE6"></i><i style="background:#3FC9A9"></i><i style="background:#CFEDE6"></i><i style="background:#17BF9A"></i></div><div class="wk"><i style="background:#3FC9A9"></i><i style="background:#EEF1F5"></i><i style="background:#EEF1F5"></i><i style="background:#3FC9A9"></i><i style="background:#CFEDE6"></i><i style="background:#17BF9A"></i><i style="background:#CFEDE6"></i></div><div class="wk"><i style="background:#EEF1F5"></i><i style="background:#8FDCCB"></i><i style="background:#8FDCCB"></i><i style="background:#EEF1F5"></i><i style="background:#EEF1F5"></i><i style="background:#CFEDE6"></i><i style="background:#17BF9A"></i></div><div class="wk"><i style="background:#8FDCCB"></i><i style="background:#EEF1F5"></i><i style="background:#EEF1F5"></i><i style="background:#EEF1F5"></i><i style="background:#EEF1F5"></i><i style="background:#3FC9A9"></i><i style="background:#EEF1F5"></i></div><div class="wk"><i style="background:#8FDCCB"></i><i style="background:#CFEDE6"></i><i style="background:#EEF1F5"></i><i style="background:#8FDCCB"></i><i style="background:#EEF1F5"></i><i style="background:#8FDCCB"></i><i style="background:#EEF1F5"></i></div><div class="wk"><i style="background:#CFEDE6"></i><i style="background:#EEF1F5"></i><i style="background:#EEF1F5"></i><i style="background:#17BF9A"></i><i style="background:transparent"></i><i style="background:transparent"></i><i style="background:transparent"></i></div></div>
+       <div class="hl"><span>less</span><i style="background:#EEF1F5"></i><i style="background:#CFEDE6"></i><i style="background:#8FDCCB"></i><i style="background:#3FC9A9"></i><i style="background:#17BF9A"></i><span>more</span></div>
+       <div class="streak"><b>7-day streak</b> · best 14 · studied 58 of the last 84 days</div></div>
+     </div>
+    </div>
+
+    <div class="sh"><h4>Progress by topic</h4><span>5 topics</span><a>Manage topics ›</a></div>
+    <div class="lg"><span><i style="background:var(--new)"></i>Not started</span><span><i style="background:var(--acc)"></i>Learning</span><span><i style="background:var(--kn)"></i>Known</span></div>
+
+    <div class="trow" data-colour="orange"><span class="sw"></span>
+     <div class="t"><b>Foot &amp; ankle</b><span>3 decks · 84 cards</span></div>
+     <div class="bar"><i style="width:22%;background:var(--new)"></i><i style="width:20%;background:var(--acc)"></i><i style="width:58%;background:var(--kn)"></i></div>
+     <span class="pc2">58%</span><span class="dd">12 due</span></div>
+
+    <div class="trow" data-colour="pink"><span class="sw"></span>
+     <div class="t"><b>Knee &amp; hip</b><span>2 decks · 61 cards</span></div>
+     <div class="bar"><i style="width:10%;background:var(--new)"></i><i style="width:19%;background:var(--acc)"></i><i style="width:71%;background:var(--kn)"></i></div>
+     <span class="pc2">71%</span><span class="dd">9 due</span></div>
+
+    <div class="trow" data-colour="violet"><span class="sw"></span>
+     <div class="t"><b>Neurology</b><span>4 decks · 96 cards</span></div>
+     <div class="bar"><i style="width:14%;background:var(--new)"></i><i style="width:22%;background:var(--acc)"></i><i style="width:64%;background:var(--kn)"></i></div>
+     <span class="pc2">64%</span><span class="dd">7 due</span></div>
+
+    <div class="trow" data-colour="mint"><span class="sw"></span>
+     <div class="t"><b>Basic sciences</b><span>2 decks · 40 cards</span></div>
+     <div class="bar"><i style="width:35%;background:var(--new)"></i><i style="width:25%;background:var(--acc)"></i><i style="width:40%;background:var(--kn)"></i></div>
+     <span class="pc2">40%</span><span class="dd ok">✓ up to date</span></div>
+
+    <div class="trow" data-colour="sky"><span class="sw"></span>
+     <div class="t"><b>My decks</b><span>2 decks · 26 cards</span></div>
+     <div class="bar"><i style="width:12%;background:var(--new)"></i><i style="width:5%;background:var(--acc)"></i><i style="width:83%;background:var(--kn)"></i></div>
+     <span class="pc2">83%</span><span class="dd">3 due</span></div>
+   </div>
+  </div>
+ </div>
+
+ <div class="notes">
+  <div class="nb"><b>SEPARATORS, NOT A WALL OF CARDS</b><p>MSK, Neurology, Basic sciences, Other — each with its subject colour, its counts and a <em>See all</em>. Nine topics stop looking like nine tiles.</p></div>
+  <div class="nb"><b>THREE QUESTIONS, THREE PANELS</b><p><em>What do I know</em> (142 of 307), <em>how much do I study</em> (16 weeks of reviews), <em>how well does it stick</em> (retention and study days).</p></div>
+  <div class="nb"><b>THE ROWS STILL NAVIGATE</b><p>Two ways into the same place: the library card above, and the progress row below. Both open the topic, where the decks are.</p></div>
+  <div class="nb"><b>THE CARD SAYS WHERE YOU ARE</b><p><em>12 due</em>, <em>✓ up to date</em> or <em>Not started</em> — the same card serves someone who has never opened it and someone halfway through.</p></div>
+  <div class="nb"><b>EVERY NUMBER HAS A TREND</b><p><em>▲ 38 this month</em>, <em>▲ 4 pts</em>, best day, best streak. A number on its own tells you nothing about whether you are improving.</p></div>
+ </div>
+</div>
+</body></html>

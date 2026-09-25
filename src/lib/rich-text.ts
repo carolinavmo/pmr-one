@@ -313,3 +313,12 @@ export function sanitizeRichText(html: string): string {
     ALLOWED_URI_REGEXP: SAFE_URI_REGEXP,
   });
 }
+
+// For a plain-text preview of rich content (a truncated list row, a
+// card's accessible name) — strips every tag rather than rendering
+// it, so a formatted flashcard still reads as a normal line of text
+// wherever the full rich rendering (sanitizeRichText + a real render)
+// isn't wanted.
+export function richTextToPlainText(html: string): string {
+  return DOMPurify.sanitize(html, { ALLOWED_TAGS: [], ALLOWED_ATTR: [] });
+}

@@ -3,6 +3,7 @@
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import type { WeakCard } from "@/lib/flashcards";
+import { richTextToPlainText } from "@/lib/rich-text";
 
 // "Weak cards are shown as questions, not ids — that is what makes
 // the list actionable." (FLASHCARDS-SPEC.md rule 4) Ranked by lapses
@@ -20,7 +21,7 @@ export function TopicWeakCards({ cards }: { cards: WeakCard[] }) {
         {cards.map((card) => (
           <div key={card.id} className="flex items-center gap-3 py-2.5">
             <div className="min-w-0 flex-1">
-              <p className="truncate font-ui text-sm font-semibold text-primary">{card.question}</p>
+              <p className="truncate font-ui text-sm font-semibold text-primary">{richTextToPlainText(card.question)}</p>
               <p className="font-ui text-xs text-secondary">{t("lapsesCount", { count: card.lapses, deck: card.deckName })}</p>
             </div>
             <Link href={`/flashcards/${card.deckId}`} className="shrink-0 rounded-lg border border-border px-2.5 py-1 font-ui text-xs font-bold text-primary hover:bg-border/30">

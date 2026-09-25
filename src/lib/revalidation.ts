@@ -49,6 +49,17 @@ export function revalidateFlashcardSurfaces() {
   revalidatePath("/[locale]/flashcards/category/[categoryId]", "page");
 }
 
+// Called after any write in the /admin/flashcards CMS (Pass 5-6) —
+// covers both the admin routes themselves and every reader surface,
+// since a publish/unpublish there changes what a reader sees
+// immediately ("publishing a card makes it available to every reader
+// immediately," FLASHCARDS-IMPLEMENTATION.md).
+export function revalidateFlashcardAdminSurfaces() {
+  revalidateFlashcardSurfaces();
+  revalidatePath("/[locale]/admin/flashcards", "page");
+  revalidatePath("/[locale]/admin/flashcards/[deckId]", "page");
+}
+
 // Called after any write to a question-bank folder, set, or question —
 // covers the dashboard, folder detail, and question-set routes since
 // any of the three can show stale names/counts/scores after a mutation

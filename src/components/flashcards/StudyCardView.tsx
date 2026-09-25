@@ -4,6 +4,7 @@ import { useTranslations, useFormatter } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import type { StudyCard } from "@/lib/flashcards";
 import type { Grade, Sm2State, Sm2Outcome } from "@/lib/flashcard-sm2";
+import { sanitizeRichText } from "@/lib/rich-text";
 
 // FLASHCARDS-SPEC.md's grading buttons — fixed colours per grade
 // (distinct from the topic/state palette, this is the button's own
@@ -106,16 +107,23 @@ export function StudyCardView({
         >
           <div data-topic-color={card.topicColor ?? undefined} className={faceClass} style={borderStyle} aria-hidden={flipped}>
             {tagsRow}
-            <p className="text-center font-heading text-[36px] leading-tight font-black text-navy">{card.question}</p>
+            <div
+              className="text-center font-heading text-[36px] leading-tight font-black text-navy [&_img]:mx-auto [&_img]:max-h-64 [&_img]:rounded-lg [&_p]:mt-2 [&_p:first-child]:mt-0"
+              dangerouslySetInnerHTML={{ __html: sanitizeRichText(card.question) }}
+            />
           </div>
 
           <div data-topic-color={card.topicColor ?? undefined} className={`${faceClass} rotate-y-[180deg]`} style={borderStyle} aria-hidden={!flipped}>
             {tagsRow}
-            <p className="shrink-0 text-center font-ui text-[17px] font-extrabold text-secondary">{card.question}</p>
+            <div
+              className="shrink-0 text-center font-ui text-[17px] font-extrabold text-secondary [&_p]:mt-1 [&_p:first-child]:mt-0"
+              dangerouslySetInnerHTML={{ __html: sanitizeRichText(card.question) }}
+            />
             <div className="flex w-full min-h-0 flex-1 flex-col gap-4 overflow-y-auto border-t border-border pt-6">
-              <div className="flex flex-col gap-3 whitespace-pre-wrap font-reading text-[17px] leading-relaxed text-primary">
-                {card.answer}
-              </div>
+              <div
+                className="flex flex-col gap-3 font-reading text-[17px] leading-relaxed text-primary [&_img]:max-h-80 [&_img]:rounded-lg [&_p]:mt-3 [&_p:first-child]:mt-0 [&_ul]:list-disc [&_ul]:pl-5 [&_ol]:list-decimal [&_ol]:pl-5"
+                dangerouslySetInnerHTML={{ __html: sanitizeRichText(card.answer) }}
+              />
               {card.sourceDiseaseName && card.sourceDiseaseSlug && (
                 <Link href={`/conditions/${card.sourceDiseaseSlug}`} className="font-ui text-xs font-semibold text-acc-ink hover:underline">
                   {card.topicName && card.sourceReviewedAt

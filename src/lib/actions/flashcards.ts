@@ -7,6 +7,7 @@ import { auth } from "@/auth";
 import { revalidateFlashcardSurfaces } from "@/lib/revalidation";
 import type { CardColor } from "@/lib/editorial-blocks";
 import type { TopicColor } from "@/lib/flashcard-topic-colors";
+import type { FlashcardSubject } from "@/lib/flashcard-subjects";
 import type { Grade, Sm2State, Sm2Outcome } from "@/lib/flashcard-sm2";
 import {
   createDeck,
@@ -28,6 +29,7 @@ import {
   renameCategory,
   updateCategoryColor,
   updateCategoryTopicColor,
+  updateCategorySubject,
   deleteCategory,
   setDeckCategory,
   getStudyCardsForDeck,
@@ -35,14 +37,11 @@ import {
   recordSm2Review,
   getUserStreak,
   getTopicKnownPercent,
-  addLibraryTopic,
-  undoAddLibraryTopic,
   type DeckOwnerType,
   type DeckSummary,
   type FlashcardCard,
   type FlashcardCategory,
   type StudyCard,
-  type AddedLibraryTopic,
 } from "@/lib/flashcards";
 
 // Every signed-in member can create/edit their own decks — no role
@@ -244,6 +243,12 @@ export async function updateCategoryTopicColorAction(categoryId: string, topicCo
   revalidateFlashcardSurfaces();
 }
 
+export async function updateCategorySubjectAction(categoryId: string, subject: FlashcardSubject): Promise<void> {
+  const { userId, isEditor } = await requireUserId();
+  await updateCategorySubject(userId, categoryId, subject, isEditor);
+  revalidateFlashcardSurfaces();
+}
+
 export async function deleteCategoryAction(categoryId: string): Promise<void> {
   const { userId, isEditor } = await requireUserId();
   await deleteCategory(userId, categoryId, isEditor);
@@ -298,26 +303,4 @@ export async function getUserStreakAction(todayYmd: string): Promise<number> {
 export async function getTopicKnownPercentAction(categoryId: string): Promise<number> {
   const { userId } = await requireUserId();
   return getTopicKnownPercent(userId, categoryId);
-}
-
-// ============================================================
-// Add from the library (FLASHCARDS-ADD-TOPIC-IMPLEMENTATION.md)
-// ============================================================
-
-// Awaited by AddFromLibrary.tsx before flipping its optimistic button
-// state to "✓ Added" — the copy itself (decks + cards, one INSERT per
-// deck) is what "insert in one statement... must not block the button
-// for two seconds" is about, not this round trip.
-export async function addLibraryTopicAction(libraryCategoryId: string): Promise<AddedLibraryTopic | null> {
-  const { userId } = await requireUserId();
-  const result = await addLibraryTopic(userId, libraryCategoryId);
-  revalidateFlashcardSurfaces();
-  return result;
-}
-
-// The 10-second Undo on the add-topic snackbar.
-export async function undoAddLibraryTopicAction(categoryId: string): Promise<void> {
-  const { userId } = await requireUserId();
-  await undoAddLibraryTopic(userId, categoryId);
-  revalidateFlashcardSurfaces();
 }

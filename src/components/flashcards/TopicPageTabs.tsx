@@ -8,6 +8,7 @@ import { TopicDeckRowItem } from "./TopicDeckRowItem";
 import { TopicSettingsPanel } from "./TopicSettingsPanel";
 import { KnownPercentRing } from "./KnownPercentRing";
 import { TopicStateBar } from "./TopicStateBar";
+import { richTextToPlainText } from "@/lib/rich-text";
 
 export type TopicTab = "decks" | "allCards" | "statistics" | "settings";
 
@@ -88,7 +89,7 @@ export function TopicPageTabs({
           ) : (
             allCards.map((card) => (
               <div key={card.id} className="flex items-center justify-between gap-3 border-b border-border py-2.5 last:border-b-0">
-                <p className="min-w-0 flex-1 truncate font-ui text-sm text-primary">{card.question}</p>
+                <p className="min-w-0 flex-1 truncate font-ui text-sm text-primary">{richTextToPlainText(card.question)}</p>
                 <span className="shrink-0 font-ui text-xs text-secondary">{card.deckName}</span>
                 <span
                   className={`shrink-0 rounded-full px-2 py-0.5 font-ui text-[10px] font-bold tracking-wide uppercase ${

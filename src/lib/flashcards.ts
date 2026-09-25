@@ -3,6 +3,8 @@ import type { CardColor } from "@/lib/editorial-blocks";
 import { nextBox, computeDueAt, MASTERY_BOX } from "@/lib/flashcard-scoring";
 import type { CardIconName } from "@/components/ui/cardIcons";
 import { type TopicColor, isTopicColor, pickFreeTopicColor } from "@/lib/flashcard-topic-colors";
+import { type FlashcardSubject, isFlashcardSubject, SUBJECT_ORDER } from "@/lib/flashcard-subjects";
+import { sanitizeRichText } from "@/lib/rich-text";
 import {
   type CardState,
   type Grade,
@@ -38,6 +40,12 @@ export interface FlashcardCategory {
   // onto the topic palette. Nullable only for rows inserted before
   // migration 0062; every category created since gets one assigned.
   topicColor: TopicColor | null;
+  // The Browse-the-library grouping (flashcard-subjects.ts) — a coarser,
+  // fixed 4-way classification distinct from topicColor above. Only
+  // meaningful for system topics (only they render in "Browse the
+  // library"), but every row carries one since the column defaults
+  // every topic to 'other'.
+  subject: FlashcardSubject;
   icon: CardIconName | undefined;
   deckCount: number;
   // True for the one open sample folder a signed-out visitor can fully
@@ -125,23 +133,23 @@ export async function getDeckSummaries(
     ? `, (
          SELECT COUNT(*) FROM flashcard f
          JOIN flashcard_progress p ON p.flashcard_id = f.id AND p.user_id = $1
-         WHERE f.deck_id = d.id AND p.box >= ${MASTERY_BOX}
+         WHERE f.deck_id = d.id AND f.status = 'published' AND f.deleted_at IS NULL AND p.box >= ${MASTERY_BOX}
        ) AS mastered_count,
        (
          SELECT COUNT(*) FROM flashcard f
          JOIN flashcard_progress p ON p.flashcard_id = f.id AND p.user_id = $1
-         WHERE f.deck_id = d.id
+         WHERE f.deck_id = d.id AND f.status = 'published' AND f.deleted_at IS NULL
        ) AS started_count`
     : `, NULL::bigint AS mastered_count, NULL::bigint AS started_count`;
 
   const { rows: presetRows } = await pool.query(
     `SELECT d.id, d.owner_type, d.name, d.description, d.color, d.icon_url,
        d.category_id, c.name AS category_name, c.icon AS category_icon,
-       (SELECT COUNT(*) FROM flashcard f WHERE f.deck_id = d.id) AS card_count
+       (SELECT COUNT(*) FROM flashcard f WHERE f.deck_id = d.id AND f.status = 'published' AND f.deleted_at IS NULL) AS card_count
        ${masteredSelect}
      FROM flashcard_deck d
      LEFT JOIN flashcard_category c ON c.id = d.category_id
-     WHERE d.owner_type = 'system'
+     WHERE d.owner_type = 'system' AND d.status = 'published' AND d.archived_at IS NULL
      ORDER BY d.position, d.name`,
     userId ? [userId] : []
   );
@@ -153,16 +161,16 @@ export async function getDeckSummaries(
   const { rows: userRows } = await pool.query(
     `SELECT d.id, d.owner_type, d.name, d.description, d.color, d.icon_url,
        d.category_id, c.name AS category_name, c.icon AS category_icon,
-       (SELECT COUNT(*) FROM flashcard f WHERE f.deck_id = d.id) AS card_count,
+       (SELECT COUNT(*) FROM flashcard f WHERE f.deck_id = d.id AND f.status = 'published' AND f.deleted_at IS NULL) AS card_count,
        (
          SELECT COUNT(*) FROM flashcard f
          JOIN flashcard_progress p ON p.flashcard_id = f.id AND p.user_id = $1
-         WHERE f.deck_id = d.id AND p.box >= ${MASTERY_BOX}
+         WHERE f.deck_id = d.id AND f.status = 'published' AND f.deleted_at IS NULL AND p.box >= ${MASTERY_BOX}
        ) AS mastered_count,
        (
          SELECT COUNT(*) FROM flashcard f
          JOIN flashcard_progress p ON p.flashcard_id = f.id AND p.user_id = $1
-         WHERE f.deck_id = d.id
+         WHERE f.deck_id = d.id AND f.status = 'published' AND f.deleted_at IS NULL
        ) AS started_count
      FROM flashcard_deck d
      LEFT JOIN flashcard_category c ON c.id = d.category_id
@@ -182,7 +190,7 @@ export async function getDeckWithCards(
   userId: string | null
 ): Promise<DeckDetail | null> {
   const { rows: deckRows } = await pool.query(
-    `SELECT d.id, d.owner_type, d.name, d.description, d.color, d.icon_url, d.category_id,
+    `SELECT d.id, d.owner_type, d.name, d.description, d.color, d.icon_url, d.category_id, d.status, d.archived_at,
        c.icon AS category_icon, c.color AS category_color,
        dis.canonical_name AS source_disease_name, dis.slug AS source_disease_slug
      FROM flashcard_deck d
@@ -193,6 +201,11 @@ export async function getDeckWithCards(
   );
   const deck = deckRows[0];
   if (!deck) return null;
+  // A draft/archived system deck doesn't exist for a reader — same
+  // "never serve a draft" rule STUDY_CARD_SELECT enforces. A user's
+  // own deck is never draft/archived by construction (only the admin
+  // CMS, system-only, can set those), so this never affects them.
+  if (deck.owner_type === "system" && (deck.status !== "published" || deck.archived_at !== null)) return null;
 
   const { rows: ownerCheckRows } =
     deck.owner_type === "user"
@@ -208,11 +221,11 @@ export async function getDeckWithCards(
       ? `SELECT f.id, f.question, f.answer, f.position, p.box, p.due_at
          FROM flashcard f
          LEFT JOIN flashcard_progress p ON p.flashcard_id = f.id AND p.user_id = $2
-         WHERE f.deck_id = $1
+         WHERE f.deck_id = $1 AND f.status = 'published' AND f.deleted_at IS NULL
          ORDER BY f.position, f.created_at`
       : `SELECT f.id, f.question, f.answer, f.position, NULL::int AS box, NULL::date AS due_at
          FROM flashcard f
-         WHERE f.deck_id = $1
+         WHERE f.deck_id = $1 AND f.status = 'published' AND f.deleted_at IS NULL
          ORDER BY f.position, f.created_at`,
     userId ? [deckId, userId] : [deckId]
   );
@@ -316,6 +329,12 @@ function mapStudyCardRow(r: {
   };
 }
 
+// Both joins are gated to published/non-archived/non-deleted content
+// right in the ON clause — every reader-facing caller below builds its
+// own WHERE on top of this, so baking the visibility rule in here
+// once means no caller can forget it (FLASHCARDS-IMPLEMENTATION.md
+// Pass 5: "publishing a card makes it available to every reader
+// immediately" — the inverse must hold too, a draft is never served).
 const STUDY_CARD_SELECT = `
   SELECT f.id, f.question, f.answer, f.deck_id,
     d.name AS deck_name, d.color AS deck_color, d.category_id,
@@ -323,10 +342,11 @@ const STUDY_CARD_SELECT = `
     dis.canonical_name AS source_disease_name, dis.slug AS source_disease_slug, dis.reviewed_at AS source_reviewed_at,
     p.state, p.ease_factor, p.interval_days, p.repetitions
   FROM flashcard f
-  JOIN flashcard_deck d ON d.id = f.deck_id
+  JOIN flashcard_deck d ON d.id = f.deck_id AND d.status = 'published' AND d.archived_at IS NULL
   LEFT JOIN flashcard_category c ON c.id = d.category_id
   LEFT JOIN disease dis ON dis.id = d.source_disease_id
   LEFT JOIN flashcard_sm2_progress p ON p.flashcard_id = f.id AND p.user_id = $1
+  WHERE f.status = 'published' AND f.deleted_at IS NULL
 `;
 
 // Due now: never studied (no progress row) or due_at has passed. Cards
@@ -349,7 +369,7 @@ export async function getStudyCardsForDeck(userId: string, deckId: string, inclu
   if (ownerCheck.length === 0) return null;
 
   const { rows } = await pool.query(
-    `${STUDY_CARD_SELECT} WHERE f.deck_id = $2 ${includeNotDue ? "" : STUDY_CARD_DUE_FILTER} ORDER BY f.position, f.created_at`,
+    `${STUDY_CARD_SELECT} AND f.deck_id = $2 ${includeNotDue ? "" : STUDY_CARD_DUE_FILTER} ORDER BY f.position, f.created_at`,
     [userId, deckId]
   );
   return rows.map(mapStudyCardRow);
@@ -366,23 +386,22 @@ export async function getStudyCardsForCategory(userId: string, categoryId: strin
   if (ownerCheck.length === 0) return null;
 
   const { rows } = await pool.query(
-    `${STUDY_CARD_SELECT} WHERE d.category_id = $2 ${includeNotDue ? "" : STUDY_CARD_DUE_FILTER} ORDER BY d.position, f.position, f.created_at`,
+    `${STUDY_CARD_SELECT} AND d.category_id = $2 ${includeNotDue ? "" : STUDY_CARD_DUE_FILTER} ORDER BY d.position, f.position, f.created_at`,
     [userId, categoryId]
   );
   return rows.map(mapStudyCardRow);
 }
 
-// Every due card across every deck this user owns (the dashboard's
-// own "Start review" button, FLASHCARDS-SPEC.md rule 2: "never offer
-// a session that doesn't exist" — this is the one entry point with no
-// single deck/topic to scope to). Owned-only, not "system or owned" —
-// FLASHCARDS-ADD-TOPIC-IMPLEMENTATION.md's copy-on-add model: system
-// content isn't "yours" to study from the dashboard until Add Topic
-// has copied it in, so this stays consistent with what "Your topics"
-// itself shows.
+// Every due card across every deck this user can reach — system
+// topics are directly studyable (no add/copy step), so "reach" means
+// the same accessible-deck condition getStudyCardsForDeck's own
+// ownership check uses, applied account-wide (the dashboard's "Start
+// review" button, FLASHCARDS-SPEC.md rule 2: "never offer a session
+// that doesn't exist" — this is the one entry point with no single
+// deck/topic to scope to).
 export async function getStudyCardsForAccount(userId: string, includeNotDue = false): Promise<StudyCard[]> {
   const { rows } = await pool.query(
-    `${STUDY_CARD_SELECT} WHERE d.user_id = $1 ${includeNotDue ? "" : STUDY_CARD_DUE_FILTER} ORDER BY d.position, f.position, f.created_at`,
+    `${STUDY_CARD_SELECT} AND (d.owner_type = 'system' OR d.user_id = $1) ${includeNotDue ? "" : STUDY_CARD_DUE_FILTER} ORDER BY d.position, f.position, f.created_at`,
     [userId]
   );
   return rows.map(mapStudyCardRow);
@@ -458,9 +477,9 @@ export async function getTopicKnownPercent(userId: string, categoryId: string): 
        COUNT(*)::int AS total,
        COUNT(*) FILTER (WHERE p.state = 'review' AND p.interval_days >= ${KNOWN_INTERVAL_THRESHOLD_DAYS})::int AS known
      FROM flashcard f
-     JOIN flashcard_deck d ON d.id = f.deck_id
+     JOIN flashcard_deck d ON d.id = f.deck_id AND d.status = 'published' AND d.archived_at IS NULL
      LEFT JOIN flashcard_sm2_progress p ON p.flashcard_id = f.id AND p.user_id = $1
-     WHERE d.category_id = $2`,
+     WHERE d.category_id = $2 AND f.status = 'published' AND f.deleted_at IS NULL`,
     [userId, categoryId]
   );
   const { total, known } = rows[0] ?? { total: "0", known: "0" };
@@ -486,6 +505,11 @@ export interface TopicDeckRow {
   lastStudiedAt: string | null;
   sourceDiseaseName: string | null;
   sourceDiseaseSlug: string | null;
+  // "The reviewed date shown to readers on the card's source line"
+  // (FLASHCARDS-IMPLEMENTATION.md Pass 7) — set by publishAdminDeck,
+  // null for a deck that's never been through the admin review flow
+  // (every pre-existing deck, and any member's own deck).
+  reviewedAt: string | null;
 }
 
 // Per-deck rollup for the topic page's deck rows. last_studied_at is a
@@ -504,7 +528,7 @@ export interface TopicDeckRow {
 // rather than needing a second no-session query shape.
 export async function getTopicDeckRows(userId: string | null, categoryId: string): Promise<TopicDeckRow[]> {
   const { rows } = await pool.query(
-    `SELECT d.id, d.name, d.color, d.icon_url,
+    `SELECT d.id, d.name, d.color, d.icon_url, d.reviewed_at,
        dis.canonical_name AS source_disease_name, dis.slug AS source_disease_slug,
        COUNT(f.id)::int AS card_count,
        COUNT(*) FILTER (WHERE f.id IS NOT NULL AND (p.state IS NULL OR p.state = 'new'))::int AS new_count,
@@ -516,9 +540,9 @@ export async function getTopicDeckRows(userId: string | null, categoryId: string
        EXISTS (SELECT 1 FROM flashcard_deck_favorite WHERE deck_id = d.id AND user_id = $1) AS is_favorited
      FROM flashcard_deck d
      LEFT JOIN disease dis ON dis.id = d.source_disease_id
-     LEFT JOIN flashcard f ON f.deck_id = d.id
+     LEFT JOIN flashcard f ON f.deck_id = d.id AND f.status = 'published' AND f.deleted_at IS NULL
      LEFT JOIN flashcard_sm2_progress p ON p.flashcard_id = f.id AND p.user_id = $1
-     WHERE d.category_id = $2
+     WHERE d.category_id = $2 AND d.status = 'published' AND d.archived_at IS NULL
      GROUP BY d.id, dis.canonical_name, dis.slug
      ORDER BY d.position, d.name`,
     [userId, categoryId]
@@ -538,6 +562,7 @@ export async function getTopicDeckRows(userId: string | null, categoryId: string
     lastStudiedAt: r.last_studied_at,
     sourceDiseaseName: r.source_disease_name,
     sourceDiseaseSlug: r.source_disease_slug,
+    reviewedAt: r.reviewed_at,
   }));
 }
 
@@ -557,9 +582,9 @@ export async function getTopicMetrics(userId: string, categoryId: string): Promi
     pool.query<{ due_count: string }>(
       `SELECT COUNT(*)::int AS due_count
        FROM flashcard f
-       JOIN flashcard_deck d ON d.id = f.deck_id
+       JOIN flashcard_deck d ON d.id = f.deck_id AND d.status = 'published' AND d.archived_at IS NULL
        LEFT JOIN flashcard_sm2_progress p ON p.flashcard_id = f.id AND p.user_id = $1
-       WHERE d.category_id = $2 AND (p.due_at IS NULL OR p.due_at <= now())`,
+       WHERE d.category_id = $2 AND f.status = 'published' AND f.deleted_at IS NULL AND (p.due_at IS NULL OR p.due_at <= now())`,
       [userId, categoryId]
     ),
     // Retention: correct (not "again") ÷ total, over review-state
@@ -576,9 +601,9 @@ export async function getTopicMetrics(userId: string, categoryId: string): Promi
     pool.query<{ next_review_at: string | null }>(
       `SELECT MIN(p.due_at) AS next_review_at
        FROM flashcard f
-       JOIN flashcard_deck d ON d.id = f.deck_id
+       JOIN flashcard_deck d ON d.id = f.deck_id AND d.status = 'published' AND d.archived_at IS NULL
        JOIN flashcard_sm2_progress p ON p.flashcard_id = f.id AND p.user_id = $1
-       WHERE d.category_id = $2 AND p.due_at > now()`,
+       WHERE d.category_id = $2 AND f.status = 'published' AND f.deleted_at IS NULL AND p.due_at > now()`,
       [userId, categoryId]
     ),
     pool.query<{ lapses: string }>(
@@ -646,9 +671,9 @@ export async function getTopicAllCards(userId: string, categoryId: string): Prom
   const { rows } = await pool.query(
     `SELECT f.id, f.deck_id, d.name AS deck_name, f.question, p.state
      FROM flashcard f
-     JOIN flashcard_deck d ON d.id = f.deck_id
+     JOIN flashcard_deck d ON d.id = f.deck_id AND d.status = 'published' AND d.archived_at IS NULL
      LEFT JOIN flashcard_sm2_progress p ON p.flashcard_id = f.id AND p.user_id = $1
-     WHERE d.category_id = $2
+     WHERE d.category_id = $2 AND f.status = 'published' AND f.deleted_at IS NULL
      ORDER BY d.position, d.name, f.position`,
     [userId, categoryId]
   );
@@ -672,11 +697,8 @@ export interface DashboardMetrics {
   estimatedMinutes: number;
 }
 
-// Every deck this user owns. Not "system or owned" —
-// FLASHCARDS-ADD-TOPIC-IMPLEMENTATION.md's copy-on-add model means
-// system content isn't part of the account until Add Topic copies it
-// in, so the dashboard's own figures only ever count what's actually
-// been added.
+// Every deck this user can reach: system topics (directly studyable,
+// no add/copy step) plus their own.
 export async function getDashboardMetrics(userId: string, todayYmd: string): Promise<DashboardMetrics> {
   const [countRows, retentionRows, streak] = await Promise.all([
     pool.query<{ total_cards: number; due_today: number; new_count: number; learning_count: number; review_count: number }>(
@@ -687,9 +709,9 @@ export async function getDashboardMetrics(userId: string, todayYmd: string): Pro
          COUNT(*) FILTER (WHERE p.state = 'learning')::int AS learning_count,
          COUNT(*) FILTER (WHERE p.state = 'review')::int AS review_count
        FROM flashcard f
-       JOIN flashcard_deck d ON d.id = f.deck_id
+       JOIN flashcard_deck d ON d.id = f.deck_id AND d.status = 'published' AND d.archived_at IS NULL
        LEFT JOIN flashcard_sm2_progress p ON p.flashcard_id = f.id AND p.user_id = $1
-       WHERE d.user_id = $1`,
+       WHERE (d.owner_type = 'system' OR d.user_id = $1) AND f.status = 'published' AND f.deleted_at IS NULL`,
       [userId]
     ),
     pool.query<{ total: number; correct: number }>(
@@ -697,7 +719,7 @@ export async function getDashboardMetrics(userId: string, todayYmd: string): Pro
        FROM flashcard_review_log rl
        JOIN flashcard_deck d ON d.id = rl.deck_id
        WHERE rl.user_id = $1 AND rl.state_before = 'review' AND rl.reviewed_at > now() - interval '30 days'
-         AND d.user_id = $1`,
+         AND (d.owner_type = 'system' OR d.user_id = $1)`,
       [userId]
     ),
     getUserStreak(userId, todayYmd),
@@ -730,9 +752,9 @@ export async function getSevenDayForecast(userId: string, todayYmd: string): Pro
   const { rows } = await pool.query<{ day: string; count: string }>(
     `SELECT (p.due_at AT TIME ZONE 'UTC')::date::text AS day, COUNT(*)::int AS count
      FROM flashcard f
-     JOIN flashcard_deck d ON d.id = f.deck_id
+     JOIN flashcard_deck d ON d.id = f.deck_id AND d.status = 'published' AND d.archived_at IS NULL
      JOIN flashcard_sm2_progress p ON p.flashcard_id = f.id AND p.user_id = $1
-     WHERE d.user_id = $1
+     WHERE (d.owner_type = 'system' OR d.user_id = $1) AND f.status = 'published' AND f.deleted_at IS NULL
        AND p.due_at >= $2::date AND p.due_at < $2::date + interval '7 days'
      GROUP BY day`,
     [userId, todayYmd]
@@ -766,7 +788,7 @@ export async function getSevenDayForecast(userId: string, todayYmd: string): Pro
 // them to).
 export async function getDashboardDeckRows(userId: string | null): Promise<TopicDeckRow[]> {
   const { rows } = await pool.query(
-    `SELECT d.id, d.name, d.color, d.icon_url,
+    `SELECT d.id, d.name, d.color, d.icon_url, d.reviewed_at,
        dis.canonical_name AS source_disease_name, dis.slug AS source_disease_slug,
        COUNT(f.id)::int AS card_count,
        COUNT(*) FILTER (WHERE f.id IS NOT NULL AND (p.state IS NULL OR p.state = 'new'))::int AS new_count,
@@ -778,9 +800,10 @@ export async function getDashboardDeckRows(userId: string | null): Promise<Topic
        EXISTS (SELECT 1 FROM flashcard_deck_favorite WHERE deck_id = d.id AND user_id = $1) AS is_favorited
      FROM flashcard_deck d
      LEFT JOIN disease dis ON dis.id = d.source_disease_id
-     LEFT JOIN flashcard f ON f.deck_id = d.id
+     LEFT JOIN flashcard f ON f.deck_id = d.id AND f.status = 'published' AND f.deleted_at IS NULL
      LEFT JOIN flashcard_sm2_progress p ON p.flashcard_id = f.id AND p.user_id = $1
-     WHERE d.category_id IS NULL AND ((d.owner_type = 'system' AND $1::uuid IS NULL) OR (d.owner_type = 'user' AND d.user_id = $1))
+     WHERE d.category_id IS NULL AND d.status = 'published' AND d.archived_at IS NULL
+       AND ((d.owner_type = 'system' AND $1::uuid IS NULL) OR (d.owner_type = 'user' AND d.user_id = $1))
      GROUP BY d.id, dis.canonical_name, dis.slug
      ORDER BY d.position, d.name`,
     [userId]
@@ -800,6 +823,7 @@ export async function getDashboardDeckRows(userId: string | null): Promise<Topic
     lastStudiedAt: r.last_studied_at,
     sourceDiseaseName: r.source_disease_name,
     sourceDiseaseSlug: r.source_disease_slug,
+    reviewedAt: r.reviewed_at,
   }));
 }
 
@@ -927,13 +951,21 @@ export async function createCard(
        WHERE id = $2 AND ((owner_type = 'user' AND user_id = $1) OR (owner_type = 'system' AND $5))
      )
      RETURNING id, question, answer, position`,
-    [userId, deckId, question, answer, isEditor]
+    [userId, deckId, sanitizeRichText(question), sanitizeRichText(answer), isEditor]
   );
   const row = rows[0];
   if (!row) return null;
   return { id: row.id, question: row.question, answer: row.answer, position: row.position, box: null, dueAt: null };
 }
 
+// Every save bumps content_version, whether or not the meaning
+// changed — "a typo fix must not reset anyone's progress"
+// (FLASHCARDS-IMPLEMENTATION.md Pass 6), and this quick inline path
+// (the one live topic pages have always used) never resets scheduling
+// at all. The admin CMS's own card editor (flashcards-admin.ts) is the
+// only place that can flag "this changes the answer" and reset
+// reviewers' progress — a deliberate, separate, slower path for that
+// riskier action.
 export async function updateCard(
   userId: string,
   cardId: string,
@@ -942,11 +974,11 @@ export async function updateCard(
   isEditor: boolean
 ): Promise<void> {
   await pool.query(
-    `UPDATE flashcard f SET question = $1, answer = $2, updated_at = now()
+    `UPDATE flashcard f SET question = $1, answer = $2, updated_at = now(), content_version = content_version + 1
      FROM flashcard_deck d
      WHERE f.id = $3 AND f.deck_id = d.id
        AND ((d.owner_type = 'user' AND d.user_id = $4) OR (d.owner_type = 'system' AND $5))`,
-    [question, answer, cardId, userId, isEditor]
+    [sanitizeRichText(question), sanitizeRichText(answer), cardId, userId, isEditor]
   );
 }
 
@@ -1066,19 +1098,19 @@ export async function getFavoritedDecks(userId: string): Promise<DeckSummary[]> 
   const { rows } = await pool.query(
     `SELECT d.id, d.owner_type, d.name, d.description, d.color, d.icon_url,
        d.category_id, c.name AS category_name, c.icon AS category_icon,
-       (SELECT COUNT(*) FROM flashcard f WHERE f.deck_id = d.id) AS card_count,
+       (SELECT COUNT(*) FROM flashcard f WHERE f.deck_id = d.id AND f.status = 'published' AND f.deleted_at IS NULL) AS card_count,
        (
          SELECT COUNT(*) FROM flashcard f
          JOIN flashcard_progress p ON p.flashcard_id = f.id AND p.user_id = $1
-         WHERE f.deck_id = d.id AND p.box >= ${MASTERY_BOX}
+         WHERE f.deck_id = d.id AND f.status = 'published' AND f.deleted_at IS NULL AND p.box >= ${MASTERY_BOX}
        ) AS mastered_count,
        (
          SELECT COUNT(*) FROM flashcard f
          JOIN flashcard_progress p ON p.flashcard_id = f.id AND p.user_id = $1
-         WHERE f.deck_id = d.id
+         WHERE f.deck_id = d.id AND f.status = 'published' AND f.deleted_at IS NULL
        ) AS started_count
      FROM flashcard_deck_favorite fav
-     JOIN flashcard_deck d ON d.id = fav.deck_id
+     JOIN flashcard_deck d ON d.id = fav.deck_id AND d.status = 'published' AND d.archived_at IS NULL
      LEFT JOIN flashcard_category c ON c.id = d.category_id
      WHERE fav.user_id = $1
      ORDER BY fav.created_at DESC`,
@@ -1124,6 +1156,7 @@ function mapCategoryRow(r: {
   name: string;
   color: CardColor;
   topic_color?: string | null;
+  subject?: string | null;
   icon: string | null;
   deck_count: string;
   is_public?: boolean;
@@ -1134,6 +1167,7 @@ function mapCategoryRow(r: {
     name: r.name,
     color: r.color,
     topicColor: isTopicColor(r.topic_color) ? r.topic_color : null,
+    subject: isFlashcardSubject(r.subject) ? r.subject : "other",
     icon: (r.icon as CardIconName | null) ?? undefined,
     deckCount: Number(r.deck_count),
     isPublic: r.owner_type === "user" ? true : Boolean(r.is_public),
@@ -1144,8 +1178,8 @@ export async function getCategories(
   userId: string | null
 ): Promise<{ systemCategories: FlashcardCategory[]; userCategories: FlashcardCategory[] }> {
   const { rows: systemRows } = await pool.query(
-    `SELECT c.id, c.owner_type, c.name, c.color, c.topic_color, c.icon, c.is_public,
-       (SELECT COUNT(*) FROM flashcard_deck d WHERE d.category_id = c.id) AS deck_count
+    `SELECT c.id, c.owner_type, c.name, c.color, c.topic_color, c.subject, c.icon, c.is_public,
+       (SELECT COUNT(*) FROM flashcard_deck d WHERE d.category_id = c.id AND d.status = 'published' AND d.archived_at IS NULL) AS deck_count
      FROM flashcard_category c
      WHERE c.owner_type = 'system'
      ORDER BY c.position, c.name`
@@ -1156,7 +1190,7 @@ export async function getCategories(
   }
 
   const { rows: userRows } = await pool.query(
-    `SELECT c.id, c.owner_type, c.name, c.color, c.topic_color, c.icon,
+    `SELECT c.id, c.owner_type, c.name, c.color, c.topic_color, c.subject, c.icon,
        (SELECT COUNT(*) FROM flashcard_deck d WHERE d.category_id = c.id) AS deck_count
      FROM flashcard_category c
      WHERE c.owner_type = 'user' AND c.user_id = $1
@@ -1174,6 +1208,9 @@ export interface TopicTile {
   id: string;
   name: string;
   topicColor: TopicColor | null;
+  // Populated only by getLibraryTopicTiles — "Your topics" tiles don't
+  // group by subject, so they leave this undefined.
+  subject?: FlashcardSubject;
   isPublic: boolean;
   isFavorited: boolean;
   deckCount: number;
@@ -1183,6 +1220,11 @@ export interface TopicTile {
   reviewCount: number;
   knownCount: number;
   dueCount: number;
+  // First three deck names, in position order — only populated by
+  // getLibraryTopicTiles, for LibraryTopicCard's own stack-of-cards
+  // design ("so the topic is concrete" rather than a bare count).
+  // "Your topics" tiles leave this undefined; they don't use it.
+  sampleDeckTitles?: string[];
 }
 
 // "Your topics" — the dashboard's own progress-tile grid
@@ -1215,8 +1257,8 @@ export async function getDashboardTopicTiles(userId: string | null): Promise<Top
        COUNT(*) FILTER (WHERE f.id IS NOT NULL AND p.state = 'review' AND p.interval_days >= ${KNOWN_INTERVAL_THRESHOLD_DAYS})::int AS known_count,
        COUNT(*) FILTER (WHERE f.id IS NOT NULL AND (p.due_at IS NULL OR p.due_at <= now()))::int AS due_count
      FROM flashcard_category c
-     LEFT JOIN flashcard_deck d ON d.category_id = c.id
-     LEFT JOIN flashcard f ON f.deck_id = d.id
+     LEFT JOIN flashcard_deck d ON d.category_id = c.id AND d.status = 'published' AND d.archived_at IS NULL
+     LEFT JOIN flashcard f ON f.deck_id = d.id AND f.status = 'published' AND f.deleted_at IS NULL
      LEFT JOIN flashcard_sm2_progress p ON p.flashcard_id = f.id AND p.user_id = $1
      WHERE (c.owner_type = 'system' AND $1::uuid IS NULL) OR (c.owner_type = 'user' AND c.user_id = $1)
      GROUP BY c.id
@@ -1240,170 +1282,99 @@ export async function getDashboardTopicTiles(userId: string | null): Promise<Top
 }
 
 // ============================================================
-// Add from the library (FLASHCARDS-ADD-TOPIC-IMPLEMENTATION.md)
+// From the library — every system topic, directly studyable
 // ============================================================
 
-export interface LibraryTopic {
-  id: string;
-  name: string;
-  topicColor: TopicColor | null;
-  deckCount: number;
-  cardCount: number;
-  // First three deck names, in position order — "so the topic is
-  // concrete" rather than a bare count.
-  sampleDeckTitles: string[];
-  isAdded: boolean;
-}
-
-// Every system topic, whether or not this user has copied it in yet —
-// "a catalogue of library topics", computed live off the existing
-// system categories/decks/cards rather than a separately denormalized
-// table: this app's actual catalogue size (a handful of topics) makes
-// a per-request grouped query cheap, so the cache-and-invalidate
-// layer the doc describes isn't worth the added moving parts. `isAdded`
-// is one indexed lookup against source_category_id (migration 0065),
-// not a diff over copied card sets.
-export async function getLibraryTopics(userId: string | null): Promise<LibraryTopic[]> {
+// Same shape/query as getDashboardTopicTiles, scoped to system topics
+// unconditionally (signed-in or not) instead of by ownership. No
+// "add" step: a library topic tile links straight to its own page
+// (same as a "Your topics" tile), where studying it writes real
+// progress against the original cards — nothing is copied.
+export async function getLibraryTopicTiles(userId: string | null): Promise<TopicTile[]> {
   const { rows } = await pool.query(
-    `SELECT c.id, c.name, c.topic_color,
+    `SELECT c.id, c.name, c.topic_color, c.subject, c.is_public,
+       EXISTS (SELECT 1 FROM flashcard_category_favorite fav WHERE fav.category_id = c.id AND fav.user_id = $1) AS is_favorited,
        COUNT(DISTINCT d.id)::int AS deck_count,
        COUNT(f.id)::int AS card_count,
-       (SELECT array_agg(t.name) FROM (SELECT name FROM flashcard_deck WHERE category_id = c.id ORDER BY position LIMIT 3) t) AS sample_deck_titles,
-       EXISTS (SELECT 1 FROM flashcard_category WHERE source_category_id = c.id AND user_id = $1) AS is_added
+       COUNT(*) FILTER (WHERE f.id IS NOT NULL AND (p.state IS NULL OR p.state = 'new'))::int AS new_count,
+       COUNT(*) FILTER (WHERE f.id IS NOT NULL AND p.state = 'learning')::int AS learning_count,
+       COUNT(*) FILTER (WHERE f.id IS NOT NULL AND p.state = 'review')::int AS review_count,
+       COUNT(*) FILTER (WHERE f.id IS NOT NULL AND p.state = 'review' AND p.interval_days >= ${KNOWN_INTERVAL_THRESHOLD_DAYS})::int AS known_count,
+       COUNT(*) FILTER (WHERE f.id IS NOT NULL AND (p.due_at IS NULL OR p.due_at <= now()))::int AS due_count,
+       (SELECT array_agg(t.name) FROM (SELECT name FROM flashcard_deck WHERE category_id = c.id AND status = 'published' AND archived_at IS NULL ORDER BY position LIMIT 3) t) AS sample_deck_titles
      FROM flashcard_category c
-     LEFT JOIN flashcard_deck d ON d.category_id = c.id
-     LEFT JOIN flashcard f ON f.deck_id = d.id
+     LEFT JOIN flashcard_deck d ON d.category_id = c.id AND d.status = 'published' AND d.archived_at IS NULL
+     LEFT JOIN flashcard f ON f.deck_id = d.id AND f.status = 'published' AND f.deleted_at IS NULL
+     LEFT JOIN flashcard_sm2_progress p ON p.flashcard_id = f.id AND p.user_id = $1
      WHERE c.owner_type = 'system'
      GROUP BY c.id
-     ORDER BY c.position, c.name`,
+     ORDER BY is_favorited DESC, due_count DESC, c.name`,
     [userId]
   );
   return rows.map((r) => ({
     id: r.id,
     name: r.name,
     topicColor: isTopicColor(r.topic_color) ? r.topic_color : null,
+    subject: isFlashcardSubject(r.subject) ? r.subject : "other",
+    isPublic: Boolean(r.is_public),
+    isFavorited: r.is_favorited,
     deckCount: r.deck_count,
     cardCount: r.card_count,
+    newCount: r.new_count,
+    learningCount: r.learning_count,
+    reviewCount: r.review_count,
+    knownCount: r.known_count,
+    dueCount: r.due_count,
     sampleDeckTitles: r.sample_deck_titles ?? [],
-    isAdded: r.is_added,
   }));
 }
 
-export interface AddedLibraryTopic {
-  category: FlashcardCategory;
-  deckCount: number;
+export interface LibrarySubjectGroup {
+  subject: FlashcardSubject;
+  topics: TopicTile[];
+  topicCount: number;
   cardCount: number;
 }
 
-// Copies a system topic's decks and cards into a brand-new topic the
-// user owns — "copy on add" (recommended over a live subscription:
-// the copy is the user's own from the moment it lands, no confusing
-// "is this mine or the library's" edit semantics). Every copied card
-// keeps source_card_id and a source_version snapshot (the source's
-// own updated_at at copy time), so a future "N cards were updated in
-// the library" feature is possible without another migration. Whole
-// thing runs in one transaction — a half-copied topic on failure
-// would be worse than the add simply not happening.
-export async function addLibraryTopic(userId: string, libraryCategoryId: string): Promise<AddedLibraryTopic | null> {
-  const client = await pool.connect();
-  try {
-    await client.query("BEGIN");
-
-    const { rows: sourceRows } = await client.query<{ name: string; color: CardColor; topic_color: string | null }>(
-      `SELECT name, color, topic_color FROM flashcard_category WHERE id = $1 AND owner_type = 'system'`,
-      [libraryCategoryId]
-    );
-    const source = sourceRows[0];
-    if (!source) {
-      await client.query("ROLLBACK");
-      return null;
-    }
-
-    // Free-colour assignment scoped to the user's own topics only —
-    // system topics aren't "the user's palette" to compete against.
-    const { rows: siblingRows } = await client.query<{ topic_color: string | null }>(
-      `SELECT topic_color FROM flashcard_category WHERE owner_type = 'user' AND user_id = $1`,
-      [userId]
-    );
-    const usedColors = siblingRows.map((r) => r.topic_color as TopicColor | null);
-    const sourceColor = isTopicColor(source.topic_color) ? source.topic_color : null;
-    const topicColor = sourceColor && !usedColors.includes(sourceColor) ? sourceColor : pickFreeTopicColor(usedColors);
-
-    const { rows: newCategoryRows } = await client.query(
-      `INSERT INTO flashcard_category (owner_type, user_id, name, color, topic_color, position, source_category_id)
-       VALUES ('user', $1, $2, $3, $4, $5, $6)
-       RETURNING id, owner_type, name, color, topic_color, icon`,
-      [userId, source.name, source.color, topicColor, siblingRows.length, libraryCategoryId]
-    );
-    const newCategory = newCategoryRows[0];
-
-    const { rows: sourceDecks } = await client.query<{
-      id: string;
-      name: string;
-      description: string;
-      color: CardColor;
-      source_disease_id: string | null;
-      position: number;
-    }>(
-      `SELECT id, name, description, color, source_disease_id, position FROM flashcard_deck WHERE category_id = $1 ORDER BY position`,
-      [libraryCategoryId]
-    );
-
-    let cardCount = 0;
-    for (const deck of sourceDecks) {
-      const { rows: newDeckRows } = await client.query<{ id: string }>(
-        `INSERT INTO flashcard_deck (owner_type, user_id, name, description, color, source_disease_id, category_id, position)
-         VALUES ('user', $1, $2, $3, $4, $5, $6, $7)
-         RETURNING id`,
-        [userId, deck.name, deck.description, deck.color, deck.source_disease_id, newCategory.id, deck.position]
-      );
-      const { rowCount } = await client.query(
-        `INSERT INTO flashcard (deck_id, question, answer, position, source_card_id, source_version)
-         SELECT $1, question, answer, position, id, updated_at FROM flashcard WHERE deck_id = $2`,
-        [newDeckRows[0].id, deck.id]
-      );
-      cardCount += rowCount ?? 0;
-    }
-
-    await client.query("COMMIT");
-    return {
-      category: mapCategoryRow({ ...newCategory, deck_count: String(sourceDecks.length) }),
-      deckCount: sourceDecks.length,
-      cardCount,
-    };
-  } catch (err) {
-    await client.query("ROLLBACK");
-    throw err;
-  } finally {
-    client.release();
+// Groups getLibraryTopicTiles's flat list by subject in JS — a pure
+// transform over the one query's rows, not a second DB round trip
+// (FLASHCARDS-SPEC.md: "Counts come from one grouped query"). Fixed
+// SUBJECT_ORDER, and a subject with no topics simply doesn't appear —
+// there's nothing to separate.
+export function groupLibraryTopicsBySubject(topics: TopicTile[]): LibrarySubjectGroup[] {
+  const groups = new Map<FlashcardSubject, TopicTile[]>();
+  for (const topic of topics) {
+    const subject = topic.subject ?? "other";
+    const existing = groups.get(subject);
+    if (existing) existing.push(topic);
+    else groups.set(subject, [topic]);
   }
+  return SUBJECT_ORDER.filter((subject) => groups.has(subject)).map((subject) => {
+    const subjectTopics = groups.get(subject)!;
+    return {
+      subject,
+      topics: subjectTopics,
+      topicCount: subjectTopics.length,
+      cardCount: subjectTopics.reduce((sum, t) => sum + t.cardCount, 0),
+    };
+  });
 }
 
-// Deletes a just-copied topic and the decks/cards Add Topic created
-// for it — not the general-purpose deleteCategory, which only
-// unassigns a folder's decks (ON DELETE SET NULL) rather than
-// removing them, and would leave the copies behind as unfiled junk.
-// The source_category_id IS NOT NULL check keeps this from ever
-// touching a topic the user built by hand.
-export async function undoAddLibraryTopic(userId: string, categoryId: string): Promise<void> {
-  const client = await pool.connect();
-  try {
-    await client.query("BEGIN");
-    const { rows } = await client.query(
-      `SELECT 1 FROM flashcard_category WHERE id = $1 AND owner_type = 'user' AND user_id = $2 AND source_category_id IS NOT NULL`,
-      [categoryId, userId]
-    );
-    if (rows.length > 0) {
-      await client.query(`DELETE FROM flashcard_deck WHERE category_id = $1 AND user_id = $2`, [categoryId, userId]);
-      await client.query(`DELETE FROM flashcard_category WHERE id = $1 AND user_id = $2`, [categoryId, userId]);
-    }
-    await client.query("COMMIT");
-  } catch (err) {
-    await client.query("ROLLBACK");
-    throw err;
-  } finally {
-    client.release();
-  }
+// Editor-only — same ownership guard as updateCategoryTopicColor, but
+// subject is only ever set on system topics in the UI (only they group
+// into "Browse the library"); the guard stays symmetric with the other
+// category-field updaters rather than hard-coding that assumption here.
+export async function updateCategorySubject(
+  userId: string,
+  categoryId: string,
+  subject: FlashcardSubject,
+  isEditor: boolean
+): Promise<void> {
+  await pool.query(
+    `UPDATE flashcard_category SET subject = $1
+     WHERE id = $2 AND ((owner_type = 'user' AND user_id = $3) OR (owner_type = 'system' AND $4))`,
+    [subject, categoryId, userId, isEditor]
+  );
 }
 
 // A "user" folder 404s (returns null) for anyone but its owner — same
@@ -1415,8 +1386,8 @@ export async function getCategoryWithDecks(
   userId: string | null
 ): Promise<{ category: FlashcardCategory; decks: DeckSummary[] } | null> {
   const { rows: categoryRows } = await pool.query(
-    `SELECT c.id, c.owner_type, c.user_id, c.name, c.color, c.topic_color, c.icon, c.is_public,
-       (SELECT COUNT(*) FROM flashcard_deck d WHERE d.category_id = c.id) AS deck_count
+    `SELECT c.id, c.owner_type, c.user_id, c.name, c.color, c.topic_color, c.subject, c.icon, c.is_public,
+       (SELECT COUNT(*) FROM flashcard_deck d WHERE d.category_id = c.id AND d.status = 'published' AND d.archived_at IS NULL) AS deck_count
      FROM flashcard_category c
      WHERE c.id = $1`,
     [categoryId]
@@ -1429,23 +1400,23 @@ export async function getCategoryWithDecks(
     ? `, (
          SELECT COUNT(*) FROM flashcard f
          JOIN flashcard_progress p ON p.flashcard_id = f.id AND p.user_id = $2
-         WHERE f.deck_id = d.id AND p.box >= ${MASTERY_BOX}
+         WHERE f.deck_id = d.id AND f.status = 'published' AND f.deleted_at IS NULL AND p.box >= ${MASTERY_BOX}
        ) AS mastered_count,
        (
          SELECT COUNT(*) FROM flashcard f
          JOIN flashcard_progress p ON p.flashcard_id = f.id AND p.user_id = $2
-         WHERE f.deck_id = d.id
+         WHERE f.deck_id = d.id AND f.status = 'published' AND f.deleted_at IS NULL
        ) AS started_count`
     : `, NULL::bigint AS mastered_count, NULL::bigint AS started_count`;
 
   const { rows: deckRows } = await pool.query(
     `SELECT d.id, d.owner_type, d.name, d.description, d.color, d.icon_url,
        d.category_id, c.name AS category_name, c.icon AS category_icon,
-       (SELECT COUNT(*) FROM flashcard f WHERE f.deck_id = d.id) AS card_count
+       (SELECT COUNT(*) FROM flashcard f WHERE f.deck_id = d.id AND f.status = 'published' AND f.deleted_at IS NULL) AS card_count
        ${masteredSelect}
      FROM flashcard_deck d
      JOIN flashcard_category c ON c.id = d.category_id
-     WHERE d.category_id = $1
+     WHERE d.category_id = $1 AND d.status = 'published' AND d.archived_at IS NULL
      ORDER BY d.position, d.name`,
     userId ? [categoryId, userId] : [categoryId]
   );
@@ -1562,4 +1533,258 @@ export async function setDeckCategory(
        ))`,
     [categoryId, deckId, userId, isEditor]
   );
+}
+
+// ============================================================
+// Your progress — the three panels + progress-by-topic
+// (FLASHCARDS-SPEC.md "The dashboard — final order")
+// ============================================================
+
+const MILESTONE_STEP = 50;
+const RETENTION_MIN_ANSWERS = 20; // "Retention needs at least 20 review answers before it appears at all" (FLASHCARDS-DASHBOARD-STATES.md)
+const REVIEW_VOLUME_WEEKS = 16;
+const STUDY_DAYS_WINDOW = 84;
+
+// Monday-start week boundary, matching Postgres's date_trunc('week', ...)
+// (ISO weeks) — so the JS-side week keys line up with the SQL-side ones
+// without a second round trip per week.
+function startOfIsoWeek(date: Date): Date {
+  const d = new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate()));
+  const day = d.getUTCDay();
+  d.setUTCDate(d.getUTCDate() + ((day === 0 ? -6 : 1) - day));
+  return d;
+}
+
+export interface ProgressWhatYouKnow {
+  knownCount: number;
+  totalCards: number;
+  knownPercent: number;
+  learningCount: number;
+  notStartedCount: number;
+  // Cards that crossed the known threshold (flashcard-sm2's 21-day
+  // interval) for the first time this calendar month — derived from
+  // the review log's own before/after intervals, not a snapshot, so
+  // it's exact rather than inferred from "reviewed recently".
+  knownThisMonth: number;
+  milestoneTarget: number;
+  milestoneRemaining: number;
+  milestoneSessions: number;
+}
+
+// null when the visitor has no cards at all (system + owned) — "never
+// show a statistic with no data" (FLASHCARDS-DASHBOARD-STATES.md rule 1).
+export async function getProgressWhatYouKnow(userId: string): Promise<ProgressWhatYouKnow | null> {
+  const [countRows, monthRows, activeDaysRows] = await Promise.all([
+    pool.query<{ total: string; known: string; learning: string }>(
+      `SELECT
+         COUNT(f.id)::int AS total,
+         COUNT(*) FILTER (WHERE p.state = 'review' AND p.interval_days >= ${KNOWN_INTERVAL_THRESHOLD_DAYS})::int AS known,
+         COUNT(*) FILTER (WHERE p.state = 'learning' OR (p.state = 'review' AND p.interval_days < ${KNOWN_INTERVAL_THRESHOLD_DAYS}))::int AS learning
+       FROM flashcard f
+       JOIN flashcard_deck d ON d.id = f.deck_id AND d.status = 'published' AND d.archived_at IS NULL
+       LEFT JOIN flashcard_sm2_progress p ON p.flashcard_id = f.id AND p.user_id = $1
+       WHERE (d.owner_type = 'system' OR d.user_id = $1) AND f.status = 'published' AND f.deleted_at IS NULL`,
+      [userId]
+    ),
+    pool.query<{ count: string }>(
+      `SELECT COUNT(*)::int AS count
+       FROM flashcard_review_log rl
+       WHERE rl.user_id = $1 AND rl.reviewed_at >= date_trunc('month', now())
+         AND rl.interval_after_days >= ${KNOWN_INTERVAL_THRESHOLD_DAYS}
+         AND COALESCE(rl.interval_before_days, 0) < ${KNOWN_INTERVAL_THRESHOLD_DAYS}`,
+      [userId]
+    ),
+    pool.query<{ count: string }>(
+      `SELECT COUNT(DISTINCT (reviewed_at AT TIME ZONE 'UTC')::date)::int AS count
+       FROM flashcard_review_log WHERE user_id = $1`,
+      [userId]
+    ),
+  ]);
+
+  const total = Number(countRows.rows[0]?.total ?? 0);
+  if (total === 0) return null;
+
+  const known = Number(countRows.rows[0].known);
+  const learning = Number(countRows.rows[0].learning);
+  const knownThisMonth = Number(monthRows.rows[0]?.count ?? 0);
+  const activeDays = Number(activeDaysRows.rows[0]?.count ?? 0);
+
+  const milestoneTarget = known % MILESTONE_STEP === 0 ? known + MILESTONE_STEP : Math.ceil(known / MILESTONE_STEP) * MILESTONE_STEP;
+  const milestoneRemaining = milestoneTarget - known;
+  const avgKnownPerActiveDay = activeDays === 0 ? 0 : known / activeDays;
+  const milestoneSessions = avgKnownPerActiveDay <= 0 ? milestoneRemaining : Math.max(1, Math.ceil(milestoneRemaining / avgKnownPerActiveDay));
+
+  return {
+    knownCount: known,
+    totalCards: total,
+    knownPercent: Math.round((known / total) * 100),
+    learningCount: learning,
+    notStartedCount: total - known - learning,
+    knownThisMonth,
+    milestoneTarget,
+    milestoneRemaining,
+    milestoneSessions,
+  };
+}
+
+export interface ProgressReviewVolume {
+  // REVIEW_VOLUME_WEEKS entries, oldest first, last entry = this week.
+  weeklyCounts: number[];
+  totalReviews: number;
+  weeklyAverage: number;
+  // JS Date.getDay() convention (0 = Sunday) — the UI formats it via
+  // next-intl's own weekday formatting rather than a hardcoded label.
+  bestWeekdayIndex: number | null;
+}
+
+// null when the visitor has never logged a single review — nothing to
+// chart yet.
+export async function getProgressReviewVolume(userId: string): Promise<ProgressReviewVolume | null> {
+  const [totalRows, weekRows, weekdayRows] = await Promise.all([
+    pool.query<{ count: string }>(`SELECT COUNT(*)::int AS count FROM flashcard_review_log WHERE user_id = $1`, [userId]),
+    pool.query<{ week_start: string; count: string }>(
+      `SELECT date_trunc('week', reviewed_at)::date::text AS week_start, COUNT(*)::int AS count
+       FROM flashcard_review_log
+       WHERE user_id = $1 AND reviewed_at >= now() - interval '${REVIEW_VOLUME_WEEKS} weeks'
+       GROUP BY week_start`,
+      [userId]
+    ),
+    pool.query<{ dow: number; count: string }>(
+      `SELECT EXTRACT(DOW FROM reviewed_at)::int AS dow, COUNT(*)::int AS count
+       FROM flashcard_review_log WHERE user_id = $1
+       GROUP BY dow ORDER BY count DESC LIMIT 1`,
+      [userId]
+    ),
+  ]);
+
+  const totalReviews = Number(totalRows.rows[0]?.count ?? 0);
+  if (totalReviews === 0) return null;
+
+  const byWeek = new Map(weekRows.rows.map((r) => [r.week_start, Number(r.count)]));
+  const thisWeekStart = startOfIsoWeek(new Date());
+  const weeklyCounts: number[] = [];
+  for (let i = REVIEW_VOLUME_WEEKS - 1; i >= 0; i--) {
+    const d = new Date(thisWeekStart);
+    d.setUTCDate(d.getUTCDate() - i * 7);
+    weeklyCounts.push(byWeek.get(d.toISOString().slice(0, 10)) ?? 0);
+  }
+
+  return {
+    weeklyCounts,
+    totalReviews,
+    weeklyAverage: Math.round(weeklyCounts.reduce((a, b) => a + b, 0) / REVIEW_VOLUME_WEEKS),
+    bestWeekdayIndex: weekdayRows.rows[0] ? Number(weekdayRows.rows[0].dow) : null,
+  };
+}
+
+export interface ProgressRetention {
+  // null unless the trailing-30-day window has at least
+  // RETENTION_MIN_ANSWERS review-state answers.
+  retentionPercent: number | null;
+  // null unless both the trailing and the prior 30-day windows clear
+  // the same threshold — comparing a real rate to a fabricated one
+  // would be a fake trend.
+  retentionChangePts: number | null;
+  // STUDY_DAYS_WINDOW entries, oldest first, today last.
+  studyDayCounts: { date: string; count: number }[];
+  currentStreak: number;
+  bestStreak: number;
+  daysStudiedOutOf84: number;
+  // The earliest day this visitor has any review logged, within the
+  // lookback window queried — powers "since your first review, X ago".
+  firstStudyDay: string | null;
+}
+
+// null when there's no review history at all — nothing to show for
+// either the heatmap or the streak line.
+export async function getProgressRetention(userId: string, todayYmd: string): Promise<ProgressRetention | null> {
+  const [recentRows, priorRows, dayRows] = await Promise.all([
+    pool.query<{ total: string; correct: string }>(
+      `SELECT COUNT(*)::int AS total, COUNT(*) FILTER (WHERE grade != 'again')::int AS correct
+       FROM flashcard_review_log
+       WHERE user_id = $1 AND state_before = 'review' AND reviewed_at > now() - interval '30 days'`,
+      [userId]
+    ),
+    pool.query<{ total: string; correct: string }>(
+      `SELECT COUNT(*)::int AS total, COUNT(*) FILTER (WHERE grade != 'again')::int AS correct
+       FROM flashcard_review_log
+       WHERE user_id = $1 AND state_before = 'review'
+         AND reviewed_at <= now() - interval '30 days' AND reviewed_at > now() - interval '60 days'`,
+      [userId]
+    ),
+    pool.query<{ day: string; count: string }>(
+      `SELECT (reviewed_at AT TIME ZONE 'UTC')::date::text AS day, COUNT(*)::int AS count
+       FROM flashcard_review_log
+       WHERE user_id = $1 AND reviewed_at >= now() - interval '400 days'
+       GROUP BY day`,
+      [userId]
+    ),
+  ]);
+
+  if (dayRows.rows.length === 0) return null;
+
+  const dayCountMap = new Map(dayRows.rows.map((r) => [r.day, Number(r.count)]));
+  const allDays = [...dayCountMap.keys()].sort();
+
+  let currentStreak = 0;
+  const cursor = new Date(`${todayYmd}T00:00:00Z`);
+  while (dayCountMap.has(cursor.toISOString().slice(0, 10))) {
+    currentStreak += 1;
+    cursor.setUTCDate(cursor.getUTCDate() - 1);
+  }
+
+  let bestStreak = 0;
+  let run = 0;
+  let prevDay: Date | null = null;
+  for (const day of allDays) {
+    const d = new Date(`${day}T00:00:00Z`);
+    run = prevDay && d.getTime() - prevDay.getTime() === 86400000 ? run + 1 : 1;
+    bestStreak = Math.max(bestStreak, run);
+    prevDay = d;
+  }
+
+  const studyDayCounts: { date: string; count: number }[] = [];
+  const start = new Date(`${todayYmd}T00:00:00Z`);
+  start.setUTCDate(start.getUTCDate() - (STUDY_DAYS_WINDOW - 1));
+  let daysStudiedOutOf84 = 0;
+  for (let i = 0; i < STUDY_DAYS_WINDOW; i++) {
+    const d = new Date(start);
+    d.setUTCDate(d.getUTCDate() + i);
+    const key = d.toISOString().slice(0, 10);
+    const count = dayCountMap.get(key) ?? 0;
+    if (count > 0) daysStudiedOutOf84 += 1;
+    studyDayCounts.push({ date: key, count });
+  }
+
+  const recentTotal = Number(recentRows.rows[0]?.total ?? 0);
+  const priorTotal = Number(priorRows.rows[0]?.total ?? 0);
+  const retentionPercent =
+    recentTotal < RETENTION_MIN_ANSWERS ? null : Math.round((Number(recentRows.rows[0].correct) / recentTotal) * 100);
+  const priorRetention =
+    priorTotal < RETENTION_MIN_ANSWERS ? null : Math.round((Number(priorRows.rows[0].correct) / priorTotal) * 100);
+
+  return {
+    retentionPercent,
+    retentionChangePts: retentionPercent !== null && priorRetention !== null ? retentionPercent - priorRetention : null,
+    studyDayCounts,
+    currentStreak,
+    bestStreak,
+    daysStudiedOutOf84,
+    firstStudyDay: allDays[0] ?? null,
+  };
+}
+
+export interface DashboardProgress {
+  whatYouKnow: ProgressWhatYouKnow | null;
+  reviewVolume: ProgressReviewVolume | null;
+  retention: ProgressRetention | null;
+}
+
+export async function getDashboardProgress(userId: string, todayYmd: string): Promise<DashboardProgress> {
+  const [whatYouKnow, reviewVolume, retention] = await Promise.all([
+    getProgressWhatYouKnow(userId),
+    getProgressReviewVolume(userId),
+    getProgressRetention(userId, todayYmd),
+  ]);
+  return { whatYouKnow, reviewVolume, retention };
 }

@@ -9,6 +9,7 @@ import type { CardColor } from "@/lib/editorial-blocks";
 import { CARD_COLOR_CARD } from "@/lib/card-colors";
 import { MASTERY_BOX } from "@/lib/flashcard-scoring";
 import { recordReviewAction, saveReviewPositionAction } from "@/lib/actions/flashcards";
+import { sanitizeRichText } from "@/lib/rich-text";
 
 // Question always visible, tap/click reveals the answer — same
 // click-to-reveal interaction SelfCheckBlockView/EvidenceBadge already
@@ -249,7 +250,10 @@ export function FlashcardReviewer({
                 }
               }}
             >
-              <p className="font-reading text-xl font-semibold text-primary">{current.question}</p>
+              <div
+                className="font-reading text-xl font-semibold text-primary [&_p]:mt-2 [&_p:first-child]:mt-0"
+                dangerouslySetInnerHTML={{ __html: sanitizeRichText(current.question) }}
+              />
               <div className="flex flex-col items-center gap-2 text-secondary">
                 <MousePointerClick className="size-5" aria-hidden="true" />
                 <span className="font-ui text-sm">{t("clickToReveal")}</span>
@@ -279,7 +283,10 @@ export function FlashcardReviewer({
             </div>
 
             <div className="flex flex-1 flex-col items-center justify-center gap-4 text-center">
-              <p className="font-reading text-lg font-normal text-primary">{current.answer}</p>
+              <div
+                className="font-reading text-lg font-normal text-primary [&_p]:mt-2 [&_p:first-child]:mt-0"
+                dangerouslySetInnerHTML={{ __html: sanitizeRichText(current.answer) }}
+              />
             </div>
 
             {isSignedIn ? (

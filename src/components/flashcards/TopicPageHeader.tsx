@@ -4,6 +4,8 @@ import { useTranslations } from "next-intl";
 import { Play, Plus } from "lucide-react";
 import { Link } from "@/i18n/navigation";
 import type { TopicColor } from "@/lib/flashcard-topic-colors";
+import { SUBJECT_LABEL_KEY, type FlashcardSubject } from "@/lib/flashcard-subjects";
+import type { DeckOwnerType } from "@/lib/flashcards";
 import { KnownPercentRing } from "./KnownPercentRing";
 import { TopicStateBar } from "./TopicStateBar";
 
@@ -15,6 +17,8 @@ export function TopicPageHeader({
   categoryId,
   name,
   topicColor,
+  ownerType,
+  subject,
   deckCount,
   cardCount,
   knownPercent,
@@ -28,6 +32,8 @@ export function TopicPageHeader({
   categoryId: string;
   name: string;
   topicColor: TopicColor | null;
+  ownerType: DeckOwnerType;
+  subject: FlashcardSubject;
   deckCount: number;
   cardCount: number;
   knownPercent: number;
@@ -47,7 +53,11 @@ export function TopicPageHeader({
       <div className="flex min-w-0 flex-1 flex-col gap-3">
         <div>
           <h1 className="font-reading text-2xl text-primary">{name}</h1>
-          <p className="font-ui text-sm text-secondary">{t("deckAndCardCount", { decks: deckCount, cards: cardCount })}</p>
+          <p className="font-ui text-sm text-secondary">
+            {ownerType === "system"
+              ? t("deckAndCardCountFromLibrary", { decks: deckCount, cards: cardCount, subject: t(SUBJECT_LABEL_KEY[subject]) })
+              : t("deckAndCardCount", { decks: deckCount, cards: cardCount })}
+          </p>
         </div>
 
         <TopicStateBar newCount={newCount} learningCount={learningCount} reviewCount={reviewCount} knownCount={knownCount} topicColor={topicColor} showLegend />

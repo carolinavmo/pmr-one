@@ -6,7 +6,9 @@ import {
   getFolderDueBadges,
   getCategories,
   getDashboardTopicTiles,
-  getLibraryTopics,
+  getLibraryTopicTiles,
+  groupLibraryTopicsBySubject,
+  getDashboardProgress,
 } from "@/lib/flashcards";
 import { FlashcardsDashboard } from "@/components/flashcards/FlashcardsDashboard";
 
@@ -30,17 +32,19 @@ export default async function FlashcardsPage() {
   const isEditor = session?.user.role === "editor" || session?.user.role === "admin";
   const todayYmd = new Date().toISOString().slice(0, 10);
 
-  const [deckRows, { systemCategories, userCategories }, metrics, forecast, folderDueBadgesMap, topics, libraryTopics] = await Promise.all([
+  const [deckRows, { systemCategories, userCategories }, metrics, forecast, folderDueBadgesMap, topics, libraryTopics, progress] = await Promise.all([
     getDashboardDeckRows(userId),
     getCategories(userId),
     userId ? getDashboardMetrics(userId, todayYmd) : null,
     userId ? getSevenDayForecast(userId, todayYmd) : Promise.resolve([]),
     getFolderDueBadges(userId),
     getDashboardTopicTiles(userId),
-    getLibraryTopics(userId),
+    getLibraryTopicTiles(userId),
+    userId ? getDashboardProgress(userId, todayYmd) : null,
   ]);
 
   const folderDueBadges = Object.fromEntries(folderDueBadgesMap);
+  const libraryGroups = groupLibraryTopicsBySubject(libraryTopics);
 
   return (
     <main className="mx-auto flex w-full max-w-7xl flex-col px-6 py-16">
@@ -50,6 +54,8 @@ export default async function FlashcardsPage() {
         deckRows={deckRows}
         topics={topics}
         libraryTopics={libraryTopics}
+        libraryGroups={libraryGroups}
+        progress={progress}
         systemCategories={systemCategories}
         userCategories={userCategories}
         folderDueBadges={folderDueBadges}

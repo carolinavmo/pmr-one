@@ -11,6 +11,7 @@ import {
   ChevronRight,
   ClipboardList,
   Tag,
+  Layers,
 } from "lucide-react";
 import { auth } from "@/auth";
 import { pool } from "@/lib/db";
@@ -125,6 +126,12 @@ export default async function AdminPage() {
           icon={Tag}
           title="Page Types"
           description="Set anatomy / biomechanics / examination / condition / rehabilitation / procedure for the library home's Browse by area."
+        />
+        <QuickLinkCard
+          href="/admin/flashcards"
+          icon={Layers}
+          title="Flashcards"
+          description="Write and review library decks — draft, publish, and edit cards without resetting anyone's progress."
         />
       </section>
 

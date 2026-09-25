@@ -1,7 +1,10 @@
+"use client";
+
+import { useEffect, useState, type CSSProperties } from "react";
 import { useTranslations } from "next-intl";
 import { Plus, Search, Star, FolderPlus, CalendarCheck, LayoutGrid, Lock } from "lucide-react";
 import { Link } from "@/i18n/navigation";
-import type { FlashcardCategory, TopicTile, LibraryTopic } from "@/lib/flashcards";
+import type { FlashcardCategory, TopicTile } from "@/lib/flashcards";
 import { MacFolderIcon } from "@/components/ui/MacFolderIcon";
 import type { CardColor } from "@/lib/editorial-blocks";
 
@@ -10,13 +13,16 @@ import type { CardColor } from "@/lib/editorial-blocks";
 // library-tree sidebar on this exact route (SidebarFrame.tsx hides
 // itself here the same way it already does for My Handbook's own
 // index rail: "no sidebar slot at all — its own rail lives inside the
-// page content itself").
+// page content itself"). Sticky, same top-offset-off-the-navbar
+// mechanism as SidebarFrame.tsx itself, so this reads as a real
+// sidebar (stays put while the main column scrolls) rather than a
+// block of content that scrolls away with the page.
 //
-// TOPICS lists what a signed-in visitor has actually added (copy-on-
-// add — FLASHCARDS-ADD-TOPIC-IMPLEMENTATION.md), not every system
-// topic; FROM THE LIBRARY lists what's still available to add. A
-// signed-out visitor has no account to add into, so they keep
-// browsing every system topic directly, same as before this model.
+// FROM THE LIBRARY (system topics, directly studyable — no add/copy
+// step) is listed above TOPICS (the visitor's own), matching the main
+// column's own library-first ordering. A signed-out visitor sees only
+// the system list, since there's no personal "my topics" without an
+// account.
 export function FlashcardsRail({
   query,
   onQueryChange,
@@ -38,17 +44,39 @@ export function FlashcardsRail({
   dueToday: number;
   favoritedCount: number;
   topics: TopicTile[];
-  libraryTopics: LibraryTopic[];
+  libraryTopics: TopicTile[];
   systemCategories: FlashcardCategory[];
   folderDueBadges: Record<string, number>;
   isSignedIn: boolean;
   isEditor: boolean;
 }) {
   const t = useTranslations("flashcards");
-  const notYetAdded = libraryTopics.filter((lt) => !lt.isAdded);
+
+  // Same ResizeObserver-on-the-header technique as SidebarFrame.tsx —
+  // the navbar's rendered height varies by locale and viewport (its
+  // own row can wrap), so a fixed offset would drift.
+  const [topOffset, setTopOffset] = useState(0);
+  useEffect(() => {
+    const header = document.querySelector("header");
+    if (!header) return;
+    const updateOffset = () => setTopOffset(header.getBoundingClientRect().height);
+    updateOffset();
+    const observer = new ResizeObserver(updateOffset);
+    observer.observe(header);
+    return () => observer.disconnect();
+  }, []);
 
   return (
-    <aside className="flex w-full shrink-0 flex-col gap-5 lg:w-[252px]">
+    <aside
+      // The offset is a CSS custom property, not a plain inline style,
+      // so `top`/`height` only take effect at the `lg:` breakpoint
+      // (Tailwind's responsive variants can gate a var() reference but
+      // not a raw inline style) — below `lg` the rail stacks in normal
+      // flow, full height, not sticky, same as SidebarFrame.tsx hiding
+      // itself outright there instead of constraining its height.
+      style={{ "--rail-top": `${topOffset}px` } as CSSProperties}
+      className="flex w-full shrink-0 flex-col gap-5 lg:sticky lg:top-[var(--rail-top)] lg:h-[calc(100vh-var(--rail-top))] lg:w-[252px] lg:overflow-y-auto"
+    >
       {isSignedIn ? (
         <button
           type="button"
@@ -99,6 +127,17 @@ export function FlashcardsRail({
 
       {isSignedIn ? (
         <>
+          {libraryTopics.length > 0 && (
+            <div className="flex flex-col gap-2">
+              <span className="px-2.5 font-ui text-xs font-medium text-secondary">{t("fromTheLibraryRailHeading")}</span>
+              <div className="flex flex-col gap-0.5">
+                {libraryTopics.map((topic) => (
+                  <RailFolderRow key={topic.id} id={topic.id} name={topic.name} due={topic.dueCount} topicColor={topic.topicColor ?? undefined} />
+                ))}
+              </div>
+            </div>
+          )}
+
           <div className="flex flex-col gap-2">
             <div className="flex items-center justify-between px-2.5">
               <span className="font-ui text-xs font-medium text-secondary">{t("myFolders")}</span>
@@ -108,32 +147,12 @@ export function FlashcardsRail({
             </div>
             <div className="flex flex-col gap-0.5">
               {topics.length === 0 ? (
-                <p className="px-2.5 font-ui text-xs text-secondary">{t("addTopicToSeeItHere")}</p>
+                <p className="px-2.5 font-ui text-xs text-secondary">{t("noFoldersYet")}</p>
               ) : (
                 topics.map((topic) => <RailFolderRow key={topic.id} id={topic.id} name={topic.name} due={topic.dueCount} topicColor={topic.topicColor ?? undefined} />)
               )}
             </div>
           </div>
-
-          {notYetAdded.length > 0 && (
-            <div className="flex flex-col gap-2">
-              <span className="px-2.5 font-ui text-xs font-medium text-secondary">{t("fromTheLibraryRailHeading")}</span>
-              <div className="flex flex-col gap-0.5">
-                {notYetAdded.map((lt) => (
-                  <a
-                    key={lt.id}
-                    href="#add-from-library"
-                    data-topic-color={lt.topicColor ?? undefined}
-                    className="flex items-center gap-2.5 rounded-lg px-2.5 py-2 font-ui text-sm font-bold text-primary hover:bg-border/30"
-                  >
-                    <span className="size-2.5 shrink-0 rounded-full" style={{ backgroundColor: lt.topicColor ? "var(--topic)" : "var(--color-border)" }} />
-                    <span className="min-w-0 flex-1 truncate">{lt.name}</span>
-                    <span className="font-ui text-xs font-normal text-secondary">{lt.cardCount}</span>
-                  </a>
-                ))}
-              </div>
-            </div>
-          )}
         </>
       ) : (
         <div className="flex flex-col gap-2">

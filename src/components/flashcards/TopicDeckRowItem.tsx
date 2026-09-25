@@ -21,6 +21,7 @@ export function TopicDeckRowItem({ deck, topicColor, now }: { deck: TopicDeckRow
     deck.sourceDiseaseName ? t("fromTheLibrary") : t("createdByYou"),
   ];
   if (deck.lastStudiedAt && now) subtitleParts.push(t("studiedRelative", { time: format.relativeTime(new Date(deck.lastStudiedAt), now) }));
+  if (deck.reviewedAt && now) subtitleParts.push(t("reviewedRelative", { time: format.relativeTime(new Date(deck.reviewedAt), now) }));
 
   const action =
     deck.cardCount === 0 ? (

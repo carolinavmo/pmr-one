@@ -8,12 +8,14 @@ import {
   renameCategoryAction,
   updateCategoryColorAction,
   updateCategoryTopicColorAction,
+  updateCategorySubjectAction,
   deleteCategoryAction,
 } from "@/lib/actions/flashcards";
 import type { CardColor } from "@/lib/editorial-blocks";
 import { ColorSwatchPicker } from "@/components/ui/ColorSwatchPicker";
 import { TopicColorPicker } from "./TopicColorPicker";
 import type { TopicColor } from "@/lib/flashcard-topic-colors";
+import { SUBJECT_ORDER, SUBJECT_LABEL, type FlashcardSubject } from "@/lib/flashcard-subjects";
 import type { FlashcardCategory } from "@/lib/flashcards";
 
 // The "Settings" tab (FLASHCARDS-IMPLEMENTATION.md Pass 3) — rename,
@@ -36,6 +38,7 @@ export function TopicSettingsPanel({
   const [draft, setDraft] = useState(category.name);
   const [colorPickerOpen, setColorPickerOpen] = useState(false);
   const [topicColorPickerOpen, setTopicColorPickerOpen] = useState(false);
+  const [subject, setSubject] = useState(category.subject);
   const [, startTransition] = useTransition();
 
   function handleSaveName() {
@@ -58,6 +61,13 @@ export function TopicSettingsPanel({
     setTopicColorPickerOpen(false);
     startTransition(() => {
       updateCategoryTopicColorAction(category.id, c);
+    });
+  }
+
+  function handleSubjectChange(next: FlashcardSubject) {
+    setSubject(next);
+    startTransition(() => {
+      updateCategorySubjectAction(category.id, next);
     });
   }
 
@@ -114,6 +124,23 @@ export function TopicSettingsPanel({
             {topicColorPickerOpen && <TopicColorPicker onPick={handlePickTopicColor} className="absolute top-full left-0 z-10 mt-1 w-40" />}
           </div>
         </div>
+
+        {category.ownerType === "system" && (
+          <div className="flex flex-col gap-1.5">
+            <span className="font-ui text-xs font-bold text-secondary">{t("subjectLabel")}</span>
+            <select
+              value={subject}
+              onChange={(e) => handleSubjectChange(e.target.value as FlashcardSubject)}
+              className="rounded-lg border border-border bg-surface-raised px-3 py-2 font-ui text-xs font-bold text-secondary outline-none focus:border-accent"
+            >
+              {SUBJECT_ORDER.map((s) => (
+                <option key={s} value={s}>
+                  {SUBJECT_LABEL[s]}
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
       </div>
 
       <div className="border-t border-border pt-4">

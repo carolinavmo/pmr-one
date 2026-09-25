@@ -235,3 +235,95 @@ it to a single row: "Add from the library · 3 topics left ›".
 3. **One tap to start.** Add topic → decks copied → study immediately; no wizard.
 4. **Say what adding does** — copied, editable, progress is theirs.
 5. The first tile a user creates should look exactly like the ones they will have later.
+
+
+---
+
+# The dashboard — final order
+
+Reference: `FLASHCARDS-D-dashboard.png` · **source of truth**: `flashcards-dashboard-final.html`
+
+| # | Section | Why it is here |
+|---|---|---|
+| 1 | **Today's session** | the reason the page exists — start studying |
+| 2 | **Browse the library** | every topic, grouped by subject; a card opens the topic |
+| 3 | **Your progress** | three panels: what you know, how much you study, how well it sticks |
+| 4 | **Progress by topic** | the rows, which are a second way into a topic |
+
+## Browse the library
+**There is no "add topic" step.** Every library topic is always available: a card opens the
+topic, and the decks are chosen there. Nothing is copied, so a card fixed in the library is
+fixed for everyone, and a user's progress is simply their own scheduling state on shared cards.
+
+### Subject separators
+Topics are grouped by subject, each group introduced by a separator row:
+`● MSK   4 topics · 245 cards ──────────────── See all ›`
+- 11px colour square, label 12px / 900 with +1.6px tracking in the subject colour, counts in
+  `#9AA5B4`, a hairline to the right and **See all ›**.
+- Subject colours: MSK `#A8760F` · Neurology `#5A479C` · Basic sciences `#0F8A6E` ·
+  Other `#1F7A4D` — these are the **library's** colours; the bright Candy palette stays on the
+  topic cards themselves.
+- Four cards per group on the dashboard; the rest behind See all.
+
+### Topic card
+Deck-of-cards style: two decorative edges, count badge on the corner, name, deck count, up to
+three deck titles, then a footer with **where you are** and **Open ›**:
+
+| Footer state | Shown when |
+|---|---|
+| `12 due` in red | the user has cards due in that topic |
+| `✓ up to date` in green | studied, nothing due |
+| `Not started` in grey | no reviews yet |
+
+One card, three audiences — someone who has never opened it, someone mid-way, someone finished
+for today.
+
+Three panels answering three questions, then the topics as rows so the section still navigates.
+
+## Panel 1 — What you know
+104px ring (`--kn` on `#EEF1F5`), `142 of 307` 19px / 900, "cards known", and the month's change
+in green. Below: learning and not-started counts. Then **Next milestone** — the next round
+number of known cards, a progress bar and "8 to go · about 2 sessions" (remaining ÷ average
+known-per-session).
+
+## Panel 2 — Cards reviewed, last 16 weeks
+One bar per week, `--acc-dk`, current week in `--acc`. Axis labels at each end only. Below:
+total reviews, weekly average, and the weekday the user studies most.
+
+## Panel 3 — How well it sticks
+Retention 34px / 900 with its 30-day change, then a **12-week study-day grid** (13px squares,
+five levels from `#EEF1F5` to `#17BF9A`) and one line: current streak, best streak, and days
+studied out of the last 84.
+
+## Progress by topic
+A row per topic: colour bar, name, "3 decks · 84 cards", the three-part bar, the percentage, and
+the due count (green "✓ up to date" when there is none). **Each row is a link to the topic** —
+this is what replaces the tiles as the way in, so it must stay.
+
+## Rules
+1. **Every number carries a trend** — ▲ 38 this month, ▲ 4 pts, best day, best streak. A bare
+   number says nothing about whether the person is improving.
+2. **Never show a panel with no data.** Under 20 reviews, hide retention; under two weeks, hide
+   the bar chart; a new user sees the tiles version instead (state S1 in
+   `FLASHCARDS-DASHBOARD-STATES.md`).
+3. **The rows navigate.** Losing the tiles must not lose the way into a topic.
+4. **Milestones are round numbers of known cards** (50, 100, 150…), never streaks — streaks
+   punish a missed day, and a missed day is not failure.
+
+## When to use which
+| | Tiles (`FLASHCARDS-D-dashboard.png`) | Progress section (this) |
+|---|---|---|
+| Best for | choosing what to study | seeing whether it is working |
+| New user | yes | no — not enough data |
+| After a month | still fine | better |
+| Navigation | the tile is the way in | the row is the way in |
+
+**Why the library sits above progress:** after "study now", the dashboard's job is to get people
+into a topic; progress rewards what they have already done. If the library section grows past
+about three groups, collapse the empty ones (`Not started` only) behind their **See all**, rather
+than moving progress down.
+
+**What this simplifies.** With no add step there is no copying, no `source_card_id`, no sync
+problem and no per-user duplicates: topics are library regions, decks are library decks, and the
+only user-owned rows are the scheduling state per card, the review log, and any decks the user
+creates themselves.

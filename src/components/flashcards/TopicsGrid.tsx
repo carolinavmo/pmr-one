@@ -43,13 +43,13 @@ export function TopicsGrid({
 
       <div className="grid grid-cols-1 gap-3.5 sm:grid-cols-2 xl:grid-cols-3">
         {topics.map((topic) => (
-          <TopicTile key={topic.id} topic={topic} href={`/flashcards/category/${topic.id}`} isSignedIn={isSignedIn} canFavorite={isSignedIn} />
+          <TopicTileCard key={topic.id} topic={topic} href={`/flashcards/category/${topic.id}`} isSignedIn={isSignedIn} canFavorite={isSignedIn} />
         ))}
 
         {/* Anchored, not routed — the decks it summarizes already live
             further down this same page (the "Decks" grid), so there's
             no separate virtual-topic page to build. */}
-        {myDecksTile && <TopicTile topic={myDecksTile} href="#your-decks" isSignedIn={isSignedIn} canFavorite={false} />}
+        {myDecksTile && <TopicTileCard topic={myDecksTile} href="#your-decks" isSignedIn={isSignedIn} canFavorite={false} />}
 
         {isSignedIn && (
           <button
@@ -67,7 +67,12 @@ export function TopicsGrid({
   );
 }
 
-function TopicTile({
+// Exported so LibraryTopicsGrid.tsx can render the exact same tile
+// for a system topic — "the tile" is one component regardless of
+// whether the topic is the user's own or the library's, matching
+// FLASHCARDS-SPEC.md rule 1 ("same colour and same percentage
+// everywhere it appears") applied to the whole card, not just the ring.
+export function TopicTileCard({
   topic,
   href,
   isSignedIn,

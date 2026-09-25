@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl";
 import { GripVertical, Pencil, Plus, Trash2 } from "lucide-react";
 import type { FlashcardCard } from "@/lib/flashcards";
 import { createCardAction, updateCardAction, deleteCardAction, reorderCardsAction } from "@/lib/actions/flashcards";
+import { richTextToPlainText } from "@/lib/rich-text";
 import { useReorderDrag, dragRowClass } from "@/lib/useReorderDrag";
 import { Button } from "@/components/ui/Button";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
@@ -114,7 +115,7 @@ export function CardManager({
                 >
                   <GripVertical className="size-4" aria-hidden="true" />
                 </button>
-                <span className="min-w-0 flex-1 truncate font-ui text-sm text-primary">{card.question}</span>
+                <span className="min-w-0 flex-1 truncate font-ui text-sm text-primary">{richTextToPlainText(card.question)}</span>
                 <button
                   type="button"
                   onClick={() => startEdit(card)}

@@ -57,6 +57,8 @@ export function TopicPageClient({
         categoryId={category.id}
         name={name}
         topicColor={topicColor}
+        ownerType={category.ownerType}
+        subject={category.subject}
         deckCount={deckRows.length}
         cardCount={cardCount}
         knownPercent={metrics?.knownPercent ?? 0}
