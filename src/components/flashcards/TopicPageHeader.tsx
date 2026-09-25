@@ -60,7 +60,7 @@ export function TopicPageHeader({
 
         <div className="flex min-w-0 flex-1 flex-col gap-3">
           <div>
-            <h1 className="font-heading text-3xl font-bold text-primary">{name}</h1>
+            <h1 className="font-heading text-3xl font-black text-primary">{name}</h1>
             <p className="font-ui text-sm text-secondary">
               {ownerType === "system"
                 ? t("deckAndCardCountFromLibrary", { decks: deckCount, cards: cardCount, subject: t(SUBJECT_LABEL_KEY[subject]) })
