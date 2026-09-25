@@ -1,9 +1,8 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 import { X, CloudOff } from "lucide-react";
-import { useRouter } from "@/i18n/navigation";
 import type { StudyCard } from "@/lib/flashcards";
 import type { Grade, Sm2State } from "@/lib/flashcard-sm2";
 import { applyGrade, previewGrades } from "@/lib/flashcard-sm2";
@@ -29,7 +28,19 @@ export interface SessionLogEntry {
 
 export function StudySession({ initialCards, backHref }: { initialCards: StudyCard[]; backHref: string }) {
   const t = useTranslations("flashcards");
-  const router = useRouter();
+  const locale = useLocale();
+  // A full browser navigation, not router.push() — every grade this
+  // session already told the server to revalidate (recordSm2ReviewAction
+  // -> revalidateFlashcardSurfaces), but the client Router Cache can
+  // still be holding a pre-session copy of the destination page from
+  // before studying started, and router.push()+router.refresh() proved
+  // timing-fragile in practice (users reported landing back on stale
+  // numbers). This guarantees a fresh server render every time, at the
+  // cost of the SPA transition — acceptable for a session-boundary exit.
+  const goBack = useCallback(() => {
+    // eslint-disable-next-line @next/next/no-location-assign-relative-destination -- deliberate hard nav, see comment above
+    window.location.href = `/${locale}${backHref}`;
+  }, [locale, backHref]);
 
   const [queue, setQueue] = useState<StudyCard[]>(initialCards);
   const [cardStates, setCardStates] = useState<Record<string, Sm2State>>(() =>
@@ -155,8 +166,7 @@ export function StudySession({ initialCards, backHref }: { initialCards: StudyCa
     function onKeyDown(e: KeyboardEvent) {
       if (done || grading) return;
       if (e.key === "Escape") {
-        router.push(backHref);
-        router.refresh();
+        goBack();
         return;
       }
       if (e.key === " ") {
@@ -173,7 +183,7 @@ export function StudySession({ initialCards, backHref }: { initialCards: StudyCa
     }
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
-  }, [flipped, done, grading, handleGrade, router, backHref]);
+  }, [flipped, done, grading, handleGrade, goBack]);
 
   // Remaining-by-state chrome counts — the not-yet-shown slice of the
   // queue, each card's *current* tracked state (a requeued card may
@@ -210,14 +220,7 @@ export function StudySession({ initialCards, backHref }: { initialCards: StudyCa
     return (
       <div className="flex min-h-screen flex-col items-center justify-center gap-4 bg-surface-sunken p-6">
         <p className="font-ui text-lg font-bold text-primary">{t("studyNothingDue")}</p>
-        <button
-          type="button"
-          onClick={() => {
-            router.push(backHref);
-            router.refresh();
-          }}
-          className="rounded-lg bg-accent px-4 py-2 font-ui text-sm font-bold text-white"
-        >
+        <button type="button" onClick={goBack} className="rounded-lg bg-accent px-4 py-2 font-ui text-sm font-bold text-white">
           {t("studyBackToDeck")}
         </button>
       </div>
@@ -232,7 +235,7 @@ export function StudySession({ initialCards, backHref }: { initialCards: StudyCa
         streak={streak}
         knownBefore={knownBefore}
         knownAfter={knownAfter}
-        backHref={backHref}
+        onBack={goBack}
       />
     );
   }
@@ -242,10 +245,7 @@ export function StudySession({ initialCards, backHref }: { initialCards: StudyCa
       <div className="flex items-center justify-between px-4 py-3 sm:px-8">
         <button
           type="button"
-          onClick={() => {
-            router.push(backHref);
-            router.refresh();
-          }}
+          onClick={goBack}
           aria-label={t("studyClose")}
           className="flex size-[34px] items-center justify-center rounded-full border border-border bg-surface text-secondary hover:text-primary"
         >
