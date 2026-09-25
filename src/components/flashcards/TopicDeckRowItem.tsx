@@ -42,8 +42,8 @@ export function TopicDeckRowItem({ deck, topicColor, now }: { deck: TopicDeckRow
     );
 
   return (
-    <div className="flex items-center gap-3 border-b border-border py-3 last:border-b-0">
-      <span data-topic-color={topicColor ?? undefined} className="size-2.5 shrink-0 rounded-full" style={{ backgroundColor: topicColor ? "var(--topic)" : "var(--color-border)" }} />
+    <div className="flex items-center gap-3.5 rounded-xl border border-border bg-surface p-3.5 hover:border-accent/40">
+      <span data-topic-color={topicColor ?? undefined} className="h-9 w-2.5 shrink-0 rounded-[5px]" style={{ backgroundColor: topicColor ? "var(--topic)" : "var(--color-border)" }} />
 
       <div className="min-w-0 flex-1">
         <div className="flex items-center gap-1.5">

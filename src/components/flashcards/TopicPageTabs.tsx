@@ -79,7 +79,7 @@ export function TopicPageTabs({
           {deckRows.length === 0 ? (
             <p className="rounded-xl border border-dashed border-border p-6 text-center font-ui text-sm text-secondary">{t("noDecksInFolder")}</p>
           ) : (
-            <div className="rounded-xl border border-border bg-surface px-4">
+            <div className="flex flex-col gap-2">
               {deckRows.map((deck) => (
                 <TopicDeckRowItem key={deck.id} deck={deck} topicColor={topicColor} now={now} />
               ))}
