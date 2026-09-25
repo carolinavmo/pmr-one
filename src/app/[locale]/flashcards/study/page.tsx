@@ -2,11 +2,11 @@ import { getLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
 import { redirect } from "@/i18n/navigation";
 import { auth } from "@/auth";
-import { getStudyCardsForDeck, getStudyCardsForCategory, getStudyCardsForAccount } from "@/lib/flashcards";
+import { getStudyCardsForDeck, getStudyCardsForCategory, getStudyCardsForAccount, getWeakStudyCardsForCategory } from "@/lib/flashcards";
 import { StudySession } from "@/components/flashcards/StudySession";
 
 interface StudyPageProps {
-  searchParams: Promise<{ deck?: string; topic?: string; early?: string }>;
+  searchParams: Promise<{ deck?: string; topic?: string; early?: string; weak?: string }>;
 }
 
 // FLASHCARDS-IMPLEMENTATION.md Pass 2 — "Route /flashcards/study?deck=…
@@ -23,14 +23,17 @@ export default async function FlashcardsStudyPage({ searchParams }: StudyPagePro
     return;
   }
 
-  const { deck: deckId, topic: categoryId, early } = await searchParams;
+  const { deck: deckId, topic: categoryId, early, weak } = await searchParams;
   const includeNotDue = early === "1";
 
-  const cards = deckId
-    ? await getStudyCardsForDeck(session.user.id, deckId, includeNotDue)
-    : categoryId
-      ? await getStudyCardsForCategory(session.user.id, categoryId, includeNotDue)
-      : await getStudyCardsForAccount(session.user.id, includeNotDue);
+  const cards =
+    categoryId && weak === "1"
+      ? await getWeakStudyCardsForCategory(session.user.id, categoryId)
+      : deckId
+        ? await getStudyCardsForDeck(session.user.id, deckId, includeNotDue)
+        : categoryId
+          ? await getStudyCardsForCategory(session.user.id, categoryId, includeNotDue)
+          : await getStudyCardsForAccount(session.user.id, includeNotDue);
   if (cards === null) notFound();
 
   const backHref = deckId ? `/flashcards/${deckId}` : categoryId ? `/flashcards/category/${categoryId}` : "/flashcards";

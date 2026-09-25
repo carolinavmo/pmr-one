@@ -91,7 +91,7 @@ export function TopicPageClient({
         now={now}
       />
 
-      <TopicWeakCards cards={weakCards} />
+      <TopicWeakCards cards={weakCards} categoryId={category.id} />
     </div>
   );
 }

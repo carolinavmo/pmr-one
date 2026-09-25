@@ -392,6 +392,37 @@ export async function getStudyCardsForCategory(userId: string, categoryId: strin
   return rows.map(mapStudyCardRow);
 }
 
+// "So the person can review only the weak ones" — the exact same set
+// TopicWeakCards.tsx lists (getTopicWeakCards' own "grade='again' in
+// the last 7 days" ranking, same default limit), fed through
+// STUDY_CARD_SELECT instead of the lighter WeakCard shape so it can
+// feed a real study session (SM-2 state, grading, the works) rather
+// than just linking out to each card's whole deck. Ignores due_at —
+// a weak card is worth reviewing regardless of whether SM-2 already
+// pushed its next due date out.
+export async function getWeakStudyCardsForCategory(userId: string, categoryId: string, limit = 5): Promise<StudyCard[] | null> {
+  const { rows: ownerCheck } = await pool.query(
+    `SELECT 1 FROM flashcard_category WHERE id = $1 AND (owner_type = 'system' OR user_id = $2)`,
+    [categoryId, userId]
+  );
+  if (ownerCheck.length === 0) return null;
+
+  const { rows } = await pool.query(
+    `${STUDY_CARD_SELECT}
+       AND d.category_id = $2
+       AND f.id IN (
+         SELECT rl.flashcard_id FROM flashcard_review_log rl
+         WHERE rl.user_id = $1 AND rl.grade = 'again' AND rl.reviewed_at > now() - interval '7 days'
+         GROUP BY rl.flashcard_id
+         ORDER BY COUNT(*) DESC
+         LIMIT $3
+       )
+     ORDER BY d.position, f.position, f.created_at`,
+    [userId, categoryId, limit]
+  );
+  return rows.map(mapStudyCardRow);
+}
+
 // Every due card across every deck this user can reach — system
 // topics are directly studyable (no add/copy step), so "reach" means
 // the same accessible-deck condition getStudyCardsForDeck's own

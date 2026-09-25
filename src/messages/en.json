@@ -688,7 +688,12 @@
     "streakSummary": "{streak} day streak · best {best} · studied {days} of the last {window} days",
     "progressByTopic": "Progress by topic",
     "reviewedRelative": "reviewed {time}",
-    "newDeckInTopic": "New deck in {name}"
+    "newDeckInTopic": "New deck in {name}",
+    "weakCardsCount": "{count, plural, one {# with repeated lapses} other {# with repeated lapses}}",
+    "studyTheseWeak": "Study these {count}",
+    "failedNTimes": "{deck} · failed {count, plural, one {# time} other {# times}}",
+    "weakCardEdit": "Edit",
+    "weakCardStudy": "Study"
   },
   "courses": {
     "pageTitle": "Courses",

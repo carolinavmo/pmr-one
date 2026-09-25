@@ -688,7 +688,12 @@
     "streakSummary": "{streak} días seguidos · récord {best} · estudiaste {days} de los últimos {window} días",
     "progressByTopic": "Progreso por tema",
     "reviewedRelative": "revisado {time}",
-    "newDeckInTopic": "Nuevo mazo en {name}"
+    "newDeckInTopic": "Nuevo mazo en {name}",
+    "weakCardsCount": "{count, plural, one {# con fallos repetidos} other {# con fallos repetidos}}",
+    "studyTheseWeak": "Repasar estas {count}",
+    "failedNTimes": "{deck} · fallada {count, plural, one {# vez} other {# veces}}",
+    "weakCardEdit": "Editar",
+    "weakCardStudy": "Repasar"
   },
   "courses": {
     "pageTitle": "Cursos",
