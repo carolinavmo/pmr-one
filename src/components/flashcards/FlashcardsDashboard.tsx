@@ -7,7 +7,6 @@ import { FlashcardsHeader } from "./FlashcardsHeader";
 import { FlashcardsSessionPanel } from "./FlashcardsSessionPanel";
 import { FlashcardsRail } from "./FlashcardsRail";
 import { LibraryTopicsGrid } from "./LibraryTopicsGrid";
-import { TopicsGrid } from "./TopicsGrid";
 import { FlashcardsProgressPanels } from "./FlashcardsProgressPanels";
 import { ProgressByTopicRows } from "./ProgressByTopicRows";
 import { DashboardDeckCard } from "./DashboardDeckCard";
@@ -22,9 +21,10 @@ import { NewCategoryDrawer } from "./NewCategoryDrawer";
 // route so the two never render at once.
 //
 // System topics are directly studyable — no "add to my account" step.
-// "From the library" (system topics) renders above "Your topics" (the
-// visitor's own): the library is where most studying actually starts,
-// since it's ready-made content, so it gets first billing.
+// The old tile grid for a visitor's own topic folders ("Your topics")
+// was removed — those folders still surface as rows in "Progress by
+// topic" below, and are still creatable from the rail's own "My
+// Folders" +, so nothing here was the only path to either.
 export function FlashcardsDashboard({
   metrics,
   forecast,
@@ -154,10 +154,6 @@ export function FlashcardsDashboard({
         )}
 
         <LibraryTopicsGrid groups={libraryGroups} isSignedIn={isSignedIn} />
-
-        {(topics.length > 0 || myDecksTile) && (
-          <TopicsGrid topics={topics} myDecksTile={myDecksTile} isSignedIn={isSignedIn} onNewTopicClick={() => setUserFolderDrawerOpen(true)} />
-        )}
 
         {progress && <FlashcardsProgressPanels progress={progress} now={now} />}
 
