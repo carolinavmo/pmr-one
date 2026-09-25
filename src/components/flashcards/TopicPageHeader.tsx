@@ -47,7 +47,14 @@ export function TopicPageHeader({
   const t = useTranslations("flashcards");
 
   return (
-    <div className="flex flex-col gap-5 rounded-2xl border border-border bg-surface p-6 sm:flex-row sm:items-center">
+    <div
+      data-topic-color={topicColor ?? undefined}
+      className="flex flex-col gap-5 rounded-2xl border p-6 sm:flex-row sm:items-center"
+      style={{
+        borderColor: topicColor ? "var(--topic-bd)" : "var(--color-border)",
+        backgroundColor: topicColor ? "var(--topic-bg)" : "var(--color-surface)",
+      }}
+    >
       <KnownPercentRing percent={knownPercent} size={124} sublabel={t("known")} topicColor={topicColor ?? undefined} />
 
       <div className="flex min-w-0 flex-1 flex-col gap-3">
