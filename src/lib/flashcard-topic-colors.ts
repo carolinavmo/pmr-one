@@ -3,11 +3,29 @@
 // the app-wide 20-color CardColor palette (card-colors.ts) used
 // everywhere else. "Where the bright palette does not go: the
 // navigation stays navy... these eight are for topics only."
-export type TopicColor = "orange" | "pink" | "violet" | "mint" | "sky" | "sunny" | "coral" | "lime";
+export type TopicColor = "orange" | "pink" | "violet" | "mint" | "sky" | "sunny" | "coral" | "lime" | "teal" | "indigo" | "magenta" | "rose";
 
 // Fixed creation order — also the order pickFreeTopicColor() cycles
-// through when assigning a new topic's color.
-export const TOPIC_COLOR_ORDER: TopicColor[] = ["orange", "pink", "violet", "mint", "sky", "sunny", "coral", "lime"];
+// through when assigning a new topic's color. The last 4 (teal/
+// indigo/magenta/rose) were added on top of the spec's original 8 —
+// user request for more variety in "the flashcards color pickers" —
+// each one fills a hue gap between two existing colors (teal between
+// mint/sky, indigo between violet/sky, magenta between violet/pink,
+// rose between pink/coral) rather than duplicating one.
+export const TOPIC_COLOR_ORDER: TopicColor[] = [
+  "orange",
+  "pink",
+  "violet",
+  "mint",
+  "sky",
+  "sunny",
+  "coral",
+  "lime",
+  "teal",
+  "indigo",
+  "magenta",
+  "rose",
+];
 
 export const TOPIC_COLOR_LABEL: Record<TopicColor, string> = {
   orange: "Orange",
@@ -18,6 +36,10 @@ export const TOPIC_COLOR_LABEL: Record<TopicColor, string> = {
   sunny: "Sunny",
   coral: "Coral",
   lime: "Lime",
+  teal: "Teal",
+  indigo: "Indigo",
+  magenta: "Magenta",
+  rose: "Rose",
 };
 
 // The swatch dot a picker shows — the full-strength ring/badge hex,
@@ -31,6 +53,10 @@ export const TOPIC_COLOR_HEX: Record<TopicColor, string> = {
   sunny: "#FFC53D",
   coral: "#FF6B6B",
   lime: "#9BD24A",
+  teal: "#14B8A6",
+  indigo: "#6366F1",
+  magenta: "#D946EF",
+  rose: "#FB7185",
 };
 
 export function isTopicColor(value: string | null | undefined): value is TopicColor {

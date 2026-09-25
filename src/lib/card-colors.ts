@@ -30,7 +30,11 @@ export const DEFAULT_BRANCH_CYCLE: CardColor[] = ["blue", "violet", "rose", "sla
 // read this same list). The 12 additions are Tailwind's own 500-level
 // hues, picked to sit clearly apart from the existing 4 rather than
 // duplicate one (sky/cyan/indigo apart from blue, purple/fuchsia apart
-// from violet, pink apart from rose).
+// from violet, pink apart from rose). emerald/amber/coral added later
+// (user request for "more colorful colors" in the flashcards pickers,
+// which read this same app-wide list) — the two genuine gaps against
+// Tailwind's own named palette (emerald, amber) plus one custom warm
+// tone (coral) not covered by anything already here.
 export const CARD_COLOR_ORDER: CardColor[] = [
   "neutral",
   "accent",
@@ -56,6 +60,9 @@ export const CARD_COLOR_ORDER: CardColor[] = [
   "wine",
   "umber",
   "plum",
+  "emerald",
+  "amber",
+  "coral",
 ];
 
 export const CARD_COLOR_LABEL: Record<CardColor, string> = {
@@ -83,6 +90,9 @@ export const CARD_COLOR_LABEL: Record<CardColor, string> = {
   wine: "Wine",
   umber: "Umber",
   plum: "Plum",
+  emerald: "Emerald",
+  amber: "Amber",
+  coral: "Coral",
 };
 
 // The picker's own swatch dot — a solid fill so the 20 options are
@@ -112,6 +122,9 @@ export const CARD_COLOR_SWATCH: Record<CardColor, string> = {
   wine: "bg-card-wine",
   umber: "bg-card-umber",
   plum: "bg-card-plum",
+  emerald: "bg-card-emerald",
+  amber: "bg-card-amber",
+  coral: "bg-card-coral",
 };
 
 // A card's own background — a quiet tint plus a matching border, not
@@ -142,6 +155,9 @@ export const CARD_COLOR_CARD: Record<CardColor, string> = {
   wine: "border-card-wine/30 bg-card-wine/5",
   umber: "border-card-umber/30 bg-card-umber/5",
   plum: "border-card-plum/30 bg-card-plum/5",
+  emerald: "border-card-emerald/30 bg-card-emerald/5",
+  amber: "border-card-amber/30 bg-card-amber/5",
+  coral: "border-card-coral/30 bg-card-coral/5",
 };
 
 // An alternate card treatment (EXPERIMENTAL, local-only — not yet
@@ -176,6 +192,9 @@ export const CARD_COLOR_CARD_ACCENT: Record<CardColor, string> = {
   wine: "border-l-4 border-l-card-wine/60 bg-card-wine/5",
   umber: "border-l-4 border-l-card-umber/60 bg-card-umber/5",
   plum: "border-l-4 border-l-card-plum/60 bg-card-plum/5",
+  emerald: "border-l-4 border-l-card-emerald/60 bg-card-emerald/5",
+  amber: "border-l-4 border-l-card-amber/60 bg-card-amber/5",
+  coral: "border-l-4 border-l-card-coral/60 bg-card-coral/5",
 };
 
 // A badge's pill treatment — a solid, fixed-dark fill with light text
@@ -208,6 +227,9 @@ export const CARD_COLOR_BADGE: Record<CardColor, string> = {
   wine: "bg-badge-wine text-white",
   umber: "bg-badge-umber text-white",
   plum: "bg-badge-plum text-white",
+  emerald: "bg-badge-emerald text-white",
+  amber: "bg-badge-amber text-white",
+  coral: "bg-badge-coral text-white",
 };
 
 // A table's own rule lines (card border + row dividers) tinted to
@@ -240,6 +262,9 @@ export const CARD_COLOR_BORDER: Record<CardColor, string> = {
   wine: "border-badge-wine/25",
   umber: "border-badge-umber/25",
   plum: "border-badge-plum/25",
+  emerald: "border-badge-emerald/25",
+  amber: "border-badge-amber/25",
+  coral: "border-badge-coral/25",
 };
 
 // The table card's own outer frame — full-strength (not the /25 tint
@@ -271,6 +296,9 @@ export const CARD_COLOR_BORDER_STRONG: Record<CardColor, string> = {
   wine: "border-badge-wine",
   umber: "border-badge-umber",
   plum: "border-badge-plum",
+  emerald: "border-badge-emerald",
+  amber: "border-badge-amber",
+  coral: "border-badge-coral",
 };
 
 // A deeper tint than CARD_COLOR_TINT (/10) but still soft — the
@@ -303,6 +331,9 @@ export const CARD_COLOR_MID: Record<CardColor, string> = {
   wine: "bg-card-wine/20",
   umber: "bg-card-umber/20",
   plum: "bg-card-plum/20",
+  emerald: "bg-card-emerald/20",
+  amber: "bg-card-amber/20",
+  coral: "bg-card-coral/20",
 };
 
 // A small colored icon-chip treatment (Explore sidebar topic icons,
@@ -337,6 +368,9 @@ export const CARD_COLOR_CHIP: Record<CardColor, string> = {
   wine: "bg-card-wine/15 text-card-wine",
   umber: "bg-card-umber/15 text-card-umber",
   plum: "bg-card-plum/15 text-card-plum",
+  emerald: "bg-card-emerald/15 text-card-emerald",
+  amber: "bg-card-amber/15 text-card-amber",
+  coral: "bg-card-coral/15 text-card-coral",
 };
 
 // A low-opacity full-row background wash (the Explore sidebar's
@@ -367,6 +401,9 @@ export const CARD_COLOR_TINT: Record<CardColor, string> = {
   wine: "bg-card-wine/10",
   umber: "bg-card-umber/10",
   plum: "bg-card-plum/10",
+  emerald: "bg-card-emerald/10",
+  amber: "bg-card-amber/10",
+  coral: "bg-card-coral/10",
 };
 
 // Text color only, no background — the Explore sidebar's active-
@@ -399,4 +436,7 @@ export const CARD_COLOR_TEXT: Record<CardColor, string> = {
   wine: "text-card-wine",
   umber: "text-card-umber",
   plum: "text-card-plum",
+  emerald: "text-card-emerald",
+  amber: "text-card-amber",
+  coral: "text-card-coral",
 };

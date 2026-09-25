@@ -125,7 +125,10 @@ export type CardColor =
   | "navy"
   | "wine"
   | "umber"
-  | "plum";
+  | "plum"
+  | "emerald"
+  | "amber"
+  | "coral";
 
 export interface ParagraphBlock extends BlockBase {
   type: "paragraph";

@@ -109,6 +109,9 @@
   --color-card-wine: #9c3f56;
   --color-card-umber: #8b5a34;
   --color-card-plum: #6b4c7a;
+  --color-card-emerald: #10b981;
+  --color-card-amber: #f59e0b;
+  --color-card-coral: #ff6f61;
 
   /* ---------- Color: Clinical Tools category tokens ----------
      TOOLS-DASHBOARD-SPEC.md — "Add four CSS custom properties per
@@ -266,6 +269,18 @@
   --topic-lime-c: #9bd24a;
   --topic-lime-tint: #f1fae2;
   --topic-lime-bd: #d7eeb3;
+  --topic-teal-c: #14b8a6;
+  --topic-teal-tint: #e0fbf6;
+  --topic-teal-bd: #a8f0e0;
+  --topic-indigo-c: #6366f1;
+  --topic-indigo-tint: #eeedfe;
+  --topic-indigo-bd: #c7c6fc;
+  --topic-magenta-c: #d946ef;
+  --topic-magenta-tint: #fbeafe;
+  --topic-magenta-bd: #f0c3fa;
+  --topic-rose-c: #fb7185;
+  --topic-rose-tint: #ffebee;
+  --topic-rose-bd: #fecbd1;
 
   /* Fixed spaced-repetition state colours (Pass 1's "fixed state
      colours" — new/known never change per topic; "learning" isn't a
@@ -313,6 +328,26 @@
   --topic-bg: var(--topic-lime-tint);
   --topic-bd: var(--topic-lime-bd);
 }
+[data-topic-color="teal"] {
+  --topic: var(--topic-teal-c);
+  --topic-bg: var(--topic-teal-tint);
+  --topic-bd: var(--topic-teal-bd);
+}
+[data-topic-color="indigo"] {
+  --topic: var(--topic-indigo-c);
+  --topic-bg: var(--topic-indigo-tint);
+  --topic-bd: var(--topic-indigo-bd);
+}
+[data-topic-color="magenta"] {
+  --topic: var(--topic-magenta-c);
+  --topic-bg: var(--topic-magenta-tint);
+  --topic-bd: var(--topic-magenta-bd);
+}
+[data-topic-color="rose"] {
+  --topic: var(--topic-rose-c);
+  --topic-bg: var(--topic-rose-tint);
+  --topic-bd: var(--topic-rose-bd);
+}
 
 :root {
   /* ---------- Color: badge backgrounds (fixed, not theme-swapped) ----------
@@ -356,6 +391,9 @@
   --color-badge-wine: #7a2e42;
   --color-badge-umber: #6b4526;
   --color-badge-plum: #54395f;
+  --color-badge-emerald: #059669;
+  --color-badge-amber: #d97706;
+  --color-badge-coral: #e14a3b;
 
   /* ---------- Color: footer (fixed, not theme-swapped) ----------
      Same "declared once, doesn't flip with light/dark" reasoning as
@@ -482,6 +520,9 @@
     --color-card-wine: #e8a8b7;
     --color-card-umber: #d9b48a;
     --color-card-plum: #c9a8d4;
+    --color-card-emerald: #6ee7b7;
+    --color-card-amber: #fcd34d;
+    --color-card-coral: #ffa398;
   }
   /* Clinical Tools category tokens — same lighten-tint-darken,
      lighten-text transform as the card colors above, applied to the
@@ -592,6 +633,9 @@
   --color-card-wine: #e8a8b7;
   --color-card-umber: #d9b48a;
   --color-card-plum: #c9a8d4;
+  --color-card-emerald: #6ee7b7;
+  --color-card-amber: #fcd34d;
+  --color-card-coral: #ffa398;
 }
 :root[data-theme="dark"] [data-category="independence"] {
   --c: #5ee1ee;
@@ -713,6 +757,9 @@
   --color-card-wine: var(--color-card-wine);
   --color-card-umber: var(--color-card-umber);
   --color-card-plum: var(--color-card-plum);
+  --color-card-emerald: var(--color-card-emerald);
+  --color-card-amber: var(--color-card-amber);
+  --color-card-coral: var(--color-card-coral);
 
   --color-badge-neutral: var(--color-badge-neutral);
   --color-badge-accent: var(--color-badge-accent);
@@ -738,6 +785,9 @@
   --color-badge-wine: var(--color-badge-wine);
   --color-badge-umber: var(--color-badge-umber);
   --color-badge-plum: var(--color-badge-plum);
+  --color-badge-emerald: var(--color-badge-emerald);
+  --color-badge-amber: var(--color-badge-amber);
+  --color-badge-coral: var(--color-badge-coral);
 
   --color-footer-bg: var(--color-footer-bg);
   --color-footer-border: var(--color-footer-border);
