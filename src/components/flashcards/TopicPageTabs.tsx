@@ -1,6 +1,7 @@
 "use client";
 
 import { useTranslations } from "next-intl";
+import { Plus } from "lucide-react";
 import type { DeckSummary, FlashcardCategory, TopicDeckRow, TopicCardRow, TopicMetrics } from "@/lib/flashcards";
 import type { TopicColor } from "@/lib/flashcard-topic-colors";
 import { CategoryDeckManager } from "./CategoryDeckManager";
@@ -23,6 +24,7 @@ export function TopicPageTabs({
   assignableDecks,
   onTopicColorChanged,
   onRenamed,
+  onNewDeckClick,
   tab,
   onTabChange,
   now,
@@ -37,6 +39,7 @@ export function TopicPageTabs({
   assignableDecks: DeckSummary[];
   onTopicColorChanged: (color: TopicColor) => void;
   onRenamed: (name: string) => void;
+  onNewDeckClick: () => void;
   tab: TopicTab;
   onTabChange: (tab: TopicTab) => void;
   now: Date | null;
@@ -44,8 +47,8 @@ export function TopicPageTabs({
   const t = useTranslations("flashcards");
 
   const tabs: { key: TopicTab; label: string }[] = [
-    { key: "decks", label: t("tabDecks") },
-    { key: "allCards", label: t("tabAllCards") },
+    { key: "decks", label: `${t("tabDecks")} · ${deckRows.length}` },
+    { key: "allCards", label: allCards ? `${t("tabAllCards")} · ${allCards.length}` : t("tabAllCards") },
     { key: "statistics", label: t("tabStatistics") },
     ...(canManage ? [{ key: "settings" as TopicTab, label: t("tabSettings") }] : []),
   ];
@@ -70,6 +73,9 @@ export function TopicPageTabs({
       {tab === "decks" && (
         <div className="flex flex-col gap-4">
           {canManage && <CategoryDeckManager categoryId={category.id} decksInFolder={decksInFolder} assignableDecks={assignableDecks} />}
+
+          <h2 className="font-heading text-lg font-black text-navy">{t("tabDecks")}</h2>
+
           {deckRows.length === 0 ? (
             <p className="rounded-xl border border-dashed border-border p-6 text-center font-ui text-sm text-secondary">{t("noDecksInFolder")}</p>
           ) : (
@@ -78,6 +84,17 @@ export function TopicPageTabs({
                 <TopicDeckRowItem key={deck.id} deck={deck} topicColor={topicColor} now={now} />
               ))}
             </div>
+          )}
+
+          {canManage && (
+            <button
+              type="button"
+              onClick={onNewDeckClick}
+              className="flex items-center justify-center gap-1.5 rounded-lg border border-dashed border-border py-2.5 font-ui text-sm text-secondary hover:border-accent/40 hover:text-accent"
+            >
+              <Plus className="size-4" aria-hidden="true" />
+              {t("newDeckInTopic", { name: category.name })}
+            </button>
           )}
         </div>
       )}

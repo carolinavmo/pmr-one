@@ -599,7 +599,7 @@
     "studiedRelative": "estudiado {time}",
     "open": "Abrir",
     "reviewEarly": "Repasar antes de tiempo",
-    "fixTheseFirst": "Corregir estos primero",
+    "fixTheseFirst": "Tarjetas débiles en este tema",
     "lapsesCount": "{count, plural, one {# fallo} other {# fallos}} esta semana · {deck}",
     "tabDecks": "Mazos",
     "tabAllCards": "Todas las tarjetas",
@@ -687,7 +687,8 @@
     "heatmapMore": "más",
     "streakSummary": "{streak} días seguidos · récord {best} · estudiaste {days} de los últimos {window} días",
     "progressByTopic": "Progreso por tema",
-    "reviewedRelative": "revisado {time}"
+    "reviewedRelative": "revisado {time}",
+    "newDeckInTopic": "Nuevo mazo en {name}"
   },
   "courses": {
     "pageTitle": "Cursos",

@@ -15,13 +15,14 @@ export function TopicWeakCards({ cards }: { cards: WeakCard[] }) {
   if (cards.length === 0) return null;
 
   return (
-    <div className="flex flex-col gap-2 rounded-xl border border-border bg-surface p-4">
-      <h2 className="font-ui text-sm font-black text-navy">{t("fixTheseFirst")}</h2>
+    <div className="flex flex-col gap-3 rounded-xl border border-border bg-surface p-4">
+      <h2 className="font-heading text-lg font-black text-navy">{t("fixTheseFirst")}</h2>
       <div className="flex flex-col divide-y divide-border">
         {cards.map((card) => (
           <div key={card.id} className="flex items-center gap-3 py-2.5">
+            <span aria-hidden="true" className="h-8 w-1 shrink-0 rounded-full bg-[#E8564B]" />
             <div className="min-w-0 flex-1">
-              <p className="truncate font-ui text-sm font-semibold text-primary">{richTextToPlainText(card.question)}</p>
+              <p className="truncate font-ui text-sm font-semibold text-primary">&ldquo;{richTextToPlainText(card.question)}&rdquo;</p>
               <p className="font-ui text-xs text-secondary">{t("lapsesCount", { count: card.lapses, deck: card.deckName })}</p>
             </div>
             <Link href={`/flashcards/${card.deckId}`} className="shrink-0 rounded-lg border border-border px-2.5 py-1 font-ui text-xs font-bold text-primary hover:bg-border/30">

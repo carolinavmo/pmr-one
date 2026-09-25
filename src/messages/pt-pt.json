@@ -599,7 +599,7 @@
     "studiedRelative": "estudado {time}",
     "open": "Abrir",
     "reviewEarly": "Rever antecipadamente",
-    "fixTheseFirst": "Corrigir estes primeiro",
+    "fixTheseFirst": "Cartões fracos neste tópico",
     "lapsesCount": "{count, plural, one {# falha} other {# falhas}} esta semana · {deck}",
     "tabDecks": "Baralhos",
     "tabAllCards": "Todos os cartões",
@@ -687,7 +687,8 @@
     "heatmapMore": "mais",
     "streakSummary": "{streak} dias seguidos · recorde {best} · estudou {days} dos últimos {window} dias",
     "progressByTopic": "Progresso por tópico",
-    "reviewedRelative": "revisto {time}"
+    "reviewedRelative": "revisto {time}",
+    "newDeckInTopic": "Novo baralho em {name}"
   },
   "courses": {
     "pageTitle": "Cursos",

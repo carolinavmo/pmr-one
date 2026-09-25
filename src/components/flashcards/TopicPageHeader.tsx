@@ -49,43 +49,50 @@ export function TopicPageHeader({
   return (
     <div
       data-topic-color={topicColor ?? undefined}
-      className="flex flex-col gap-5 rounded-2xl border p-6 sm:flex-row sm:items-center"
+      className="flex flex-col gap-5 rounded-2xl border p-6 sm:flex-row sm:items-center sm:justify-between"
       style={{
         borderColor: topicColor ? "var(--topic-bd)" : "var(--color-border)",
         backgroundColor: topicColor ? "var(--topic-bg)" : "var(--color-surface)",
       }}
     >
-      <KnownPercentRing percent={knownPercent} size={124} sublabel={t("known")} topicColor={topicColor ?? undefined} />
+      <div className="flex min-w-0 flex-1 flex-col gap-5 sm:flex-row sm:items-center">
+        <KnownPercentRing percent={knownPercent} size={124} sublabel={t("known")} topicColor={topicColor ?? undefined} />
 
-      <div className="flex min-w-0 flex-1 flex-col gap-3">
-        <div>
-          <h1 className="font-reading text-2xl text-primary">{name}</h1>
-          <p className="font-ui text-sm text-secondary">
-            {ownerType === "system"
-              ? t("deckAndCardCountFromLibrary", { decks: deckCount, cards: cardCount, subject: t(SUBJECT_LABEL_KEY[subject]) })
-              : t("deckAndCardCount", { decks: deckCount, cards: cardCount })}
-          </p>
+        <div className="flex min-w-0 flex-1 flex-col gap-3">
+          <div>
+            <h1 className="font-reading text-2xl text-primary">{name}</h1>
+            <p className="font-ui text-sm text-secondary">
+              {ownerType === "system"
+                ? t("deckAndCardCountFromLibrary", { decks: deckCount, cards: cardCount, subject: t(SUBJECT_LABEL_KEY[subject]) })
+                : t("deckAndCardCount", { decks: deckCount, cards: cardCount })}
+            </p>
+          </div>
+
+          <TopicStateBar newCount={newCount} learningCount={learningCount} reviewCount={reviewCount} knownCount={knownCount} topicColor={topicColor} showLegend />
         </div>
+      </div>
 
-        <TopicStateBar newCount={newCount} learningCount={learningCount} reviewCount={reviewCount} knownCount={knownCount} topicColor={topicColor} showLegend />
-
-        <div className="flex flex-wrap items-center gap-2">
-          <Link
-            href={`/flashcards/study?topic=${categoryId}`}
-            className="flex items-center gap-1.5 rounded-lg bg-accent px-4 py-2 font-ui text-sm font-bold text-white hover:bg-accent-hover"
-          >
-            <Play className="size-3.5" aria-hidden="true" />
-            {dueToday > 0 ? t("studyNDue", { count: dueToday }) : t("studyUpToDate")}
-          </Link>
-          <button
-            type="button"
-            onClick={onNewDeckClick}
-            className="flex items-center gap-1.5 rounded-lg border border-border px-4 py-2 font-ui text-sm font-bold text-secondary hover:bg-border/30 hover:text-primary"
-          >
-            <Plus className="size-3.5" aria-hidden="true" />
-            {t("newDeck")}
-          </button>
-        </div>
+      {/* Right-aligned action stack on wider screens — "the tile
+          enlarged" carries the tile's own single-column action list
+          along with it, rather than the actions running inline under
+          the title. */}
+      <div className="flex shrink-0 flex-col gap-2 sm:w-44">
+        <Link
+          href={`/flashcards/study?topic=${categoryId}`}
+          className="flex items-center justify-center gap-1.5 rounded-lg bg-accent px-4 py-2.5 font-ui text-sm font-bold text-white hover:bg-accent-hover"
+        >
+          <Play className="size-3.5" aria-hidden="true" />
+          {dueToday > 0 ? t("studyNDue", { count: dueToday }) : t("studyUpToDate")}
+        </Link>
+        <button
+          type="button"
+          onClick={onNewDeckClick}
+          className="flex items-center justify-center gap-1.5 rounded-lg border px-4 py-2.5 font-ui text-sm font-bold text-secondary hover:bg-border/30 hover:text-primary"
+          style={{ borderColor: topicColor ? "var(--topic-bd)" : "var(--color-border)" }}
+        >
+          <Plus className="size-3.5" aria-hidden="true" />
+          {t("newDeck")}
+        </button>
       </div>
     </div>
   );

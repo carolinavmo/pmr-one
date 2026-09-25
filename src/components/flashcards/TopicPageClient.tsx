@@ -85,6 +85,7 @@ export function TopicPageClient({
         assignableDecks={assignableDecks}
         onTopicColorChanged={setTopicColor}
         onRenamed={setName}
+        onNewDeckClick={() => setTab("decks")}
         tab={tab}
         onTabChange={setTab}
         now={now}

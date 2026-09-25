@@ -599,7 +599,7 @@
     "studiedRelative": "studied {time}",
     "open": "Open",
     "reviewEarly": "Review early",
-    "fixTheseFirst": "Fix these first",
+    "fixTheseFirst": "Weak cards in this topic",
     "lapsesCount": "{count, plural, one {# lapse} other {# lapses}} this week · {deck}",
     "tabDecks": "Decks",
     "tabAllCards": "All cards",
@@ -687,7 +687,8 @@
     "heatmapMore": "more",
     "streakSummary": "{streak} day streak · best {best} · studied {days} of the last {window} days",
     "progressByTopic": "Progress by topic",
-    "reviewedRelative": "reviewed {time}"
+    "reviewedRelative": "reviewed {time}",
+    "newDeckInTopic": "New deck in {name}"
   },
   "courses": {
     "pageTitle": "Courses",
