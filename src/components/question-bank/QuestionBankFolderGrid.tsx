@@ -33,7 +33,7 @@ export function QuestionBankFolderGrid({ groups }: { groups: QuestionBankSubject
             <span className={`font-ui text-xs font-black tracking-[1.6px] uppercase ${CARD_COLOR_TEXT[group.subjectColor]}`}>{group.subjectName}</span>
             <span aria-hidden="true" className="h-px flex-1 bg-border" />
           </div>
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
             {group.folders.map((folder) => (
               <FolderCard key={folder.id} folder={folder} />
             ))}

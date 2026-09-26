@@ -46,7 +46,7 @@ export default async function FlashcardsPage() {
   const libraryGroups = groupLibraryTopicsBySubject(libraryTopics, subjects);
 
   return (
-    <main className="mx-auto flex w-full max-w-7xl flex-col px-6 py-16">
+    <main className="mx-auto flex w-full max-w-6xl flex-col px-6 py-16">
       <FlashcardsDashboard
         metrics={metrics}
         forecast={forecast}

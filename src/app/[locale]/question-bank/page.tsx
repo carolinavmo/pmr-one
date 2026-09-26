@@ -1,5 +1,5 @@
 import { getTranslations } from "next-intl/server";
-import { ListChecks, HelpCircle, Target, Repeat } from "lucide-react";
+import { ListChecks } from "lucide-react";
 import { auth } from "@/auth";
 import {
   getCategories,
@@ -46,7 +46,7 @@ export default async function QuestionBankPage() {
   const folderGroups = groupFoldersBySubject(folderTiles, subjects);
 
   return (
-    <main className="mx-auto flex w-full max-w-6xl flex-col gap-8 px-6 py-16">
+    <main className="mx-auto flex w-full max-w-6xl flex-col gap-6 px-6 py-16">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-center gap-3">
           <span className="flex size-11 shrink-0 items-center justify-center rounded-full bg-accent/10 text-accent">
@@ -59,19 +59,22 @@ export default async function QuestionBankPage() {
         </div>
 
         {session && progress ? (
-          <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-            <StatTile icon={HelpCircle} value={progress.answered} label={t("statsAnswered")} />
-            <StatTile icon={Target} value={progress.accuracyPercent ?? 0} label={t("statsAccuracy")} suffix="%" />
-            <StatTile icon={Repeat} value={progress.incorrect} label={t("statsToReview")} />
-            <StatTile icon={ListChecks} value={streak} label={t("statsStreak")} />
+          // Same plain value/label chip row FlashcardsHeader uses for its
+          // own account-wide stats — no bordered tiles, so the two
+          // dashboards' header rows read as one shared pattern.
+          <div className="flex flex-wrap items-center gap-5">
+            <StatChip value={progress.answered} label={t("statsAnswered")} />
+            <StatChip value={progress.accuracyPercent ?? 0} suffix="%" label={t("statsAccuracy")} />
+            <StatChip value={progress.incorrect} label={t("statsToReview")} />
+            <StatChip value={streak} label={t("statsStreak")} />
           </div>
         ) : (
           // Signed out, or signed in but nothing answered yet — nothing
           // personal to show (never a fabricated 0% accuracy/streak),
           // so this falls back to the same plain totals a visitor sees.
-          <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-            <StatTile icon={HelpCircle} value={stats.totalQuestions} label={t("statsTotalQuestions")} />
-            <StatTile icon={ListChecks} value={stats.totalSets} label={t("statsQuestionSets")} />
+          <div className="flex flex-wrap items-center gap-5">
+            <StatChip value={stats.totalQuestions} label={t("statsTotalQuestions")} />
+            <StatChip value={stats.totalSets} label={t("statsQuestionSets")} />
           </div>
         )}
       </div>
@@ -87,29 +90,14 @@ export default async function QuestionBankPage() {
   );
 }
 
-function StatTile({
-  icon: Icon,
-  value,
-  label,
-  suffix,
-}: {
-  icon: typeof ListChecks;
-  value: number;
-  label: string;
-  suffix?: string;
-}) {
+function StatChip({ value, label, suffix }: { value: number; label: string; suffix?: string }) {
   return (
-    <div className="flex items-center gap-3 rounded-xl border border-border bg-surface-card p-3">
-      <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-accent/10 text-accent">
-        <Icon className="size-4.5" aria-hidden="true" />
+    <div className="flex flex-col items-start">
+      <span className="font-heading text-lg font-black text-navy tabular-nums">
+        {value}
+        {suffix}
       </span>
-      <div className="flex flex-col">
-        <span className="font-heading text-xl font-semibold text-primary tabular-nums">
-          {value}
-          {suffix}
-        </span>
-        <span className="font-ui text-xs text-secondary">{label}</span>
-      </div>
+      <span className="font-ui text-[11px] text-secondary">{label}</span>
     </div>
   );
 }
