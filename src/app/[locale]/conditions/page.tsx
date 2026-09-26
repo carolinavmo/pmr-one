@@ -37,7 +37,7 @@ export default async function ConditionsPage({ searchParams }: ConditionsPagePro
             {t("backToAll")}
           </LinkButton>
         )}
-        <h1 className="font-reading text-3xl text-primary">
+        <h1 className="font-heading text-3xl font-black text-primary">
           {topicFilter ? topicFilter.name : t("heading")}
         </h1>
         <p className="mt-1 font-ui text-sm text-secondary">

@@ -45,7 +45,7 @@ export default async function StudyPlannerPage({ searchParams }: StudyPlannerPag
         <Calendar className="size-5" aria-hidden="true" />
       </span>
       <div className="flex flex-col">
-        <h1 className="font-heading text-2xl font-semibold text-primary sm:text-3xl">{t("pageTitle")}</h1>
+        <h1 className="font-heading text-3xl font-black text-primary">{t("pageTitle")}</h1>
         <p className="font-ui text-sm text-secondary">{t("pageSubtitle")}</p>
       </div>
     </div>

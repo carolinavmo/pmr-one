@@ -27,7 +27,7 @@ export function FlashcardsHeader({
           <Layers className="size-5" aria-hidden="true" />
         </span>
         <div>
-          <h1 className="font-heading text-3xl text-primary">{t("pageTitle")}</h1>
+          <h1 className="font-heading text-3xl font-black text-primary">{t("pageTitle")}</h1>
           <p className="mt-1 font-ui text-sm text-secondary">{t("pageSubtitle")}</p>
         </div>
       </div>
