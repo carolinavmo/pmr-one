@@ -9,6 +9,8 @@ import {
   groupLibraryTopicsBySubject,
   getSubjects,
   getDashboardProgress,
+  getCollectionCoverage,
+  findNextDue,
 } from "@/lib/flashcards";
 import { FlashcardsDashboard } from "@/components/flashcards/FlashcardsDashboard";
 
@@ -32,7 +34,7 @@ export default async function FlashcardsPage() {
   const isEditor = session?.user.role === "editor" || session?.user.role === "admin";
   const todayYmd = new Date().toISOString().slice(0, 10);
 
-  const [deckRows, { systemCategories, userCategories }, metrics, forecast, topics, libraryTopics, progress, subjects] = await Promise.all([
+  const [deckRows, { systemCategories, userCategories }, metrics, forecast, topics, libraryTopics, progress, subjects, coverage] = await Promise.all([
     getDashboardDeckRows(userId),
     getCategories(userId),
     userId ? getDashboardMetrics(userId, todayYmd) : null,
@@ -41,15 +43,20 @@ export default async function FlashcardsPage() {
     getLibraryTopicTiles(userId),
     userId ? getDashboardProgress(userId, todayYmd) : null,
     getSubjects(),
+    userId ? getCollectionCoverage(userId) : Promise.resolve(null),
   ]);
 
   const libraryGroups = groupLibraryTopicsBySubject(libraryTopics, subjects);
+  // Only meaningful once the panel already has nothing due today — see
+  // FlashcardsCoveragePanel's own comment for the full state ordering.
+  const nextDue = coverage && coverage.dueToday === 0 ? findNextDue(forecast) : null;
 
   return (
     <main className="mx-auto flex w-full max-w-6xl flex-col px-6 py-16">
       <FlashcardsDashboard
         metrics={metrics}
-        forecast={forecast}
+        coverage={coverage}
+        nextDue={nextDue}
         deckRows={deckRows}
         topics={topics}
         libraryTopics={libraryTopics}

@@ -2,11 +2,19 @@ import { getLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
 import { redirect } from "@/i18n/navigation";
 import { auth } from "@/auth";
-import { getStudyCardsForDeck, getStudyCardsForCategory, getStudyCardsForAccount, getWeakStudyCardsForCategory, getDeckCategoryId } from "@/lib/flashcards";
+import {
+  getStudyCardsForDeck,
+  getStudyCardsForCategory,
+  getStudyCardsForAccount,
+  getNewStudyCardsForAccount,
+  getDueOnlyStudyCardsForAccount,
+  getWeakStudyCardsForCategory,
+  getDeckCategoryId,
+} from "@/lib/flashcards";
 import { StudySession } from "@/components/flashcards/StudySession";
 
 interface StudyPageProps {
-  searchParams: Promise<{ deck?: string; topic?: string; early?: string; weak?: string }>;
+  searchParams: Promise<{ deck?: string; topic?: string; early?: string; weak?: string; new?: string; due?: string }>;
 }
 
 // FLASHCARDS-IMPLEMENTATION.md Pass 2 — "Route /flashcards/study?deck=…
@@ -23,17 +31,21 @@ export default async function FlashcardsStudyPage({ searchParams }: StudyPagePro
     return;
   }
 
-  const { deck: deckId, topic: categoryId, early, weak } = await searchParams;
+  const { deck: deckId, topic: categoryId, early, weak, new: newOnly, due: dueOnly } = await searchParams;
   const includeNotDue = early === "1";
 
   const cards =
-    categoryId && weak === "1"
-      ? await getWeakStudyCardsForCategory(session.user.id, categoryId)
-      : deckId
-        ? await getStudyCardsForDeck(session.user.id, deckId, includeNotDue)
-        : categoryId
-          ? await getStudyCardsForCategory(session.user.id, categoryId, includeNotDue)
-          : await getStudyCardsForAccount(session.user.id, includeNotDue);
+    newOnly === "1"
+      ? await getNewStudyCardsForAccount(session.user.id)
+      : dueOnly === "1"
+        ? await getDueOnlyStudyCardsForAccount(session.user.id)
+        : categoryId && weak === "1"
+          ? await getWeakStudyCardsForCategory(session.user.id, categoryId)
+          : deckId
+            ? await getStudyCardsForDeck(session.user.id, deckId, includeNotDue)
+            : categoryId
+              ? await getStudyCardsForCategory(session.user.id, categoryId, includeNotDue)
+              : await getStudyCardsForAccount(session.user.id, includeNotDue);
   if (cards === null) notFound();
 
   // A deck-scoped session (?deck=) used to send "Back" to the deck's own

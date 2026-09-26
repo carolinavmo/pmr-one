@@ -120,3 +120,10 @@ export const KNOWN_INTERVAL_THRESHOLD_DAYS = 1;
 export function isKnown(state: Sm2State): boolean {
   return state.state === "review" && state.intervalDays >= KNOWN_INTERVAL_THRESHOLD_DAYS;
 }
+
+// "Learn N new" (FLASHCARDS-COVERAGE-PANEL.md) — lives here rather
+// than in flashcards.ts so a client component (the coverage panel)
+// can import it without pulling that file's `import { pool } from
+// "@/lib/db"` into the client bundle. See getNewStudyCardsForAccount's
+// own comment in flashcards.ts for the query this sizes.
+export const NEW_CARDS_PER_SESSION = 10;

@@ -2,9 +2,9 @@
 
 import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
-import type { DashboardMetrics, ForecastDay, FlashcardCategory, TopicDeckRow, TopicTile, LibrarySubjectGroup, DashboardProgress } from "@/lib/flashcards";
+import type { DashboardMetrics, CollectionCoverage, NextDue, FlashcardCategory, TopicDeckRow, TopicTile, LibrarySubjectGroup, DashboardProgress } from "@/lib/flashcards";
 import { FlashcardsHeader } from "./FlashcardsHeader";
-import { FlashcardsSessionPanel } from "./FlashcardsSessionPanel";
+import { FlashcardsCoveragePanel } from "./FlashcardsCoveragePanel";
 import { LibraryTopicsGrid } from "./LibraryTopicsGrid";
 import { FlashcardsProgressPanels } from "./FlashcardsProgressPanels";
 import { ProgressByTopicRows } from "./ProgressByTopicRows";
@@ -32,7 +32,8 @@ import { NewCategoryDrawer } from "./NewCategoryDrawer";
 // Folders" +, so nothing here was the only path to either.
 export function FlashcardsDashboard({
   metrics,
-  forecast,
+  coverage,
+  nextDue,
   deckRows,
   topics,
   libraryTopics,
@@ -45,9 +46,14 @@ export function FlashcardsDashboard({
 }: {
   // null for a signed-out visitor — every field here is personal
   // (progress, streak, due dates), so there's nothing meaningful to
-  // show; the session panel is skipped entirely rather than faking it.
+  // show; the header's account-wide chips are skipped entirely rather
+  // than faking it.
   metrics: DashboardMetrics | null;
-  forecast: ForecastDay[];
+  // null for a signed-out visitor, or a signed-in one with no cards at
+  // all (system + owned) — the coverage panel is skipped entirely in
+  // both cases, same reasoning as `metrics`.
+  coverage: CollectionCoverage | null;
+  nextDue: NextDue | null;
   deckRows: TopicDeckRow[];
   topics: TopicTile[];
   libraryTopics: TopicTile[];
@@ -107,16 +113,7 @@ export function FlashcardsDashboard({
     <div className="flex min-w-0 flex-1 flex-col gap-6">
       <FlashcardsHeader streak={metrics?.streak ?? null} retentionPercent={metrics?.retentionPercent ?? null} totalCards={metrics?.totalCards ?? totalCards} />
 
-      {metrics && (
-        <FlashcardsSessionPanel
-          dueToday={metrics.dueToday}
-          estimatedMinutes={metrics.estimatedMinutes}
-          newCount={metrics.newCount}
-          learningCount={metrics.learningCount}
-          reviewCount={metrics.reviewCount}
-          forecast={forecast}
-        />
-      )}
+      {coverage && <FlashcardsCoveragePanel coverage={coverage} nextDue={nextDue} />}
 
       {isEditor && (
         <div className="flex justify-end">

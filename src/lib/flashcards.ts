@@ -12,6 +12,7 @@ import {
   NEW_CARD_STATE,
   applyGrade,
   KNOWN_INTERVAL_THRESHOLD_DAYS,
+  NEW_CARDS_PER_SESSION,
 } from "@/lib/flashcard-sm2";
 
 // Preset ("system") decks + member-created ("user") decks, sharing one
@@ -450,6 +451,39 @@ export async function getStudyCardsForAccount(userId: string, includeNotDue = fa
   return rows.map(mapStudyCardRow);
 }
 
+// "Learn N new" (FLASHCARDS-COVERAGE-PANEL.md) — never-seen cards only
+// (no flashcard_sm2_progress row at all — the SM-2 state has never
+// been written for this card/user pair), capped to a fixed batch so
+// the coverage panel's button always names the size of the session it
+// starts. `?new=1` on /flashcards/study, account-wide only (no
+// deck/topic-scoped variant — the panel's own action isn't scoped to
+// one either).
+export async function getNewStudyCardsForAccount(userId: string, limit: number = NEW_CARDS_PER_SESSION): Promise<StudyCard[]> {
+  const { rows } = await pool.query(
+    `${STUDY_CARD_SELECT} AND (d.owner_type = 'system' OR d.user_id = $1) AND p.flashcard_id IS NULL
+     ORDER BY d.position, f.position, f.created_at LIMIT $2`,
+    [userId, limit]
+  );
+  return rows.map(mapStudyCardRow);
+}
+
+// "Review N" (FLASHCARDS-COVERAGE-PANEL.md) — previously-seen cards
+// only (a progress row exists) whose due_at has passed. Deliberately
+// stricter than STUDY_CARD_DUE_FILTER, which also folds in never-seen
+// cards (due_at IS NULL) for the plain "Start review"/"Due today"
+// flow elsewhere — the coverage panel's whole point is a clean
+// Review/Learn-new split, which only holds if the two sessions never
+// overlap. getCollectionCoverage's own due_today counts the same set.
+// `?due=1` on /flashcards/study, account-wide only.
+export async function getDueOnlyStudyCardsForAccount(userId: string): Promise<StudyCard[]> {
+  const { rows } = await pool.query(
+    `${STUDY_CARD_SELECT} AND (d.owner_type = 'system' OR d.user_id = $1) AND p.due_at IS NOT NULL AND p.due_at <= now()
+     ORDER BY d.position, f.position, f.created_at`,
+    [userId]
+  );
+  return rows.map(mapStudyCardRow);
+}
+
 // Write-before-advance (FLASHCARDS-IMPLEMENTATION.md: "Write the
 // review log on every grade, before the UI advances") — one
 // transaction covering both the log insert and the progress upsert,
@@ -810,6 +844,76 @@ export async function getSevenDayForecast(userId: string, todayYmd: string): Pro
     const dayStr = d.toISOString().slice(0, 10);
     return { date: dayStr, count: counts.get(dayStr) ?? 0 };
   });
+}
+
+// The "Your collection" coverage panel (FLASHCARDS-COVERAGE-PANEL.md,
+// replacing the old "Today's session" panel). known/learning reuse
+// the exact same KNOWN_INTERVAL_THRESHOLD_DAYS expression as
+// isKnown()/getProgressWhatYouKnow, so this bar can never disagree
+// with the topic-tile rings or the "What you know" panel — see
+// flashcard-sm2.ts's own comment on why that threshold is 1 day, not
+// the 21 days an earlier draft of this panel's spec assumed.
+export interface CollectionCoverage {
+  total: number;
+  known: number;
+  learning: number;
+  neverSeen: number;
+  dueToday: number;
+}
+
+// null when the visitor has no cards at all (system + owned) — same
+// "hide rather than fabricate" rule getProgressWhatYouKnow follows;
+// the dashboard shows the library browse section instead.
+//
+// due_today deliberately excludes never-seen cards (p.due_at IS NULL)
+// even though the plain "Start review" queue folds them in elsewhere
+// — see getDueOnlyStudyCardsForAccount's own comment. Counting them
+// here too would make due_today > 0 whenever neverSeen > 0, which
+// makes the panel's own "nothing due, N never seen" state unreachable
+// and the "Review N" button's count wrong (it would promise N but the
+// due-only session it starts would only ever serve N).
+export async function getCollectionCoverage(userId: string): Promise<CollectionCoverage | null> {
+  const { rows } = await pool.query<{ total: string; known: string; learning: string; never_seen: string; due_today: string }>(
+    `SELECT
+       COUNT(f.id)::int AS total,
+       COUNT(*) FILTER (WHERE p.state = 'review' AND p.interval_days >= ${KNOWN_INTERVAL_THRESHOLD_DAYS})::int AS known,
+       COUNT(*) FILTER (WHERE p.state = 'learning' OR (p.state = 'review' AND p.interval_days < ${KNOWN_INTERVAL_THRESHOLD_DAYS}))::int AS learning,
+       COUNT(*) FILTER (WHERE p.state IS NULL)::int AS never_seen,
+       COUNT(*) FILTER (WHERE p.due_at IS NOT NULL AND p.due_at <= now())::int AS due_today
+     FROM flashcard f
+     JOIN flashcard_deck d ON d.id = f.deck_id AND d.status = 'published' AND d.archived_at IS NULL
+     LEFT JOIN flashcard_sm2_progress p ON p.flashcard_id = f.id AND p.user_id = $1
+     WHERE (d.owner_type = 'system' OR d.user_id = $1) AND f.status = 'published' AND f.deleted_at IS NULL`,
+    [userId]
+  );
+  const r = rows[0];
+  const total = Number(r?.total ?? 0);
+  if (total === 0) return null;
+  return {
+    total,
+    known: Number(r.known),
+    learning: Number(r.learning),
+    neverSeen: Number(r.never_seen),
+    dueToday: Number(r.due_today),
+  };
+}
+
+export interface NextDue {
+  inDays: number;
+  count: number;
+}
+
+// The panel's "Nothing due today. Next: N cards tomorrow" line reads
+// this — the first of the next 7 forecast days (today excluded) that
+// has anything due. Capped at 7 days rather than an open-ended search:
+// matches the panel's own example ("tomorrow"), and a review further
+// out than a week isn't "next" in any useful sense to a visitor
+// looking at today's dashboard.
+export function findNextDue(forecast: ForecastDay[]): NextDue | null {
+  for (let i = 1; i < forecast.length; i++) {
+    if (forecast[i].count > 0) return { inDays: i, count: forecast[i].count };
+  }
+  return null;
 }
 
 // Same shape as TopicDeckRow (id/name/color/iconUrl/isFavorited/
