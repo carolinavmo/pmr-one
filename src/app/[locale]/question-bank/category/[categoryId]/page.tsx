@@ -3,10 +3,8 @@ import { getTranslations } from "next-intl/server";
 import { Lock } from "lucide-react";
 import { auth } from "@/auth";
 import { Link } from "@/i18n/navigation";
-import { getCategoryWithSets, getCategories } from "@/lib/question-bank";
-import { QuestionSetTable } from "@/components/question-bank/QuestionSetTable";
-import { CategoryHeader } from "@/components/question-bank/CategoryHeader";
-import { NewQuestionSetButton } from "@/components/question-bank/NewQuestionSetButton";
+import { getCategoryWithSets, getCategories, getFolderQuestions, getFolderFlaggedCount, getWorthRevisiting } from "@/lib/question-bank";
+import { QuestionBankFolderPage } from "@/components/question-bank/QuestionBankFolderPage";
 
 interface CategoryPageProps {
   params: Promise<{ categoryId: string }>;
@@ -15,10 +13,16 @@ interface CategoryPageProps {
 // Every folder is public browsing (no ownership branch, unlike
 // Flashcards' user-folder 404 case) — only mutation controls are
 // gated, via canManage below.
+//
+// QBANK-IMPLEMENTATION.md Pass 3 — "the folder page." The per-user
+// tabs (All questions/My incorrect, flagged count, Worth revisiting)
+// only mean anything with a session, so they're skipped entirely for
+// a signed-out visitor rather than fetched and shown empty.
 export default async function QuestionBankCategoryPage({ params }: CategoryPageProps) {
   const { categoryId } = await params;
   const session = await auth();
-  const result = await getCategoryWithSets(categoryId, session?.user.id ?? null);
+  const userId = session?.user.id ?? null;
+  const result = await getCategoryWithSets(categoryId, userId);
   if (!result) notFound();
   const { category, sets } = result;
 
@@ -29,15 +33,20 @@ export default async function QuestionBankCategoryPage({ params }: CategoryPageP
   const tCommon = await getTranslations("common");
   const tAuth = await getTranslations("auth");
 
+  const [allQuestions, flaggedCount, worthRevisiting] = userId
+    ? await Promise.all([getFolderQuestions(categoryId, userId), getFolderFlaggedCount(categoryId, userId), getWorthRevisiting(categoryId, userId)])
+    : [[], 0, []];
+
   return (
     <main className="mx-auto flex w-full max-w-6xl flex-col gap-6 px-6 py-16">
-      <Link href="/question-bank" className="font-ui text-sm text-secondary hover:text-accent">
-        {t("backToQuestionBank")}
-      </Link>
-
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <CategoryHeader category={category} canManage={isEditor} />
-        {isEditor && <NewQuestionSetButton categories={allCategories} defaultCategoryId={category.id} />}
+      <div className="flex items-center gap-2 font-ui text-sm font-bold text-secondary">
+        <Link href="/question-bank" className="hover:text-accent">
+          {t("pageTitle")}
+        </Link>
+        <span>›</span>
+        <span className="text-primary">{category.subjectName}</span>
+        <span>›</span>
+        <span className="text-primary">{category.name}</span>
       </div>
 
       {!canBrowseFolder ? (
@@ -67,7 +76,15 @@ export default async function QuestionBankCategoryPage({ params }: CategoryPageP
           {t("noSetsInFolder")}
         </p>
       ) : (
-        <QuestionSetTable sets={sets} />
+        <QuestionBankFolderPage
+          category={category}
+          sets={sets}
+          allQuestions={allQuestions}
+          flaggedCount={flaggedCount}
+          worthRevisiting={worthRevisiting}
+          canManage={isEditor}
+          allCategories={allCategories}
+        />
       )}
     </main>
   );

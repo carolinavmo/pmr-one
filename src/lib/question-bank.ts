@@ -77,6 +77,7 @@ export interface QuestionSetSummary {
   questionCount: number;
   yourScore: number | null; // 0-100, rounded; null when signed out or nothing attempted yet
   yourAttempts: number;
+  yourCorrect: number;
   lastAnsweredAt: string | null;
 }
 
@@ -209,6 +210,7 @@ function mapSetSummaryRow(r: {
     questionCount: Number(r.question_count),
     yourScore: attempts > 0 ? Math.round((Number(r.correct_count) / attempts) * 100) : null,
     yourAttempts: attempts,
+    yourCorrect: Number(r.correct_count ?? 0),
     lastAnsweredAt: r.last_answered_at,
   };
 }
@@ -345,6 +347,87 @@ export async function getCategoryWithSets(
       ]);
 
   return { category: mapCategoryRow(categoryRow), sets: setRows.map(mapSetSummaryRow) };
+}
+
+// ============================================================
+// Pass 3 — the folder page (QBANK-IMPLEMENTATION.md). The header's
+// ring/bar/legend/metrics are all derived in the caller from the same
+// `sets` array getCategoryWithSets already returns (sum questionCount/
+// yourAttempts/yourCorrect, max lastAnsweredAt) — no separate query,
+// same "one definition, reused" discipline as the dashboard.
+// ============================================================
+
+export interface FolderQuestionRow {
+  id: string;
+  setId: string;
+  setName: string;
+  prompt: string;
+  status: "correct" | "incorrect" | "notSeen";
+  flagged: boolean;
+}
+
+// Backs both the "All questions" and "My incorrect" tabs (the caller
+// filters by status; one query covers both, matching how a single
+// question_attempt row already carries everything needed for either
+// view). Never leaks is_correct for a question the member hasn't
+// attempted — status is derived from the attempt row, not the option
+// table, same answer-leak-safety getSetWithQuestions already follows.
+export async function getFolderQuestions(categoryId: string, userId: string): Promise<FolderQuestionRow[]> {
+  const { rows } = await pool.query(
+    `SELECT q.id, q.set_id, st.name AS set_name, q.prompt, a.is_correct, (f.user_id IS NOT NULL) AS flagged
+     FROM question q
+     JOIN question_set st ON st.id = q.set_id
+     LEFT JOIN question_attempt a ON a.question_id = q.id AND a.user_id = $2
+     LEFT JOIN question_flag f ON f.question_id = q.id AND f.user_id = $2
+     WHERE st.category_id = $1
+     ORDER BY st.position, q.position`,
+    [categoryId, userId]
+  );
+  return rows.map((r) => ({
+    id: r.id,
+    setId: r.set_id,
+    setName: r.set_name,
+    prompt: r.prompt,
+    status: r.is_correct === null ? "notSeen" : r.is_correct ? "correct" : "incorrect",
+    flagged: r.flagged,
+  }));
+}
+
+export async function getFolderFlaggedCount(categoryId: string, userId: string): Promise<number> {
+  const { rows } = await pool.query(
+    `SELECT COUNT(*)::int AS count
+     FROM question_flag f
+     JOIN question q ON q.id = f.question_id
+     JOIN question_set st ON st.id = q.set_id
+     WHERE st.category_id = $1 AND f.user_id = $2`,
+    [categoryId, userId]
+  );
+  return rows[0].count;
+}
+
+export interface WorthRevisitingRow {
+  id: string;
+  setId: string;
+  setName: string;
+  prompt: string;
+  wrongCount: number;
+}
+
+// "The actual questions answered wrong more than once" (QBANK-SPEC.md)
+// — wrong_count (migration 0070) is the cumulative counter recordAttempt
+// bumps on every wrong answer, not just the latest attempt's outcome.
+export async function getWorthRevisiting(categoryId: string, userId: string, limit = 10): Promise<WorthRevisitingRow[]> {
+  const { rows } = await pool.query(
+    `SELECT q.id, q.set_id, st.name AS set_name, q.prompt, a.wrong_count
+     FROM question q
+     JOIN question_set st ON st.id = q.set_id
+     JOIN question_attempt a ON a.question_id = q.id AND a.user_id = $2
+     WHERE st.category_id = $1 AND a.wrong_count >= 2
+     ORDER BY a.wrong_count DESC, a.answered_at DESC
+     LIMIT $3`,
+    [categoryId, userId, limit]
+  );
+  return rows.map((r) => ({ id: r.id, setId: r.set_id, setName: r.set_name, prompt: r.prompt, wrongCount: r.wrong_count }));
 }
 
 export async function getUnfiledSets(userId: string | null): Promise<QuestionSetSummary[]> {
@@ -688,10 +771,11 @@ export async function recordAttempt(
   const explanation = questionRows[0]?.explanation ?? "";
 
   await pool.query(
-    `INSERT INTO question_attempt (user_id, question_id, selected_option_id, is_correct, answered_at)
-     VALUES ($1, $2, $3, $4, now())
+    `INSERT INTO question_attempt (user_id, question_id, selected_option_id, is_correct, answered_at, wrong_count)
+     VALUES ($1, $2, $3, $4, now(), CASE WHEN $4 THEN 0 ELSE 1 END)
      ON CONFLICT (user_id, question_id)
-     DO UPDATE SET selected_option_id = $3, is_correct = $4, answered_at = now()`,
+     DO UPDATE SET selected_option_id = $3, is_correct = $4, answered_at = now(),
+       wrong_count = question_attempt.wrong_count + (CASE WHEN $4 THEN 0 ELSE 1 END)`,
     [userId, questionId, selectedOptionId, selected.is_correct]
   );
 
