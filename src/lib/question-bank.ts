@@ -381,6 +381,177 @@ export async function getDashboardStats(
   };
 }
 
+// ============================================================
+// Pass 2 — the dashboard (QBANK-IMPLEMENTATION.md). Definitions
+// "implemented once and reused": accuracy = correct / answered (this
+// table only ever holds the latest attempt per question, so no
+// "latest attempt per question" filtering is needed the way an
+// append-only log would require); to review = answered wrong;
+// streak = consecutive days with >= 1 attempt.
+// ============================================================
+
+// Same day-walk-backwards shape as flashcards.ts's getUserStreak, over
+// question_attempt.answered_at instead of flashcard_review_log.
+export async function getQuestionBankStreak(userId: string, todayYmd: string): Promise<number> {
+  const { rows } = await pool.query<{ day: string }>(
+    `SELECT DISTINCT (answered_at AT TIME ZONE 'UTC')::date::text AS day
+     FROM question_attempt WHERE user_id = $1
+     ORDER BY day DESC LIMIT 400`,
+    [userId]
+  );
+  const answeredDays = new Set(rows.map((r) => r.day));
+  let streak = 0;
+  const cursor = new Date(`${todayYmd}T00:00:00Z`);
+  while (answeredDays.has(cursor.toISOString().slice(0, 10))) {
+    streak += 1;
+    cursor.setUTCDate(cursor.getUTCDate() - 1);
+  }
+  return streak;
+}
+
+// "Browse by folder" (QBANK-SPEC.md's minimal pastel cards) — one
+// grouped query per folder, not per subject, since a folder card needs
+// its own set/question counts and accuracy regardless of how the
+// subject-level rail rolls them up.
+export interface QuestionBankFolderTile {
+  id: string;
+  name: string;
+  colourKey: QbankFolderColor;
+  subjectId: string;
+  isPublic: boolean;
+  setCount: number;
+  questionCount: number;
+  answered: number;
+  accuracyPercent: number | null;
+}
+
+export async function getQuestionBankFolderTiles(userId: string | null): Promise<QuestionBankFolderTile[]> {
+  const { rows } = await pool.query(
+    `SELECT c.id, c.name, c.colour_key, c.subject_id, c.is_public,
+       COUNT(DISTINCT st.id)::int AS set_count,
+       COUNT(DISTINCT q.id)::int AS question_count,
+       COUNT(a.question_id)::int AS answered,
+       COUNT(*) FILTER (WHERE a.is_correct)::int AS correct
+     FROM question_category c
+     LEFT JOIN question_set st ON st.category_id = c.id
+     LEFT JOIN question q ON q.set_id = st.id
+     LEFT JOIN question_attempt a ON a.question_id = q.id AND a.user_id = $1
+     GROUP BY c.id
+     ORDER BY c.position, c.name`,
+    [userId]
+  );
+  return rows.map((r) => ({
+    id: r.id,
+    name: r.name,
+    colourKey: r.colour_key,
+    subjectId: r.subject_id,
+    isPublic: r.is_public,
+    setCount: r.set_count,
+    questionCount: r.question_count,
+    answered: r.answered,
+    accuracyPercent: r.answered === 0 ? null : Math.round((r.correct / r.answered) * 100),
+  }));
+}
+
+export interface QuestionBankSubjectGroup {
+  subjectId: string;
+  subjectName: string;
+  subjectColor: CardColor;
+  folders: QuestionBankFolderTile[];
+}
+
+// Groups getQuestionBankFolderTiles' flat list by subject in JS — same
+// shape as flashcards.ts's groupLibraryTopicsBySubject. `subjects` is
+// the admin-managed list (already ordered by position); a subject with
+// no folders simply doesn't appear.
+export function groupFoldersBySubject(
+  folders: QuestionBankFolderTile[],
+  subjects: { id: string; name: string; color: CardColor }[]
+): QuestionBankSubjectGroup[] {
+  const groups = new Map<string, QuestionBankFolderTile[]>();
+  for (const folder of folders) {
+    const existing = groups.get(folder.subjectId);
+    if (existing) existing.push(folder);
+    else groups.set(folder.subjectId, [folder]);
+  }
+  return subjects
+    .filter((s) => groups.has(s.id))
+    .map((s) => ({ subjectId: s.id, subjectName: s.name, subjectColor: s.color, folders: groups.get(s.id)! }));
+}
+
+const QBANK_PROGRESS_WEEKS = 12;
+const WEAKEST_FOLDERS_MIN_ANSWERED = 3;
+const WEAKEST_FOLDERS_COUNT = 4;
+
+// Monday-start week boundary — same as flashcards.ts's own
+// startOfIsoWeek, duplicated rather than shared since importing from
+// flashcards.ts here would be a cross-feature coupling this file has
+// otherwise avoided (it only reads flashcard_subject, never
+// flashcards.ts's own functions).
+function startOfIsoWeek(date: Date): Date {
+  const d = new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate()));
+  const day = d.getUTCDay();
+  d.setUTCDate(d.getUTCDate() + ((day === 0 ? -6 : 1) - day));
+  return d;
+}
+
+export interface QuestionBankProgress {
+  accuracyPercent: number | null;
+  answered: number;
+  totalQuestions: number;
+  incorrect: number;
+  notSeen: number;
+  // QBANK_PROGRESS_WEEKS entries, oldest first, last entry = this week.
+  weeklyCounts: number[];
+  weeklyAverage: number;
+  weakestFolders: { id: string; name: string; colourKey: QbankFolderColor; accuracyPercent: number }[];
+}
+
+// null when the visitor has never answered a single question — nothing
+// to chart yet (same "never show a statistic with no data" rule
+// flashcards.ts's progress panels follow).
+export async function getQuestionBankProgress(userId: string, todayYmd: string): Promise<QuestionBankProgress | null> {
+  const [railStats, weekRows, folderTiles] = await Promise.all([
+    getQuestionBankRailStats(userId),
+    pool.query<{ week_start: string; count: string }>(
+      `SELECT date_trunc('week', answered_at)::date::text AS week_start, COUNT(*)::int AS count
+       FROM question_attempt
+       WHERE user_id = $1 AND answered_at >= now() - interval '${QBANK_PROGRESS_WEEKS} weeks'
+       GROUP BY week_start`,
+      [userId]
+    ),
+    getQuestionBankFolderTiles(userId),
+  ]);
+
+  if (railStats.answered === 0) return null;
+
+  const byWeek = new Map(weekRows.rows.map((r) => [r.week_start, Number(r.count)]));
+  const thisWeekStart = startOfIsoWeek(new Date(`${todayYmd}T00:00:00Z`));
+  const weeklyCounts: number[] = [];
+  for (let i = QBANK_PROGRESS_WEEKS - 1; i >= 0; i--) {
+    const d = new Date(thisWeekStart);
+    d.setUTCDate(d.getUTCDate() - i * 7);
+    weeklyCounts.push(byWeek.get(d.toISOString().slice(0, 10)) ?? 0);
+  }
+
+  const weakestFolders = folderTiles
+    .filter((f) => f.answered >= WEAKEST_FOLDERS_MIN_ANSWERED && f.accuracyPercent !== null)
+    .sort((a, b) => a.accuracyPercent! - b.accuracyPercent!)
+    .slice(0, WEAKEST_FOLDERS_COUNT)
+    .map((f) => ({ id: f.id, name: f.name, colourKey: f.colourKey, accuracyPercent: f.accuracyPercent! }));
+
+  return {
+    accuracyPercent: railStats.accuracyPercent,
+    answered: railStats.answered,
+    totalQuestions: railStats.totalQuestions,
+    incorrect: railStats.incorrect,
+    notSeen: railStats.notSeen,
+    weeklyCounts,
+    weeklyAverage: Math.round(weeklyCounts.reduce((a, b) => a + b, 0) / QBANK_PROGRESS_WEEKS),
+    weakestFolders,
+  };
+}
+
 // One real question + its options, for the homepage's Question Bank
 // showcase mockup — unlike getSetWithQuestions this deliberately DOES
 // include is_correct, since this is marketing copy illustrating the
