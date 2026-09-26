@@ -20,6 +20,7 @@ import {
   reorderQuestions,
   recordAttempt,
   resetSetAttempts,
+  toggleQuestionFlag,
   getQuestionsForManagement,
   type Difficulty,
   type QuestionCategory,
@@ -187,4 +188,14 @@ export async function restartSetAction(setId: string): Promise<void> {
   if (!session) throw new Error("Unauthorized");
   await resetSetAttempts(session.user.id, setId);
   revalidateQuestionBankSurfaces();
+}
+
+// Returns the new flagged state (true = now flagged) so the caller can
+// update its own UI without a round trip back through getters.
+export async function toggleQuestionFlagAction(questionId: string): Promise<boolean> {
+  const session = await auth();
+  if (!session) throw new Error("Unauthorized");
+  const flagged = await toggleQuestionFlag(session.user.id, questionId);
+  revalidateQuestionBankSurfaces();
+  return flagged;
 }

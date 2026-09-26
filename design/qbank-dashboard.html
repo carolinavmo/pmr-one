@@ -1,0 +1,230 @@
+<!DOCTYPE html><html><head><meta charset="utf-8">
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="qb_style.css">
+<style>
+.hd{display:flex;align-items:flex-start;gap:16px}
+.hd h2{font-size:30px;font-weight:900;color:var(--navy);letter-spacing:-1px}
+.hd p{font-size:14.5px;color:var(--mute);margin-top:4px}
+.mets{display:flex;gap:10px;margin-left:auto}
+.mets div{border:1px solid var(--line);border-radius:12px;padding:9px 14px;text-align:center;background:#fff}
+.mets b{display:block;font-size:20px;font-weight:900;color:var(--navy)}
+.mets span{font-size:10.5px;color:#9AA5B4;font-weight:700}
+.start{display:flex;gap:16px;background:var(--navy);border-radius:16px;padding:20px 24px;margin-top:16px;align-items:center}
+.start .l{flex:1}
+.start .k{font-size:10px;font-weight:900;letter-spacing:1.5px;color:var(--acc-dk)}
+.start h3{font-size:27px;font-weight:900;color:#fff;letter-spacing:-.7px;margin-top:4px}
+.start p{font-size:13.5px;color:#9DB0CA;margin-top:7px;line-height:1.4}
+.modes{display:flex;gap:8px;margin-top:12px}
+.modes span{font-size:12.5px;font-weight:800;border-radius:10px;padding:8px 13px;border:1px solid rgba(255,255,255,.26);color:#C8D3E2}
+.modes span.on{background:rgba(255,255,255,.14);color:#fff;border-color:rgba(255,255,255,.5)}
+.start .btn{background:var(--acc);color:#fff;font-size:15px;font-weight:900;border-radius:11px;padding:14px 24px;white-space:nowrap}
+.start .btn2{border:1px solid rgba(255,255,255,.28);color:#fff;font-size:12.5px;font-weight:800;border-radius:10px;padding:12px 16px;white-space:nowrap}
+.filters{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px;align-items:center}
+.filters .lb{font-size:12px;font-weight:900;letter-spacing:1.2px;color:#9AA5B4}
+.filters a{font-size:12.5px;font-weight:800;border:1px solid var(--line);border-radius:14px;padding:7px 13px;background:#fff;color:var(--ink)}
+.filters a.on{background:var(--acc-bg);border-color:var(--acc-bd);color:var(--acc-ink)}
+.filters a b{color:#9AA5B4;font-weight:800;margin-left:5px}
+.perf{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.pr{display:flex;align-items:center;gap:12px;border:1px solid var(--line);border-radius:12px;padding:11px 14px}
+.pr .sw{width:9px;height:32px;border-radius:5px;flex:none}
+.pr .t{flex:1;min-width:0}
+.pr .t b{display:block;font-size:14px;font-weight:900;color:var(--navy)}
+.pr .t span{font-size:11px;color:#9AA5B4;font-weight:700}
+.pr .bar{width:120px;height:8px;background:#EEF1F5;border-radius:4px;overflow:hidden}
+.pr .bar i{display:block;height:8px}
+.pr .pc{width:46px;text-align:right;font-size:13.5px;font-weight:900}
+.sets{display:flex;flex-direction:column;gap:9px}
+.set{display:flex;align-items:center;gap:13px;border:1px solid var(--line);border-radius:12px;padding:12px 15px}
+.set .tag{font-size:10px;font-weight:900;letter-spacing:1px;border-radius:6px;padding:3px 8px}
+.set .t{flex:1;min-width:0}
+.set .t b{display:block;font-size:15px;font-weight:900;color:var(--navy)}
+.set .t span{font-size:11.5px;color:#9AA5B4;font-weight:700}
+.set .prog{width:130px}
+.set .prog .bar{height:7px;background:#EEF1F5;border-radius:4px;overflow:hidden;display:flex}
+.set .prog .bar i{display:block;height:7px}
+.set .prog span{display:block;font-size:11px;color:#9AA5B4;font-weight:800;margin-top:4px}
+.set .btn{font-size:12.5px;font-weight:900;color:#fff;background:var(--acc);border-radius:9px;padding:9px 14px;white-space:nowrap}
+.set .btn.sec{background:#fff;border:1px solid var(--line);color:var(--mute)}
+
+.sep{display:flex;align-items:center;gap:10px;margin:18px 0 10px}
+.sep i{width:11px;height:11px;border-radius:4px}
+.sep b{font-size:12px;font-weight:900;letter-spacing:1.6px}
+.sep span{font-size:11.5px;color:#9AA5B4;font-weight:700}
+.sep .ln{flex:1;height:1px;background:var(--line)}
+.sep a{font-size:11.5px;font-weight:800;color:var(--acc-ink)}
+.folders{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.fold{border:2px solid var(--line);border-radius:15px;padding:14px 16px;background:#fff;position:relative}
+.fold .tab{position:absolute;top:-9px;left:16px;height:9px;width:64px;border-radius:5px 5px 0 0}
+.fold .nm{font-size:17px;font-weight:900;color:var(--navy);letter-spacing:-.3px}
+.fold .sb{font-size:11.5px;color:#9AA5B4;font-weight:700;margin-top:3px}
+.fold .topics{font-size:12.5px;color:var(--mute);font-weight:600;margin-top:8px;line-height:1.35;min-height:34px}
+.fold .bar{height:7px;background:#EEF1F5;border-radius:4px;overflow:hidden;display:flex;margin-top:10px}
+.fold .bar i{display:block;height:7px}
+.fold .ft{display:flex;align-items:center;margin-top:8px;font-size:12px;font-weight:800}
+.fold .ft .go{margin-left:auto;color:var(--navy);font-weight:900}
+
+[data-c="peach"]{--c:#D9762F;--cb:#FFF0E4;--cd:#F8D7BC}
+[data-c="rose"]{--c:#CE5C87;--cb:#FFEBF2;--cd:#F7CEDD}
+[data-c="lilac"]{--c:#6F5FCB;--cb:#EFEBFC;--cd:#DBD3F5}
+[data-c="mint"]{--c:#2E9B80;--cb:#E3F6F0;--cd:#C3E9DF}
+[data-c="sky"]{--c:#4189C4;--cb:#E7F2FB;--cd:#C7E1F4}
+[data-c="butter"]{--c:#B58A25;--cb:#FFF6DF;--cd:#F2E3B8}
+[data-c="sage"]{--c:#6E9B39;--cb:#F0F7E4;--cd:#D7E9BD}
+[data-c="blush"]{--c:#CE6660;--cb:#FFECEA;--cd:#F8D2CF}
+.fp{background:var(--cb);border-radius:18px;padding:18px 20px 16px;position:relative}
+.fp .nm{font-size:20px;font-weight:900;color:var(--navy);letter-spacing:-.4px;line-height:1.14}
+.fp .sb{font-size:12.5px;color:var(--mute);font-weight:700;margin-top:5px;opacity:.9}
+.fp .ftr{display:flex;align-items:center;margin-top:14px}
+.fp .pill{font-size:12.5px;font-weight:900;background:#fff;color:var(--c);border:1px solid var(--cd);border-radius:20px;padding:6px 14px}
+.fp .pill.new{color:var(--mute)}
+.fp .go{margin-left:auto;font-size:13px;font-weight:900;color:var(--c)}
+.fp:hover{box-shadow:0 8px 20px rgba(20,40,74,.10)}
+.fp.ghostc{background:#fff;border:2px dashed var(--line);display:flex;flex-direction:column;align-items:center;justify-content:center;color:#9AA5B4;min-height:130px}
+/* progress panels */
+.pgrid{display:grid;grid-template-columns:1.05fr 1.5fr 1fr;gap:12px}
+.pc2{border:1px solid var(--line);border-radius:15px;padding:15px 17px}
+.pc2 .k{font-size:9.5px;font-weight:900;letter-spacing:1.3px;color:#9AA5B4;margin-bottom:9px}
+.mast{display:flex;align-items:center;gap:15px}
+.ring{width:100px;height:100px;border-radius:50%;background:conic-gradient(var(--grn) 66%,#EEF1F5 0);display:flex;align-items:center;justify-content:center;position:relative;flex:none}
+.ring::after{content:"";position:absolute;width:78px;height:78px;border-radius:50%;background:#fff}
+.ring em{position:relative;z-index:2;font-style:normal;font-size:23px;font-weight:900;color:var(--navy)}
+.ring em small{display:block;font-size:9px;font-weight:900;letter-spacing:1px;color:#9AA5B4}
+.mast b{display:block;font-size:18px;font-weight:900;color:var(--navy)}
+.mast span{display:block;font-size:12.5px;color:var(--mute);margin-top:4px}
+.mast .up{color:var(--grn);font-weight:800}
+.bars{display:flex;align-items:flex-end;gap:5px;height:88px}
+.bars i{flex:1;background:var(--acc-dk);border-radius:3px 3px 0 0;display:block}
+.axis{display:flex;justify-content:space-between;font-size:10.5px;color:#9AA5B4;font-weight:800;margin-top:6px}
+.mini2{display:flex;gap:16px;margin-top:11px;border-top:1px solid #F0F2F5;padding-top:10px}
+.mini2 div b{display:block;font-size:16px;font-weight:900;color:var(--navy)}
+.mini2 div span{font-size:11px;color:#9AA5B4;font-weight:700}
+.wk{display:flex;align-items:center;gap:10px;font-size:13.5px;padding:7px 0;border-top:1px solid #F0F2F5}
+.wk:first-of-type{border-top:none}
+.wk i{width:9px;height:9px;border-radius:3px;display:block}
+.wk b{flex:1;font-weight:800;color:var(--navy)}
+.wk span{font-weight:900}
+</style></head><body>
+<div class="sheet" id="d">
+ <div class="tb"><i style="background:var(--acc)"></i><i style="background:var(--navy)"></i></div>
+ <div class="bh"><img src="logo.png" alt=""><b>PM&amp;R <span style="color:var(--acc)">Explained</span></b></div>
+ <h1 class="t">Question Bank — pastel folders</h1>
+ <div class="dek">Folders are <b>quiet</b>: a soft tint, the name, the counts and your accuracy. The practising happens in the session panel above and inside the folder — not on the card.</div>
+
+ <div class="frame">
+  <div class="nav">
+   <div class="r1"><div class="logo"><img src="logo.png" alt="">PM&amp;R <span>Explained</span></div>
+    <div class="srch">⌕&nbsp; Search conditions, exam maneuvers, calculators…</div>
+    <div class="ut"><span>🌐 EN ⌄</span><span>🔔</span><div class="av">CA</div></div></div>
+   <div class="r2"><span class="pl">▣ Explore library</span><span class="dv"></span><span class="pl">Clinical Tools</span><span class="pl">Study Planner</span><span class="pl">My Handbook</span><span class="pl">Flashcards</span><span class="on">☑ Question Bank</span><span class="pl">Courses</span></div>
+  </div>
+  <div class="body">
+   <div class="rail">
+    <div class="newbtn">▶ Start a session</div>
+    <div class="fd">⌕ Search questions and sets…</div>
+    <div class="g">PRACTICE</div>
+    <div class="r on"><i style="background:var(--acc)"></i>All questions<span class="n">318</span></div>
+    <div class="r"><i style="background:var(--red)"></i>My incorrect<span class="n">42</span></div>
+    <div class="r"><i style="background:var(--gold)"></i>★ Flagged<span class="n">11</span></div>
+    <div class="r"><i style="background:#C6CED8"></i>Not seen yet<span class="n">96</span></div>
+    <div class="g">BY SUBJECT</div>
+    <div class="r"><i style="background:#A8760F"></i>MSK<span class="pc" style="color:var(--grn)">74%</span></div>
+    <div class="r"><i style="background:#5A479C"></i>Neurology<span class="pc" style="color:var(--amb)">61%</span></div>
+    <div class="r"><i style="background:#0F8A6E"></i>Basic sciences<span class="pc" style="color:var(--red)">48%</span></div>
+    <div class="r"><i style="background:#1F7A4D"></i>Other topics<span class="pc" style="color:var(--grn)">80%</span></div>
+    <div class="g">SETS<span class="pl">＋</span></div>
+    <div class="r">Foot &amp; ankle<span class="n">3</span></div>
+    <div class="r">Knee &amp; hip<span class="n">2</span></div>
+    <div class="r">Spinal cord injury<span class="n">2</span></div>
+    <div class="railfoot">222 answered · 66% overall · 9 sets</div>
+   </div>
+
+   <div class="main">
+    <div class="hd"><div><h2>Question Bank</h2><p>Practice by subject, or work through what you got wrong.</p></div>
+     <div class="mets"><div><b>222</b><span>answered</span></div><div><b>66%</b><span>accuracy</span></div><div><b>42</b><span>to review</span></div><div><b>5</b><span>day streak</span></div></div></div>
+
+    <div class="start">
+     <div class="l"><div class="k">START A SESSION</div><h3>20 questions · about 15 min</h3>
+      <p>Mixed across your weakest subjects, with 42 you previously got wrong put back in the queue.</p>
+      <div class="modes"><span class="on">Tutor — explain as I go</span><span>Exam — explain at the end</span><span>Timed</span></div></div>
+     <div class="btn">▶ Start</div><div class="btn2">Resume · Q12 of 20</div><div class="btn2">Custom</div>
+    </div>
+
+    <div class="filters"><span class="lb">BUILD FROM</span>
+     <a class="on">Weakest first</a><a>Not seen<b>96</b></a><a>Incorrect<b>42</b></a><a>Flagged<b>11</b></a><a>A subject ⌄</a><a>A set ⌄</a><a>Difficulty ⌄</a></div>
+
+    <div class="sh"><h4>Browse by folder</h4><span>9 folders · 318 questions</span><a>Manage ›</a></div>
+
+    <div class="sep"><i style="background:#D9762F"></i><b style="color:#D9762F">MSK</b><span>4 folders · 186 questions</span><span class="ln"></span><a>See all ›</a></div>
+    <div class="folders">
+     <div class="fp" data-c="peach"><div class="nm">Foot &amp; ankle</div><div class="sb">3 topics · 48 questions</div>
+      <div class="ftr"><span class="pill">74% correct</span><span class="go">Open ›</span></div></div>
+     <div class="fp" data-c="rose"><div class="nm">Knee &amp; hip</div><div class="sb">2 topics · 44 questions</div>
+      <div class="ftr"><span class="pill">68% correct</span><span class="go">Open ›</span></div></div>
+     <div class="fp" data-c="butter"><div class="nm">Spine</div><div class="sb">3 topics · 52 questions</div>
+      <div class="ftr"><span class="pill new">not started</span><span class="go">Open ›</span></div></div>
+    </div>
+
+    <div class="sep"><i style="background:#6F5FCB"></i><b style="color:#6F5FCB">NEUROLOGY</b><span>3 folders · 92 questions</span><span class="ln"></span><a>See all ›</a></div>
+    <div class="folders">
+     <div class="fp" data-c="lilac"><div class="nm">Spinal cord injury</div><div class="sb">2 topics · 34 questions</div>
+      <div class="ftr"><span class="pill">67% correct</span><span class="go">Open ›</span></div></div>
+     <div class="fp" data-c="sky"><div class="nm">Stroke</div><div class="sb">2 topics · 30 questions</div>
+      <div class="ftr"><span class="pill">60% correct</span><span class="go">Open ›</span></div></div>
+     <div class="fp" data-c="blush"><div class="nm">Mononeuropathies</div><div class="sb">2 topics · 28 questions</div>
+      <div class="ftr"><span class="pill new">not started</span><span class="go">Open ›</span></div></div>
+    </div>
+
+    <div class="sep"><i style="background:#2E9B80"></i><b style="color:#2E9B80">BASIC SCIENCES</b><span>2 folders · 40 questions</span><span class="ln"></span><a>See all ›</a></div>
+    <div class="folders">
+     <div class="fp" data-c="mint"><div class="nm">Anatomy</div><div class="sb">2 topics · 24 questions</div>
+      <div class="ftr"><span class="pill">48% correct</span><span class="go">Open ›</span></div></div>
+     <div class="fp" data-c="sage"><div class="nm">Biomechanics</div><div class="sb">1 topics · 16 questions</div>
+      <div class="ftr"><span class="pill new">not started</span><span class="go">Open ›</span></div></div>
+     <div class="fp ghostc"><div style="font-size:26px;font-weight:900">＋</div><div class="nm" style="font-size:15px;color:#9AA5B4">New folder</div>
+      <div class="sb" style="text-align:center;padding:0 16px">group your own question sets</div></div>
+    </div>
+
+    <div class="sh"><h4>Your progress</h4><span>222 questions answered since June</span><a>Full statistics ›</a></div>
+    <div class="pgrid">
+     <div class="pc2"><div class="k">OVERALL ACCURACY</div>
+      <div class="mast"><div class="ring"><em>66%<small>CORRECT</small></em></div>
+       <div><b>147 of 222</b><span>answered correctly</span><span class="up">▲ 5 points this month</span></div></div>
+      <div class="mini2"><div><b>42</b><span>to review</span></div><div><b>96</b><span>not seen</span></div></div>
+     </div>
+     <div class="pc2"><div class="k">QUESTIONS ANSWERED · LAST 12 WEEKS</div>
+      <div class="bars"><i style="height:30%"></i><i style="height:56%"></i><i style="height:22%"></i><i style="height:74%"></i><i style="height:48%"></i><i style="height:90%"></i><i style="height:38%"></i><i style="height:66%"></i><i style="height:28%"></i><i style="height:82%"></i><i style="height:54%"></i><i style="height:44%"></i></div>
+      <div class="axis"><span>12 weeks ago</span><span>this week</span></div>
+      <div class="mini2"><div><b>222</b><span>answered</span></div><div><b>19</b><span>a week</span></div><div><b>5</b><span>day streak</span></div></div>
+     </div>
+     <div class="pc2"><div class="k">WEAKEST FOLDERS</div>
+      <div class="wk"><i style="background:#17BF9A"></i><b>Anatomy</b><span style="color:var(--red)">48%</span></div>
+      <div class="wk"><i style="background:#2EA8FF"></i><b>Stroke</b><span style="color:var(--red)">60%</span></div>
+      <div class="wk"><i style="background:#7B61FF"></i><b>Spinal cord injury</b><span style="color:var(--amb)">67%</span></div>
+      <div class="wk"><i style="background:#F0569A"></i><b>Knee &amp; hip</b><span style="color:var(--amb)">68%</span></div>
+      <div style="margin-top:11px"><span style="display:block;text-align:center;background:var(--acc);color:#fff;font-size:12.5px;font-weight:900;border-radius:10px;padding:10px 0">Practise the weakest 20 ›</span></div>
+     </div>
+    </div>
+
+   </div>
+  </div>
+ </div>
+
+ <div class="notes">
+  <div class="nb"><b><i>1</i>ONE BUTTON, AND A MODE</b><p>The page opens with a session: <em>20 questions, about 15 minutes</em>, built from your weakest subjects — and <em>tutor, exam or timed</em> before you start.</p></div>
+  <div class="nb"><b><i>2</i>COUNTS THAT MEAN SOMETHING</b><p>"Total questions · sets · score · attempts" is replaced by <em>answered, accuracy, to review, streak</em> — and accuracy per subject below.</p></div>
+  <div class="nb"><b><i>3</i>THE RAIL IS THE QUESTION INDEX</b><p>The library tree is gone. In its place: <em>incorrect, flagged, not seen</em>, then subjects with your accuracy beside each.</p></div>
+  <div class="nb"><b><i>4</i>BUILD YOUR OWN SESSION</b><p>The filter row is how a question bank is actually used: <em>not seen, incorrect, flagged, by subject, by difficulty</em>.</p></div>
+  <div class="nb"><b><i>5</i>MINIMAL PASTEL FOLDERS</b><p>Name, counts, one accuracy pill, <em>Open ›</em>. Navy text on a soft tint, so contrast never depends on the colour.</p></div>
+  <div class="nb"><b><i>6</i>RESUME MOVED UP</b><p>The interrupted session is no longer a section of its own — it is a <em>second button in the session panel</em>, where the eye already is.</p></div>
+  <div class="nb"><b>PROGRESS, LIKE FLASHCARDS</b><p>Accuracy ring, twelve weeks of activity, and <em>weakest folders</em> with a button that practises them — the same three questions as the flashcard page.</p></div>
+ </div>
+
+<script>
+const t=[['.start .btn',1],['.mets',2],['.rail .g',3],['.filters',4],['.folders .fp',5],['.start .btn2',6]];
+const f=document.querySelector('.frame'),fr=f.getBoundingClientRect();
+t.forEach(([sel,n])=>{const el=document.querySelectorAll(sel)[sel==='.set'?0:0];if(!el)return;const r=el.getBoundingClientRect();
+ const p=document.createElement('div');p.className='pin';p.textContent=n;
+ p.style.left=(r.left-fr.left-14)+'px';p.style.top=(r.top-fr.top-13)+'px';f.appendChild(p);});
+</script>
+</div>
+</body></html>

@@ -4,6 +4,7 @@ import { getTopicTree } from "@/lib/topics";
 import { getCalculatorCategories, getAllCalculators } from "@/lib/clinical-tools";
 import { getFavoritedCalculatorIds } from "@/lib/workspace";
 import { getDashboardTopicTiles, getLibraryTopicTiles, getCategories, getFolderDueBadges, getFavoritedDeckCount, getDueTodayCount } from "@/lib/flashcards";
+import { getCategories as getQuestionBankCategories, getQuestionBankRailStats } from "@/lib/question-bank";
 import { SidebarFrame } from "./SidebarFrame";
 
 // Site-wide persistent nav (desktop, `lg`+ — SidebarFrame handles the
@@ -19,19 +20,33 @@ export async function Sidebar() {
   const canReview = session?.user.role === "editor" || session?.user.role === "admin";
   const userId = session?.user.id ?? null;
   const locale = await getLocale();
-  const [tree, calculatorCategories, calculators, favoritedCalculatorIds, dueToday, favoritedDeckCount, flashcardTopics, libraryTopics, { systemCategories }, folderDueBadgesMap] =
-    await Promise.all([
-      getTopicTree(canReview),
-      getCalculatorCategories(),
-      getAllCalculators(locale),
-      session ? getFavoritedCalculatorIds(session.user.id) : Promise.resolve(new Set<string>()),
-      getDueTodayCount(userId),
-      getFavoritedDeckCount(userId),
-      getDashboardTopicTiles(userId),
-      getLibraryTopicTiles(userId),
-      getCategories(userId),
-      getFolderDueBadges(userId),
-    ]);
+  const [
+    tree,
+    calculatorCategories,
+    calculators,
+    favoritedCalculatorIds,
+    dueToday,
+    favoritedDeckCount,
+    flashcardTopics,
+    libraryTopics,
+    { systemCategories },
+    folderDueBadgesMap,
+    questionBankCategories,
+    questionBankRailStats,
+  ] = await Promise.all([
+    getTopicTree(canReview),
+    getCalculatorCategories(),
+    getAllCalculators(locale),
+    session ? getFavoritedCalculatorIds(session.user.id) : Promise.resolve(new Set<string>()),
+    getDueTodayCount(userId),
+    getFavoritedDeckCount(userId),
+    getDashboardTopicTiles(userId),
+    getLibraryTopicTiles(userId),
+    getCategories(userId),
+    getFolderDueBadges(userId),
+    getQuestionBankCategories(),
+    getQuestionBankRailStats(userId),
+  ]);
 
   return (
     <SidebarFrame
@@ -47,6 +62,8 @@ export async function Sidebar() {
       flashcardsLibraryTopics={libraryTopics}
       flashcardsSystemCategories={systemCategories}
       flashcardsFolderDueBadges={Object.fromEntries(folderDueBadgesMap)}
+      questionBankCategories={questionBankCategories}
+      questionBankRailStats={questionBankRailStats}
       isEditor={canReview}
     />
   );

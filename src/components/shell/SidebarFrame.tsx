@@ -7,9 +7,11 @@ import { PanelLeftClose, PanelLeftOpen } from "lucide-react";
 import type { TopicNode } from "@/lib/topics";
 import type { CalculatorCategory, CalculatorSummary } from "@/lib/clinical-tools";
 import type { FlashcardCategory, TopicTile } from "@/lib/flashcards";
+import type { QuestionCategory, QuestionBankRailStats } from "@/lib/question-bank";
 import { IndexSidebar } from "./IndexSidebar";
 import { ClinicalToolsSidebar } from "@/components/clinical-tools/ClinicalToolsSidebar";
 import { FlashcardsSidebar } from "@/components/flashcards/FlashcardsSidebar";
+import { QuestionBankSidebar } from "@/components/question-bank/QuestionBankSidebar";
 
 // Persisted app-wide (not per-page) — same collapsed/expanded
 // preference should hold as a reader moves around the site, same
@@ -57,6 +59,8 @@ interface SidebarFrameProps {
   flashcardsLibraryTopics: TopicTile[];
   flashcardsSystemCategories: FlashcardCategory[];
   flashcardsFolderDueBadges: Record<string, number>;
+  questionBankCategories: QuestionCategory[];
+  questionBankRailStats: QuestionBankRailStats;
   isEditor: boolean;
 }
 
@@ -78,6 +82,8 @@ export function SidebarFrame({
   flashcardsLibraryTopics,
   flashcardsSystemCategories,
   flashcardsFolderDueBadges,
+  questionBankCategories,
+  questionBankRailStats,
   isEditor,
 }: SidebarFrameProps) {
   const collapsed = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
@@ -88,6 +94,7 @@ export function SidebarFrame({
   const isMyHandbook = pathname.startsWith("/my-atlas");
   const isFlashcardsStudy = pathname.startsWith("/flashcards/study");
   const isFlashcards = pathname.startsWith("/flashcards") && !isFlashcardsStudy;
+  const isQuestionBank = pathname.startsWith("/question-bank");
 
   // The sidebar now sits in a row below TopBar (the brand wordmark
   // moved there) rather than spanning the full viewport height itself,
@@ -192,6 +199,11 @@ export function SidebarFrame({
                 isEditor={isEditor}
                 headerAction={collapseButton}
               />
+            );
+          }
+          if (isQuestionBank) {
+            return (
+              <QuestionBankSidebar stats={questionBankRailStats} categories={questionBankCategories} isEditor={isEditor} headerAction={collapseButton} />
             );
           }
           return <IndexSidebar tree={tree} isSignedIn={!signedOut} headerAction={collapseButton} />;

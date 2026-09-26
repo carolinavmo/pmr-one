@@ -1,6 +1,8 @@
+import { cache } from "react";
 import { pool } from "@/lib/db";
 import type { CardColor } from "@/lib/editorial-blocks";
 import type { CardIconName } from "@/components/ui/cardIcons";
+import { type QbankFolderColor, pickFreeQbankFolderColor } from "@/lib/qbank-folder-colors";
 
 // Editor/admin-authored MCQ practice questions, member read-only — see
 // db/migrations/0046_question_bank.sql for why this is a standalone
@@ -24,6 +26,44 @@ export interface QuestionCategory {
   // — every folder still shows its tile, but a locked one's set list is
   // gated behind a session on its detail page.
   isPublic: boolean;
+  // QBANK-IMPLEMENTATION.md Pass 1 — the "By subject" rail grouping.
+  // Reuses flashcard_subject (migration 0068's admin-managed MSK/
+  // Neurology/Basic sciences/Other table) rather than a second,
+  // duplicate taxonomy — one shared subject list across both features.
+  subjectId: string;
+  subjectName: string;
+  subjectColor: CardColor;
+  // The pastel folder-card tint (qbank-folder-colors.ts) — Pass 1 only
+  // adds the field; the folder cards that actually render it are
+  // Pass 2.
+  colourKey: QbankFolderColor;
+}
+
+// One row per subject in "By subject" (QBANK-IMPLEMENTATION.md Pass 1)
+// — accuracy is null (not 0) when the user hasn't answered anything
+// under this subject yet, same "null means nothing to show, never a
+// fabricated 0" rule the rest of the app follows.
+export interface SubjectAccuracy {
+  subjectId: string;
+  subjectName: string;
+  subjectColor: CardColor;
+  totalQuestions: number;
+  answered: number;
+  accuracyPercent: number | null;
+}
+
+// The rail's own figures (QBANK-IMPLEMENTATION.md Pass 1: "▶ Start a
+// session, search, Practice (all · my incorrect · flagged · not seen)
+// and By subject with the user's accuracy"). null for a signed-out
+// visitor — every figure here is personal.
+export interface QuestionBankRailStats {
+  totalQuestions: number;
+  answered: number;
+  accuracyPercent: number | null;
+  incorrect: number;
+  flagged: number;
+  notSeen: number;
+  bySubject: SubjectAccuracy[];
 }
 
 export interface QuestionSetSummary {
@@ -112,6 +152,12 @@ export interface QuestionOptionInput {
   rationale: string | null;
 }
 
+// Every mapCategoryRow caller joins flashcard_subject the same way —
+// one fragment so the alias/column names can't drift between queries
+// (same pattern flashcards.ts's own CATEGORY_SUBJECT_JOIN uses).
+const CATEGORY_SUBJECT_JOIN = `LEFT JOIN flashcard_subject s ON s.id = c.subject_id`;
+const CATEGORY_SUBJECT_SELECT = `s.id AS subject_id, s.name AS subject_name, s.color AS subject_color`;
+
 function mapCategoryRow(r: {
   id: string;
   name: string;
@@ -119,6 +165,10 @@ function mapCategoryRow(r: {
   icon: string | null;
   set_count: string;
   is_public: boolean;
+  subject_id: string;
+  subject_name: string;
+  subject_color: CardColor;
+  colour_key: QbankFolderColor;
 }): QuestionCategory {
   return {
     id: r.id,
@@ -127,6 +177,10 @@ function mapCategoryRow(r: {
     icon: (r.icon as CardIconName | null) ?? undefined,
     setCount: Number(r.set_count),
     isPublic: r.is_public,
+    subjectId: r.subject_id,
+    subjectName: r.subject_name,
+    subjectColor: r.subject_color,
+    colourKey: r.colour_key,
   };
 }
 
@@ -161,12 +215,86 @@ function mapSetSummaryRow(r: {
 
 export async function getCategories(): Promise<QuestionCategory[]> {
   const { rows } = await pool.query(
-    `SELECT c.id, c.name, c.color, c.icon, c.is_public,
+    `SELECT c.id, c.name, c.color, c.icon, c.is_public, c.colour_key, ${CATEGORY_SUBJECT_SELECT},
        (SELECT COUNT(*) FROM question_set s WHERE s.category_id = c.id) AS set_count
      FROM question_category c
+     ${CATEGORY_SUBJECT_JOIN}
      ORDER BY c.position, c.name`
   );
   return rows.map(mapCategoryRow);
+}
+
+// The rail's whole "Practice" + "By subject" section, from ONE grouped
+// query over question_attempt (QBANK-IMPLEMENTATION.md Pass 1: "Counts
+// come from one grouped query over attempt, cached per user and
+// invalidated when an attempt is written"). "Cached per user" here
+// means request-scoped memoization (this function is wrapped in
+// React's cache() below) rather than a persistent store — this page
+// is fully dynamic (session-dependent), so Next never caches it across
+// requests anyway; "invalidated when an attempt is written" is what
+// recordAttemptAction's revalidatePath already does, same as every
+// other write in this app. flagged is a separate, non-subject-scoped
+// count, so it's one small second query rather than forced into the
+// same GROUP BY.
+async function getQuestionBankRailStatsUncached(userId: string | null): Promise<QuestionBankRailStats> {
+  const { rows } = await pool.query(
+    `SELECT sub.id AS subject_id, sub.name AS subject_name, sub.color AS subject_color,
+       COUNT(DISTINCT q.id)::int AS total_questions,
+       COUNT(a.question_id)::int AS answered,
+       COUNT(*) FILTER (WHERE a.is_correct)::int AS correct
+     FROM flashcard_subject sub
+     LEFT JOIN question_category c ON c.subject_id = sub.id
+     LEFT JOIN question_set st ON st.category_id = c.id
+     LEFT JOIN question q ON q.set_id = st.id
+     LEFT JOIN question_attempt a ON a.question_id = q.id AND a.user_id = $1
+     GROUP BY sub.id, sub.name, sub.color, sub.position
+     ORDER BY sub.position, sub.name`,
+    [userId]
+  );
+
+  const bySubject: SubjectAccuracy[] = rows.map((r) => ({
+    subjectId: r.subject_id,
+    subjectName: r.subject_name,
+    subjectColor: r.subject_color,
+    totalQuestions: r.total_questions,
+    answered: r.answered,
+    accuracyPercent: r.answered === 0 ? null : Math.round((r.correct / r.answered) * 100),
+  }));
+
+  const totalQuestions = bySubject.reduce((sum, s) => sum + s.totalQuestions, 0);
+  const answered = bySubject.reduce((sum, s) => sum + s.answered, 0);
+  const correct = rows.reduce((sum, r) => sum + r.correct, 0);
+
+  const flaggedCount = userId
+    ? Number((await pool.query(`SELECT COUNT(*)::int AS count FROM question_flag WHERE user_id = $1`, [userId])).rows[0].count)
+    : 0;
+
+  return {
+    totalQuestions,
+    answered,
+    accuracyPercent: answered === 0 ? null : Math.round((correct / answered) * 100),
+    incorrect: answered - correct,
+    flagged: flaggedCount,
+    notSeen: totalQuestions - answered,
+    bySubject,
+  };
+}
+
+// Request-scoped memoization only (not unstable_cache) — this is
+// per-user personal data, and this route is already fully dynamic, so
+// there's no persistent cache to invalidate; "cached per user" just
+// means the rail and the dashboard body sharing one request don't each
+// pay for their own round trip.
+export const getQuestionBankRailStats = cache(getQuestionBankRailStatsUncached);
+
+export async function toggleQuestionFlag(userId: string, questionId: string): Promise<boolean> {
+  const { rows } = await pool.query(`DELETE FROM question_flag WHERE user_id = $1 AND question_id = $2 RETURNING 1`, [
+    userId,
+    questionId,
+  ]);
+  if (rows.length > 0) return false;
+  await pool.query(`INSERT INTO question_flag (user_id, question_id) VALUES ($1, $2)`, [userId, questionId]);
+  return true;
 }
 
 const SET_SUMMARY_SELECT = (userIdParamIndex: number) => `
@@ -197,9 +325,10 @@ export async function getCategoryWithSets(
   userId: string | null
 ): Promise<{ category: QuestionCategory; sets: QuestionSetSummary[] } | null> {
   const { rows: categoryRows } = await pool.query(
-    `SELECT c.id, c.name, c.color, c.icon, c.is_public,
+    `SELECT c.id, c.name, c.color, c.icon, c.is_public, c.colour_key, ${CATEGORY_SUBJECT_SELECT},
        (SELECT COUNT(*) FROM question_set s WHERE s.category_id = c.id) AS set_count
      FROM question_category c
+     ${CATEGORY_SUBJECT_JOIN}
      WHERE c.id = $1`,
     [categoryId]
   );
@@ -448,13 +577,33 @@ export async function getQuestionsForManagement(setId: string): Promise<Question
 }
 
 export async function createCategory(name: string, color: CardColor): Promise<QuestionCategory> {
+  const { rows: siblingRows } = await pool.query<{ colour_key: QbankFolderColor | null }>(
+    `SELECT colour_key FROM question_category`
+  );
+  const colourKey = pickFreeQbankFolderColor(siblingRows.map((r) => r.colour_key));
+  // A brand-new folder starts on whichever subject sorts first — same
+  // "always at least one row" guarantee flashcards.ts's own
+  // createCategory relies on (flashcards.ts's deleteSubject refuses to
+  // remove the last subject left).
+  const { rows: subjectRows } = await pool.query<{ id: string; name: string; color: CardColor }>(
+    `SELECT id, name, color FROM flashcard_subject ORDER BY position, name LIMIT 1`
+  );
+  const fallbackSubject = subjectRows[0];
   const { rows: countRows } = await pool.query(`SELECT COUNT(*)::int AS count FROM question_category`);
   const { rows } = await pool.query(
-    `INSERT INTO question_category (name, color, position) VALUES ($1, $2, $3)
+    `INSERT INTO question_category (name, color, colour_key, subject_id, position) VALUES ($1, $2, $3, $4, $5)
      RETURNING id, name, color, icon`,
-    [name, color, countRows[0].count]
+    [name, color, colourKey, fallbackSubject.id, countRows[0].count]
   );
-  return mapCategoryRow({ ...rows[0], set_count: "0" });
+  return mapCategoryRow({
+    ...rows[0],
+    is_public: false,
+    colour_key: colourKey,
+    subject_id: fallbackSubject.id,
+    subject_name: fallbackSubject.name,
+    subject_color: fallbackSubject.color,
+    set_count: "0",
+  });
 }
 
 export async function renameCategory(categoryId: string, name: string): Promise<void> {

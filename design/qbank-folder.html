@@ -1,0 +1,132 @@
+<!DOCTYPE html><html><head><meta charset="utf-8">
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="qb_style.css">
+<style>
+.crumb{display:flex;align-items:center;gap:8px;font-size:12.5px;color:#9AA5B4;font-weight:700}
+.crumb b{color:var(--mute)}
+.fhead{display:flex;gap:24px;align-items:center;background:#FFF0E4;border:2px solid #F8D7BC;border-radius:20px;padding:22px 26px;margin-top:12px}
+.ring{width:120px;height:120px;border-radius:50%;flex:none;display:flex;align-items:center;justify-content:center;position:relative;background:conic-gradient(#D9762F 74%,#F8D7BC 0)}
+.ring::after{content:"";position:absolute;width:92px;height:92px;border-radius:50%;background:#fff}
+.ring em{position:relative;z-index:2;font-style:normal;font-size:28px;font-weight:900;color:var(--navy)}
+.ring em small{display:block;font-size:10px;font-weight:900;letter-spacing:1.1px;color:#9AA5B4;margin-top:1px}
+.fhead .rw{flex:1}
+.fhead h2{font-size:32px;font-weight:900;color:var(--navy);letter-spacing:-1px}
+.fhead .s{font-size:14px;color:var(--mute);font-weight:700;margin-top:5px}
+.fhead .bar{height:10px;border-radius:5px;overflow:hidden;display:flex;margin-top:12px;max-width:430px}
+.fhead .bar i{display:block;height:10px}
+.fhead .lg{display:flex;gap:16px;margin-top:9px;font-size:12.5px;font-weight:800;color:var(--mute)}
+.fhead .lg span{display:flex;align-items:center;gap:6px}
+.fhead .lg i{width:9px;height:9px;border-radius:3px;display:block}
+.fhead .acts{display:flex;flex-direction:column;gap:9px;width:215px;flex:none}
+.fhead .acts .pri{background:var(--acc);color:#fff;font-size:15px;font-weight:900;border-radius:12px;padding:14px 0;text-align:center}
+.fhead .acts .sec{background:#fff;border:1px solid #F8D7BC;color:var(--mute);font-size:12.5px;font-weight:800;border-radius:10px;padding:10px 0;text-align:center}
+.mrow{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:16px}
+.mt{border:1px solid var(--line);border-radius:13px;padding:13px 15px}
+.mt b{display:block;font-size:21px;font-weight:900;color:var(--navy)}
+.mt span{font-size:11.5px;color:#9AA5B4;font-weight:700}
+.tabs{display:flex;gap:4px;margin-top:22px;border-bottom:1px solid var(--line)}
+.tabs a{font-size:13.5px;font-weight:800;color:var(--mute);padding:10px 14px;border-bottom:3px solid transparent;margin-bottom:-1px}
+.tabs a.on{color:var(--navy);border-bottom-color:#D9762F}
+.trow{display:flex;align-items:center;gap:14px;border:1px solid var(--line);border-radius:13px;padding:13px 16px;margin-bottom:9px}
+.trow .sw{width:9px;height:38px;border-radius:5px;background:#D9762F;flex:none}
+.trow .t{flex:1;min-width:0}
+.trow .t b{display:block;font-size:16px;font-weight:900;color:var(--navy)}
+.trow .t span{font-size:11.5px;color:#9AA5B4;font-weight:700}
+.trow .prog{width:180px}
+.trow .prog .bar{height:8px;background:#EEF1F5;border-radius:4px;overflow:hidden;display:flex}
+.trow .prog .bar i{display:block;height:8px}
+.trow .prog span{display:block;font-size:11px;color:#9AA5B4;font-weight:800;margin-top:4px}
+.trow .pc{width:52px;text-align:right;font-size:14px;font-weight:900}
+.trow .btn{font-size:12.5px;font-weight:900;color:#fff;background:var(--acc);border-radius:9px;padding:10px 15px;white-space:nowrap}
+.trow .btn.sec{background:#fff;border:1px solid var(--line);color:var(--mute)}
+</style></head><body>
+<div class="sheet" id="d">
+ <div class="tb"><i style="background:#D9762F"></i><i style="background:var(--navy)"></i></div>
+ <div class="bh"><img src="logo.png" alt=""><b>PM&amp;R <span style="color:var(--acc)">Explained</span></b></div>
+ <h1 class="t">Inside a folder</h1>
+ <div class="dek">The card is quiet, so the folder page does the work. A folder holds <b>topics</b>. The page opens with a session across the whole folder, then each topic with its own accuracy and its own button.</div>
+
+ <div class="frame">
+  <div class="nav">
+   <div class="r1"><div class="logo"><img src="logo.png" alt="">PM&amp;R <span>Explained</span></div>
+    <div class="srch">⌕&nbsp; Search conditions, exam maneuvers, calculators…</div>
+    <div class="ut"><span>🌐 EN ⌄</span><span>🔔</span><div class="av">CA</div></div></div>
+   <div class="r2"><span class="pl">▣ Explore library</span><span class="dv"></span><span class="pl">Clinical Tools</span><span class="pl">Study Planner</span><span class="pl">My Handbook</span><span class="pl">Flashcards</span><span class="on">☑ Question Bank</span><span class="pl">Courses</span></div>
+  </div>
+  <div class="body">
+   <div class="rail">
+    <div class="newbtn">▶ Start a session</div>
+    <div class="fd">⌕ Search questions and sets…</div>
+    <div class="g">PRACTICE</div>
+    <div class="r"><i style="background:var(--acc)"></i>All questions<span class="n">318</span></div>
+    <div class="r"><i style="background:var(--red)"></i>My incorrect<span class="n">42</span></div>
+    <div class="r"><i style="background:var(--gold)"></i>★ Flagged<span class="n">11</span></div>
+    <div class="r"><i style="background:#C6CED8"></i>Not seen yet<span class="n">96</span></div>
+    <div class="g">FOLDERS<span class="pl">＋</span></div>
+    <div class="r on"><i style="background:#D9762F"></i>Foot &amp; ankle<span class="pc" style="color:var(--grn)">74%</span></div>
+    <div class="r"><i style="background:#CE5C87"></i>Knee &amp; hip<span class="pc" style="color:var(--amb)">68%</span></div>
+    <div class="r"><i style="background:#B58A25"></i>Spine<span class="n">52</span></div>
+    <div class="r"><i style="background:#6F5FCB"></i>Spinal cord injury<span class="pc" style="color:var(--amb)">67%</span></div>
+    <div class="r"><i style="background:#4189C4"></i>Stroke<span class="pc" style="color:var(--red)">60%</span></div>
+    <div class="r"><i style="background:#2E9B80"></i>Anatomy<span class="pc" style="color:var(--red)">48%</span></div>
+    <div class="railfoot">222 answered · 66% overall · 9 folders</div>
+   </div>
+
+   <div class="main">
+    <div class="crumb">Question Bank <span>›</span> <b>MSK</b> <span>›</span> <b>Foot &amp; ankle</b></div>
+
+    <div class="fhead">
+     <div class="ring"><em>74%<small>CORRECT</small></em></div>
+     <div class="rw">
+      <h2>Foot &amp; ankle</h2>
+      <div class="s">3 topics · 48 questions · from MSK in the library</div>
+      <div class="bar"><i style="width:52%;background:var(--grn)"></i><i style="width:19%;background:var(--red)"></i><i style="width:29%;background:#EEF1F5"></i></div>
+      <div class="lg"><span><i style="background:var(--grn)"></i>25 correct</span><span><i style="background:var(--red)"></i>9 wrong</span><span><i style="background:#EEF1F5;border:1px solid var(--line)"></i>14 not seen</span></div>
+     </div>
+     <div class="acts">
+      <div class="pri">▶ Practise this folder</div>
+      <div class="sec">9 I got wrong</div>
+      <div class="sec">14 not seen</div>
+     </div>
+    </div>
+
+    <div class="mrow">
+     <div class="mt"><b>48</b><span>questions</span></div>
+     <div class="mt"><b>74%</b><span>your accuracy</span></div>
+     <div class="mt"><b>3</b><span>flagged</span></div>
+     <div class="mt"><b>2 days ago</b><span>last practised</span></div>
+    </div>
+
+    <div class="tabs"><a class="on">Topics · 3</a><a>All questions · 48</a><a>My incorrect · 9</a><a>Statistics</a></div>
+
+    <div class="sh"><h4>Topics in this folder</h4><span>sorted by accuracy</span><a>Sort ⌄</a></div>
+
+    <div class="trow"><span class="sw"></span>
+     <div class="t"><b>Plantar fasciopathy — key concepts</b><span>10 questions · from the library · last attempt 2 days ago</span></div>
+     <div class="prog"><div class="bar"><i style="width:70%;background:var(--grn)"></i><i style="width:30%;background:var(--red)"></i></div><span>10 answered</span></div>
+     <span class="pc" style="color:var(--grn)">70%</span><span class="btn sec">Retake</span></div>
+
+    <div class="trow"><span class="sw"></span>
+     <div class="t"><b>Achilles tendinopathy</b><span>20 questions · from the library · 6 left to answer</span></div>
+     <div class="prog"><div class="bar"><i style="width:55%;background:var(--grn)"></i><i style="width:15%;background:var(--red)"></i><i style="width:30%;background:#EEF1F5"></i></div><span>14 of 20 answered</span></div>
+     <span class="pc" style="color:var(--grn)">79%</span><span class="btn">Continue</span></div>
+
+    <div class="trow"><span class="sw"></span>
+     <div class="t"><b>Ankle sprain and instability</b><span>18 questions · created by you</span></div>
+     <div class="prog"><div class="bar"><i style="width:100%;background:#EEF1F5"></i></div><span>not started</span></div>
+     <span class="pc" style="color:#9AA5B4">—</span><span class="btn">Start</span></div>
+
+    <div class="trow" style="border-style:dashed;color:#9AA5B4;justify-content:center;font-weight:900">＋ New topic in Foot &amp; ankle &nbsp;·&nbsp; or generate questions from a library page</div>
+
+    <div class="sh"><h4>Worth revisiting</h4><span>questions you got wrong more than once</span><a>Practise these 4 ›</a></div>
+    <div class="trow"><span class="sw" style="background:var(--red)"></span>
+     <div class="t"><b>"Which test reproduces pain in a calcaneal stress fracture?"</b><span>Plantar fasciopathy — key concepts · wrong twice</span></div>
+     <span class="btn sec">Review</span><span class="btn">Practise</span></div>
+    <div class="trow"><span class="sw" style="background:var(--red)"></span>
+     <div class="t"><b>"First-line loading protocol for mid-portion Achilles tendinopathy?"</b><span>Achilles tendinopathy · wrong twice</span></div>
+     <span class="btn sec">Review</span><span class="btn">Practise</span></div>
+   </div>
+  </div>
+ </div>
+</div>
+</body></html>

@@ -1,0 +1,172 @@
+<!DOCTYPE html><html><head><meta charset="utf-8">
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="qb_style.css">
+<style>
+.frame2{margin-top:16px;border:1px solid var(--line);border-radius:14px;overflow:hidden;box-shadow:0 10px 30px rgba(20,40,74,.10);background:#fff}
+.qtop{display:flex;align-items:center;gap:14px;padding:13px 22px;border-bottom:1px solid var(--line)}
+.qtop .x{width:34px;height:34px;border-radius:10px;border:1px solid var(--line);display:flex;align-items:center;justify-content:center;font-size:15px;color:var(--mute);font-weight:900}
+.qtop .who b{font-size:14.5px;font-weight:900;color:var(--navy)}
+.qtop .who span{font-size:12px;color:#9AA5B4;font-weight:700}
+.qtop .mid{margin-left:auto;display:flex;align-items:center;gap:16px;font-size:12.5px;font-weight:800;color:var(--mute)}
+.qtop .mid b{color:var(--navy)}
+.qtop .tools{display:flex;gap:7px}
+.qtop .tools span{height:34px;border-radius:10px;border:1px solid var(--line);display:flex;align-items:center;gap:7px;padding:0 12px;font-size:12.5px;font-weight:800;color:var(--mute)}
+.prog{height:5px;background:#EEF1F5;display:flex}
+.prog i{display:block;height:5px}
+.qbody{padding:26px 30px 30px;display:flex;gap:26px}
+.qmain{flex:1;min-width:0;max-width:820px;margin:0 auto}
+.stem{font-size:23px;line-height:1.5;color:var(--ink)}
+.stem b{font-weight:900;color:var(--navy)}
+.opts{margin-top:20px;display:flex;flex-direction:column;gap:9px}
+.op{display:flex;align-items:center;gap:14px;border:2px solid var(--line);border-radius:13px;padding:14px 18px;font-size:18px;color:var(--ink)}
+.op .l{width:32px;height:32px;border-radius:10px;border:2px solid var(--line);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:900;color:var(--mute);flex:none}
+.op .kb{margin-left:auto;font-family:ui-monospace,Menlo,monospace;font-size:11.5px;color:#B4BDC8;border:1px solid var(--line);border-radius:6px;padding:2px 7px}
+.op.sel{border-color:var(--acc);background:var(--acc-bg)}
+.op.sel .l{border-color:var(--acc);background:var(--acc);color:#fff}
+.op.right{border-color:var(--grn);background:var(--grn-bg)}
+.op.right .l{border-color:var(--grn);background:var(--grn);color:#fff}
+.op.wrong{border-color:var(--red-bd);background:var(--red-bg)}
+.op.wrong .l{border-color:var(--red);background:var(--red);color:#fff}
+.op .mark{margin-left:auto;font-size:18px;font-weight:900}
+.op .pct{margin-left:auto;font-size:12.5px;font-weight:800;color:#9AA5B4}
+.qact{display:flex;align-items:center;gap:12px;margin-top:20px}
+.qact .sub{background:var(--navy);color:#fff;font-size:16px;font-weight:900;border-radius:12px;padding:14px 28px}
+.qact .hint{font-size:13px;color:#9AA5B4;font-weight:700}
+.qact .skip{margin-left:auto;font-size:13px;font-weight:800;color:var(--mute)}
+/* explanation */
+.verdict{display:flex;align-items:center;gap:13px;border-radius:14px;padding:14px 18px;margin-top:20px}
+.verdict.ok{background:var(--grn-bg);border:2px solid var(--grn-bd)}
+.verdict.no{background:var(--red-bg);border:2px solid var(--red-bd)}
+.verdict .ic{width:34px;height:34px;border-radius:50%;color:#fff;font-size:17px;font-weight:900;display:flex;align-items:center;justify-content:center}
+.verdict b{font-size:19px;font-weight:900}
+.verdict span{font-size:14px;font-weight:700;color:var(--mute);margin-left:auto}
+.exp{margin-top:18px}
+.exp .k{font-size:11.5px;font-weight:900;letter-spacing:1.4px;color:#9AA5B4;margin-bottom:7px}
+.exp p{font-size:17.5px;line-height:1.55}
+.exp p b{font-weight:900;color:var(--navy)}
+.why{margin-top:18px;border:1px solid var(--line);border-radius:14px;padding:15px 18px}
+.why .row{display:flex;gap:11px;font-size:16px;line-height:1.44;padding:7px 0;border-top:1px solid #F0F2F5}
+.why .row:first-of-type{border-top:none}
+.why .row i{width:24px;height:24px;border-radius:8px;background:var(--red-bg);color:var(--red);font-size:12px;font-weight:900;font-style:normal;display:flex;align-items:center;justify-content:center;flex:none}
+.why .row b{font-weight:900;color:var(--navy)}
+.src{display:flex;align-items:center;gap:12px;margin-top:16px;background:var(--acc-bg);border:1px solid var(--acc-bd);border-radius:13px;padding:13px 17px}
+.src .t{flex:1;font-size:15.5px;color:var(--ink)}
+.src .t b{color:var(--navy);font-weight:900}
+.src a{font-size:13px;font-weight:900;color:#fff;background:var(--acc);border-radius:9px;padding:9px 14px}
+.after{display:flex;gap:10px;margin-top:16px;align-items:center}
+.after .b{font-size:13px;font-weight:800;border:1px solid var(--line);border-radius:10px;padding:10px 14px;color:var(--mute)}
+.after .next{margin-left:auto;background:var(--navy);color:#fff;font-size:15px;font-weight:900;border-radius:12px;padding:13px 24px}
+.side{width:250px;flex:none;border-left:1px solid var(--line);padding-left:22px}
+.side .k{font-size:9.5px;font-weight:900;letter-spacing:1.3px;color:#9AA5B4;margin-bottom:9px}
+.grid{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+.grid span{height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:12.5px;font-weight:900;border:1px solid var(--line);color:var(--mute)}
+.grid span.ok{background:var(--grn-bg);border-color:var(--grn-bd);color:var(--grn)}
+.grid span.no{background:var(--red-bg);border-color:var(--red-bd);color:var(--red)}
+.grid span.now{background:var(--navy);border-color:var(--navy);color:#fff}
+.side .box{margin-top:20px;border:1px solid var(--line);border-radius:12px;padding:12px 13px}
+.side .box .t{font-size:12.5px;font-weight:800;color:var(--navy)}
+.side .box .s{font-size:11.5px;color:#9AA5B4;margin-top:3px;font-weight:600;line-height:1.35}
+h2.s{font-size:12.5px;font-weight:900;letter-spacing:2.4px;color:var(--acc-ink);margin-top:30px;padding-bottom:9px;border-bottom:2px solid var(--line)}
+</style></head><body>
+<div class="sheet" id="d">
+ <div class="tb"><i style="background:var(--acc)"></i><i style="background:var(--navy)"></i></div>
+ <div class="bh"><img src="logo.png" alt=""><b>PM&amp;R <span style="color:var(--acc)">Explained</span></b></div>
+ <h1 class="t">Question Bank — answering</h1>
+ <div class="dek">The session gets <b>its own screen</b>: no sidebar, a progress bar, a question map, and an answer that arrives with <b>the source page attached</b>.</div>
+
+ <h2 class="s">BEFORE YOU ANSWER</h2>
+ <div class="frame2">
+  <div class="qtop">
+   <span class="x">✕</span>
+   <div class="who"><b>Foot &amp; ankle — mixed practice</b><span> · tutor mode</span></div>
+   <div class="mid"><span><b>Q 6</b> of 20</span><span>⏱ 4:12</span><span style="color:var(--grn)">4 correct</span><span style="color:var(--red)">1 wrong</span></div>
+   <div class="tools"><span>⚑ Flag</span><span>⋯</span></div>
+  </div>
+  <div class="prog"><i style="width:28%;background:var(--acc)"></i><i style="width:72%;background:#EEF1F5"></i></div>
+  <div class="qbody">
+   <div class="qmain">
+    <div class="stem">A runner reports progressively worsening heel pain that now occurs <b>at rest</b>. Examination shows diffuse calcaneal tenderness and pain when the calcaneus is <b>compressed from both sides</b>. Which diagnosis should be suspected?</div>
+    <div class="opts">
+     <div class="op"><span class="l">A</span>Plantar fasciopathy<span class="kb">1</span></div>
+     <div class="op sel"><span class="l">B</span>Calcaneal stress fracture<span class="kb">2</span></div>
+     <div class="op"><span class="l">C</span>Baxter nerve entrapment<span class="kb">3</span></div>
+     <div class="op"><span class="l">D</span>Achilles tendinopathy<span class="kb">4</span></div>
+     <div class="op"><span class="l">E</span>First metatarsophalangeal osteoarthritis<span class="kb">5</span></div>
+    </div>
+    <div class="qact"><span class="sub">Submit answer</span><span class="hint">or press <b>enter</b></span><span class="skip">Skip for now ›</span></div>
+   </div>
+   <div class="side">
+    <div class="k">THIS SESSION</div>
+    <div class="grid">
+     <span class="ok">1</span><span class="ok">2</span><span class="no">3</span><span class="ok">4</span><span class="ok">5</span>
+     <span class="now">6</span><span>7</span><span>8</span><span>9</span><span>10</span>
+     <span>11</span><span>12</span><span>13</span><span>14</span><span>15</span>
+     <span>16</span><span>17</span><span>18</span><span>19</span><span>20</span></div>
+    <div class="box"><div class="t">Foot &amp; ankle</div><div class="s">Your accuracy here: 74%</div></div>
+    <div class="box" style="background:var(--soft)"><div class="t">Tutor mode</div><div class="s">The explanation appears as soon as you answer. Switch to exam mode in settings.</div></div>
+   </div>
+  </div>
+ </div>
+
+ <h2 class="s">AFTER YOU ANSWER</h2>
+ <div class="frame2">
+  <div class="qtop">
+   <span class="x">✕</span>
+   <div class="who"><b>Foot &amp; ankle — mixed practice</b><span> · tutor mode</span></div>
+   <div class="mid"><span><b>Q 6</b> of 20</span><span>⏱ 4:38</span><span style="color:var(--grn)">4 correct</span><span style="color:var(--red)">2 wrong</span></div>
+   <div class="tools"><span style="color:var(--gold);border-color:#F1E2BF">⚑ Flagged</span><span>⋯</span></div>
+  </div>
+  <div class="prog"><i style="width:30%;background:var(--acc)"></i><i style="width:70%;background:#EEF1F5"></i></div>
+  <div class="qbody">
+   <div class="qmain">
+    <div class="stem" style="font-size:19px;color:var(--mute)">A runner reports worsening heel pain <b>at rest</b>, with diffuse calcaneal tenderness and pain on <b>mediolateral compression</b>.</div>
+    <div class="opts">
+     <div class="op wrong"><span class="l">A</span>Plantar fasciopathy<span class="mark" style="color:var(--red)">✕ your answer</span></div>
+     <div class="op right"><span class="l">B</span>Calcaneal stress fracture<span class="mark" style="color:var(--grn)">✓ correct</span></div>
+     <div class="op"><span class="l">C</span>Baxter nerve entrapment<span class="pct">9% chose this</span></div>
+     <div class="op"><span class="l">D</span>Achilles tendinopathy<span class="pct">6% chose this</span></div>
+     <div class="op"><span class="l">E</span>First MTP osteoarthritis<span class="pct">2% chose this</span></div>
+    </div>
+
+    <div class="verdict no"><span class="ic" style="background:var(--red)">✕</span><b style="color:var(--red)">Not quite — 41% get this one wrong</b><span>you chose A · the answer is B</span></div>
+
+    <div class="exp"><div class="k">WHY B IS RIGHT</div>
+     <p>Heel pain that worsens with loading and is now <b>present at rest</b>, with pain reproduced by <b>mediolateral compression of the calcaneus</b> — the squeeze test — points to a <b>calcaneal stress fracture</b>. Early radiographs are often normal, so MRI is needed if suspicion stays high.</p></div>
+
+    <div class="why"><div class="k" style="font-size:11.5px;font-weight:900;letter-spacing:1.4px;color:#9AA5B4;margin-bottom:7px">WHY THE OTHERS ARE NOT</div>
+     <div class="row"><i>A</i><span><b>Plantar fasciopathy</b> — focal plantar-medial tenderness and first-step pain, not diffuse tenderness with a positive squeeze test.</span></div>
+     <div class="row"><i>C</i><span><b>Baxter nerve entrapment</b> — medial plantar heel pain, often burning; not painful on calcaneal compression.</span></div>
+     <div class="row"><i>D</i><span><b>Achilles tendinopathy</b> — posterior pain at the insertion or within the tendon, with loading.</span></div>
+     <div class="row"><i>E</i><span><b>First MTP osteoarthritis</b> — great-toe pain on push-off, not heel pain.</span></div>
+    </div>
+
+    <div class="src"><div class="t">Read it in full — <b>Foot &amp; ankle › Calcaneal stress fracture</b> · reviewed Aug 2026</div><a>Open the page ›</a></div>
+
+    <div class="after">
+     <span class="b">＋ Add to flashcards</span><span class="b">✎ Note</span><span class="b">⚑ Report</span>
+     <span class="next">Next question →</span></div>
+   </div>
+   <div class="side">
+    <div class="k">THIS SESSION</div>
+    <div class="grid">
+     <span class="ok">1</span><span class="ok">2</span><span class="no">3</span><span class="ok">4</span><span class="ok">5</span>
+     <span class="no now">6</span><span>7</span><span>8</span><span>9</span><span>10</span>
+     <span>11</span><span>12</span><span>13</span><span>14</span><span>15</span>
+     <span>16</span><span>17</span><span>18</span><span>19</span><span>20</span></div>
+    <div class="box"><div class="t">Difficulty</div><div class="s">Hard · 59% answer correctly</div></div>
+    <div class="box"><div class="t">Tags</div><div class="s">heel pain · stress fracture · overuse</div></div>
+    <div class="box" style="background:var(--red-bg);border-color:var(--red-bd)"><div class="t" style="color:var(--red)">Added to your review list</div><div class="s">It will come back in a later session.</div></div>
+   </div>
+  </div>
+ </div>
+
+ <div class="notes">
+  <div class="nb"><b><i>1</i>THE SESSION OWNS THE SCREEN</b><p>No library tree. The chrome is <em>exit, set name, position, timer, score and flag</em> — plus a progress bar in the accent colour.</p></div>
+  <div class="nb"><b><i>2</i>A QUESTION MAP</b><p>Twenty squares showing correct, wrong, current and unseen. You can jump back, and you can see how far there is to go.</p></div>
+  <div class="nb"><b><i>3</i>ANSWER, THEN REVEAL</b><p><em>Submit answer</em> replaces a bare "Next question", and the keys 1–5 select while enter submits.</p></div>
+  <div class="nb"><b><i>4</i>THE SOURCE IS ATTACHED</b><p>Every explanation links to the library page it came from, with its review date — the reason to trust the answer.</p></div>
+  <div class="nb"><b><i>5</i>HOW OTHERS ANSWERED</b><p><em>41% get this wrong</em>, and the share who chose each distractor. It turns a mistake into information.</p></div>
+  <div class="nb"><b><i>6</i>WHAT TO DO WITH IT</b><p><em>Add to flashcards</em>, note, report, and an automatic place in your review list — so a wrong answer becomes future practice.</p></div>
+ </div>
+</div>
+</body></html>
