@@ -1,10 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useTransition } from "react";
 import { useTranslations, useFormatter } from "next-intl";
 import { HelpCircle, Target, Flag, Clock, Plus } from "lucide-react";
 import { Link, useRouter } from "@/i18n/navigation";
 import { restartSetAction } from "@/lib/actions/question-bank";
+import { startSessionAction } from "@/lib/actions/question-bank-session";
+import { DEFAULT_SESSION_SIZE } from "@/lib/question-bank-session-constants";
 import type { QuestionCategory, QuestionSetSummary, FolderQuestionRow, WorthRevisitingRow } from "@/lib/question-bank";
 import { QuestionBankFolderHeader } from "./QuestionBankFolderHeader";
 import { NewQuestionSetDrawer } from "./NewQuestionSetDrawer";
@@ -39,6 +41,7 @@ export function QuestionBankFolderPage({
   const router = useRouter();
   const [tab, setTab] = useState<FolderTab>("topics");
   const [newSetOpen, setNewSetOpen] = useState(false);
+  const [, startTransition] = useTransition();
 
   const totalQuestions = sets.reduce((sum, s) => sum + s.questionCount, 0);
   const correct = sets.reduce((sum, s) => sum + s.yourCorrect, 0);
@@ -49,11 +52,10 @@ export function QuestionBankFolderPage({
   const incorrectQuestions = allQuestions.filter((q) => q.status === "incorrect");
 
   function handleStartFolder() {
-    // No cross-topic session engine yet (Pass 4) — the closest honest
-    // approximation is jumping into whichever topic still has
-    // something left to answer, falling back to the first topic.
-    const target = sets.find((s) => s.yourAttempts < s.questionCount) ?? sets[0];
-    if (target) router.push(`/question-bank/set/${target.id}`);
+    startTransition(async () => {
+      const sessionId = await startSessionAction("tutor", { filter: "folder", folderId: category.id, size: DEFAULT_SESSION_SIZE });
+      if (sessionId) router.push(`/question-bank/session/${sessionId}`);
+    });
   }
 
   const tabs: { key: FolderTab; label: string }[] = [

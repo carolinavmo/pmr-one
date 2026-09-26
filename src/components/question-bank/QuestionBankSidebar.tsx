@@ -1,29 +1,27 @@
 "use client";
 
-import { useMemo, useState, type ReactNode } from "react";
+import { useMemo, useState, useTransition, type ReactNode } from "react";
 import { useTranslations } from "next-intl";
 import { Play, Search, FolderPlus, ListChecks, XCircle, Flag, EyeOff } from "lucide-react";
-import { Link, usePathname } from "@/i18n/navigation";
+import { Link, usePathname, useRouter } from "@/i18n/navigation";
 import type { QuestionCategory, QuestionBankRailStats } from "@/lib/question-bank";
 import { MacFolderIcon } from "@/components/ui/MacFolderIcon";
 import type { CardColor } from "@/lib/editorial-blocks";
 import { CARD_COLOR_SWATCH } from "@/lib/card-colors";
 import { NewCategoryDrawer } from "./NewCategoryDrawer";
+import { startSessionAction } from "@/lib/actions/question-bank-session";
+import type { SessionBuildFilter } from "@/lib/question-bank-session";
+import { DEFAULT_SESSION_SIZE } from "@/lib/question-bank-session-constants";
 
-// QBANK-IMPLEMENTATION.md Pass 1 — "Replace the library tree on
+// QBANK-IMPLEMENTATION.md Pass 1 (structure) + Pass 4 (wired to real
+// sessions once the engine existed) — "Replace the library tree on
 // /qbank with the question index" (SidebarFrame.tsx swaps this in for
 // /question-bank the same way it already does FlashcardsSidebar for
 // /flashcards and ClinicalToolsSidebar for /clinical-tools; the
 // generic condition-browsing tree it showed before had nothing to do
-// with practice questions).
-//
-// Practice and By subject are counts only for this pass, not yet
-// links — there's no cross-folder practice session or per-subject
-// browse page to send them to (that's Pass 4's session engine and
-// Pass 2's dashboard respectively); wiring real destinations here
-// once those exist is straightforward since the data (stats) is
-// already correct. Folders link to the one destination that already
-// works today: the existing /question-bank/category/[id] page.
+// with practice questions). Folders link to the one destination that
+// already worked before the session engine did:
+// /question-bank/category/[id].
 //
 // Accuracy bands reuse the app's existing meaningful-color tokens
 // rather than inventing new ones — trust/insight/warning are already
@@ -39,30 +37,56 @@ interface QuestionBankSidebarProps {
   stats: QuestionBankRailStats;
   categories: QuestionCategory[];
   isEditor: boolean;
+  isSignedIn: boolean;
   headerAction?: ReactNode;
 }
 
-export function QuestionBankSidebar({ stats, categories, isEditor, headerAction }: QuestionBankSidebarProps) {
+export function QuestionBankSidebar({ stats, categories, isEditor, isSignedIn, headerAction }: QuestionBankSidebarProps) {
   const t = useTranslations("questionBank");
   const pathname = usePathname();
+  const router = useRouter();
   const [query, setQuery] = useState("");
   const [folderDrawerOpen, setFolderDrawerOpen] = useState(false);
+  const [, startTransition] = useTransition();
 
   const q = query.trim().toLowerCase();
   const matchingCategories = useMemo(() => categories.filter((c) => !q || c.name.toLowerCase().includes(q)), [categories, q]);
 
   const isAllQuestionsActive = pathname === "/question-bank";
 
+  // Every Practice/By-subject row starts a real session — nothing to
+  // start when signed out (recordAttemptAction and startSessionAction
+  // both require a session), so those rows stay plain, non-interactive
+  // counts for a visitor, same as before Pass 4.
+  function handlePractice(filter: SessionBuildFilter, subjectId?: string) {
+    if (!isSignedIn) return;
+    startTransition(async () => {
+      const sessionId = await startSessionAction("tutor", { filter, subjectId, size: DEFAULT_SESSION_SIZE });
+      if (sessionId) router.push(`/question-bank/session/${sessionId}`);
+    });
+  }
+
   return (
     <nav aria-label={t("pageTitle")} className="flex min-h-0 flex-1 flex-col gap-5 overflow-y-auto">
       <div className="flex items-center gap-1.5">
-        <Link
-          href="/question-bank"
-          className="flex flex-1 items-center justify-center gap-1.5 rounded-lg bg-accent px-3 py-2.5 font-ui text-sm font-bold text-white hover:bg-accent-hover"
-        >
-          <Play className="size-3.5 fill-white" aria-hidden="true" />
-          {t("startSession")}
-        </Link>
+        {isSignedIn ? (
+          <button
+            type="button"
+            onClick={() => handlePractice("smart")}
+            className="flex flex-1 items-center justify-center gap-1.5 rounded-lg bg-accent px-3 py-2.5 font-ui text-sm font-bold text-white hover:bg-accent-hover"
+          >
+            <Play className="size-3.5 fill-white" aria-hidden="true" />
+            {t("startSession")}
+          </button>
+        ) : (
+          <Link
+            href="/login"
+            className="flex flex-1 items-center justify-center gap-1.5 rounded-lg bg-accent px-3 py-2.5 font-ui text-sm font-bold text-white hover:bg-accent-hover"
+          >
+            <Play className="size-3.5 fill-white" aria-hidden="true" />
+            {t("startSession")}
+          </Link>
+        )}
         {headerAction}
       </div>
 
@@ -80,26 +104,18 @@ export function QuestionBankSidebar({ stats, categories, isEditor, headerAction 
       <div className="flex flex-col gap-2">
         <span className="px-2.5 font-ui text-xs font-medium text-secondary">{t("practiceHeading")}</span>
         <div className="flex flex-col gap-0.5">
-          <div className={`flex items-center gap-2.5 rounded-lg px-2.5 py-2 font-ui text-sm font-bold text-primary ${isAllQuestionsActive ? "bg-border/30" : ""}`}>
-            <ListChecks className="size-4 shrink-0 text-secondary" aria-hidden="true" />
-            {t("allQuestions")}
-            <span className="ml-auto font-ui text-xs font-normal text-secondary">{stats.totalQuestions}</span>
-          </div>
-          <div className="flex items-center gap-2.5 rounded-lg px-2.5 py-2 font-ui text-sm font-bold text-primary">
-            <XCircle className="size-4 shrink-0 text-warning" aria-hidden="true" />
-            {t("myIncorrect")}
-            <span className="ml-auto font-ui text-xs font-normal text-secondary">{stats.incorrect}</span>
-          </div>
-          <div className="flex items-center gap-2.5 rounded-lg px-2.5 py-2 font-ui text-sm font-bold text-primary">
-            <Flag className="size-4 shrink-0 text-insight" aria-hidden="true" />
-            {t("flaggedRailLabel")}
-            <span className="ml-auto font-ui text-xs font-normal text-secondary">{stats.flagged}</span>
-          </div>
-          <div className="flex items-center gap-2.5 rounded-lg px-2.5 py-2 font-ui text-sm font-bold text-primary">
-            <EyeOff className="size-4 shrink-0 text-secondary" aria-hidden="true" />
-            {t("notSeenYet")}
-            <span className="ml-auto font-ui text-xs font-normal text-secondary">{stats.notSeen}</span>
-          </div>
+          <PracticeRow
+            icon={ListChecks}
+            iconClassName="text-secondary"
+            label={t("allQuestions")}
+            count={stats.totalQuestions}
+            active={isAllQuestionsActive}
+            disabled={!isSignedIn || stats.totalQuestions === 0}
+            onClick={() => handlePractice("smart")}
+          />
+          <PracticeRow icon={XCircle} iconClassName="text-warning" label={t("myIncorrect")} count={stats.incorrect} disabled={!isSignedIn || stats.incorrect === 0} onClick={() => handlePractice("incorrect")} />
+          <PracticeRow icon={Flag} iconClassName="text-insight" label={t("flaggedRailLabel")} count={stats.flagged} disabled={!isSignedIn || stats.flagged === 0} onClick={() => handlePractice("flagged")} />
+          <PracticeRow icon={EyeOff} iconClassName="text-secondary" label={t("notSeenYet")} count={stats.notSeen} disabled={!isSignedIn || stats.notSeen === 0} onClick={() => handlePractice("notSeen")} />
         </div>
       </div>
 
@@ -108,15 +124,21 @@ export function QuestionBankSidebar({ stats, categories, isEditor, headerAction 
           <span className="px-2.5 font-ui text-xs font-medium text-secondary">{t("bySubjectHeading")}</span>
           <div className="flex flex-col gap-0.5">
             {stats.bySubject.map((subject) => (
-              <div key={subject.subjectId} className="flex items-center gap-2.5 rounded-lg px-2.5 py-2 font-ui text-sm font-bold text-primary">
+              <button
+                key={subject.subjectId}
+                type="button"
+                onClick={() => handlePractice("subject", subject.subjectId)}
+                disabled={!isSignedIn}
+                className="flex items-center gap-2.5 rounded-lg px-2.5 py-2 font-ui text-sm font-bold text-primary hover:bg-border/30 disabled:cursor-default disabled:hover:bg-transparent"
+              >
                 <span className={`size-2.5 shrink-0 rounded-full ${CARD_COLOR_SWATCH[subject.subjectColor]}`} />
-                <span className="min-w-0 flex-1 truncate">{subject.subjectName}</span>
+                <span className="min-w-0 flex-1 truncate text-left">{subject.subjectName}</span>
                 {subject.accuracyPercent === null ? (
                   <span className="font-ui text-xs font-normal text-secondary">{t("notStarted")}</span>
                 ) : (
                   <span className={`font-ui text-xs font-black ${accuracyBandClass(subject.accuracyPercent)}`}>{subject.accuracyPercent}%</span>
                 )}
-              </div>
+              </button>
             ))}
           </div>
         </div>
@@ -146,6 +168,39 @@ export function QuestionBankSidebar({ stats, categories, isEditor, headerAction 
         {t("railFooter", { answered: stats.answered, percent: stats.accuracyPercent ?? 0, folders: categories.length })}
       </p>
     </nav>
+  );
+}
+
+function PracticeRow({
+  icon: Icon,
+  iconClassName,
+  label,
+  count,
+  active,
+  disabled,
+  onClick,
+}: {
+  icon: typeof ListChecks;
+  iconClassName: string;
+  label: string;
+  count: number;
+  active?: boolean;
+  disabled: boolean;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      disabled={disabled}
+      className={`flex items-center gap-2.5 rounded-lg px-2.5 py-2 font-ui text-sm font-bold text-primary disabled:cursor-default disabled:hover:bg-transparent ${
+        active ? "bg-border/30" : "hover:bg-border/30"
+      }`}
+    >
+      <Icon className={`size-4 shrink-0 ${iconClassName}`} aria-hidden="true" />
+      <span className="flex-1 text-left">{label}</span>
+      <span className="font-ui text-xs font-normal text-secondary">{count}</span>
+    </button>
   );
 }
 

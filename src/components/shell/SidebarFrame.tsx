@@ -94,7 +94,8 @@ export function SidebarFrame({
   const isMyHandbook = pathname.startsWith("/my-atlas");
   const isFlashcardsStudy = pathname.startsWith("/flashcards/study");
   const isFlashcards = pathname.startsWith("/flashcards") && !isFlashcardsStudy;
-  const isQuestionBank = pathname.startsWith("/question-bank");
+  const isQuestionBankSession = pathname.startsWith("/question-bank/session/");
+  const isQuestionBank = pathname.startsWith("/question-bank") && !isQuestionBankSession;
 
   // The sidebar now sits in a row below TopBar (the brand wordmark
   // moved there) rather than spanning the full viewport height itself,
@@ -133,6 +134,10 @@ export function SidebarFrame({
   }
   // FLASHCARDS-SPEC.md's study screen — "no navbar, no sidebar."
   if (isFlashcardsStudy) {
+    return null;
+  }
+  // QBANK-SPEC.md's answering screen — same "no navbar, no sidebar."
+  if (isQuestionBankSession) {
     return null;
   }
 
@@ -203,7 +208,7 @@ export function SidebarFrame({
           }
           if (isQuestionBank) {
             return (
-              <QuestionBankSidebar stats={questionBankRailStats} categories={questionBankCategories} isEditor={isEditor} headerAction={collapseButton} />
+              <QuestionBankSidebar stats={questionBankRailStats} categories={questionBankCategories} isEditor={isEditor} isSignedIn={!signedOut} headerAction={collapseButton} />
             );
           }
           return <IndexSidebar tree={tree} isSignedIn={!signedOut} headerAction={collapseButton} />;

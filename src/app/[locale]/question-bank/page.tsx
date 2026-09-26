@@ -11,9 +11,11 @@ import {
   getQuestionBankStreak,
 } from "@/lib/question-bank";
 import { getSubjects } from "@/lib/flashcards";
+import { getActiveSession } from "@/lib/question-bank-session";
 import { QuestionBankBrowser } from "@/components/question-bank/QuestionBankBrowser";
 import { QuestionBankFolderGrid } from "@/components/question-bank/QuestionBankFolderGrid";
 import { QuestionBankProgressPanels } from "@/components/question-bank/QuestionBankProgressPanels";
+import { QuestionBankSessionPanel } from "@/components/question-bank/QuestionBankSessionPanel";
 
 // Public browse, same idiom as Flashcards/Clinical Tools — folders and
 // sets are reference content anyone can look at and click through;
@@ -31,7 +33,7 @@ export default async function QuestionBankPage() {
   const isEditor = session?.user.role === "editor" || session?.user.role === "admin";
   const t = await getTranslations("questionBank");
 
-  const [categories, unfiledSets, stats, folderTiles, subjects, progress, streak] = await Promise.all([
+  const [categories, unfiledSets, stats, folderTiles, subjects, progress, streak, activeSession] = await Promise.all([
     getCategories(),
     getUnfiledSets(userId),
     getDashboardStats(userId),
@@ -39,6 +41,7 @@ export default async function QuestionBankPage() {
     getSubjects(),
     userId ? getQuestionBankProgress(userId, todayYmd) : Promise.resolve(null),
     userId ? getQuestionBankStreak(userId, todayYmd) : Promise.resolve(0),
+    userId ? getActiveSession(userId) : Promise.resolve(null),
   ]);
   const folderGroups = groupFoldersBySubject(folderTiles, subjects);
 
@@ -72,6 +75,8 @@ export default async function QuestionBankPage() {
           </div>
         )}
       </div>
+
+      {session && <QuestionBankSessionPanel activeSession={activeSession} notSeenCount={progress?.notSeen ?? stats.totalQuestions} />}
 
       <QuestionBankFolderGrid groups={folderGroups} />
 

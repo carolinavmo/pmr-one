@@ -68,6 +68,7 @@ export function revalidateQuestionBankSurfaces() {
   revalidatePath("/[locale]/question-bank", "page");
   revalidatePath("/[locale]/question-bank/category/[categoryId]", "page");
   revalidatePath("/[locale]/question-bank/set/[setId]", "page");
+  revalidatePath("/[locale]/question-bank/session/[sessionId]", "page");
 }
 
 // Called after any write to a course, module, or lesson (create/

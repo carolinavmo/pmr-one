@@ -71,6 +71,11 @@ export function NavbarFrame({
   if (pathname.startsWith("/flashcards/study")) {
     return null;
   }
+  // QBANK-SPEC.md's answering screen — "no navbar, no sidebar," same
+  // reasoning as Flashcards' own study screen above.
+  if (pathname.startsWith("/question-bank/session/")) {
+    return null;
+  }
 
   const activeTool = TOOLS.find(
     (tool) => pathname === tool.href || pathname.startsWith(`${tool.href}/`)
