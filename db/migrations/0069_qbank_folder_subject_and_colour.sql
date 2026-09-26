@@ -25,9 +25,13 @@ ALTER TABLE question_category ADD COLUMN colour_key TEXT NOT NULL DEFAULT 'sky'
 UPDATE question_category SET subject_id = (SELECT id FROM flashcard_subject ORDER BY position, name LIMIT 1)
   WHERE subject_id IS NULL;
 -- Cycle the 8 colours across existing folders by position so they
--- don't all start on the same default tint.
+-- don't all start on the same default tint. Normalized to a
+-- non-negative remainder first -- Postgres's % keeps the dividend's
+-- sign (-1 % 8 = -1, not 7), and a real production row has
+-- position = -1, which would otherwise index the array at 0 (out of
+-- bounds, silently NULL) and fail the NOT NULL constraint below.
 UPDATE question_category SET colour_key =
-  (ARRAY['peach', 'rose', 'lilac', 'mint', 'sky', 'butter', 'sage', 'blush'])[(position % 8) + 1];
+  (ARRAY['peach', 'rose', 'lilac', 'mint', 'sky', 'butter', 'sage', 'blush'])[((position % 8 + 8) % 8) + 1];
 
 ALTER TABLE question_category ALTER COLUMN subject_id SET NOT NULL;
 
