@@ -1,0 +1,147 @@
+<!DOCTYPE html><html><head><meta charset="utf-8">
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="qb_style.css">
+<style>
+.crumb{display:flex;align-items:center;gap:8px;font-size:12.5px;color:#9AA5B4;font-weight:700}
+.crumb b{color:var(--mute)}
+.phead{display:flex;gap:24px;align-items:center;background:#FFF0E4;border:2px solid #F8D7BC;border-radius:20px;padding:20px 24px;margin-top:12px}
+.ring{width:114px;height:114px;border-radius:50%;flex:none;display:flex;align-items:center;justify-content:center;position:relative;background:conic-gradient(#D9762F 62%,#F8D7BC 0)}
+.ring::after{content:"";position:absolute;width:88px;height:88px;border-radius:50%;background:#FFF0E4}
+.ring em{position:relative;z-index:2;font-style:normal;font-size:26px;font-weight:900;color:var(--navy)}
+.ring em small{display:block;font-size:9.5px;font-weight:900;letter-spacing:1px;color:#9AA5B4;margin-top:1px}
+.phead .t{flex:1}
+.phead h2{font-size:31px;font-weight:900;color:var(--navy);letter-spacing:-1px}
+.phead .s{font-size:14px;color:var(--mute);font-weight:700;margin-top:5px}
+.phead .pill{display:inline-flex;align-items:center;gap:8px;background:var(--grn-bg);border:1px solid var(--grn-bd);color:var(--grn);font-size:13px;font-weight:900;border-radius:20px;padding:7px 14px;margin-top:11px}
+.phead .acts{display:flex;flex-direction:column;gap:9px;width:200px;flex:none}
+.phead .acts .pri{background:var(--acc);color:#fff;font-size:14.5px;font-weight:900;border-radius:12px;padding:13px 0;text-align:center}
+.phead .acts .sec{background:#fff;border:1px solid #F8D7BC;color:var(--mute);font-size:12.5px;font-weight:800;border-radius:10px;padding:10px 0;text-align:center}
+.mrow{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:14px}
+.mt{border:1px solid var(--line);border-radius:13px;padding:13px 15px}
+.mt b{display:block;font-size:20px;font-weight:900;color:var(--navy)}
+.mt span{font-size:11.5px;color:#9AA5B4;font-weight:700}
+.tabs{display:flex;gap:4px;margin-top:20px;border-bottom:1px solid var(--line)}
+.tabs a{font-size:13.5px;font-weight:800;color:var(--mute);padding:10px 14px;border-bottom:3px solid transparent;margin-bottom:-1px}
+.tabs a.on{color:var(--navy);border-bottom-color:#D9762F}
+.sh{display:flex;align-items:baseline;gap:10px;margin-top:20px;margin-bottom:11px}
+.sh h4{font-size:16.5px;font-weight:900;color:var(--navy)}
+.sh span{font-size:12px;color:#9AA5B4;font-weight:700}
+.sh a{margin-left:auto;font-size:12px;font-weight:800;color:var(--acc-ink)}
+.two{display:flex;gap:16px}
+.col{flex:1;min-width:0}
+.tp{display:flex;align-items:center;gap:12px;border:1px solid var(--line);border-radius:12px;padding:11px 14px;margin-bottom:8px}
+.tp .t{flex:1;min-width:0}
+.tp .t b{display:block;font-size:14px;font-weight:900;color:var(--navy)}
+.tp .t span{font-size:11px;color:#9AA5B4;font-weight:700}
+.tp .bar{width:110px;height:8px;background:#EEF1F5;border-radius:4px;overflow:hidden;display:flex}
+.tp .bar i{display:block;height:8px}
+.tp .pc{width:44px;text-align:right;font-size:13px;font-weight:900}
+.wk{display:flex;align-items:center;gap:12px;border:1px solid var(--line);border-radius:12px;padding:10px 14px;margin-bottom:7px}
+.wk .w{width:120px;flex:none;font-size:13px;font-weight:900;color:var(--navy)}
+.wk .dots{flex:1;display:flex;gap:4px}
+.wk .dots i{width:16px;height:16px;border-radius:5px;display:block;background:#EEF1F5}
+.wk .dots i.ok{background:var(--grn)} .wk .dots i.no{background:var(--red)} .wk .dots i.pl{background:#D9DFE8}
+.wk .st{font-size:11.5px;font-weight:800;color:#9AA5B4;width:86px;text-align:right}
+.set{display:flex;gap:12px;margin-top:8px}
+.st2{flex:1;border:1px solid var(--line);border-radius:12px;padding:12px 14px}
+.st2 .k{font-size:10px;font-weight:900;letter-spacing:1.2px;color:#9AA5B4}
+.st2 b{display:block;font-size:15px;font-weight:900;color:var(--navy);margin-top:4px}
+.st2 span{font-size:11.5px;color:#9AA5B4;font-weight:700}
+.warn{background:var(--amb-bg);border-left:7px solid var(--amb);border-radius:13px;padding:13px 17px;margin-top:14px}
+.warn b{color:var(--amb);font-weight:900}
+.warn p{font-size:15px;line-height:1.4}
+.warn p b2{font-weight:900;color:var(--navy)}
+</style></head><body>
+<div class="sheet" id="d">
+ <div class="tb"><i style="background:#D9762F"></i><i style="background:var(--navy)"></i></div>
+ <div class="bh"><img src="logo.png" alt=""><b>PM&amp;R <span style="color:var(--acc)">Explained</span></b></div>
+ <h1 class="t">Study Planner — inside a plan</h1>
+ <div class="dek">A plan is a <b>goal with a deadline</b> that writes its own tasks. The page shows whether it is on track, what it covers, and what to change if it is not.</div>
+
+ <div class="frame">
+  <div class="nav">
+   <div class="r1"><div class="logo"><img src="logo.png" alt="">PM&amp;R <span>Explained</span></div>
+    <div class="srch">⌕&nbsp; Search conditions, exam maneuvers, calculators…</div>
+    <div class="ut"><span>🌐 EN ⌄</span><span>🔔</span><div class="av">CA</div></div></div>
+   <div class="r2"><span class="pl">▣ Explore library</span><span class="dv"></span><span class="pl">Clinical Tools</span><span class="on">▤ Study Planner</span><span class="pl">My Handbook</span><span class="pl">Flashcards</span><span class="pl">Question Bank</span><span class="pl">Courses</span></div>
+  </div>
+  <div class="body">
+   <div class="rail">
+    <div class="newbtn">＋ New task</div>
+    <div class="fd">⌕ Search tasks and plans…</div>
+    <div class="g">PLANNER</div>
+    <div class="r"><i style="background:var(--acc)"></i>Today<span class="n">3</span></div>
+    <div class="r"><i style="background:#C6CED8"></i>This week<span class="n">11</span></div>
+    <div class="r"><i style="background:var(--red)"></i>Overdue<span class="due">2</span></div>
+    <div class="r"><i style="background:var(--grn)"></i>Done<span class="n">34</span></div>
+    <div class="r"><i style="background:#9AA5B4"></i>Calendar</div>
+    <div class="g">MY PLANS<span class="pl">＋</span></div>
+    <div class="r on"><i style="background:#D9762F"></i>Board exam<span class="n">62%</span></div>
+    <div class="r"><i style="background:#6F5FCB"></i>Neurology rotation<span class="n">28%</span></div>
+    <div class="r"><i style="background:#2E9B80"></i>Weekly routine</div>
+    <div class="railfoot">11 tasks this week · 5-day streak</div>
+   </div>
+
+   <div class="main">
+    <div class="crumb">Study Planner <span>›</span> <b>My plans</b> <span>›</span> <b>Board exam</b></div>
+
+    <div class="phead">
+     <div class="ring"><em>62%<small>COMPLETE</small></em></div>
+     <div class="t"><h2>Board exam</h2>
+      <div class="s">18 May 2027 · 34 weeks left · built from 9 library regions</div>
+      <div class="pill">✓ On track — 2 tasks ahead of schedule</div></div>
+     <div class="acts"><div class="pri">▶ Today's tasks · 2</div><div class="sec">Adjust the pace</div><div class="sec">Edit topics · Pause</div></div>
+    </div>
+
+    <div class="mrow">
+     <div class="mt"><b>148 of 240</b><span>tasks done</span></div>
+     <div class="mt"><b>6.5 h</b><span>a week, average</span></div>
+     <div class="mt"><b>3 / week</b><span>current pace</span></div>
+     <div class="mt"><b>April 2027</b><span>projected finish</span></div>
+    </div>
+
+    <div class="tabs"><a class="on">Overview</a><a>Topics · 9</a><a>Schedule</a><a>Settings</a></div>
+
+    <div class="two">
+     <div class="col">
+      <div class="sh"><h4>Coverage by topic</h4><span>what the plan includes</span><a>Edit ›</a></div>
+      <div class="tp"><div class="t"><b>Spinal cord injury</b><span>32 tasks · read, cards, questions</span></div>
+       <div class="bar"><i style="width:84%;background:var(--grn)"></i></div><span class="pc" style="color:var(--grn)">84%</span></div>
+      <div class="tp"><div class="t"><b>Stroke</b><span>28 tasks</span></div>
+       <div class="bar"><i style="width:71%;background:var(--grn)"></i></div><span class="pc" style="color:var(--grn)">71%</span></div>
+      <div class="tp"><div class="t"><b>MSK — spine</b><span>26 tasks</span></div>
+       <div class="bar"><i style="width:58%;background:var(--amb)"></i></div><span class="pc" style="color:var(--amb)">58%</span></div>
+      <div class="tp"><div class="t"><b>Amputees and prosthetics</b><span>22 tasks</span></div>
+       <div class="bar"><i style="width:31%;background:var(--red)"></i></div><span class="pc" style="color:var(--red)">31%</span></div>
+      <div class="tp"><div class="t"><b>Paediatric rehabilitation</b><span>18 tasks</span></div>
+       <div class="bar"><i style="width:0%;background:var(--red)"></i></div><span class="pc" style="color:#9AA5B4">not started</span></div>
+      <div class="tp" style="border-style:dashed;justify-content:center;color:#9AA5B4;font-weight:900;font-size:13px">＋ Add a topic to this plan</div>
+     </div>
+
+     <div class="col">
+      <div class="sh"><h4>The weeks</h4><span>each square is a task</span><a>Full schedule ›</a></div>
+      <div class="wk"><span class="w">22–28 Sep</span><div class="dots"><i class="ok"></i><i class="ok"></i><i class="ok"></i><i class="ok"></i><i class="no"></i><i class="ok"></i><i class="pl"></i><i class="pl"></i></div><span class="st">this week</span></div>
+      <div class="wk"><span class="w">29 Sep–5 Oct</span><div class="dots"><i class="pl"></i><i class="pl"></i><i class="pl"></i><i class="pl"></i><i class="pl"></i><i class="pl"></i><i class="pl"></i></div><span class="st">7 planned</span></div>
+      <div class="wk"><span class="w">6–12 Oct</span><div class="dots"><i class="pl"></i><i class="pl"></i><i class="pl"></i><i class="pl"></i><i class="pl"></i><i class="pl"></i><i class="pl"></i></div><span class="st">7 planned</span></div>
+      <div class="wk"><span class="w">15–21 Sep</span><div class="dots"><i class="ok"></i><i class="ok"></i><i class="ok"></i><i class="ok"></i><i class="ok"></i><i class="ok"></i><i class="ok"></i></div><span class="st">all done</span></div>
+      <div class="wk"><span class="w">8–14 Sep</span><div class="dots"><i class="ok"></i><i class="ok"></i><i class="no"></i><i class="ok"></i><i class="ok"></i><i class="ok"></i></div><span class="st">1 missed</span></div>
+
+      <div class="set">
+       <div class="st2"><div class="k">STUDY DAYS</div><b>Mon · Tue · Wed · Thu · Sat</b><span>Fridays and Sundays kept free</span></div>
+       <div class="st2"><div class="k">SESSION LENGTH</div><b>45 minutes</b><span>about 3 tasks a day</span></div>
+      </div>
+
+      <div class="warn"><p><b>If you fall behind:</b> the plan does not silently pile tasks up. Missed tasks roll forward as overdue, and once there are more than five the planner offers to <b style="color:var(--navy)">re-spread the remaining topics</b> across the weeks left.</p></div>
+     </div>
+    </div>
+   </div>
+  </div>
+ </div>
+
+ <div class="notes">
+  <div class="nb"><b>ON TRACK, STATED PLAINLY</b><p>A green pill when you are ahead, amber when you are behind, with the number of tasks either way — and a <em>projected finish</em> from your actual pace, not the plan's.</p></div>
+  <div class="nb"><b>COVERAGE, NOT JUST PROGRESS</b><p>62% overall hides that paediatrics has not started. The topic bars show <em>where the gap is</em>, which is what an exam plan is really for.</p></div>
+  <div class="nb"><b>THE PLAN CAN BE CHANGED</b><p><em>Adjust the pace, edit topics, pause.</em> A plan nobody can reshape gets abandoned the first busy week — so re-spreading is offered automatically.</p></div>
+ </div>
+</div>
+</body></html>

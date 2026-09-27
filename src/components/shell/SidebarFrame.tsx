@@ -8,10 +8,12 @@ import type { TopicNode } from "@/lib/topics";
 import type { CalculatorCategory, CalculatorSummary } from "@/lib/clinical-tools";
 import type { FlashcardCategory, TopicTile } from "@/lib/flashcards";
 import type { QuestionCategory, QuestionBankRailStats } from "@/lib/question-bank";
+import type { StudyPlan, PlannerRailStats } from "@/lib/planner";
 import { IndexSidebar } from "./IndexSidebar";
 import { ClinicalToolsSidebar } from "@/components/clinical-tools/ClinicalToolsSidebar";
 import { FlashcardsSidebar } from "@/components/flashcards/FlashcardsSidebar";
 import { QuestionBankSidebar } from "@/components/question-bank/QuestionBankSidebar";
+import { PlannerSidebar } from "@/components/planner/PlannerSidebar";
 
 // Persisted app-wide (not per-page) — same collapsed/expanded
 // preference should hold as a reader moves around the site, same
@@ -61,6 +63,8 @@ interface SidebarFrameProps {
   flashcardsFolderDueBadges: Record<string, number>;
   questionBankCategories: QuestionCategory[];
   questionBankRailStats: QuestionBankRailStats;
+  plannerRailStats: PlannerRailStats | null;
+  plannerPlans: StudyPlan[];
   isEditor: boolean;
 }
 
@@ -84,6 +88,8 @@ export function SidebarFrame({
   flashcardsFolderDueBadges,
   questionBankCategories,
   questionBankRailStats,
+  plannerRailStats,
+  plannerPlans,
   isEditor,
 }: SidebarFrameProps) {
   const collapsed = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
@@ -96,6 +102,7 @@ export function SidebarFrame({
   const isFlashcards = pathname.startsWith("/flashcards") && !isFlashcardsStudy;
   const isQuestionBankSession = pathname.startsWith("/question-bank/session/");
   const isQuestionBank = pathname.startsWith("/question-bank") && !isQuestionBankSession;
+  const isStudyPlanner = pathname.startsWith("/study-planner");
 
   // The sidebar now sits in a row below TopBar (the brand wordmark
   // moved there) rather than spanning the full viewport height itself,
@@ -210,6 +217,9 @@ export function SidebarFrame({
             return (
               <QuestionBankSidebar stats={questionBankRailStats} categories={questionBankCategories} isEditor={isEditor} isSignedIn={!signedOut} headerAction={collapseButton} />
             );
+          }
+          if (isStudyPlanner) {
+            return <PlannerSidebar isSignedIn={!signedOut} railStats={plannerRailStats} plans={plannerPlans} headerAction={collapseButton} />;
           }
           return <IndexSidebar tree={tree} isSignedIn={!signedOut} headerAction={collapseButton} />;
         })()}

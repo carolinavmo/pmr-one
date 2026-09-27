@@ -1,0 +1,159 @@
+<!DOCTYPE html><html><head><meta charset="utf-8">
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="qb_style.css">
+<style>
+[data-c="peach"]{--c:#D9762F;--cb:#FFF0E4;--cd:#F8D7BC}
+[data-c="lilac"]{--c:#6F5FCB;--cb:#EFEBFC;--cd:#DBD3F5}
+[data-c="mint"]{--c:#2E9B80;--cb:#E3F6F0;--cd:#C3E9DF}
+[data-c="sky"]{--c:#4189C4;--cb:#E7F2FB;--cd:#C7E1F4}
+.hd{display:flex;align-items:flex-start;gap:16px}
+.hd h2{font-size:30px;font-weight:900;color:var(--navy);letter-spacing:-1px}
+.hd p{font-size:14.5px;color:var(--mute);margin-top:4px}
+.mets{display:flex;gap:10px;margin-left:auto}
+.mets div{border:1px solid var(--line);border-radius:12px;padding:9px 14px;text-align:center;background:#fff}
+.mets b{display:block;font-size:20px;font-weight:900;color:var(--navy)}
+.mets span{font-size:10.5px;color:#9AA5B4;font-weight:700}
+.today{background:var(--navy);border-radius:16px;padding:20px 24px;margin-top:16px;color:#fff}
+.today .k{font-size:10px;font-weight:900;letter-spacing:1.5px;color:var(--acc-dk)}
+.today .row{display:flex;align-items:center;gap:16px}
+.today h3{font-size:27px;font-weight:900;letter-spacing:-.7px;margin-top:4px}
+.today p{font-size:13.5px;color:#9DB0CA;margin-top:6px}
+.today .btn{background:var(--acc);color:#fff;font-size:15px;font-weight:900;border-radius:11px;padding:13px 22px;white-space:nowrap}
+.today .btn2{border:1px solid rgba(255,255,255,.28);color:#fff;font-size:12.5px;font-weight:800;border-radius:10px;padding:12px 15px;white-space:nowrap}
+.tasks{display:flex;flex-direction:column;gap:8px;margin-top:14px}
+.tk{display:flex;align-items:center;gap:12px;background:rgba(255,255,255,.08);border-radius:12px;padding:11px 14px}
+.tk .cb{width:22px;height:22px;border-radius:7px;border:2px solid rgba(255,255,255,.4);flex:none}
+.tk .cb.on{background:var(--acc);border-color:var(--acc);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:900}
+.tk .tag{font-size:10px;font-weight:900;letter-spacing:.9px;border-radius:6px;padding:3px 8px;background:rgba(255,255,255,.16);color:#C8D3E2}
+.tk b{font-size:15px;font-weight:800;flex:1}
+.tk b.done{text-decoration:line-through;color:#7E93B4;font-weight:700}
+.tk span{font-size:12px;color:#9DB0CA;font-weight:700}
+.tk .go{font-size:12px;font-weight:900;color:#fff;background:rgba(255,255,255,.18);border-radius:8px;padding:7px 12px}
+.sh{display:flex;align-items:baseline;gap:10px;margin-top:24px;margin-bottom:12px}
+.sh h4{font-size:17px;font-weight:900;color:var(--navy)}
+.sh span{font-size:12px;color:#9AA5B4;font-weight:700}
+.sh a{margin-left:auto;font-size:12px;font-weight:800;color:var(--acc-ink)}
+.week{display:flex;gap:9px}
+.wd{flex:1;border:2px solid var(--line);border-radius:14px;padding:11px 10px;text-align:center}
+.wd .d{font-size:11px;font-weight:900;letter-spacing:1.2px;color:#9AA5B4}
+.wd .n{font-size:19px;font-weight:900;color:var(--navy);margin-top:2px}
+.wd .bars{display:flex;gap:3px;justify-content:center;margin-top:8px;min-height:22px;align-items:flex-end}
+.wd .bars i{width:7px;border-radius:2px;display:block}
+.wd .lb{font-size:10.5px;color:#9AA5B4;font-weight:800;margin-top:6px}
+.wd.now{border-color:var(--navy);background:var(--soft)}
+.wd.now .d{color:var(--navy)}
+.wd.done{background:var(--grn-bg);border-color:var(--grn-bd)}
+.plans{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.pl{background:var(--cb);border-radius:18px;padding:16px 18px}
+.pl .nm{font-size:17px;font-weight:900;color:var(--navy);letter-spacing:-.3px}
+.pl .sb{font-size:11.5px;color:var(--mute);font-weight:700;margin-top:3px}
+.pl .bar{height:8px;border-radius:4px;background:rgba(20,40,74,.09);overflow:hidden;margin-top:11px}
+.pl .bar i{display:block;height:8px;background:var(--c)}
+.pl .ft{display:flex;align-items:center;margin-top:8px;font-size:12px;font-weight:800;color:var(--c)}
+.pl .ft .go{margin-left:auto;font-size:12.5px;font-weight:900;color:var(--navy)}
+.pl.ghost{background:#fff;border:2px dashed var(--line);display:flex;flex-direction:column;align-items:center;justify-content:center;color:#9AA5B4;min-height:130px}
+.list{display:flex;flex-direction:column;gap:8px}
+.li{display:flex;align-items:center;gap:12px;border:1px solid var(--line);border-radius:12px;padding:11px 14px}
+.li .cb{width:20px;height:20px;border-radius:6px;border:2px solid var(--line);flex:none}
+.li .tag{font-size:10px;font-weight:900;letter-spacing:.9px;border-radius:6px;padding:3px 8px}
+.li b{font-size:14.5px;font-weight:800;color:var(--navy);flex:1}
+.li span{font-size:11.5px;color:#9AA5B4;font-weight:700}
+.li .when{font-size:11.5px;font-weight:900;color:var(--mute)}
+</style></head><body>
+<div class="sheet" id="d">
+ <div class="tb"><i style="background:var(--acc)"></i><i style="background:var(--navy)"></i></div>
+ <div class="bh"><img src="logo.png" alt=""><b>PM&amp;R <span style="color:var(--acc)">Explained</span></b></div>
+ <h1 class="t">Study Planner — improved</h1>
+ <div class="dek">A planner should say <b>what to do today</b>, not show an empty month. Tasks now come from the library, flashcards and the question bank — and each one starts with a button.</div>
+
+ <div class="frame">
+  <div class="nav">
+   <div class="r1"><div class="logo"><img src="logo.png" alt="">PM&amp;R <span>Explained</span></div>
+    <div class="srch">⌕&nbsp; Search conditions, exam maneuvers, calculators…</div>
+    <div class="ut"><span>🌐 EN ⌄</span><span>🔔</span><div class="av">CA</div></div></div>
+   <div class="r2"><span class="pl">▣ Explore library</span><span class="dv"></span><span class="pl">Clinical Tools</span><span class="on">▤ Study Planner</span><span class="pl">My Handbook</span><span class="pl">Flashcards</span><span class="pl">Question Bank</span><span class="pl">Courses</span></div>
+  </div>
+  <div class="body">
+   <div class="rail">
+    <div class="newbtn">＋ New task</div>
+    <div class="fd">⌕ Search tasks and plans…</div>
+    <div class="g">PLANNER</div>
+    <div class="r on"><i style="background:var(--acc)"></i>Today<span class="n">3</span></div>
+    <div class="r"><i style="background:#C6CED8"></i>This week<span class="n">11</span></div>
+    <div class="r"><i style="background:var(--red)"></i>Overdue<span class="due">2</span></div>
+    <div class="r"><i style="background:var(--grn)"></i>Done<span class="n">34</span></div>
+    <div class="r"><i style="background:#9AA5B4"></i>Calendar</div>
+    <div class="g">MY PLANS<span class="pl">＋</span></div>
+    <div class="r"><i style="background:#D9762F"></i>Board exam<span class="n">62%</span></div>
+    <div class="r"><i style="background:#6F5FCB"></i>Neurology rotation<span class="n">28%</span></div>
+    <div class="r"><i style="background:#2E9B80"></i>Weekly routine</div>
+    <div class="railfoot">11 tasks this week · 5-day streak</div>
+   </div>
+
+   <div class="main">
+    <div class="hd"><div><h2>Study Planner</h2><p>Friday, 27 September</p></div>
+     <div class="mets"><div><b>3</b><span>due today</span></div><div><b>8/11</b><span>this week</span></div><div><b>5</b><span>day streak</span></div><div><b>4.2 h</b><span>studied this week</span></div></div></div>
+
+    <div class="today">
+     <div class="row"><div style="flex:1"><div class="k">TODAY</div><h3>3 tasks · about 45 minutes</h3>
+       <p>Two from your board exam plan, one review you postponed on Tuesday.</p></div>
+      <div class="btn">▶ Start today's plan</div><div class="btn2">Reschedule</div></div>
+     <div class="tasks">
+      <div class="tk"><span class="cb on">✓</span><span class="tag">READ</span><b class="done">Spinal cord syndromes — anterior cord</b><span>12 min</span></div>
+      <div class="tk"><span class="cb"></span><span class="tag">FLASHCARDS</span><b>Neurology — 20 cards due</b><span>6 min</span><span class="go">Start ›</span></div>
+      <div class="tk"><span class="cb"></span><span class="tag">QUESTIONS</span><b>Spinal cord injury — 15 questions</b><span>11 min</span><span class="go">Start ›</span></div>
+      <div class="tk" style="background:rgba(184,38,43,.18)"><span class="cb"></span><span class="tag" style="background:rgba(255,255,255,.2)">OVERDUE</span><b>Read: ASIA classification</b><span>from Tuesday</span><span class="go">Start ›</span></div>
+     </div>
+    </div>
+
+    <div class="sh"><h4>This week</h4><span>8 of 11 tasks done</span><a>Open the calendar ›</a></div>
+    <div class="week">
+     <div class="wd done"><div class="d">MON</div><div class="n">23</div><div class="bars"><i style="height:14px;background:var(--grn)"></i><i style="height:10px;background:var(--grn)"></i></div><div class="lb">2 done</div></div>
+     <div class="wd done"><div class="d">TUE</div><div class="n">24</div><div class="bars"><i style="height:16px;background:var(--grn)"></i><i style="height:12px;background:var(--red)"></i></div><div class="lb">1 missed</div></div>
+     <div class="wd done"><div class="d">WED</div><div class="n">25</div><div class="bars"><i style="height:18px;background:var(--grn)"></i><i style="height:12px;background:var(--grn)"></i><i style="height:9px;background:var(--grn)"></i></div><div class="lb">3 done</div></div>
+     <div class="wd done"><div class="d">THU</div><div class="n">26</div><div class="bars"><i style="height:13px;background:var(--grn)"></i><i style="height:15px;background:var(--grn)"></i></div><div class="lb">2 done</div></div>
+     <div class="wd now"><div class="d">FRI</div><div class="n">27</div><div class="bars"><i style="height:16px;background:var(--acc)"></i><i style="height:12px;background:var(--acc)"></i><i style="height:10px;background:var(--acc)"></i></div><div class="lb">3 today</div></div>
+     <div class="wd"><div class="d">SAT</div><div class="n">28</div><div class="bars"><i style="height:10px;background:#C6CED8"></i></div><div class="lb">1 planned</div></div>
+     <div class="wd"><div class="d">SUN</div><div class="n">29</div><div class="bars"></div><div class="lb">rest day</div></div>
+    </div>
+
+    <div class="sh"><h4>My plans</h4><span>3 running</span><a>Manage ›</a></div>
+    <div class="plans">
+     <div class="pl" data-c="peach"><div class="nm">Board exam</div><div class="sb">18 May 2027 · 34 weeks left</div>
+      <div class="bar"><i style="width:62%"></i></div>
+      <div class="ft"><span>62% · on track</span><span class="go">Open ›</span></div></div>
+     <div class="pl" data-c="lilac"><div class="nm">Neurology rotation</div><div class="sb">6-week plan · week 2</div>
+      <div class="bar"><i style="width:28%"></i></div>
+      <div class="ft"><span>28% · 2 tasks behind</span><span class="go">Open ›</span></div></div>
+     <div class="pl ghost"><div style="font-size:26px;font-weight:900">＋</div><div class="nm" style="color:#9AA5B4;font-size:15px">New plan</div>
+      <div class="sb" style="text-align:center;padding:0 14px">from an exam date, a rotation or a topic</div></div>
+    </div>
+
+    <div class="sh"><h4>Coming up</h4><span>next 7 days</span><a>See all ›</a></div>
+    <div class="list">
+     <div class="li"><span class="cb"></span><span class="tag" style="background:#FFF0E4;color:#D9762F">READ</span><b>Brown-Séquard syndrome</b><span>board exam plan</span><span class="when">Tomorrow</span></div>
+     <div class="li"><span class="cb"></span><span class="tag" style="background:#EFEBFC;color:#6F5FCB">QUESTIONS</span><b>Neurology — 20 questions</b><span>neurology rotation</span><span class="when">Monday</span></div>
+     <div class="li"><span class="cb"></span><span class="tag" style="background:#E3F6F0;color:#2E9B80">FLASHCARDS</span><b>Weekly review — all topics due</b><span>weekly routine</span><span class="when">Monday</span></div>
+    </div>
+   </div>
+  </div>
+ </div>
+
+ <div class="notes">
+  <div class="nb"><b><i>1</i>TODAY, NOT A MONTH</b><p>The page opens on <em>three tasks and 45 minutes</em>, with a button that starts them. The month grid is now one view inside Calendar.</p></div>
+  <div class="nb"><b><i>2</i>TASKS COME FROM THE PLATFORM</b><p>Each task is a <em>library page, a flashcard session or a question set</em> — tagged, timed, and startable in one click. Not a generic to-do list.</p></div>
+  <div class="nb"><b><i>3</i>THE RAIL IS THE PLANNER</b><p>The library tree is gone. In its place: <em>today, this week, overdue, done</em>, then your plans with their progress.</p></div>
+  <div class="nb"><b><i>4</i>THE WEEK AT A GLANCE</b><p>Seven days with what was done, what was missed and what is planned — today outlined. A rest day says "rest day", not nothing.</p></div>
+  <div class="nb"><b><i>5</i>PLANS, NOT TASKS ALONE</b><p><em>Board exam, rotation, weekly routine</em> — each with a deadline, progress and whether you are on track. Tasks are generated from them.</p></div>
+  <div class="nb"><b><i>6</i>NUMBERS THAT MOVE</b><p>Due today, this week's fraction, streak and hours studied — instead of a 0% ring and an empty goal.</p></div>
+ </div>
+
+<script>
+const t=[['.today .btn',1],['.tasks .tk',2],['.rail .g',3],['.week',4],['.plans',5],['.mets',6]];
+const f=document.querySelector('.frame'),fr=f.getBoundingClientRect();
+t.forEach(([sel,n])=>{const el=document.querySelector(sel);if(!el)return;const r=el.getBoundingClientRect();
+ const p=document.createElement('div');p.className='pin';p.textContent=n;
+ p.style.left=(r.left-fr.left-14)+'px';p.style.top=(r.top-fr.top-13)+'px';f.appendChild(p);});
+</script>
+</div>
+</body></html>

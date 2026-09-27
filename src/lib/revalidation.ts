@@ -80,6 +80,16 @@ export function revalidateCourseSurfaces() {
   revalidatePath("/[locale]/courses/[slug]", "page");
 }
 
+// Called after any write to a plan or task — covers the planner
+// dashboard, calendar, and plan-detail routes for the same "any of
+// these can show stale data after a mutation on another" reason as
+// revalidateQuestionBankSurfaces.
+export function revalidatePlannerSurfaces() {
+  revalidatePath("/[locale]/study-planner", "page");
+  revalidatePath("/[locale]/study-planner/calendar", "page");
+  revalidatePath("/[locale]/study-planner/plan/[planId]", "page");
+}
+
 export function revalidateShellSurfaces() {
   revalidatePath("/[locale]", "layout");
   revalidatePath("/[locale]", "page");

@@ -1,0 +1,167 @@
+<!DOCTYPE html><html><head><meta charset="utf-8">
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="qb_style.css">
+<style>
+.crumb{display:flex;align-items:center;gap:8px;font-size:12.5px;color:#9AA5B4;font-weight:700}
+.crumb b{color:var(--mute)}
+.hd{display:flex;align-items:center;gap:14px;margin-top:10px}
+.hd h2{font-size:29px;font-weight:900;color:var(--navy);letter-spacing:-1px}
+.hd .nav2{display:flex;align-items:center;gap:8px;margin-left:16px}
+.hd .nav2 span{width:30px;height:30px;border:1px solid var(--line);border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:13px;color:var(--mute);font-weight:900}
+.hd .nav2 b{font-size:17px;font-weight:900;color:var(--navy);padding:0 6px}
+.seg{margin-left:auto;display:flex;background:var(--soft);border:1px solid var(--line);border-radius:11px;padding:3px}
+.seg span{font-size:12.5px;font-weight:800;color:var(--mute);padding:7px 14px;border-radius:9px}
+.seg span.on{background:#fff;color:var(--navy);box-shadow:0 1px 3px rgba(20,40,74,.1)}
+.newb{background:var(--navy);color:#fff;font-size:12.5px;font-weight:800;border-radius:10px;padding:9px 15px;margin-left:10px}
+.filters{display:flex;gap:8px;margin-top:14px;align-items:center;flex-wrap:wrap}
+.filters .lb{font-size:11.5px;font-weight:900;letter-spacing:1.2px;color:#9AA5B4}
+.filters a{font-size:12px;font-weight:800;border:1px solid var(--line);border-radius:14px;padding:6px 12px;background:#fff;color:var(--ink);display:flex;align-items:center;gap:7px}
+.filters a i{width:9px;height:9px;border-radius:3px;display:block}
+.filters a.off{color:#B4BDC8}
+.cal{display:flex;gap:16px;margin-top:14px}
+.grid{flex:1;min-width:0}
+.dow{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin-bottom:6px}
+.dow span{font-size:10.5px;font-weight:900;letter-spacing:1.2px;color:#9AA5B4;text-align:center}
+.days{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
+.dc{border:1px solid var(--line);border-radius:11px;min-height:104px;padding:7px 8px;background:#fff}
+.dc .n{font-size:13px;font-weight:900;color:var(--navy)}
+.dc.out{background:var(--soft)}.dc.out .n{color:#C6CED8}
+.dc.now{border:2px solid var(--navy)}
+.dc.sel{border:2px solid var(--acc);background:var(--acc-bg)}
+.ch{display:flex;align-items:center;gap:5px;border-radius:6px;padding:3px 6px;font-size:10.5px;font-weight:800;margin-top:4px;line-height:1.2}
+.ch i{width:6px;height:6px;border-radius:2px;flex:none}
+.ch.done{opacity:.55;text-decoration:line-through}
+.ch.over{background:#FBE3E1;color:#B8262B}
+.more{font-size:10px;font-weight:800;color:#9AA5B4;margin-top:4px}
+.side{width:300px;flex:none;border:1px solid var(--line);border-radius:14px;padding:16px 18px;height:max-content}
+.side .k{font-size:10px;font-weight:900;letter-spacing:1.3px;color:#9AA5B4}
+.side h3{font-size:21px;font-weight:900;color:var(--navy);margin-top:4px}
+.side .s{font-size:12.5px;color:var(--mute);font-weight:700;margin-top:3px}
+.tk{display:flex;align-items:center;gap:10px;border:1px solid var(--line);border-radius:11px;padding:10px 12px;margin-top:9px}
+.tk .cb{width:19px;height:19px;border-radius:6px;border:2px solid var(--line);flex:none}
+.tk .cb.on{background:var(--grn);border-color:var(--grn);color:#fff;font-size:11px;font-weight:900;display:flex;align-items:center;justify-content:center}
+.tk .tg{font-size:9.5px;font-weight:900;letter-spacing:.8px;border-radius:5px;padding:2px 6px}
+.tk b{font-size:13px;font-weight:800;color:var(--navy);flex:1;line-height:1.2}
+.tk span{font-size:11px;color:#9AA5B4;font-weight:700}
+.side .go{display:block;text-align:center;background:var(--acc);color:#fff;font-size:13px;font-weight:900;border-radius:10px;padding:11px 0;margin-top:12px}
+.side .add{display:block;text-align:center;border:1px dashed var(--line);color:#9AA5B4;font-size:12px;font-weight:800;border-radius:10px;padding:10px 0;margin-top:8px}
+.legend{display:flex;gap:14px;margin-top:12px;font-size:11.5px;color:#9AA5B4;font-weight:800;align-items:center}
+.legend span{display:flex;align-items:center;gap:6px}
+.legend i{width:9px;height:9px;border-radius:3px;display:block}
+</style></head><body>
+<div class="sheet" id="d">
+ <div class="tb"><i style="background:var(--acc)"></i><i style="background:var(--navy)"></i></div>
+ <div class="bh"><img src="logo.png" alt=""><b>PM&amp;R <span style="color:var(--acc)">Explained</span></b></div>
+ <h1 class="t">Study Planner — the calendar</h1>
+ <div class="dek">The month view, now with something in it: tasks as coloured chips by plan, a selected day beside the grid, and filters for <b>which plan you are looking at</b>.</div>
+
+ <div class="frame">
+  <div class="nav">
+   <div class="r1"><div class="logo"><img src="logo.png" alt="">PM&amp;R <span>Explained</span></div>
+    <div class="srch">⌕&nbsp; Search conditions, exam maneuvers, calculators…</div>
+    <div class="ut"><span>🌐 EN ⌄</span><span>🔔</span><div class="av">CA</div></div></div>
+   <div class="r2"><span class="pl">▣ Explore library</span><span class="dv"></span><span class="pl">Clinical Tools</span><span class="on">▤ Study Planner</span><span class="pl">My Handbook</span><span class="pl">Flashcards</span><span class="pl">Question Bank</span><span class="pl">Courses</span></div>
+  </div>
+  <div class="body">
+   <div class="rail">
+    <div class="newbtn">＋ New task</div>
+    <div class="fd">⌕ Search tasks and plans…</div>
+    <div class="g">PLANNER</div>
+    <div class="r"><i style="background:var(--acc)"></i>Today<span class="n">3</span></div>
+    <div class="r"><i style="background:#C6CED8"></i>This week<span class="n">11</span></div>
+    <div class="r"><i style="background:var(--red)"></i>Overdue<span class="due">2</span></div>
+    <div class="r"><i style="background:var(--grn)"></i>Done<span class="n">34</span></div>
+    <div class="r on"><i style="background:#9AA5B4"></i>Calendar</div>
+    <div class="g">MY PLANS<span class="pl">＋</span></div>
+    <div class="r"><i style="background:#D9762F"></i>Board exam<span class="n">62%</span></div>
+    <div class="r"><i style="background:#6F5FCB"></i>Neurology rotation<span class="n">28%</span></div>
+    <div class="r"><i style="background:#2E9B80"></i>Weekly routine</div>
+    <div class="railfoot">11 tasks this week · 5-day streak</div>
+   </div>
+
+   <div class="main">
+    <div class="crumb">Study Planner <span>›</span> <b>Calendar</b></div>
+    <div class="hd"><h2>September 2026</h2>
+     <div class="nav2"><span>‹</span><span>›</span><b style="font-size:12.5px;font-weight:800;color:var(--acc-ink)">Today</b></div>
+     <div class="seg"><span class="on">Month</span><span>Week</span><span>Agenda</span></div>
+     <span class="newb">＋ New task</span></div>
+
+    <div class="filters"><span class="lb">SHOW</span>
+     <a><i style="background:#D9762F"></i>Board exam</a>
+     <a><i style="background:#6F5FCB"></i>Neurology rotation</a>
+     <a><i style="background:#2E9B80"></i>Weekly routine</a>
+     <a class="off"><i style="background:#C6CED8"></i>Completed</a>
+     <a style="margin-left:auto">Workload: <b>3 tasks a day</b> ⌄</a></div>
+
+    <div class="cal">
+     <div class="grid">
+      <div class="dow"><span>MON</span><span>TUE</span><span>WED</span><span>THU</span><span>FRI</span><span>SAT</span><span>SUN</span></div>
+      <div class="days">
+       <div class="dc out"><div class="n">31</div></div>
+       <div class="dc"><div class="n">1</div><div class="ch done" style="background:#FFF0E4;color:#D9762F"><i style="background:#D9762F"></i>Read · Cord anatomy</div></div>
+       <div class="dc"><div class="n">2</div><div class="ch done" style="background:#E3F6F0;color:#2E9B80"><i style="background:#2E9B80"></i>Cards · 20</div></div>
+       <div class="dc"><div class="n">3</div></div>
+       <div class="dc"><div class="n">4</div><div class="ch done" style="background:#EFEBFC;color:#6F5FCB"><i style="background:#6F5FCB"></i>Questions · 15</div></div>
+       <div class="dc"><div class="n">5</div></div>
+       <div class="dc"><div class="n">6</div></div>
+
+       <div class="dc"><div class="n">7</div><div class="ch done" style="background:#FFF0E4;color:#D9762F"><i style="background:#D9762F"></i>Read · ASIA</div><div class="ch done" style="background:#E3F6F0;color:#2E9B80"><i style="background:#2E9B80"></i>Cards · 20</div></div>
+       <div class="dc"><div class="n">8</div><div class="ch done" style="background:#EFEBFC;color:#6F5FCB"><i style="background:#6F5FCB"></i>Questions · 20</div></div>
+       <div class="dc"><div class="n">9</div><div class="ch done" style="background:#E3F6F0;color:#2E9B80"><i style="background:#2E9B80"></i>Cards · 18</div></div>
+       <div class="dc"><div class="n">10</div><div class="ch done" style="background:#FFF0E4;color:#D9762F"><i style="background:#D9762F"></i>Read · Central cord</div></div>
+       <div class="dc"><div class="n">11</div><div class="ch done" style="background:#E3F6F0;color:#2E9B80"><i style="background:#2E9B80"></i>Cards · 20</div></div>
+       <div class="dc"><div class="n">12</div></div>
+       <div class="dc"><div class="n">13</div><div class="ch done" style="background:#EFEBFC;color:#6F5FCB"><i style="background:#6F5FCB"></i>Questions · 25</div></div>
+
+       <div class="dc"><div class="n">14</div><div class="ch done" style="background:#FFF0E4;color:#D9762F"><i style="background:#D9762F"></i>Read · Brown-Séquard</div><div class="ch done" style="background:#E3F6F0;color:#2E9B80"><i style="background:#2E9B80"></i>Cards · 20</div></div>
+       <div class="dc"><div class="n">15</div><div class="ch done" style="background:#E3F6F0;color:#2E9B80"><i style="background:#2E9B80"></i>Cards · 20</div></div>
+       <div class="dc"><div class="n">16</div><div class="ch done" style="background:#EFEBFC;color:#6F5FCB"><i style="background:#6F5FCB"></i>Questions · 20</div></div>
+       <div class="dc"><div class="n">17</div><div class="ch done" style="background:#FFF0E4;color:#D9762F"><i style="background:#D9762F"></i>Read · Conus vs cauda</div></div>
+       <div class="dc"><div class="n">18</div><div class="ch done" style="background:#E3F6F0;color:#2E9B80"><i style="background:#2E9B80"></i>Cards · 20</div></div>
+       <div class="dc"><div class="n">19</div></div>
+       <div class="dc"><div class="n">20</div><div class="ch done" style="background:#EFEBFC;color:#6F5FCB"><i style="background:#6F5FCB"></i>Questions · 20</div></div>
+
+       <div class="dc"><div class="n">21</div><div class="ch done" style="background:#FFF0E4;color:#D9762F"><i style="background:#D9762F"></i>Read · Spasticity</div><div class="ch done" style="background:#E3F6F0;color:#2E9B80"><i style="background:#2E9B80"></i>Cards · 20</div></div>
+       <div class="dc"><div class="n">22</div><div class="ch done" style="background:#E3F6F0;color:#2E9B80"><i style="background:#2E9B80"></i>Cards · 20</div></div>
+       <div class="dc"><div class="n">23</div><div class="ch done" style="background:#FFF0E4;color:#D9762F"><i style="background:#D9762F"></i>Read · Neurogenic bladder</div><div class="ch done" style="background:#E3F6F0;color:#2E9B80"><i style="background:#2E9B80"></i>Cards · 20</div></div>
+       <div class="dc"><div class="n">24</div><div class="ch over"><i style="background:#B8262B"></i>Read · ASIA (missed)</div><div class="ch done" style="background:#E3F6F0;color:#2E9B80"><i style="background:#2E9B80"></i>Cards · 20</div></div>
+       <div class="dc"><div class="n">25</div><div class="ch done" style="background:#EFEBFC;color:#6F5FCB"><i style="background:#6F5FCB"></i>Questions · 20</div><div class="ch done" style="background:#E3F6F0;color:#2E9B80"><i style="background:#2E9B80"></i>Cards · 18</div><div class="more">+1 more</div></div>
+       <div class="dc"><div class="n">26</div><div class="ch done" style="background:#FFF0E4;color:#D9762F"><i style="background:#D9762F"></i>Read · Anterior cord</div><div class="ch done" style="background:#E3F6F0;color:#2E9B80"><i style="background:#2E9B80"></i>Cards · 16</div></div>
+       <div class="dc sel now"><div class="n">27</div>
+        <div class="ch" style="background:#FFF0E4;color:#D9762F"><i style="background:#D9762F"></i>Read · Anterior cord</div>
+        <div class="ch" style="background:#E3F6F0;color:#2E9B80"><i style="background:#2E9B80"></i>Cards · 20</div>
+        <div class="ch" style="background:#EFEBFC;color:#6F5FCB"><i style="background:#6F5FCB"></i>Questions · 15</div>
+        <div class="ch over"><i style="background:#B8262B"></i>Overdue · 1</div></div>
+
+       <div class="dc"><div class="n">28</div><div class="ch" style="background:#E3F6F0;color:#2E9B80"><i style="background:#2E9B80"></i>Cards · 20</div></div>
+       <div class="dc"><div class="n">29</div><div class="ch" style="background:#FFF0E4;color:#D9762F"><i style="background:#D9762F"></i>Read · Brown-Séquard</div><div class="ch" style="background:#EFEBFC;color:#6F5FCB"><i style="background:#6F5FCB"></i>Questions · 20</div></div>
+       <div class="dc"><div class="n">30</div><div class="ch" style="background:#E3F6F0;color:#2E9B80"><i style="background:#2E9B80"></i>Cards · 20</div></div>
+       <div class="dc out"><div class="n">1</div></div><div class="dc out"><div class="n">2</div></div>
+       <div class="dc out"><div class="n">3</div></div><div class="dc out"><div class="n">4</div></div>
+      </div>
+      <div class="legend"><span><i style="background:#D9762F"></i>Board exam</span><span><i style="background:#6F5FCB"></i>Neurology rotation</span><span><i style="background:#2E9B80"></i>Weekly routine</span><span><i style="background:#B8262B"></i>Overdue</span><span style="margin-left:auto">Drag a task to move it · click a day to add one</span></div>
+     </div>
+
+     <div class="side">
+      <div class="k">SELECTED DAY</div>
+      <h3>Friday 27 September</h3>
+      <div class="s">3 tasks · about 45 minutes · 1 overdue</div>
+      <div class="tk"><span class="cb on">✓</span><span class="tg" style="background:#FFF0E4;color:#D9762F">READ</span><b>Anterior cord syndrome</b><span>12 m</span></div>
+      <div class="tk"><span class="cb"></span><span class="tg" style="background:#E3F6F0;color:#2E9B80">CARDS</span><b>Neurology — 20 due</b><span>6 m</span></div>
+      <div class="tk"><span class="cb"></span><span class="tg" style="background:#EFEBFC;color:#6F5FCB">QUESTIONS</span><b>Spinal cord injury — 15</b><span>11 m</span></div>
+      <div class="tk" style="background:var(--red-bg);border-color:var(--red-bd)"><span class="cb"></span><span class="tg" style="background:#fff;color:var(--red)">OVERDUE</span><b>Read: ASIA classification</b><span>Tue</span></div>
+      <span class="go">▶ Start this day</span>
+      <span class="add">＋ Add a task to this day</span>
+     </div>
+    </div>
+   </div>
+  </div>
+ </div>
+
+ <div class="notes">
+  <div class="nb"><b>CHIPS, NOT DOTS</b><p>Each task is a chip in <em>its plan's colour</em>, with the type and the size. Completed ones are struck through and faded rather than hidden — the month should show effort.</p></div>
+  <div class="nb"><b>A DAY PANEL, NOT A POPUP</b><p>Clicking a day fills the panel on the right, with the tasks, their estimates, and <em>▶ Start this day</em>. No modal to dismiss.</p></div>
+  <div class="nb"><b>FILTER BY PLAN</b><p>Three plans, three colours, each toggleable — plus a workload control that caps how many tasks a day the generator will schedule.</p></div>
+ </div>
+</div>
+</body></html>

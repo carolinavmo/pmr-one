@@ -5,7 +5,27 @@ import { getCalculatorCategories, getAllCalculators } from "@/lib/clinical-tools
 import { getFavoritedCalculatorIds } from "@/lib/workspace";
 import { getDashboardTopicTiles, getLibraryTopicTiles, getCategories, getFolderDueBadges, getFavoritedDeckCount, getDueTodayCount } from "@/lib/flashcards";
 import { getCategories as getQuestionBankCategories, getQuestionBankRailStats } from "@/lib/question-bank";
+import { getPlannerRailStats, getPlans } from "@/lib/planner";
 import { SidebarFrame } from "./SidebarFrame";
+
+function todayIsoForRail(): string {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+}
+
+// Monday-start ISO week containing today — mirrors study-planner/
+// page.tsx's own isoWeekBounds so getPlannerRailStats's request-scoped
+// cache() actually hits (same args in, same call) rather than paying
+// for the query twice.
+function thisWeekEndIso(): string {
+  const d = new Date();
+  const day = d.getUTCDay();
+  const monday = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
+  monday.setUTCDate(monday.getUTCDate() + ((day === 0 ? -6 : 1) - day));
+  const sunday = new Date(monday);
+  sunday.setUTCDate(monday.getUTCDate() + 6);
+  return sunday.toISOString().slice(0, 10);
+}
 
 // Site-wide persistent nav (desktop, `lg`+ — SidebarFrame handles the
 // collapse toggle; the mobile equivalent is a slide-over drawer, not
@@ -33,6 +53,8 @@ export async function Sidebar() {
     folderDueBadgesMap,
     questionBankCategories,
     questionBankRailStats,
+    plannerRailStats,
+    plannerPlans,
   ] = await Promise.all([
     getTopicTree(canReview),
     getCalculatorCategories(),
@@ -46,6 +68,8 @@ export async function Sidebar() {
     getFolderDueBadges(userId),
     getQuestionBankCategories(),
     getQuestionBankRailStats(userId),
+    session ? getPlannerRailStats(session.user.id, todayIsoForRail(), thisWeekEndIso()) : Promise.resolve(null),
+    session ? getPlans(session.user.id, "active") : Promise.resolve([]),
   ]);
 
   return (
@@ -64,6 +88,8 @@ export async function Sidebar() {
       flashcardsFolderDueBadges={Object.fromEntries(folderDueBadgesMap)}
       questionBankCategories={questionBankCategories}
       questionBankRailStats={questionBankRailStats}
+      plannerRailStats={plannerRailStats}
+      plannerPlans={plannerPlans}
       isEditor={canReview}
     />
   );
