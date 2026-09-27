@@ -20,7 +20,22 @@ function todayIso(): string {
 // what supplies the title and a computed estimate (searchTaskTargetsAction).
 // 'custom' is the one type with a plain title/estimate, and the one
 // type Start never appears for.
-export function NewTaskDrawer({ open, onClose, plans }: { open: boolean; onClose: () => void; plans: StudyPlan[] }) {
+//
+// `initialDate` lets the calendar's day panel ("+ Add a task to this
+// day") and clicking empty space in a day cell pre-date the drawer
+// instead of always defaulting to today — the rail's own "New task"
+// button omits it and gets today, same as before.
+export function NewTaskDrawer({
+  open,
+  onClose,
+  plans,
+  initialDate,
+}: {
+  open: boolean;
+  onClose: () => void;
+  plans: StudyPlan[];
+  initialDate?: string;
+}) {
   const t = useTranslations("studyPlanner");
   const router = useRouter();
   const [type, setType] = useState<TaskType>("custom");
@@ -30,7 +45,7 @@ export function NewTaskDrawer({ open, onClose, plans }: { open: boolean; onClose
   const [selected, setSelected] = useState<TaskTargetOption | null>(null);
   const [customTitle, setCustomTitle] = useState("");
   const [customMinutes, setCustomMinutes] = useState(15);
-  const [scheduledFor, setScheduledFor] = useState(todayIso());
+  const [scheduledFor, setScheduledFor] = useState(initialDate ?? todayIso());
   const [planId, setPlanId] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
 
@@ -44,7 +59,7 @@ export function NewTaskDrawer({ open, onClose, plans }: { open: boolean; onClose
       setSelected(null);
       setCustomTitle("");
       setCustomMinutes(15);
-      setScheduledFor(todayIso());
+      setScheduledFor(initialDate ?? todayIso());
       setPlanId(null);
     }
   }
