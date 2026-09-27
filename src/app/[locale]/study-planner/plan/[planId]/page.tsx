@@ -3,9 +3,10 @@ import { getLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
 import { redirect } from "@/i18n/navigation";
 import { auth } from "@/auth";
-import { getPlanById, getTasksInRange, attachStartHrefs } from "@/lib/planner";
+import { getPlanById, getTasksInRange, attachStartHrefs, getPlanTopics } from "@/lib/planner";
 import { QBANK_FOLDER_COLOR_TINT, QBANK_FOLDER_COLOR_ACCENT } from "@/lib/qbank-folder-colors";
 import { TaskRow } from "@/components/planner/TaskRow";
+import { RegeneratePlanButton } from "@/components/planner/RegeneratePlanButton";
 
 interface PlanPageProps {
   params: Promise<{ planId: string }>;
@@ -29,7 +30,10 @@ export default async function StudyPlanPage({ params }: PlanPageProps) {
 
   const farFuture = new Date();
   farFuture.setUTCFullYear(farFuture.getUTCFullYear() + 2);
-  const pendingTasks = await getTasksInRange(session.user.id, new Date(0).toISOString().slice(0, 10), farFuture.toISOString().slice(0, 10));
+  const [pendingTasks, topics] = await Promise.all([
+    getTasksInRange(session.user.id, new Date(0).toISOString().slice(0, 10), farFuture.toISOString().slice(0, 10)),
+    getPlanTopics(planId),
+  ]);
   const relevant = pendingTasks.filter((task) => task.planId === planId && task.state === "pending").slice(0, 30);
   const tasks = await attachStartHrefs(relevant);
 
@@ -56,7 +60,18 @@ export default async function StudyPlanPage({ params }: PlanPageProps) {
             {plan.targetDate ? t("planCardDeadline", { date: plan.targetDate }) : t(`planKind_${plan.kind}`)} · {t("planTasksDoneOfTotal", { done: plan.tasksDone, total: plan.tasksTotal })}
           </p>
         </div>
+        <RegeneratePlanButton planId={plan.id} />
       </div>
+
+      {topics.length > 0 && (
+        <div className="flex flex-wrap gap-2">
+          {topics.map((topic) => (
+            <span key={topic.id} className="rounded-full border border-border px-3 py-1.5 font-ui text-xs font-bold text-secondary">
+              {topic.label} · {topic.weight}
+            </span>
+          ))}
+        </div>
+      )}
 
       <div className="flex flex-col gap-2">
         <h2 className="font-heading text-lg font-black text-navy">{t("planUpcomingTasks")}</h2>

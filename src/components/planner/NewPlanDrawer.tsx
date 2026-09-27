@@ -2,9 +2,9 @@
 
 import { useEffect, useState, useTransition } from "react";
 import { useTranslations } from "next-intl";
-import { X } from "lucide-react";
+import { X, Check } from "lucide-react";
 import { useRouter } from "@/i18n/navigation";
-import { createPlanAction } from "@/lib/actions/planner";
+import { createPlanAction, listPlanTopicOptionsAction } from "@/lib/actions/planner";
 import type { PlanKind } from "@/lib/planner";
 import { QBANK_FOLDER_COLOR_ORDER, QBANK_FOLDER_COLOR_ACCENT, type QbankFolderColor } from "@/lib/qbank-folder-colors";
 import { Button } from "@/components/ui/Button";
@@ -12,11 +12,13 @@ import { Button } from "@/components/ui/Button";
 const KINDS: PlanKind[] = ["exam", "rotation", "routine", "custom"];
 // 1=Mon…7=Sun, matching study_plan.study_days.
 const DAY_NUMBERS = [1, 2, 3, 4, 5, 6, 7];
+const DEFAULT_TOPIC_WEIGHT = 5;
 
-// A plan's own fields, same plain-form shape as NewQuestionSetDrawer —
-// no generator wiring yet (Pass 2), so creating a plan here just gives
-// it somewhere to hang manually-created tasks and a pace to check
-// itself against once the generator exists.
+// A plan's own fields, same plain-form shape as NewQuestionSetDrawer,
+// plus the topic weight picker the generator reads from
+// (PLANNER-IMPLEMENTATION.md Pass 2). Topics are optional — a plan
+// created with none just has nowhere to hang tasks yet, same as
+// before Pass 2 existed.
 export function NewPlanDrawer({ open, onClose, initialKind }: { open: boolean; onClose: () => void; initialKind?: PlanKind }) {
   const t = useTranslations("studyPlanner");
   const router = useRouter();
@@ -27,6 +29,8 @@ export function NewPlanDrawer({ open, onClose, initialKind }: { open: boolean; o
   const [studyDays, setStudyDays] = useState<number[]>([1, 2, 3, 4, 5]);
   const [sessionMinutes, setSessionMinutes] = useState(30);
   const [maxTasksPerDay, setMaxTasksPerDay] = useState(3);
+  const [topicOptions, setTopicOptions] = useState<{ id: string; name: string }[]>([]);
+  const [topicWeights, setTopicWeights] = useState<Record<string, number>>({});
   const [isPending, startTransition] = useTransition();
 
   const [wasOpen, setWasOpen] = useState(open);
@@ -40,8 +44,14 @@ export function NewPlanDrawer({ open, onClose, initialKind }: { open: boolean; o
       setStudyDays([1, 2, 3, 4, 5]);
       setSessionMinutes(30);
       setMaxTasksPerDay(3);
+      setTopicWeights({});
     }
   }
+
+  useEffect(() => {
+    if (!open || topicOptions.length > 0) return;
+    listPlanTopicOptionsAction().then(setTopicOptions);
+  }, [open, topicOptions.length]);
 
   useEffect(() => {
     if (!open) return;
@@ -56,10 +66,24 @@ export function NewPlanDrawer({ open, onClose, initialKind }: { open: boolean; o
     setStudyDays((prev) => (prev.includes(day) ? prev.filter((d) => d !== day) : [...prev, day].sort()));
   }
 
+  function toggleTopic(id: string) {
+    setTopicWeights((prev) => {
+      const next = { ...prev };
+      if (id in next) delete next[id];
+      else next[id] = DEFAULT_TOPIC_WEIGHT;
+      return next;
+    });
+  }
+
   function handleSubmit() {
     if (!name.trim() || studyDays.length === 0) return;
     startTransition(async () => {
-      const id = await createPlanAction({
+      const topics = Object.entries(topicWeights).map(([topicRef, weight]) => ({
+        topicRef,
+        label: topicOptions.find((o) => o.id === topicRef)?.name ?? topicRef,
+        weight,
+      }));
+      const { id } = await createPlanAction({
         name: name.trim(),
         kind,
         colourKey,
@@ -67,6 +91,7 @@ export function NewPlanDrawer({ open, onClose, initialKind }: { open: boolean; o
         studyDays,
         sessionMinutes,
         maxTasksPerDay,
+        topics,
       });
       onClose();
       router.push(`/study-planner/plan/${id}`);
@@ -164,6 +189,43 @@ export function NewPlanDrawer({ open, onClose, initialKind }: { open: boolean; o
               </button>
             ))}
           </div>
+        </div>
+
+        <div className="flex flex-col gap-1.5">
+          <span className="font-ui text-xs text-secondary">{t("planTopicsLabel")}</span>
+          <div className="flex flex-col gap-1 rounded-md border border-border p-2">
+            {topicOptions.length === 0 ? (
+              <p className="px-1 py-1 font-ui text-xs text-secondary">{t("taskSearching")}</p>
+            ) : (
+              topicOptions.map((topic) => {
+                const checked = topic.id in topicWeights;
+                return (
+                  <div key={topic.id} className="flex items-center gap-2 rounded px-1 py-1 hover:bg-border/20">
+                    <button
+                      type="button"
+                      onClick={() => toggleTopic(topic.id)}
+                      aria-pressed={checked}
+                      className={`flex size-5 shrink-0 items-center justify-center rounded-[6px] border-2 ${checked ? "border-trust bg-trust" : "border-border"}`}
+                    >
+                      {checked && <Check className="size-3 text-white" aria-hidden="true" strokeWidth={3} />}
+                    </button>
+                    <span className="flex-1 truncate font-ui text-sm text-primary">{topic.name}</span>
+                    {checked && (
+                      <input
+                        type="number"
+                        min={1}
+                        max={20}
+                        value={topicWeights[topic.id]}
+                        onChange={(e) => setTopicWeights((prev) => ({ ...prev, [topic.id]: Math.max(1, Number(e.target.value)) }))}
+                        className="w-14 shrink-0 rounded border border-border bg-surface-raised px-1.5 py-1 text-center font-ui text-xs text-primary outline-none focus:border-accent"
+                      />
+                    )}
+                  </div>
+                );
+              })
+            )}
+          </div>
+          <span className="font-ui text-[11px] text-secondary">{t("planTopicsHint")}</span>
         </div>
 
         <div className="flex gap-3">

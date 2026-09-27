@@ -308,15 +308,29 @@ export interface CreatePlanInput {
   studyDays: number[];
   sessionMinutes: number;
   maxTasksPerDay: number;
+  // PlanTopicInput is declared further down (the generator section) —
+  // fine for a type reference, TS interfaces aren't subject to
+  // declaration-order the way a const binding is.
+  topics?: PlanTopicInput[];
 }
 
-export async function createPlan(userId: string, input: CreatePlanInput): Promise<string> {
+// Creating a plan with topics runs the generator immediately — "a
+// plan generates tasks" isn't a separate step the caller has to
+// remember (PLANNER-IMPLEMENTATION.md: "This is the feature"). A plan
+// with no target date (a weekly routine) or no topics still gets
+// created; it just has nothing to schedule yet.
+export async function createPlan(userId: string, input: CreatePlanInput): Promise<{ id: string; generated: GenerateResult }> {
   const { rows } = await pool.query(
     `INSERT INTO study_plan (user_id, name, kind, colour_key, target_date, study_days, session_minutes, max_tasks_per_day)
      VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING id`,
     [userId, input.name, input.kind, input.colourKey, input.targetDate, input.studyDays, input.sessionMinutes, input.maxTasksPerDay]
   );
-  return rows[0].id;
+  const id = rows[0].id;
+  if (input.topics && input.topics.length > 0) {
+    await setPlanTopics(id, input.topics);
+  }
+  const generated = await generateTasksForPlan(userId, id);
+  return { id, generated };
 }
 
 export async function setPlanStatus(userId: string, planId: string, status: PlanStatus): Promise<void> {
@@ -550,4 +564,276 @@ export async function getWeekProgress(userId: string, from: string, to: string):
     [userId, from, to]
   );
   return { done: Number(rows[0]?.done ?? 0), total: Number(rows[0]?.total ?? 0) };
+}
+
+// ============================================================
+// The generator (PLANNER-IMPLEMENTATION.md Pass 2) — "Given a plan,
+// produce tasks." topic_ref is a flashcard_subject.id: the one
+// taxonomy this app already shares between Flashcards and Question
+// Bank (QBANK-SPEC.md's subject list was deliberately the same
+// taxonomy as Flashcards', not a second one), so a single topic
+// resolves real content across all three task types without
+// inventing a fourth classification system:
+//   read       — a disease page that's the *source* of a deck filed
+//                under this subject (flashcard_deck.source_disease_id)
+//   flashcards — a published deck filed under this subject
+//   questions  — a question set filed under a folder with this subject
+// ============================================================
+
+export interface PlanTopicInput {
+  topicRef: string;
+  label: string;
+  weight: number;
+}
+
+export interface PlanTopic extends PlanTopicInput {
+  id: string;
+}
+
+export async function getPlanTopics(planId: string): Promise<PlanTopic[]> {
+  const { rows } = await pool.query<{ id: string; topic_ref: string; label: string; weight: number }>(
+    `SELECT id, topic_ref, label, weight FROM study_plan_topic WHERE plan_id = $1 ORDER BY position`,
+    [planId]
+  );
+  return rows.map((r) => ({ id: r.id, topicRef: r.topic_ref, label: r.label, weight: r.weight }));
+}
+
+// Replace-all — Pass 2 doesn't build an "edit topics" UI yet (that's
+// Pass 4's own tab), so a plan's topic list is only ever written once,
+// right after creation.
+export async function setPlanTopics(planId: string, topics: PlanTopicInput[]): Promise<void> {
+  await pool.query(`DELETE FROM study_plan_topic WHERE plan_id = $1`, [planId]);
+  for (let i = 0; i < topics.length; i++) {
+    await pool.query(`INSERT INTO study_plan_topic (plan_id, topic_ref, label, weight, position) VALUES ($1, $2, $3, $4, $5)`, [
+      planId,
+      topics[i].topicRef,
+      topics[i].label,
+      topics[i].weight,
+      i,
+    ]);
+  }
+}
+
+interface GeneratorContentOption {
+  id: string;
+  title: string;
+  minutes: number;
+}
+
+async function pickReadTargets(subjectId: string): Promise<GeneratorContentOption[]> {
+  const { rows } = await pool.query<{ id: string; canonical_name: string }>(
+    `SELECT DISTINCT dis.id, dis.canonical_name
+     FROM disease dis
+     JOIN flashcard_deck d ON d.source_disease_id = dis.id
+     JOIN flashcard_category c ON c.id = d.category_id
+     WHERE c.subject_id = $1 AND dis.status = 'published'
+     ORDER BY dis.canonical_name`,
+    [subjectId]
+  );
+  if (rows.length === 0) return [];
+  const ids = rows.map((r) => r.id);
+  const { rows: blockRows } = await pool.query<{ disease_id: string; content_config: Record<string, unknown> }>(
+    `SELECT disease_id, content_config FROM editorial_block WHERE disease_id = ANY($1)`,
+    [ids]
+  );
+  const byDisease = new Map<string, unknown[]>();
+  for (const r of blockRows) {
+    const list = byDisease.get(r.disease_id) ?? [];
+    list.push(r.content_config);
+    byDisease.set(r.disease_id, list);
+  }
+  return rows.map((r) => ({ id: r.id, title: r.canonical_name, minutes: estimateReadingMinutesFromValues(byDisease.get(r.id) ?? []) }));
+}
+
+async function pickFlashcardTargets(subjectId: string): Promise<GeneratorContentOption[]> {
+  const { rows } = await pool.query<{ id: string; name: string; card_count: string }>(
+    `SELECT d.id, d.name, COUNT(f.id)::int AS card_count
+     FROM flashcard_deck d
+     JOIN flashcard_category c ON c.id = d.category_id
+     LEFT JOIN flashcard f ON f.deck_id = d.id AND f.status = 'published' AND f.deleted_at IS NULL
+     WHERE c.subject_id = $1 AND d.status = 'published' AND d.archived_at IS NULL
+     GROUP BY d.id
+     HAVING COUNT(f.id) > 0
+     ORDER BY d.position, d.name`,
+    [subjectId]
+  );
+  return rows.map((r) => ({ id: r.id, title: r.name, minutes: Math.max(1, Math.round((Number(r.card_count) * 6) / 60)) }));
+}
+
+async function pickQuestionTargets(subjectId: string): Promise<GeneratorContentOption[]> {
+  const { rows } = await pool.query<{ id: string; name: string; question_count: string }>(
+    `SELECT s.id, s.name, COUNT(q.id)::int AS question_count
+     FROM question_set s
+     JOIN question_category c ON c.id = s.category_id
+     LEFT JOIN question q ON q.set_id = s.id
+     WHERE c.subject_id = $1
+     GROUP BY s.id
+     HAVING COUNT(q.id) > 0
+     ORDER BY s.position, s.name`,
+    [subjectId]
+  );
+  return rows.map((r) => ({ id: r.id, title: r.name, minutes: Math.max(1, Math.round((Number(r.question_count) * 45) / 60)) }));
+}
+
+interface GeneratedTaskSeed {
+  type: TaskType;
+  targetRef: string;
+  title: string;
+  estimateMinutes: number;
+}
+
+// Largest-remainder apportionment — weights are relative, not
+// percentages (PLANNER-IMPLEMENTATION.md), and this is what keeps
+// per-topic slot counts summing to exactly totalSlots regardless of
+// rounding, rather than drifting a few slots short/over.
+function apportion(weights: number[], total: number): number[] {
+  const totalWeight = weights.reduce((a, b) => a + b, 0);
+  if (totalWeight <= 0) return weights.map(() => 0);
+  const raw = weights.map((w) => (w / totalWeight) * total);
+  const base = raw.map(Math.floor);
+  const remainder = total - base.reduce((a, b) => a + b, 0);
+  const order = raw.map((v, i) => ({ i, frac: v - base[i] })).sort((a, b) => b.frac - a.frac);
+  for (let k = 0; k < remainder && k < order.length; k++) base[order[k].i]++;
+  return base;
+}
+
+export interface GenerateResult {
+  created: number;
+  reason?: "no-target-date" | "no-topics" | "no-content";
+}
+
+// Idempotent for completed tasks: only ever deletes this plan's
+// *pending* rows before laying out a fresh schedule — a 'done' task,
+// wherever it sits, is never touched (PLANNER-SPEC.md rule: "Nothing
+// is silently deleted"). Safe to call again after edits (a real
+// "Adjust the pace" UI is Pass 4; this function is already exactly
+// what that action would call).
+export async function generateTasksForPlan(userId: string, planId: string): Promise<GenerateResult> {
+  const plan = await getPlanById(userId, planId);
+  if (!plan || !plan.targetDate) return { created: 0, reason: "no-target-date" };
+  const topics = await getPlanTopics(planId);
+  if (topics.length === 0) return { created: 0, reason: "no-topics" };
+
+  const today = new Date();
+  today.setUTCHours(0, 0, 0, 0);
+  const target = new Date(`${plan.targetDate}T00:00:00Z`);
+  const daysRemaining = Math.max(1, Math.ceil((target.getTime() - today.getTime()) / 86_400_000));
+  const weeks = Math.max(1, Math.ceil(daysRemaining / 7));
+  const slotsPerWeek = plan.studyDays.length * plan.maxTasksPerDay;
+  const totalSlots = weeks * slotsPerWeek;
+
+  // Resolve content pools before apportioning: a topic with zero
+  // available content (no read/flashcard/question targets under its
+  // subject) must not eat a share of totalSlots that it can never
+  // fill — its weight is excluded so the slots go to topics that can
+  // actually use them, rather than silently vanishing.
+  const topicPools = await Promise.all(
+    topics.map(async (t) => {
+      const [readOpts, cardOpts, qOpts] = await Promise.all([pickReadTargets(t.topicRef), pickFlashcardTargets(t.topicRef), pickQuestionTargets(t.topicRef)]);
+      return { topic: t, readOpts, cardOpts, qOpts };
+    })
+  );
+  const withContent = topicPools.filter((p) => p.readOpts.length + p.cardOpts.length + p.qOpts.length > 0);
+  if (withContent.length === 0) return { created: 0, reason: "no-content" };
+
+  const perTopic = apportion(
+    withContent.map((p) => p.topic.weight),
+    totalSlots
+  );
+
+  const CYCLE = ["read", "flashcards", "questions"] as const;
+  const topicQueues: GeneratedTaskSeed[][] = [];
+  for (let i = 0; i < withContent.length; i++) {
+    const wanted = perTopic[i];
+    if (wanted <= 0) {
+      topicQueues.push([]);
+      continue;
+    }
+    const { readOpts, cardOpts, qOpts } = withContent[i];
+    const pools: Record<"read" | "flashcards" | "questions", GeneratorContentOption[]> = { read: readOpts, flashcards: cardOpts, questions: qOpts };
+    const cursors = { read: 0, flashcards: 0, questions: 0 };
+    const queue: GeneratedTaskSeed[] = [];
+    let cycleIdx = 0;
+    let guard = 0;
+    while (queue.length < wanted && guard < wanted * 6 + 12) {
+      guard++;
+      const type = CYCLE[cycleIdx % CYCLE.length];
+      cycleIdx++;
+      const opts = pools[type];
+      if (opts.length === 0) continue;
+      const item = opts[cursors[type] % opts.length];
+      cursors[type]++;
+      queue.push({ type, targetRef: item.id, title: item.title, estimateMinutes: item.minutes });
+    }
+    topicQueues.push(queue);
+  }
+
+  // Round-robin interleave — "spacing beats blocking" (Pass 2's own
+  // rule): topic A's second task should land days after its first,
+  // not immediately after, so the reader cycles subjects rather than
+  // finishing one before starting the next.
+  const interleaved: GeneratedTaskSeed[] = [];
+  for (let idx = 0; ; idx++) {
+    let any = false;
+    for (const q of topicQueues) {
+      if (idx < q.length) {
+        interleaved.push(q[idx]);
+        any = true;
+      }
+    }
+    if (!any) break;
+  }
+  if (interleaved.length === 0) return { created: 0, reason: "no-content" };
+
+  // Lay onto study days only, walking forward from today, capped at
+  // maxTasksPerDay of *this plan's own* tasks per day.
+  const studyDaySet = new Set(plan.studyDays);
+  const types: string[] = [];
+  const targetRefs: string[] = [];
+  const titles: string[] = [];
+  const minutes: number[] = [];
+  const dates: string[] = [];
+  const positions: number[] = [];
+
+  const cursor = new Date(today);
+  let taskIdx = 0;
+  let position = 0;
+  let safety = 0;
+  while (taskIdx < interleaved.length && safety < 3650) {
+    safety++;
+    const isoDow = ((cursor.getUTCDay() + 6) % 7) + 1;
+    if (studyDaySet.has(isoDow)) {
+      for (let slot = 0; slot < plan.maxTasksPerDay && taskIdx < interleaved.length; slot++) {
+        const seed = interleaved[taskIdx++];
+        types.push(seed.type);
+        targetRefs.push(seed.targetRef);
+        titles.push(seed.title);
+        minutes.push(seed.estimateMinutes);
+        dates.push(cursor.toISOString().slice(0, 10));
+        positions.push(position++);
+      }
+    }
+    cursor.setUTCDate(cursor.getUTCDate() + 1);
+  }
+
+  const client = await pool.connect();
+  try {
+    await client.query("BEGIN");
+    await client.query(`DELETE FROM study_plan_task WHERE plan_id = $1 AND state = 'pending'`, [planId]);
+    await client.query(
+      `INSERT INTO study_plan_task (user_id, plan_id, type, target_ref, title, estimate_minutes, scheduled_for, position)
+       SELECT $1, $2, x.type, x.target_ref, x.title, x.estimate_minutes, x.scheduled_for, x.position
+       FROM unnest($3::text[], $4::text[], $5::text[], $6::int[], $7::date[], $8::int[])
+         AS x(type, target_ref, title, estimate_minutes, scheduled_for, position)`,
+      [userId, planId, types, targetRefs, titles, minutes, dates, positions]
+    );
+    await client.query("COMMIT");
+  } catch (err) {
+    await client.query("ROLLBACK");
+    throw err;
+  } finally {
+    client.release();
+  }
+
+  return { created: types.length };
 }
