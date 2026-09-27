@@ -478,7 +478,9 @@
     "planCoverageSubtitle": "o que o plano inclui",
     "planWeeksHeading": "As semanas",
     "planWeeksSubtitle": "cada quadrado é uma tarefa",
-    "planSessionLengthLabel": "Duração da sessão"
+    "planSessionLengthLabel": "Duração da sessão",
+    "deleteTask": "Eliminar tarefa",
+    "confirmDeleteTask": "Eliminar esta tarefa? Esta ação não pode ser revertida."
   },
   "myAtlas": {
     "pageTitle": "O Meu Manual",

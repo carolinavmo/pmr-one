@@ -7,7 +7,15 @@ import { TaskRow } from "./TaskRow";
 // The third of the three views PLANNER-IMPLEMENTATION.md's Pass 3 asks
 // for — a flat chronological list, skipping empty days entirely rather
 // than rendering a header for every date in the window.
-export function CalendarAgenda({ dates, tasksByDate }: { dates: string[]; tasksByDate: Map<string, StartableTask[]> }) {
+export function CalendarAgenda({
+  dates,
+  tasksByDate,
+  onTaskDeleted,
+}: {
+  dates: string[];
+  tasksByDate: Map<string, StartableTask[]>;
+  onTaskDeleted: () => void;
+}) {
   const t = useTranslations("studyPlanner");
   const format = useFormatter();
   const daysWithTasks = dates.filter((date) => (tasksByDate.get(date) ?? []).length > 0);
@@ -36,6 +44,7 @@ export function CalendarAgenda({ dates, tasksByDate }: { dates: string[]; tasksB
                   state={task.state}
                   startHref={task.startHref}
                   overdue={task.state !== "done" && task.originalDate !== null}
+                  onDeleted={onTaskDeleted}
                 />
               ))}
             </div>

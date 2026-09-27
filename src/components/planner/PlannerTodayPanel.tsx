@@ -27,6 +27,10 @@ export function PlannerTodayPanel({ tasks }: { tasks: StartableTask[] }) {
     setLocalTasks((prev) => prev.map((task) => (task.id === taskId ? { ...task, state: done ? "done" : "pending" } : task)));
   }
 
+  function handleDeleted(taskId: string) {
+    setLocalTasks((prev) => prev.filter((task) => task.id !== taskId));
+  }
+
   return (
     <div className="flex flex-col gap-5 rounded-2xl bg-navy-fill p-6">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
@@ -73,6 +77,7 @@ export function PlannerTodayPanel({ tasks }: { tasks: StartableTask[] }) {
               overdue={task.originalDate !== null && task.state !== "done"}
               dark
               onToggled={(done) => handleToggled(task.id, done)}
+              onDeleted={() => handleDeleted(task.id)}
             />
           ))
         )}

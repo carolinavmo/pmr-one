@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { AlertTriangle } from "lucide-react";
+import { useRouter } from "@/i18n/navigation";
 import type { StartableTask, TopicCoverage, PlanWeek } from "@/lib/planner";
 import { TaskRow } from "./TaskRow";
 import { PlanCoverageList } from "./PlanCoverageList";
@@ -39,6 +40,7 @@ export function PlanTabs({
   overdueCount: number;
 }) {
   const t = useTranslations("studyPlanner");
+  const router = useRouter();
   const [tab, setTab] = useState<Tab>("overview");
 
   const studyDaysLabel = DAY_KEYS.filter((_, i) => studyDays.includes(i + 1))
@@ -133,6 +135,7 @@ export function PlanTabs({
                 state={task.state}
                 startHref={task.startHref}
                 overdue={task.state !== "done" && task.originalDate !== null}
+                onDeleted={() => router.refresh()}
               />
             ))
           )}

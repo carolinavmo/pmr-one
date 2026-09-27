@@ -9,7 +9,17 @@ import { TaskRow } from "./TaskRow";
 // a modal." Reuses TaskRow (the exact same row the Today panel and
 // Coming up already use) rather than a bespoke calendar row, so a task
 // looks and behaves identically everywhere it appears.
-export function CalendarDayPanel({ date, tasks, onAddTask }: { date: string; tasks: StartableTask[]; onAddTask: () => void }) {
+export function CalendarDayPanel({
+  date,
+  tasks,
+  onAddTask,
+  onTaskDeleted,
+}: {
+  date: string;
+  tasks: StartableTask[];
+  onAddTask: () => void;
+  onTaskDeleted: () => void;
+}) {
   const t = useTranslations("studyPlanner");
   const format = useFormatter();
 
@@ -45,6 +55,7 @@ export function CalendarDayPanel({ date, tasks, onAddTask }: { date: string; tas
               state={task.state}
               startHref={task.startHref}
               overdue={task.state !== "done" && task.originalDate !== null}
+              onDeleted={onTaskDeleted}
             />
           ))}
         </div>

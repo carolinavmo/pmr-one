@@ -478,7 +478,9 @@
     "planCoverageSubtitle": "what the plan includes",
     "planWeeksHeading": "The weeks",
     "planWeeksSubtitle": "each square is a task",
-    "planSessionLengthLabel": "Session length"
+    "planSessionLengthLabel": "Session length",
+    "deleteTask": "Delete task",
+    "confirmDeleteTask": "Delete this task? This cannot be undone."
   },
   "myAtlas": {
     "pageTitle": "My Handbook",
