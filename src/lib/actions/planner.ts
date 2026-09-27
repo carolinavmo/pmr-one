@@ -8,6 +8,7 @@ import {
   setPlanStatus,
   createTask,
   rescheduleTask,
+  updateTask,
   deleteTask,
   toggleTaskState,
   searchTaskTargets,
@@ -15,6 +16,7 @@ import {
   adjustPlanPace,
   type CreatePlanInput,
   type CreateTaskInput,
+  type UpdateTaskInput,
   type PlanStatus,
   type TaskState,
   type TaskType,
@@ -84,6 +86,13 @@ export async function rescheduleTaskAction(taskId: string, newDate: string): Pro
   const session = await auth();
   if (!session) throw new Error("Unauthorized");
   await rescheduleTask(session.user.id, taskId, newDate);
+  revalidatePlannerSurfaces();
+}
+
+export async function updateTaskAction(taskId: string, input: UpdateTaskInput): Promise<void> {
+  const session = await auth();
+  if (!session) throw new Error("Unauthorized");
+  await updateTask(session.user.id, taskId, input);
   revalidatePlannerSurfaces();
 }
 

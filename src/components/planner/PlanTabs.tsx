@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { AlertTriangle } from "lucide-react";
 import { useRouter } from "@/i18n/navigation";
-import type { StartableTask, TopicCoverage, PlanWeek } from "@/lib/planner";
+import type { StartableTask, TopicCoverage, PlanWeek, StudyPlan } from "@/lib/planner";
 import { TaskRow } from "./TaskRow";
 import { PlanCoverageList } from "./PlanCoverageList";
 import { PlanWeekSquares } from "./PlanWeekSquares";
@@ -28,6 +28,7 @@ export function PlanTabs({
   todayIso,
   tasks,
   overdueCount,
+  plans,
 }: {
   planId: string;
   studyDays: number[];
@@ -38,6 +39,7 @@ export function PlanTabs({
   todayIso: string;
   tasks: StartableTask[];
   overdueCount: number;
+  plans: StudyPlan[];
 }) {
   const t = useTranslations("studyPlanner");
   const router = useRouter();
@@ -132,6 +134,10 @@ export function PlanTabs({
                 type={task.type}
                 title={task.title}
                 estimateLabel={t("estimateMinutes", { minutes: task.estimateMinutes })}
+                estimateMinutes={task.estimateMinutes}
+                scheduledFor={task.scheduledFor}
+                planId={task.planId}
+                plans={plans}
                 state={task.state}
                 startHref={task.startHref}
                 overdue={task.state !== "done" && task.originalDate !== null}

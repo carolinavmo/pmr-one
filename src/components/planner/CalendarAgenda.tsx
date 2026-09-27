@@ -1,7 +1,7 @@
 "use client";
 
 import { useFormatter, useTranslations } from "next-intl";
-import type { StartableTask } from "@/lib/planner";
+import type { StartableTask, StudyPlan } from "@/lib/planner";
 import { TaskRow } from "./TaskRow";
 
 // The third of the three views PLANNER-IMPLEMENTATION.md's Pass 3 asks
@@ -10,10 +10,12 @@ import { TaskRow } from "./TaskRow";
 export function CalendarAgenda({
   dates,
   tasksByDate,
+  plans,
   onTaskDeleted,
 }: {
   dates: string[];
   tasksByDate: Map<string, StartableTask[]>;
+  plans: StudyPlan[];
   onTaskDeleted: () => void;
 }) {
   const t = useTranslations("studyPlanner");
@@ -41,6 +43,10 @@ export function CalendarAgenda({
                   type={task.type}
                   title={task.title}
                   estimateLabel={t("estimateMinutes", { minutes: task.estimateMinutes })}
+                  estimateMinutes={task.estimateMinutes}
+                  scheduledFor={task.scheduledFor}
+                  planId={task.planId}
+                  plans={plans}
                   state={task.state}
                   startHref={task.startHref}
                   overdue={task.state !== "done" && task.originalDate !== null}

@@ -152,7 +152,7 @@ export default async function StudyPlannerPage() {
         </div>
       </div>
 
-      <PlannerTodayPanel tasks={todayTasks} />
+      <PlannerTodayPanel tasks={todayTasks} plans={activePlans} />
 
       <div id="week" className="flex scroll-mt-24 items-baseline gap-2.5">
         <h2 className="font-heading text-lg font-black text-navy">{t("weekHeading")}</h2>
@@ -179,7 +179,7 @@ export default async function StudyPlannerPage() {
             <h2 className="font-heading text-lg font-black text-navy">{t("comingUpHeading")}</h2>
             <span className="font-ui text-xs font-bold text-secondary">{t("comingUpSubtitle")}</span>
           </div>
-          <ComingUpList tasks={upcomingTasks} todayIso={today} />
+          <ComingUpList tasks={upcomingTasks} todayIso={today} plans={activePlans} />
         </>
       )}
     </main>

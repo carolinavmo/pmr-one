@@ -2,7 +2,7 @@
 
 import { useTranslations, useFormatter } from "next-intl";
 import { Play, Plus } from "lucide-react";
-import type { StartableTask } from "@/lib/planner";
+import type { StartableTask, StudyPlan } from "@/lib/planner";
 import { TaskRow } from "./TaskRow";
 
 // PLANNER-SPEC.md: "Selecting a day fills the right-hand panel — never
@@ -12,11 +12,13 @@ import { TaskRow } from "./TaskRow";
 export function CalendarDayPanel({
   date,
   tasks,
+  plans,
   onAddTask,
   onTaskDeleted,
 }: {
   date: string;
   tasks: StartableTask[];
+  plans: StudyPlan[];
   onAddTask: () => void;
   onTaskDeleted: () => void;
 }) {
@@ -52,6 +54,10 @@ export function CalendarDayPanel({
               type={task.type}
               title={task.title}
               estimateLabel={t("estimateMinutes", { minutes: task.estimateMinutes })}
+              estimateMinutes={task.estimateMinutes}
+              scheduledFor={task.scheduledFor}
+              planId={task.planId}
+              plans={plans}
               state={task.state}
               startHref={task.startHref}
               overdue={task.state !== "done" && task.originalDate !== null}

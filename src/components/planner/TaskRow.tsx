@@ -2,11 +2,12 @@
 
 import { useState, useTransition } from "react";
 import { useTranslations } from "next-intl";
-import { Check, Trash2 } from "lucide-react";
+import { Check, Trash2, Pencil } from "lucide-react";
 import { Link } from "@/i18n/navigation";
-import type { TaskType } from "@/lib/planner";
+import type { TaskType, StudyPlan } from "@/lib/planner";
 import { toggleTaskStateAction, deleteTaskAction } from "@/lib/actions/planner";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
+import { NewTaskDrawer } from "./NewTaskDrawer";
 
 const TYPE_TAG_CLASS: Record<TaskType, string> = {
   read: "bg-[#FFF0E4] text-[#D9762F]",
@@ -20,20 +21,25 @@ const TYPE_TAG_CLASS: Record<TaskType, string> = {
 // the calendar's agenda/day-panel views and a plan's own schedule tab
 // — one task, one row: checkbox, type tag, title, estimate/when, a
 // Start link (PLANNER-SPEC.md: "Every task has a Start button that
-// opens the right feature with the right content loaded"), and a
-// delete control. Delete is always visible rather than hover-only —
+// opens the right feature with the right content loaded"), and edit/
+// delete controls. Both are always visible rather than hover-only —
 // every one of this row's callers renders on touch devices too
 // (mobile calendar/agenda), where hover reveal isn't reachable at
-// all — and goes through the same ConfirmDialog every other delete in
-// this app uses, since removing a task is exactly as permanent as
-// removing a flashcard. `dark` switches the palette for the navy
-// Today panel; the light variant is the plain bordered row used
-// everywhere else.
+// all — and delete goes through the same ConfirmDialog every other
+// delete in this app uses. Edit and Start both disappear once a task
+// is done, same as updateTask's own "pending only" guard: there's
+// nothing left to reschedule or retitle for a finished task. `dark`
+// switches the palette for the navy Today panel; the light variant is
+// the plain bordered row used everywhere else.
 export function TaskRow({
   id,
   type,
   title,
   estimateLabel,
+  estimateMinutes,
+  scheduledFor,
+  planId,
+  plans,
   state,
   startHref,
   overdue,
@@ -45,6 +51,10 @@ export function TaskRow({
   type: TaskType;
   title: string;
   estimateLabel: string;
+  estimateMinutes: number;
+  scheduledFor: string;
+  planId: string | null;
+  plans: StudyPlan[];
   state: "pending" | "done" | "skipped";
   startHref: string | null;
   overdue?: boolean;
@@ -55,6 +65,7 @@ export function TaskRow({
   const t = useTranslations("studyPlanner");
   const [isPending, startTransition] = useTransition();
   const [confirmingDelete, setConfirmingDelete] = useState(false);
+  const [editing, setEditing] = useState(false);
   const done = state === "done";
 
   function handleToggle() {
@@ -80,6 +91,39 @@ export function TaskRow({
       onConfirm={handleDelete}
       onCancel={() => setConfirmingDelete(false)}
     />
+  );
+
+  const editAndDeleteButtons = (isDark: boolean) => (
+    <>
+      {!done && (
+        <button
+          type="button"
+          onClick={() => setEditing(true)}
+          disabled={isPending}
+          aria-label={t("editTask")}
+          className={
+            isDark
+              ? "shrink-0 rounded-md p-1.5 text-white/50 hover:bg-white/10 hover:text-white"
+              : "shrink-0 rounded-md p-1.5 text-secondary hover:bg-border/40 hover:text-primary"
+          }
+        >
+          <Pencil className="size-3.5" aria-hidden="true" />
+        </button>
+      )}
+      <button
+        type="button"
+        onClick={() => setConfirmingDelete(true)}
+        disabled={isPending}
+        aria-label={t("deleteTask")}
+        className={
+          isDark
+            ? "shrink-0 rounded-md p-1.5 text-white/50 hover:bg-white/10 hover:text-white"
+            : "shrink-0 rounded-md p-1.5 text-secondary hover:bg-border/40 hover:text-card-red"
+        }
+      >
+        <Trash2 className="size-3.5" aria-hidden="true" />
+      </button>
+    </>
   );
 
   if (dark) {
@@ -111,16 +155,11 @@ export function TaskRow({
             {t("start")} ›
           </Link>
         )}
-        <button
-          type="button"
-          onClick={() => setConfirmingDelete(true)}
-          disabled={isPending}
-          aria-label={t("deleteTask")}
-          className="shrink-0 rounded-md p-1.5 text-white/50 hover:bg-white/10 hover:text-white"
-        >
-          <Trash2 className="size-3.5" aria-hidden="true" />
-        </button>
+        {editAndDeleteButtons(true)}
         {confirmDialog}
+        {editing && (
+          <NewTaskDrawer open onClose={() => setEditing(false)} plans={plans} editTask={{ id, type, title, estimateMinutes, scheduledFor, planId }} />
+        )}
       </div>
     );
   }
@@ -147,16 +186,9 @@ export function TaskRow({
           {t("start")} ›
         </Link>
       )}
-      <button
-        type="button"
-        onClick={() => setConfirmingDelete(true)}
-        disabled={isPending}
-        aria-label={t("deleteTask")}
-        className="shrink-0 rounded-md p-1.5 text-secondary hover:bg-border/40 hover:text-card-red"
-      >
-        <Trash2 className="size-3.5" aria-hidden="true" />
-      </button>
+      {editAndDeleteButtons(false)}
       {confirmDialog}
+      {editing && <NewTaskDrawer open onClose={() => setEditing(false)} plans={plans} editTask={{ id, type, title, estimateMinutes, scheduledFor, planId }} />}
     </div>
   );
 }

@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useTranslations, useFormatter } from "next-intl";
 import { Play } from "lucide-react";
-import type { StartableTask } from "@/lib/planner";
+import type { StartableTask, StudyPlan } from "@/lib/planner";
 import { TaskRow } from "./TaskRow";
 
 // The navy panel (PLANNER-SPEC.md: "count and estimated time, one
@@ -13,10 +13,22 @@ import { TaskRow } from "./TaskRow";
 // nothing to reschedule-in-bulk yet in Pass 1 (a real Reschedule flow
 // needs the calendar's day panel, Pass 3), so that secondary action
 // isn't shown until it would do something real.
-export function PlannerTodayPanel({ tasks }: { tasks: StartableTask[] }) {
+export function PlannerTodayPanel({ tasks, plans }: { tasks: StartableTask[]; plans: StudyPlan[] }) {
   const t = useTranslations("studyPlanner");
   const format = useFormatter();
-  const [localTasks, setLocalTasks] = useState(tasks);
+  // Transient optimistic overrides, keyed by task id — applied on top
+  // of the `tasks` prop at render time rather than mirrored into local
+  // state, so this always reflects the *current* prop for anything it
+  // hasn't touched. That matters once editing entered the picture:
+  // TaskRow's own edit drawer calls router.refresh() on save, and an
+  // edit can move a task off today entirely (a reschedule), which a
+  // one-time `useState(tasks)` copy would never pick up again.
+  const [toggledIds, setToggledIds] = useState<Record<string, boolean>>({});
+  const [deletedIds, setDeletedIds] = useState<Set<string>>(new Set());
+
+  const localTasks = tasks
+    .filter((task) => !deletedIds.has(task.id))
+    .map((task) => (task.id in toggledIds ? ({ ...task, state: toggledIds[task.id] ? "done" : "pending" } as StartableTask) : task));
 
   const pending = localTasks.filter((task) => task.state !== "done");
   const overdueCount = pending.filter((task) => task.originalDate !== null).length;
@@ -24,11 +36,11 @@ export function PlannerTodayPanel({ tasks }: { tasks: StartableTask[] }) {
   const firstStartable = pending.find((task) => task.startHref);
 
   function handleToggled(taskId: string, done: boolean) {
-    setLocalTasks((prev) => prev.map((task) => (task.id === taskId ? { ...task, state: done ? "done" : "pending" } : task)));
+    setToggledIds((prev) => ({ ...prev, [taskId]: done }));
   }
 
   function handleDeleted(taskId: string) {
-    setLocalTasks((prev) => prev.filter((task) => task.id !== taskId));
+    setDeletedIds((prev) => new Set(prev).add(taskId));
   }
 
   return (
@@ -72,6 +84,10 @@ export function PlannerTodayPanel({ tasks }: { tasks: StartableTask[] }) {
                   ? t("fromOriginalDate", { day: format.dateTime(new Date(`${task.originalDate}T00:00:00Z`), { weekday: "long" }) })
                   : t("estimateMinutes", { minutes: task.estimateMinutes })
               }
+              estimateMinutes={task.estimateMinutes}
+              scheduledFor={task.scheduledFor}
+              planId={task.planId}
+              plans={plans}
               state={task.state}
               startHref={task.startHref}
               overdue={task.originalDate !== null && task.state !== "done"}

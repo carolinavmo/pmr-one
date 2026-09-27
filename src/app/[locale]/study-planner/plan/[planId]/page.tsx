@@ -3,7 +3,7 @@ import { getLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
 import { redirect, Link } from "@/i18n/navigation";
 import { auth } from "@/auth";
-import { rollForwardMissedTasks, getPlanById, getTasksInRange, attachStartHrefs, getPlanStats, getPlanTopicCoverage, getPlanWeeks } from "@/lib/planner";
+import { rollForwardMissedTasks, getPlanById, getPlans, getTasksInRange, attachStartHrefs, getPlanStats, getPlanTopicCoverage, getPlanWeeks } from "@/lib/planner";
 import { QBANK_FOLDER_COLOR_TINT, QBANK_FOLDER_COLOR_ACCENT } from "@/lib/qbank-folder-colors";
 import { RegeneratePlanButton } from "@/components/planner/RegeneratePlanButton";
 import { AdjustPaceButton } from "@/components/planner/AdjustPaceButton";
@@ -50,11 +50,12 @@ export default async function StudyPlanPage({ params }: PlanPageProps) {
   const plan = await getPlanById(userId, planId);
   if (!plan) notFound();
 
-  const [stats, topicCoverage, weeks, pendingTasksRaw] = await Promise.all([
+  const [stats, topicCoverage, weeks, pendingTasksRaw, plans] = await Promise.all([
     getPlanStats(plan, today),
     getPlanTopicCoverage(planId),
     getPlanWeeks(userId, planId, addDays(today, -56), addDays(today, 56)),
     getTasksInRange(userId, addDays(today, -730), addDays(today, 730)),
+    getPlans(userId, "active"),
   ]);
   const relevant = pendingTasksRaw.filter((task) => task.planId === planId && task.state === "pending").slice(0, 60);
   const tasks = await attachStartHrefs(relevant);
@@ -139,6 +140,7 @@ export default async function StudyPlanPage({ params }: PlanPageProps) {
         todayIso={today}
         tasks={tasks}
         overdueCount={stats.overdueCount}
+        plans={plans}
       />
     </main>
   );

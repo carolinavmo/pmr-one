@@ -480,7 +480,10 @@
     "planWeeksSubtitle": "cada quadrado é uma tarefa",
     "planSessionLengthLabel": "Duração da sessão",
     "deleteTask": "Excluir tarefa",
-    "confirmDeleteTask": "Excluir esta tarefa? Esta ação não pode ser desfeita."
+    "confirmDeleteTask": "Excluir esta tarefa? Esta ação não pode ser desfeita.",
+    "editTask": "Editar tarefa",
+    "saving": "Salvando…",
+    "saveChanges": "Salvar alterações"
   },
   "myAtlas": {
     "pageTitle": "Meu Manual",

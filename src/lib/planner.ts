@@ -363,6 +363,39 @@ export async function rescheduleTask(userId: string, taskId: string, newDate: st
   ]);
 }
 
+export interface UpdateTaskInput {
+  title: string;
+  estimateMinutes: number;
+  scheduledFor: string;
+  planId: string | null;
+}
+
+// The general edit path (NewTaskDrawer's edit mode) — title/estimate
+// only ever change for a 'custom' task in practice (the drawer keeps
+// them read-only for every other type, since they're derived from
+// real content there), but this takes whatever it's given rather than
+// branching on type itself, same "the caller decides, this just
+// writes" shape as createTask. scheduled_for/original_date follow
+// rescheduleTask's own semantics — an edited task is no longer
+// "missed", it's freshly placed. Pending only, matching
+// rescheduleTask: a done task's date isn't something you'd edit.
+export async function updateTask(userId: string, taskId: string, input: UpdateTaskInput): Promise<void> {
+  // topic_id only clears when the plan itself actually changes —
+  // reassigning to a different plan (or to one-off) leaves the old
+  // topic's coverage math pointing at a task that isn't really that
+  // plan's anymore, but a same-plan edit (date, title) is still the
+  // same generated task and should keep its coverage attribution.
+  // The CASE reads plan_id's pre-update value, same row SET compares
+  // against.
+  await pool.query(
+    `UPDATE study_plan_task
+     SET title = $3, estimate_minutes = $4, scheduled_for = $5, original_date = NULL, plan_id = $6,
+         topic_id = CASE WHEN plan_id IS DISTINCT FROM $6 THEN NULL ELSE topic_id END
+     WHERE id = $1 AND user_id = $2 AND state = 'pending'`,
+    [taskId, userId, input.title, input.estimateMinutes, input.scheduledFor, input.planId]
+  );
+}
+
 export async function deleteTask(userId: string, taskId: string): Promise<void> {
   await pool.query(`DELETE FROM study_plan_task WHERE id = $1 AND user_id = $2`, [taskId, userId]);
 }

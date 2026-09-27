@@ -480,7 +480,10 @@
     "planWeeksSubtitle": "each square is a task",
     "planSessionLengthLabel": "Session length",
     "deleteTask": "Delete task",
-    "confirmDeleteTask": "Delete this task? This cannot be undone."
+    "confirmDeleteTask": "Delete this task? This cannot be undone.",
+    "editTask": "Edit task",
+    "saving": "Saving…",
+    "saveChanges": "Save changes"
   },
   "myAtlas": {
     "pageTitle": "My Handbook",

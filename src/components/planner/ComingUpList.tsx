@@ -2,31 +2,41 @@
 
 import { useState, useTransition } from "react";
 import { useTranslations, useFormatter } from "next-intl";
-import { Trash2 } from "lucide-react";
-import type { StartableTask } from "@/lib/planner";
+import { Trash2, Pencil } from "lucide-react";
+import type { StartableTask, StudyPlan } from "@/lib/planner";
 import { deleteTaskAction } from "@/lib/actions/planner";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
+import { NewTaskDrawer } from "./NewTaskDrawer";
 
 // "The next seven days as rows, each tagged and dated" (PLANNER-SPEC.md)
 // — read-only aside from the Start link (no checkbox here; a task
-// this far out isn't something you'd mark done ahead of time) and
-// delete, which every surface showing a task offers regardless of how
-// far out it is.
-export function ComingUpList({ tasks, todayIso }: { tasks: StartableTask[]; todayIso: string }) {
+// this far out isn't something you'd mark done ahead of time), edit
+// and delete, which every surface showing a task offers regardless of
+// how far out it is. Deletions are tracked as an override set applied
+// over the `tasks` prop at render time (not mirrored into local
+// state) so an edit — which can reschedule a task off "next 7 days"
+// entirely — is picked up correctly once NewTaskDrawer's own
+// router.refresh() delivers fresh props, rather than going stale
+// behind a one-time local copy.
+export function ComingUpList({ tasks, todayIso, plans }: { tasks: StartableTask[]; todayIso: string; plans: StudyPlan[] }) {
   const t = useTranslations("studyPlanner");
   const format = useFormatter();
-  const [localTasks, setLocalTasks] = useState(tasks);
   const [isPending, startTransition] = useTransition();
   const [confirmingId, setConfirmingId] = useState<string | null>(null);
+  const [deletedIds, setDeletedIds] = useState<Set<string>>(new Set());
+  const [editingId, setEditingId] = useState<string | null>(null);
   const tomorrow = new Date(`${todayIso}T00:00:00Z`);
   tomorrow.setUTCDate(tomorrow.getUTCDate() + 1);
   const tomorrowIso = tomorrow.toISOString().slice(0, 10);
+
+  const localTasks = tasks.filter((task) => !deletedIds.has(task.id));
+  const editingTask = localTasks.find((task) => task.id === editingId) ?? null;
 
   function handleDelete(taskId: string) {
     setConfirmingId(null);
     startTransition(async () => {
       await deleteTaskAction(taskId);
-      setLocalTasks((prev) => prev.filter((task) => task.id !== taskId));
+      setDeletedIds((prev) => new Set(prev).add(taskId));
     });
   }
 
@@ -47,6 +57,15 @@ export function ComingUpList({ tasks, todayIso }: { tasks: StartableTask[]; toda
           </span>
           <button
             type="button"
+            onClick={() => setEditingId(task.id)}
+            disabled={isPending}
+            aria-label={t("editTask")}
+            className="shrink-0 rounded-md p-1.5 text-secondary hover:bg-border/40 hover:text-primary"
+          >
+            <Pencil className="size-3.5" aria-hidden="true" />
+          </button>
+          <button
+            type="button"
             onClick={() => setConfirmingId(task.id)}
             disabled={isPending}
             aria-label={t("deleteTask")}
@@ -63,6 +82,21 @@ export function ComingUpList({ tasks, todayIso }: { tasks: StartableTask[]; toda
           cancelLabel={t("cancel")}
           onConfirm={() => handleDelete(confirmingId)}
           onCancel={() => setConfirmingId(null)}
+        />
+      )}
+      {editingTask && (
+        <NewTaskDrawer
+          open
+          onClose={() => setEditingId(null)}
+          plans={plans}
+          editTask={{
+            id: editingTask.id,
+            type: editingTask.type,
+            title: editingTask.title,
+            estimateMinutes: editingTask.estimateMinutes,
+            scheduledFor: editingTask.scheduledFor,
+            planId: editingTask.planId,
+          }}
         />
       )}
     </div>

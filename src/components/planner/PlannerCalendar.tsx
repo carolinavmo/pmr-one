@@ -246,7 +246,7 @@ export function PlannerCalendar({ tasks, plans, todayIso }: { tasks: StartableTa
       </div>
 
       {view === "agenda" ? (
-        <CalendarAgenda dates={agendaDates} tasksByDate={tasksByDate} onTaskDeleted={() => router.refresh()} />
+        <CalendarAgenda dates={agendaDates} tasksByDate={tasksByDate} plans={plans} onTaskDeleted={() => router.refresh()} />
       ) : (
         <div className="flex flex-col gap-4 lg:flex-row">
           <CalendarGrid
@@ -264,6 +264,7 @@ export function PlannerCalendar({ tasks, plans, todayIso }: { tasks: StartableTa
           <CalendarDayPanel
             date={selectedDay}
             tasks={tasksByDate.get(selectedDay) ?? []}
+            plans={plans}
             onAddTask={() => openAddTask(selectedDay)}
             onTaskDeleted={() => router.refresh()}
           />
