@@ -4,8 +4,8 @@ import { useEffect, useState, useTransition } from "react";
 import { useTranslations } from "next-intl";
 import { X, Check } from "lucide-react";
 import { useRouter } from "@/i18n/navigation";
-import { createPlanAction, listPlanTopicOptionsAction } from "@/lib/actions/planner";
-import type { PlanKind } from "@/lib/planner";
+import { createPlanAction, updatePlanAction, listPlanTopicOptionsAction } from "@/lib/actions/planner";
+import type { PlanKind, PlanTopicInput } from "@/lib/planner";
 import { QBANK_FOLDER_COLOR_ORDER, QBANK_FOLDER_COLOR_ACCENT, type QbankFolderColor } from "@/lib/qbank-folder-colors";
 import { Button } from "@/components/ui/Button";
 
@@ -14,37 +14,80 @@ const KINDS: PlanKind[] = ["exam", "rotation", "routine", "custom"];
 const DAY_NUMBERS = [1, 2, 3, 4, 5, 6, 7];
 const DEFAULT_TOPIC_WEIGHT = 5;
 
+export interface EditablePlan {
+  id: string;
+  name: string;
+  kind: PlanKind;
+  colourKey: QbankFolderColor;
+  targetDate: string | null;
+  studyDays: number[];
+  sessionMinutes: number;
+  maxTasksPerDay: number;
+  topics: PlanTopicInput[];
+}
+
 // A plan's own fields, same plain-form shape as NewQuestionSetDrawer,
 // plus the topic weight picker the generator reads from
 // (PLANNER-IMPLEMENTATION.md Pass 2). Topics are optional — a plan
 // created with none just has nowhere to hang tasks yet, same as
 // before Pass 2 existed.
-export function NewPlanDrawer({ open, onClose, initialKind }: { open: boolean; onClose: () => void; initialKind?: PlanKind }) {
+//
+// `editPlan` switches this same drawer into "Edit plan" mode
+// (PLANNER-SPEC.md rule 4, "any plan can be reshaped" — the gap Pass 4
+// deliberately left open, see updatePlan's own comment for why saving
+// an edit never touches the plan's existing tasks). Same fields, same
+// layout — just seeded from the plan passed in and submitting through
+// updatePlanAction instead of createPlanAction, same "one drawer,
+// create or edit" shape NewTaskDrawer already uses.
+export function NewPlanDrawer({
+  open,
+  onClose,
+  initialKind,
+  editPlan,
+}: {
+  open: boolean;
+  onClose: () => void;
+  initialKind?: PlanKind;
+  editPlan?: EditablePlan;
+}) {
   const t = useTranslations("studyPlanner");
   const router = useRouter();
-  const [name, setName] = useState("");
-  const [kind, setKind] = useState<PlanKind>(initialKind ?? "exam");
-  const [colourKey, setColourKey] = useState<QbankFolderColor>("peach");
-  const [targetDate, setTargetDate] = useState("");
-  const [studyDays, setStudyDays] = useState<number[]>([1, 2, 3, 4, 5]);
-  const [sessionMinutes, setSessionMinutes] = useState(30);
-  const [maxTasksPerDay, setMaxTasksPerDay] = useState(3);
+  const [name, setName] = useState(editPlan?.name ?? "");
+  const [kind, setKind] = useState<PlanKind>(editPlan?.kind ?? initialKind ?? "exam");
+  const [colourKey, setColourKey] = useState<QbankFolderColor>(editPlan?.colourKey ?? "peach");
+  const [targetDate, setTargetDate] = useState(editPlan?.targetDate ?? "");
+  const [studyDays, setStudyDays] = useState<number[]>(editPlan?.studyDays ?? [1, 2, 3, 4, 5]);
+  const [sessionMinutes, setSessionMinutes] = useState(editPlan?.sessionMinutes ?? 30);
+  const [maxTasksPerDay, setMaxTasksPerDay] = useState(editPlan?.maxTasksPerDay ?? 3);
   const [topicOptions, setTopicOptions] = useState<{ id: string; name: string }[]>([]);
-  const [topicWeights, setTopicWeights] = useState<Record<string, number>>({});
+  const [topicWeights, setTopicWeights] = useState<Record<string, number>>(
+    editPlan ? Object.fromEntries(editPlan.topics.map((topic) => [topic.topicRef, topic.weight])) : {}
+  );
   const [isPending, startTransition] = useTransition();
 
   const [wasOpen, setWasOpen] = useState(open);
   if (open !== wasOpen) {
     setWasOpen(open);
     if (open) {
-      setName("");
-      setKind(initialKind ?? "exam");
-      setColourKey("peach");
-      setTargetDate("");
-      setStudyDays([1, 2, 3, 4, 5]);
-      setSessionMinutes(30);
-      setMaxTasksPerDay(3);
-      setTopicWeights({});
+      if (editPlan) {
+        setName(editPlan.name);
+        setKind(editPlan.kind);
+        setColourKey(editPlan.colourKey);
+        setTargetDate(editPlan.targetDate ?? "");
+        setStudyDays(editPlan.studyDays);
+        setSessionMinutes(editPlan.sessionMinutes);
+        setMaxTasksPerDay(editPlan.maxTasksPerDay);
+        setTopicWeights(Object.fromEntries(editPlan.topics.map((topic) => [topic.topicRef, topic.weight])));
+      } else {
+        setName("");
+        setKind(initialKind ?? "exam");
+        setColourKey("peach");
+        setTargetDate("");
+        setStudyDays([1, 2, 3, 4, 5]);
+        setSessionMinutes(30);
+        setMaxTasksPerDay(3);
+        setTopicWeights({});
+      }
     }
   }
 
@@ -80,21 +123,39 @@ export function NewPlanDrawer({ open, onClose, initialKind }: { open: boolean; o
     startTransition(async () => {
       const topics = Object.entries(topicWeights).map(([topicRef, weight]) => ({
         topicRef,
-        label: topicOptions.find((o) => o.id === topicRef)?.name ?? topicRef,
+        // Falls back to the label edit mode already knows (from the
+        // plan's own current topics) before the raw id, in case
+        // topicOptions hasn't finished loading yet.
+        label: topicOptions.find((o) => o.id === topicRef)?.name ?? editPlan?.topics.find((t) => t.topicRef === topicRef)?.label ?? topicRef,
         weight,
       }));
-      const { id } = await createPlanAction({
-        name: name.trim(),
-        kind,
-        colourKey,
-        targetDate: targetDate || null,
-        studyDays,
-        sessionMinutes,
-        maxTasksPerDay,
-        topics,
-      });
-      onClose();
-      router.push(`/study-planner/plan/${id}`);
+      if (editPlan) {
+        await updatePlanAction(editPlan.id, {
+          name: name.trim(),
+          kind,
+          colourKey,
+          targetDate: targetDate || null,
+          studyDays,
+          sessionMinutes,
+          maxTasksPerDay,
+          topics,
+        });
+        onClose();
+        router.refresh();
+      } else {
+        const { id } = await createPlanAction({
+          name: name.trim(),
+          kind,
+          colourKey,
+          targetDate: targetDate || null,
+          studyDays,
+          sessionMinutes,
+          maxTasksPerDay,
+          topics,
+        });
+        onClose();
+        router.push(`/study-planner/plan/${id}`);
+      }
     });
   }
 
@@ -103,13 +164,13 @@ export function NewPlanDrawer({ open, onClose, initialKind }: { open: boolean; o
       {open && <div className="fixed inset-0 z-40 bg-black/40" onClick={onClose} aria-hidden="true" />}
 
       <aside
-        aria-label={t("newPlanCta")}
+        aria-label={editPlan ? t("editPlan") : t("newPlanCta")}
         className={`fixed top-0 right-0 z-50 flex h-full w-96 max-w-[90vw] flex-col gap-4 overflow-y-auto border-l border-border bg-surface p-5 shadow-xl transition-transform duration-base ${
           open ? "translate-x-0" : "translate-x-full"
         }`}
       >
         <div className="flex items-center justify-between">
-          <h2 className="font-heading text-base font-semibold text-primary">{t("newPlanCta")}</h2>
+          <h2 className="font-heading text-base font-semibold text-primary">{editPlan ? t("editPlan") : t("newPlanCta")}</h2>
           <button type="button" onClick={onClose} aria-label={t("cancel")} className="rounded-full p-1.5 text-secondary hover:bg-border/40 hover:text-primary">
             <X className="size-4" aria-hidden="true" />
           </button>
@@ -258,7 +319,7 @@ export function NewPlanDrawer({ open, onClose, initialKind }: { open: boolean; o
             {t("cancel")}
           </Button>
           <Button type="button" variant="primary" onClick={handleSubmit} disabled={isPending || !name.trim() || studyDays.length === 0}>
-            {isPending ? t("creating") : t("createPlan")}
+            {editPlan ? (isPending ? t("saving") : t("saveChanges")) : isPending ? t("creating") : t("createPlan")}
           </Button>
         </div>
       </aside>

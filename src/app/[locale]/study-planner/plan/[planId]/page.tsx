@@ -3,11 +3,22 @@ import { getLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
 import { redirect, Link } from "@/i18n/navigation";
 import { auth } from "@/auth";
-import { rollForwardMissedTasks, getPlanById, getPlans, getTasksInRange, attachStartHrefs, getPlanStats, getPlanTopicCoverage, getPlanWeeks } from "@/lib/planner";
+import {
+  rollForwardMissedTasks,
+  getPlanById,
+  getPlans,
+  getPlanTopics,
+  getTasksInRange,
+  attachStartHrefs,
+  getPlanStats,
+  getPlanTopicCoverage,
+  getPlanWeeks,
+} from "@/lib/planner";
 import { QBANK_FOLDER_COLOR_TINT, QBANK_FOLDER_COLOR_ACCENT } from "@/lib/qbank-folder-colors";
 import { RegeneratePlanButton } from "@/components/planner/RegeneratePlanButton";
 import { AdjustPaceButton } from "@/components/planner/AdjustPaceButton";
 import { PlanPauseButton } from "@/components/planner/PlanPauseButton";
+import { EditPlanButton } from "@/components/planner/EditPlanButton";
 import { PlanTabs } from "@/components/planner/PlanTabs";
 import { Play } from "lucide-react";
 
@@ -50,12 +61,13 @@ export default async function StudyPlanPage({ params }: PlanPageProps) {
   const plan = await getPlanById(userId, planId);
   if (!plan) notFound();
 
-  const [stats, topicCoverage, weeks, pendingTasksRaw, plans] = await Promise.all([
+  const [stats, topicCoverage, weeks, pendingTasksRaw, plans, planTopics] = await Promise.all([
     getPlanStats(plan, today),
     getPlanTopicCoverage(planId),
     getPlanWeeks(userId, planId, addDays(today, -56), addDays(today, 56)),
     getTasksInRange(userId, addDays(today, -730), addDays(today, 730)),
     getPlans(userId, "active"),
+    getPlanTopics(planId),
   ]);
   const relevant = pendingTasksRaw.filter((task) => task.planId === planId && task.state === "pending").slice(0, 60);
   const tasks = await attachStartHrefs(relevant);
@@ -88,7 +100,22 @@ export default async function StudyPlanPage({ params }: PlanPageProps) {
           </div>
         </div>
         <div className="flex-1">
-          <h1 className="font-heading text-3xl font-black text-primary">{plan.name}</h1>
+          <div className="flex items-center gap-1.5">
+            <h1 className="font-heading text-3xl font-black text-primary">{plan.name}</h1>
+            <EditPlanButton
+              plan={{
+                id: plan.id,
+                name: plan.name,
+                kind: plan.kind,
+                colourKey: plan.colourKey,
+                targetDate: plan.targetDate,
+                studyDays: plan.studyDays,
+                sessionMinutes: plan.sessionMinutes,
+                maxTasksPerDay: plan.maxTasksPerDay,
+                topics: planTopics.map((topic) => ({ topicRef: topic.topicRef, label: topic.label, weight: topic.weight })),
+              }}
+            />
+          </div>
           <p className="mt-1 font-ui text-sm font-bold text-secondary">
             {plan.targetDate ? t("planCardDeadline", { date: plan.targetDate }) : t(`planKind_${plan.kind}`)}
             {weeksLeft !== null && ` · ${t("planWeeksLeft", { count: weeksLeft })}`}

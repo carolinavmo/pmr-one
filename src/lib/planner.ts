@@ -337,6 +337,35 @@ export async function setPlanStatus(userId: string, planId: string, status: Plan
   await pool.query(`UPDATE study_plan SET status = $3, updated_at = now() WHERE id = $1 AND user_id = $2`, [planId, userId, status]);
 }
 
+export interface UpdatePlanInput {
+  name: string;
+  kind: PlanKind;
+  colourKey: QbankFolderColor;
+  targetDate: string | null;
+  studyDays: number[];
+  sessionMinutes: number;
+  maxTasksPerDay: number;
+  topics: PlanTopicInput[];
+}
+
+// "Any plan can be reshaped" (PLANNER-SPEC.md rule 4) — the edit path
+// setPlanTopics's own comment said Pass 2 didn't build yet. Deliberately
+// does NOT touch study_plan_task: editing study days, the target date
+// or topic weights can leave the existing schedule out of step with the
+// new settings, but that's what Regenerate/Adjust the pace are for —
+// two explicit, separately-understood actions already on this page,
+// not something an edit should silently trigger (a name/colour-only
+// edit has no business deleting and re-picking every pending task).
+export async function updatePlan(userId: string, planId: string, input: UpdatePlanInput): Promise<void> {
+  await pool.query(
+    `UPDATE study_plan
+     SET name = $3, kind = $4, colour_key = $5, target_date = $6, study_days = $7, session_minutes = $8, max_tasks_per_day = $9, updated_at = now()
+     WHERE id = $1 AND user_id = $2`,
+    [planId, userId, input.name, input.kind, input.colourKey, input.targetDate, input.studyDays, input.sessionMinutes, input.maxTasksPerDay]
+  );
+  await updatePlanTopics(planId, input.topics);
+}
+
 export interface CreateTaskInput {
   planId: string | null;
   type: TaskType;
@@ -631,9 +660,12 @@ export async function getPlanTopics(planId: string): Promise<PlanTopic[]> {
   return rows.map((r) => ({ id: r.id, topicRef: r.topic_ref, label: r.label, weight: r.weight }));
 }
 
-// Replace-all — Pass 2 doesn't build an "edit topics" UI yet (that's
-// Pass 4's own tab), so a plan's topic list is only ever written once,
-// right after creation.
+// Replace-all — only ever called once, right after creation (a brand
+// new plan has no study_plan_task rows pointing at any topic yet, so
+// there's nothing a delete-and-reinsert could orphan). Editing an
+// existing plan's topics goes through updatePlanTopics below instead,
+// which preserves a topic's id — and therefore every already-generated
+// task's topic_id — for any topicRef that survives the edit.
 export async function setPlanTopics(planId: string, topics: PlanTopicInput[]): Promise<void> {
   await pool.query(`DELETE FROM study_plan_topic WHERE plan_id = $1`, [planId]);
   for (let i = 0; i < topics.length; i++) {
@@ -644,6 +676,51 @@ export async function setPlanTopics(planId: string, topics: PlanTopicInput[]): P
       topics[i].weight,
       i,
     ]);
+  }
+}
+
+// The edit path: keeps each surviving topic's row (and id) in place —
+// only its label/weight/position change — rather than the blunt
+// delete-and-reinsert setPlanTopics does for a brand-new plan. A topic
+// removed from the picker really is deleted (its tasks' topic_id falls
+// back to NULL via the column's ON DELETE SET NULL, same as any topic
+// the generator itself excludes for having no content); a topic that's
+// still checked keeps its id, so getPlanTopicCoverage's per-topic
+// counts don't reset to zero just because the user opened Edit plan
+// and re-saved with the same topics.
+export async function updatePlanTopics(planId: string, topics: PlanTopicInput[]): Promise<void> {
+  const existing = await getPlanTopics(planId);
+  const existingByRef = new Map(existing.map((t) => [t.topicRef, t]));
+  const incomingRefs = new Set(topics.map((t) => t.topicRef));
+
+  const client = await pool.connect();
+  try {
+    await client.query("BEGIN");
+    const toDelete = existing.filter((t) => !incomingRefs.has(t.topicRef)).map((t) => t.id);
+    if (toDelete.length > 0) {
+      await client.query(`DELETE FROM study_plan_topic WHERE id = ANY($1::uuid[])`, [toDelete]);
+    }
+    for (let i = 0; i < topics.length; i++) {
+      const topic = topics[i];
+      const existingRow = existingByRef.get(topic.topicRef);
+      if (existingRow) {
+        await client.query(`UPDATE study_plan_topic SET label = $2, weight = $3, position = $4 WHERE id = $1`, [existingRow.id, topic.label, topic.weight, i]);
+      } else {
+        await client.query(`INSERT INTO study_plan_topic (plan_id, topic_ref, label, weight, position) VALUES ($1, $2, $3, $4, $5)`, [
+          planId,
+          topic.topicRef,
+          topic.label,
+          topic.weight,
+          i,
+        ]);
+      }
+    }
+    await client.query("COMMIT");
+  } catch (err) {
+    await client.query("ROLLBACK");
+    throw err;
+  } finally {
+    client.release();
   }
 }
 

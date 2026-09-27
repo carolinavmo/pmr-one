@@ -483,7 +483,8 @@
     "confirmDeleteTask": "Delete this task? This cannot be undone.",
     "editTask": "Edit task",
     "saving": "Saving…",
-    "saveChanges": "Save changes"
+    "saveChanges": "Save changes",
+    "editPlan": "Edit plan"
   },
   "myAtlas": {
     "pageTitle": "My Handbook",

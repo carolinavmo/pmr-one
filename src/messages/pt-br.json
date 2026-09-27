@@ -483,7 +483,8 @@
     "confirmDeleteTask": "Excluir esta tarefa? Esta ação não pode ser desfeita.",
     "editTask": "Editar tarefa",
     "saving": "Salvando…",
-    "saveChanges": "Salvar alterações"
+    "saveChanges": "Salvar alterações",
+    "editPlan": "Editar plano"
   },
   "myAtlas": {
     "pageTitle": "Meu Manual",

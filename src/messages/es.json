@@ -483,7 +483,8 @@
     "confirmDeleteTask": "¿Eliminar esta tarea? Esta acción no se puede deshacer.",
     "editTask": "Editar tarea",
     "saving": "Guardando…",
-    "saveChanges": "Guardar cambios"
+    "saveChanges": "Guardar cambios",
+    "editPlan": "Editar plan"
   },
   "myAtlas": {
     "pageTitle": "Mi Manual",

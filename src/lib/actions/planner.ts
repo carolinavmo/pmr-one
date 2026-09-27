@@ -5,6 +5,7 @@ import { revalidatePlannerSurfaces } from "@/lib/revalidation";
 import { getSubjects } from "@/lib/flashcards";
 import {
   createPlan,
+  updatePlan,
   setPlanStatus,
   createTask,
   rescheduleTask,
@@ -15,6 +16,7 @@ import {
   generateTasksForPlan,
   adjustPlanPace,
   type CreatePlanInput,
+  type UpdatePlanInput,
   type CreateTaskInput,
   type UpdateTaskInput,
   type PlanStatus,
@@ -30,6 +32,18 @@ export async function createPlanAction(input: CreatePlanInput): Promise<{ id: st
   const result = await createPlan(session.user.id, input);
   revalidatePlannerSurfaces();
   return result;
+}
+
+// "Any plan can be reshaped" (PLANNER-SPEC.md rule 4) — the plan's own
+// settings (name, colour, target date, study days, session length,
+// topics/weights), not its tasks. Regenerate/Adjust the pace remain
+// the separate, explicit actions for bringing the schedule itself in
+// line with a changed setting (see updatePlan's own comment).
+export async function updatePlanAction(planId: string, input: UpdatePlanInput): Promise<void> {
+  const session = await auth();
+  if (!session) throw new Error("Unauthorized");
+  await updatePlan(session.user.id, planId, input);
+  revalidatePlannerSurfaces();
 }
 
 // Re-runs the generator for an existing plan — the same function

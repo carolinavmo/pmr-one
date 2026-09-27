@@ -483,7 +483,8 @@
     "confirmDeleteTask": "Eliminar esta tarefa? Esta ação não pode ser revertida.",
     "editTask": "Editar tarefa",
     "saving": "A guardar…",
-    "saveChanges": "Guardar alterações"
+    "saveChanges": "Guardar alterações",
+    "editPlan": "Editar plano"
   },
   "myAtlas": {
     "pageTitle": "O Meu Manual",
