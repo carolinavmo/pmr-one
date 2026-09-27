@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState, useTransition } from "react";
+import { useMemo, useState, useSyncExternalStore, useTransition } from "react";
 import { useTranslations, useFormatter } from "next-intl";
 import { ChevronLeft, ChevronRight, Plus } from "lucide-react";
 import { useRouter } from "@/i18n/navigation";
@@ -60,13 +60,38 @@ function weekDates(cursorIso: string): string[] {
 // of empty day headers.
 const AGENDA_WINDOW_DAYS = 60;
 
+// PLANNER-IMPLEMENTATION.md Pass 5: "calendar defaults to agenda" on
+// mobile. Same useSyncExternalStore-over-matchMedia shape this
+// codebase already uses for client-only state that would otherwise
+// mismatch server/client renders (IndexSidebar.tsx's own
+// prefersReducedMotion, SidebarFrame.tsx's collapsed toggle) — the
+// server has no viewport to render against, so getServerSnapshot
+// assumes desktop and the real value settles in on the client's first
+// paint, no effect/setState round-trip needed.
+function subscribeIsMobile(onChange: () => void) {
+  const mql = window.matchMedia("(max-width: 639px)");
+  mql.addEventListener("change", onChange);
+  return () => mql.removeEventListener("change", onChange);
+}
+function getIsMobileSnapshot(): boolean {
+  return window.matchMedia("(max-width: 639px)").matches;
+}
+function getIsMobileServerSnapshot(): boolean {
+  return false;
+}
+
 export function PlannerCalendar({ tasks, plans, todayIso }: { tasks: StartableTask[]; plans: StudyPlan[]; todayIso: string }) {
   const t = useTranslations("studyPlanner");
   const format = useFormatter();
   const router = useRouter();
   const [, startTransition] = useTransition();
 
-  const [view, setView] = useState<View>("month");
+  const isMobile = useSyncExternalStore(subscribeIsMobile, getIsMobileSnapshot, getIsMobileServerSnapshot);
+  // Explicit picks (clicking a tab) always win over the mobile default
+  // — null just means "nothing picked yet this session".
+  const [viewOverride, setViewOverride] = useState<View | null>(null);
+  const view = viewOverride ?? (isMobile ? "agenda" : "month");
+  const setView = setViewOverride;
   const [cursorIso, setCursorIso] = useState(todayIso);
   const [selectedDay, setSelectedDay] = useState(todayIso);
   const [hiddenPlanIds, setHiddenPlanIds] = useState<Set<string>>(new Set());

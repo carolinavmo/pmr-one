@@ -5,7 +5,7 @@ import { getCalculatorCategories, getAllCalculators } from "@/lib/clinical-tools
 import { getFavoritedCalculatorIds } from "@/lib/workspace";
 import { getDashboardTopicTiles, getLibraryTopicTiles, getCategories, getFolderDueBadges, getFavoritedDeckCount, getDueTodayCount } from "@/lib/flashcards";
 import { getCategories as getQuestionBankCategories, getQuestionBankRailStats } from "@/lib/question-bank";
-import { getPlannerRailStats, getPlans } from "@/lib/planner";
+import { getPlannerRailStats, getPlans, rollForwardMissedTasks } from "@/lib/planner";
 import { SidebarFrame } from "./SidebarFrame";
 
 function todayIsoForRail(): string {
@@ -40,6 +40,19 @@ export async function Sidebar() {
   const canReview = session?.user.role === "editor" || session?.user.role === "admin";
   const userId = session?.user.id ?? null;
   const locale = await getLocale();
+
+  // PLANNER-IMPLEMENTATION.md Pass 5: "rolling forward runs once a
+  // day." There's no scheduler infra in this app (see
+  // rollForwardMissedTasks's own comment), so the nearest real
+  // equivalent is running the sweep from the one component every
+  // signed-in page already renders, rather than only from planner
+  // pages — a user who opens Flashcards first thing in the morning
+  // still gets today's overdue tasks rolled forward before the rail
+  // reads them below. Individual planner pages keep their own call
+  // too (idempotent, one indexed UPDATE) since render order between
+  // this and a sibling page isn't guaranteed.
+  if (userId) await rollForwardMissedTasks(userId);
+
   const [
     tree,
     calculatorCategories,

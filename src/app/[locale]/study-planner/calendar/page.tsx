@@ -3,6 +3,7 @@ import { redirect } from "@/i18n/navigation";
 import { auth } from "@/auth";
 import { rollForwardMissedTasks, getTasksInRange, getPlans, attachStartHrefs } from "@/lib/planner";
 import { PlannerCalendar } from "@/components/planner/PlannerCalendar";
+import { PlannerEmptyState } from "@/components/planner/PlannerEmptyState";
 
 function todayIso(): string {
   const d = new Date();
@@ -36,8 +37,25 @@ export default async function StudyPlannerCalendarPage() {
 
   await rollForwardMissedTasks(userId);
 
-  const [tasksRaw, plans] = await Promise.all([getTasksInRange(userId, addDays(today, -120), addDays(today, 400)), getPlans(userId, "active")]);
+  const [tasksRaw, plans, allPlans] = await Promise.all([
+    getTasksInRange(userId, addDays(today, -120), addDays(today, 400)),
+    getPlans(userId, "active"),
+    getPlans(userId, "all"),
+  ]);
   const tasks = await attachStartHrefs(tasksRaw);
+
+  // PLANNER-SPEC.md's empty-state rule ("hide the metrics, the week
+  // strip and the calendar until something exists") names the
+  // calendar explicitly, not just the Today page — an empty month
+  // grid answers a question nobody asked yet (rule 3, "never show a
+  // statistic at zero").
+  if (tasks.length === 0 && allPlans.length === 0) {
+    return (
+      <main className="mx-auto flex w-full max-w-6xl flex-col gap-6 px-6 py-16">
+        <PlannerEmptyState />
+      </main>
+    );
+  }
 
   return (
     <main className="mx-auto flex w-full max-w-6xl flex-col gap-6 px-6 py-16">

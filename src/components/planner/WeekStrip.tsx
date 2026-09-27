@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useRef } from "react";
 import { useTranslations } from "next-intl";
 import type { WeekDaySummary } from "@/lib/planner";
 
@@ -9,11 +10,21 @@ const DAY_LABELS = ["mon", "tue", "wed", "thu", "fri", "sat", "sun"] as const;
 // named" (PLANNER-SPEC.md) — a rest day says so rather than sitting
 // blank (rule 5), and a day with any missed task reads "N missed"
 // even if it also has done ones, since that's the one worth noticing.
+// PLANNER-IMPLEMENTATION.md Pass 5: "week strip scrolls" on mobile —
+// fixed-width cards in a horizontally-scrolling row below `sm`, back
+// to the original equal-width fill at `sm` and up (see each card's own
+// `sm:` overrides). Scrolled to today on mount so a Thursday visit
+// doesn't open on a strip showing Monday with today off-screen.
 export function WeekStrip({ days, todayIso }: { days: WeekDaySummary[]; todayIso: string }) {
   const t = useTranslations("studyPlanner");
+  const todayRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    todayRef.current?.scrollIntoView({ block: "nearest", inline: "center" });
+  }, []);
 
   return (
-    <div className="flex gap-2.5">
+    <div className="flex gap-2.5 overflow-x-auto pb-1">
       {days.map((day, i) => {
         const isToday = day.date === todayIso;
         const dayNum = Number(day.date.slice(8, 10));
@@ -29,7 +40,8 @@ export function WeekStrip({ days, todayIso }: { days: WeekDaySummary[]; todayIso
         return (
           <div
             key={day.date}
-            className={`flex flex-1 flex-col items-center gap-2 rounded-2xl border-2 px-2.5 py-3 text-center ${
+            ref={isToday ? todayRef : undefined}
+            className={`flex w-[100px] shrink-0 flex-col items-center gap-2 rounded-2xl border-2 px-2.5 py-3 text-center sm:w-auto sm:flex-1 sm:shrink ${
               isToday ? "border-navy bg-soft" : isDone ? "border-trust/30 bg-trust/5" : "border-border"
             }`}
           >
