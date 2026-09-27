@@ -13,6 +13,7 @@ import {
   removePhotoCardGalleryItemAction,
 } from "@/lib/actions/authoring";
 import { RichEditableText } from "@/components/ui/RichEditableText";
+import { preserveScrollAcrossSave } from "@/lib/preserve-scroll";
 
 type GalleryItem = PhotoCardGalleryBlock["items"][number];
 
@@ -53,7 +54,7 @@ export function PhotoCardGalleryBlockView({
           }
           onRemove={() => {
             setItems((current) => current.filter((it) => it.id !== item.id));
-            removePhotoCardGalleryItemAction(block.id, item.id);
+            preserveScrollAcrossSave(() => removePhotoCardGalleryItemAction(block.id, item.id));
           }}
         />
       ))}
@@ -61,7 +62,7 @@ export function PhotoCardGalleryBlockView({
         <button
           type="button"
           onClick={async () => {
-            const newItem = await addPhotoCardGalleryItemAction(block.id);
+            const newItem = await preserveScrollAcrossSave(() => addPhotoCardGalleryItemAction(block.id));
             setItems((current) => [...current, newItem]);
           }}
           className="flex w-fit items-center gap-1.5 rounded px-2 py-1 font-ui text-xs text-accent hover:bg-accent/10"
@@ -102,7 +103,7 @@ function PhotoCard({
 
   const commitText = (nextTitle: string, nextDescription: string) => {
     onItemChange({ ...item, title: nextTitle, description: nextDescription });
-    updatePhotoCardGalleryItemAction(blockId, item.id, nextTitle, nextDescription);
+    preserveScrollAcrossSave(() => updatePhotoCardGalleryItemAction(blockId, item.id, nextTitle, nextDescription));
   };
 
   // Metrics are staged locally like title/description and only written
@@ -113,7 +114,7 @@ function PhotoCard({
   const commitMetrics = (nextMetrics: { label: string; value: string }[]) => {
     setMetrics(nextMetrics);
     onItemChange({ ...item, metrics: nextMetrics });
-    updatePhotoCardGalleryMetricsAction(blockId, item.id, nextMetrics);
+    preserveScrollAcrossSave(() => updatePhotoCardGalleryMetricsAction(blockId, item.id, nextMetrics));
   };
 
   const handleFile = async (file: File) => {
@@ -122,7 +123,7 @@ function PhotoCard({
     const formData = new FormData();
     formData.set("file", file);
     try {
-      await uploadPhotoCardGalleryIllustrationAction(blockId, item.id, formData);
+      await preserveScrollAcrossSave(() => uploadPhotoCardGalleryIllustrationAction(blockId, item.id, formData));
       onItemChange({ ...item, illustrationUrl: URL.createObjectURL(file) });
     } catch (err) {
       setUploadError(err instanceof Error ? err.message : "Upload failed. Try again.");
@@ -146,7 +147,7 @@ function PhotoCard({
                 aria-label="Remove illustration"
                 onClick={() => {
                   onItemChange({ ...item, illustrationUrl: undefined });
-                  removePhotoCardGalleryIllustrationAction(blockId, item.id);
+                  preserveScrollAcrossSave(() => removePhotoCardGalleryIllustrationAction(blockId, item.id));
                 }}
                 className="absolute top-1.5 right-1.5 flex size-6 items-center justify-center rounded-full bg-surface text-secondary shadow-sm hover:text-warning"
               >

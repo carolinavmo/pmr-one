@@ -6,6 +6,7 @@ import type { CalloutBannerBlock, CalloutTone } from "@/lib/editorial-blocks";
 import { useEditMode } from "@/components/disease-page/EditMode";
 import { updateCalloutBannerAction } from "@/lib/actions/authoring";
 import { RichEditableText } from "@/components/ui/RichEditableText";
+import { preserveScrollAcrossSave } from "@/lib/preserve-scroll";
 
 // "Warning" reads as `insight` (warm amber) and "Error" reads as
 // `warning` (a muted red, this app's actual red-flag token) — see
@@ -39,7 +40,7 @@ export function CalloutBannerBlockView({
   const commit = (nextTone: CalloutTone, nextText: string) => {
     setTone(nextTone);
     setText(nextText);
-    updateCalloutBannerAction(block.id, nextTone, nextText);
+    preserveScrollAcrossSave(() => updateCalloutBannerAction(block.id, nextTone, nextText));
   };
 
   const meta = TONE_META[tone];

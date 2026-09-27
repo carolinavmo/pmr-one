@@ -8,6 +8,7 @@ import { updateComparisonTableAction } from "@/lib/actions/authoring";
 import { RichEditableText } from "@/components/ui/RichEditableText";
 import { sanitizeRichText } from "@/lib/rich-text";
 import { TEXT_ALIGN_CLASS } from "@/lib/block-alignment";
+import { preserveScrollAcrossSave } from "@/lib/preserve-scroll";
 
 // A grid, not a list — add/remove row and column controls sit at the
 // grid's own edges rather than reusing the up/down reorder pattern
@@ -36,13 +37,13 @@ export function ComparisonTableBlockView({
   const commit = (nextColumns: string[], nextRows: string[][]) => {
     setColumns(nextColumns);
     setRows(nextRows);
-    updateComparisonTableAction(block.id, nextColumns, nextRows, caption);
+    preserveScrollAcrossSave(() => updateComparisonTableAction(block.id, nextColumns, nextRows, caption));
   };
 
   const saveColumn = async (colIndex: number, html: string) => {
     const nextColumns = columns.map((c, i) => (i === colIndex ? html : c));
     setColumns(nextColumns);
-    await updateComparisonTableAction(block.id, nextColumns, rows, caption);
+    await preserveScrollAcrossSave(() => updateComparisonTableAction(block.id, nextColumns, rows, caption));
   };
 
   const saveCell = async (rowIndex: number, colIndex: number, html: string) => {
@@ -50,12 +51,12 @@ export function ComparisonTableBlockView({
       i === rowIndex ? r.map((c, j) => (j === colIndex ? html : c)) : r
     );
     setRows(nextRows);
-    await updateComparisonTableAction(block.id, columns, nextRows, caption);
+    await preserveScrollAcrossSave(() => updateComparisonTableAction(block.id, columns, nextRows, caption));
   };
 
   const saveCaption = async (html: string) => {
     setCaption(html);
-    await updateComparisonTableAction(block.id, columns, rows, html);
+    await preserveScrollAcrossSave(() => updateComparisonTableAction(block.id, columns, rows, html));
   };
 
   const captionAlign = block.layout?.textAlign ?? "left";

@@ -5,6 +5,7 @@ import { ShieldCheck, Shield, ShieldAlert } from "lucide-react";
 import type { EvidenceSummaryBlock, EvidenceLevel } from "@/lib/editorial-blocks";
 import { updateEvidenceSummaryAction } from "@/lib/actions/authoring";
 import { RichEditableText } from "@/components/ui/RichEditableText";
+import { preserveScrollAcrossSave } from "@/lib/preserve-scroll";
 
 const TIER_META: Record<
   EvidenceLevel,
@@ -52,7 +53,7 @@ export function EvidenceSummaryBlockView({
 
   const commit = (next: typeof tiers) => {
     setTiers(next);
-    updateEvidenceSummaryAction(block.id, next);
+    preserveScrollAcrossSave(() => updateEvidenceSummaryAction(block.id, next));
   };
 
   if (tiers.length === 0) return null;

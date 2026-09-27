@@ -35,6 +35,7 @@ import {
 import { CARD_COLOR_TINT, CARD_COLOR_MID, CARD_COLOR_CHIP, CARD_COLOR_TEXT } from "@/lib/card-colors";
 import { TEXT_ALIGN_CLASS, ROW_ITEMS_CLASS } from "@/lib/block-alignment";
 import { FOCAL_POINT_OPTIONS, FOCAL_POINT_CLASS, type ImageFocalPoint } from "@/lib/image-focal-point";
+import { preserveScrollAcrossSave } from "@/lib/preserve-scroll";
 
 // The three chrome variants (design/CARDS-VARIANTS-SPEC.md): "tint" is
 // today's Highlight Card (solid pastel fill, no border, label inline
@@ -145,7 +146,7 @@ export function HighlightCardShell({
     const formData = new FormData();
     formData.set("file", file);
     try {
-      await uploadHighlightCardImageAction(block.id, formData);
+      await preserveScrollAcrossSave(() => uploadHighlightCardImageAction(block.id, formData));
       setImageUrl(URL.createObjectURL(file));
     } finally {
       setUploadingImage(false);
@@ -201,7 +202,7 @@ export function HighlightCardShell({
           aria-pressed={imagePosition === value}
           onClick={() => {
             setImagePosition(value);
-            setHighlightCardImagePositionAction(block.id, value);
+            preserveScrollAcrossSave(() => setHighlightCardImagePositionAction(block.id, value));
           }}
           className={`flex size-6 items-center justify-center rounded transition-colors duration-base ${
             imagePosition === value
@@ -232,7 +233,7 @@ export function HighlightCardShell({
                   onClick={() => {
                     setWidthOpen(false);
                     setImageWidth(option.value);
-                    setHighlightCardImageWidthAction(block.id, option.value);
+                    preserveScrollAcrossSave(() => setHighlightCardImageWidthAction(block.id, option.value));
                   }}
                   className={`rounded border px-1.5 py-1 font-ui text-xs ${
                     effectiveWidth === option.value
@@ -269,7 +270,7 @@ export function HighlightCardShell({
                     onClick={() => {
                       setFocalPointOpen(false);
                       setImageFocalPoint(option.value);
-                      setHighlightCardImageFocalPointAction(block.id, option.value);
+                      preserveScrollAcrossSave(() => setHighlightCardImageFocalPointAction(block.id, option.value));
                     }}
                     className={`flex size-8 items-center justify-center rounded border ${
                       imageFocalPoint === option.value
@@ -300,7 +301,7 @@ export function HighlightCardShell({
             aria-pressed={imageFit === value}
             onClick={() => {
               setImageFit(value);
-              setHighlightCardImageFitAction(block.id, value);
+              preserveScrollAcrossSave(() => setHighlightCardImageFitAction(block.id, value));
             }}
             className={`flex size-6 items-center justify-center rounded transition-colors duration-base ${
               imageFit === value
@@ -330,7 +331,7 @@ export function HighlightCardShell({
             aria-label="Remove image"
             onClick={() => {
               setImageUrl(undefined);
-              removeHighlightCardImageAction(block.id);
+              preserveScrollAcrossSave(() => removeHighlightCardImageAction(block.id));
             }}
             className="absolute top-1.5 right-1.5 flex size-6 items-center justify-center rounded-full bg-surface-raised text-secondary shadow-sm hover:text-warning"
           >
@@ -386,7 +387,7 @@ export function HighlightCardShell({
         <ColorSwatchPicker
           onPick={(next) => {
             setColorPickerOpen(false);
-            setBlockCardColorAction(block.id, next);
+            preserveScrollAcrossSave(() => setBlockCardColorAction(block.id, next));
           }}
         />
       )}

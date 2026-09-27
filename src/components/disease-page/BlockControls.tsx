@@ -16,6 +16,7 @@ import { writeBlockClipboard } from "@/lib/block-clipboard";
 import { BlockPicker } from "@/components/disease-page/BlockPicker";
 import { AlignmentPicker } from "@/components/disease-page/AlignmentPicker";
 import { notifySectionIndexChanged } from "@/lib/section-events";
+import { preserveScrollAcrossSave } from "@/lib/preserve-scroll";
 
 // Section headings stay full-width and out of any row — they anchor
 // the Contents rail and drive the "nearest heading" context hint, both
@@ -270,7 +271,9 @@ export function BlockControls({
                   aria-label="Move up"
                   className="flex size-6 items-center justify-center rounded text-secondary hover:bg-border/40 hover:text-primary"
                   onClick={async () => {
-                    await moveBlockAction(diseaseId, block.id, position, "up");
+                    await preserveScrollAcrossSave(() =>
+                      moveBlockAction(diseaseId, block.id, position, "up")
+                    );
                     if (block.type === "section_heading") notifySectionIndexChanged();
                   }}
                 >
@@ -281,7 +284,9 @@ export function BlockControls({
                   aria-label="Move down"
                   className="flex size-6 items-center justify-center rounded text-secondary hover:bg-border/40 hover:text-primary"
                   onClick={async () => {
-                    await moveBlockAction(diseaseId, block.id, position, "down");
+                    await preserveScrollAcrossSave(() =>
+                      moveBlockAction(diseaseId, block.id, position, "down")
+                    );
                     if (block.type === "section_heading") notifySectionIndexChanged();
                   }}
                 >
@@ -300,7 +305,7 @@ export function BlockControls({
                 }`}
                 onClick={() =>
                   inRow
-                    ? removeFromRowAction(diseaseId, block.id)
+                    ? preserveScrollAcrossSave(() => removeFromRowAction(diseaseId, block.id))
                     : setLayoutOpen((open) => !open)
                 }
               >
@@ -334,7 +339,7 @@ export function BlockControls({
                 aria-label="Delete block"
                 className="flex size-6 items-center justify-center rounded text-secondary hover:bg-warning/10 hover:text-warning"
                 onClick={async () => {
-                  await deleteBlockAction(block.id);
+                  await preserveScrollAcrossSave(() => deleteBlockAction(block.id));
                   if (block.type === "section_heading") notifySectionIndexChanged();
                 }}
               >
@@ -349,7 +354,9 @@ export function BlockControls({
                     type="button"
                     onClick={() => {
                       setLayoutOpen(false);
-                      combineWithAdjacentBlockAction(diseaseId, block.id, "previous");
+                      preserveScrollAcrossSave(() =>
+                        combineWithAdjacentBlockAction(diseaseId, block.id, "previous")
+                      );
                     }}
                     className="rounded px-2 py-1 text-left font-ui text-xs text-primary hover:bg-border/40"
                   >
@@ -359,7 +366,9 @@ export function BlockControls({
                     type="button"
                     onClick={() => {
                       setLayoutOpen(false);
-                      combineWithAdjacentBlockAction(diseaseId, block.id, "next");
+                      preserveScrollAcrossSave(() =>
+                        combineWithAdjacentBlockAction(diseaseId, block.id, "next")
+                      );
                     }}
                     className="rounded px-2 py-1 text-left font-ui text-xs text-primary hover:bg-border/40"
                   >

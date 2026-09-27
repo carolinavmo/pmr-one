@@ -20,6 +20,7 @@ import {
 } from "@/lib/actions/authoring";
 import { cardIcons, type CardIconName } from "@/components/ui/cardIcons";
 import { RichEditableText } from "@/components/ui/RichEditableText";
+import { preserveScrollAcrossSave } from "@/lib/preserve-scroll";
 
 type Step = { label: string; description?: string; icon?: string };
 
@@ -49,18 +50,18 @@ export function TimelineBlockView({
 
   const commitSteps = (next: Step[]) => {
     setSteps(next);
-    updateTimelineStepsAction(block.id, next);
+    preserveScrollAcrossSave(() => updateTimelineStepsAction(block.id, next));
   };
 
   const commitTitle = (nextTitle: string, nextSubtitle: string) => {
     setTitle(nextTitle);
     setSubtitle(nextSubtitle);
-    updateTimelineTitleAction(block.id, nextTitle, nextSubtitle);
+    preserveScrollAcrossSave(() => updateTimelineTitleAction(block.id, nextTitle, nextSubtitle));
   };
 
   const commitOrientation = (next: "horizontal" | "vertical") => {
     setOrientation(next);
-    updateTimelineOrientationAction(block.id, next);
+    preserveScrollAcrossSave(() => updateTimelineOrientationAction(block.id, next));
   };
 
   if (!editing) {

@@ -10,6 +10,7 @@ import { cardIcons, type CardIconName } from "@/components/ui/cardIcons";
 import { ColorSwatchPicker } from "@/components/ui/ColorSwatchPicker";
 import { CARD_COLOR_CARD, CARD_COLOR_CHIP, CARD_COLOR_TEXT } from "@/lib/card-colors";
 import { RichEditableText } from "@/components/ui/RichEditableText";
+import { preserveScrollAcrossSave } from "@/lib/preserve-scroll";
 
 function isCardIconName(value: string): value is CardIconName {
   return value in cardIcons;
@@ -65,19 +66,21 @@ export function StatCardBlockView({
 
   const commit = (next: Fields) => {
     setFields(next);
-    updateStatCardAction(
-      block.id,
-      {
-        variant: next.variant,
-        icon: next.icon,
-        value: next.value,
-        label: next.label,
-        subtext: next.subtext || undefined,
-        progress: next.progress,
-        linkUrl: next.linkUrl || undefined,
-        linkLabel: next.linkLabel || undefined,
-        color: next.color,
-      }
+    preserveScrollAcrossSave(() =>
+      updateStatCardAction(
+        block.id,
+        {
+          variant: next.variant,
+          icon: next.icon,
+          value: next.value,
+          label: next.label,
+          subtext: next.subtext || undefined,
+          progress: next.progress,
+          linkUrl: next.linkUrl || undefined,
+          linkLabel: next.linkLabel || undefined,
+          color: next.color,
+        }
+      )
     );
   };
 

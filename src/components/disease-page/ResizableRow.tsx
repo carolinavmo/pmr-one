@@ -5,6 +5,7 @@ import { GripVertical } from "lucide-react";
 import { useEditMode } from "@/components/disease-page/EditMode";
 import { resizeRowAction } from "@/lib/actions/authoring";
 import { ROW_ALIGN_SELF_CLASS } from "@/lib/block-alignment";
+import { preserveScrollAcrossSave } from "@/lib/preserve-scroll";
 import type { VerticalAlign } from "@/lib/editorial-blocks";
 
 type RowWidth = "1/4" | "1/3" | "1/2" | "2/3" | "3/4";
@@ -93,7 +94,9 @@ export function ResizableRow({
 
   const commit = useCallback(
     (nextLeft: RowWidth) => {
-      resizeRowAction(leftIds, nextLeft, rightIds, complement(nextLeft));
+      preserveScrollAcrossSave(() =>
+        resizeRowAction(leftIds, nextLeft, rightIds, complement(nextLeft))
+      );
     },
     [leftIds, rightIds]
   );

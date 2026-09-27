@@ -13,6 +13,7 @@ import {
   setMediaTabsImageWidthAction,
 } from "@/lib/actions/authoring";
 import { cardIcons, type CardIconName } from "@/components/ui/cardIcons";
+import { preserveScrollAcrossSave } from "@/lib/preserve-scroll";
 
 type Tab = MediaTabsBlock["tabs"][number];
 type ImageWidth = NonNullable<Tab["imageWidth"]>;
@@ -82,7 +83,7 @@ export function MediaTabsBlockView({
 
   const commit = (next: Tab[]) => {
     setTabs(next);
-    return updateMediaTabsAction(block.id, next);
+    return preserveScrollAcrossSave(() => updateMediaTabsAction(block.id, next));
   };
 
   // Reorders by moving the dragged tab to sit right before `to`'s
@@ -171,7 +172,7 @@ export function MediaTabsBlockView({
   const setImageWidth = (width: ImageWidth) => {
     const next = tabs.map((t, i) => (i === clampedIndex ? { ...t, imageWidth: width } : t));
     setTabs(next);
-    setMediaTabsImageWidthAction(block.id, clampedIndex, width);
+    preserveScrollAcrossSave(() => setMediaTabsImageWidthAction(block.id, clampedIndex, width));
   };
 
   const handleFile = async (file: File) => {
@@ -180,7 +181,9 @@ export function MediaTabsBlockView({
     const formData = new FormData();
     formData.set("file", file);
     try {
-      const assetUrl = await uploadMediaTabsImageAction(block.id, clampedIndex, formData);
+      const assetUrl = await preserveScrollAcrossSave(() =>
+        uploadMediaTabsImageAction(block.id, clampedIndex, formData)
+      );
       // The real server-saved URL, not a client-only blob: preview —
       // this state feeds every other whole-array commit on this block
       // (see uploadMediaTabsImageAction's own comment), so it must
@@ -435,7 +438,7 @@ export function MediaTabsBlockView({
                     onClick={() => {
                       const next = tabs.map((t, i) => (i === clampedIndex ? { ...t, imageUrl: undefined } : t));
                       setTabs(next);
-                      removeMediaTabsImageAction(block.id, clampedIndex);
+                      preserveScrollAcrossSave(() => removeMediaTabsImageAction(block.id, clampedIndex));
                     }}
                     className="absolute top-2 right-2 flex size-7 items-center justify-center rounded-full bg-surface text-secondary shadow-sm hover:text-warning"
                   >

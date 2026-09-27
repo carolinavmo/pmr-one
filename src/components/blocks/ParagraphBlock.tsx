@@ -17,6 +17,7 @@ import {
 import { cardIcons, type CardIconName } from "@/components/ui/cardIcons";
 import { CARD_COLOR_TINT, CARD_COLOR_BADGE, CARD_COLOR_SWATCH } from "@/lib/card-colors";
 import { TEXT_ALIGN_CLASS, ROW_ITEMS_CLASS } from "@/lib/block-alignment";
+import { preserveScrollAcrossSave } from "@/lib/preserve-scroll";
 
 function isCardIconName(value: string): value is CardIconName {
   return value in cardIcons;
@@ -42,7 +43,7 @@ export function ParagraphBlockView({
 
   const commitBadges = (next: { text: string; color: CardColor }[]) => {
     setBadges(next);
-    updateParagraphBadgesAction(block.id, next);
+    preserveScrollAcrossSave(() => updateParagraphBadgesAction(block.id, next));
   };
 
   const handleImageFile = async (file: File) => {
@@ -50,7 +51,7 @@ export function ParagraphBlockView({
     const formData = new FormData();
     formData.set("file", file);
     try {
-      await uploadParagraphImageAction(block.id, formData);
+      await preserveScrollAcrossSave(() => uploadParagraphImageAction(block.id, formData));
       setImageUrl(URL.createObjectURL(file));
     } finally {
       setUploadingImage(false);
@@ -169,7 +170,7 @@ export function ParagraphBlockView({
           aria-label="Remove image"
           onClick={() => {
             setImageUrl(undefined);
-            removeParagraphImageAction(block.id);
+            preserveScrollAcrossSave(() => removeParagraphImageAction(block.id));
           }}
           className="absolute -top-1.5 -right-1.5 flex size-4 items-center justify-center rounded-full bg-surface-raised text-secondary shadow-sm hover:text-warning"
         >
@@ -213,7 +214,7 @@ export function ParagraphBlockView({
             <ColorSwatchPicker
               onPick={(color) => {
                 setStylePickerOpen(false);
-                setCardStyleAction(block.id, color);
+                preserveScrollAcrossSave(() => setCardStyleAction(block.id, color));
               }}
             />
           )}

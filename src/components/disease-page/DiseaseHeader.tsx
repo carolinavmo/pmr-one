@@ -17,6 +17,7 @@ import {
   updateTopicOfWeekPitchAction,
 } from "@/lib/actions/authoring";
 import { toggleDiseaseFavoriteAction } from "@/lib/actions/workspace";
+import { preserveScrollAcrossSave } from "@/lib/preserve-scroll";
 import {
   DISEASE_PAGE_TYPE_ORDER,
   DISEASE_PAGE_TYPE_LABEL,
@@ -217,7 +218,7 @@ function EvidenceBadge({
   return (
     <button
       type="button"
-      onClick={() => toggleEvidenceBasedAction(diseaseId)}
+      onClick={() => preserveScrollAcrossSave(() => toggleEvidenceBasedAction(diseaseId))}
       aria-pressed={evidenceBased}
     >
       {pill}
@@ -246,7 +247,7 @@ function BoardRelevanceStars({
               key={n}
               type="button"
               aria-label={`Set board relevance to ${n}`}
-              onClick={() => updateBoardRelevanceAction(diseaseId, n)}
+              onClick={() => preserveScrollAcrossSave(() => updateBoardRelevanceAction(diseaseId, n))}
             >
               <Star
                 className={`size-3.5 ${n <= value ? "text-accent" : "text-border"}`}
@@ -290,7 +291,9 @@ function PageTypeSelect({
       value={type ?? ""}
       onChange={(e) => {
         const next = e.target.value;
-        updateDiseasePageTypeAction(diseaseId, isDiseasePageType(next) ? next : null);
+        preserveScrollAcrossSave(() =>
+          updateDiseasePageTypeAction(diseaseId, isDiseasePageType(next) ? next : null)
+        );
       }}
       className="rounded border border-border bg-surface px-1.5 py-0.5 font-ui text-xs text-secondary outline-none focus:border-accent"
     >
@@ -323,7 +326,7 @@ function TopicOfWeekToggle({
   return (
     <button
       type="button"
-      onClick={() => setTopicOfWeekAction(diseaseId, !enabled)}
+      onClick={() => preserveScrollAcrossSave(() => setTopicOfWeekAction(diseaseId, !enabled))}
       aria-pressed={enabled}
       className={`font-ui text-xs font-medium ${enabled ? "text-accent" : "text-secondary hover:text-primary"}`}
     >
@@ -339,7 +342,7 @@ function TopicOfWeekPitchField({ diseaseId, pitch }: { diseaseId: string; pitch:
   return (
     <textarea
       defaultValue={pitch}
-      onBlur={(e) => updateTopicOfWeekPitchAction(diseaseId, e.target.value)}
+      onBlur={(e) => preserveScrollAcrossSave(() => updateTopicOfWeekPitchAction(diseaseId, e.target.value))}
       placeholder="Short pitch for the library home feature panel…"
       rows={2}
       className="w-full max-w-lg resize-none rounded border border-border bg-surface px-2 py-1.5 font-ui text-sm text-primary outline-none focus:border-accent"

@@ -10,6 +10,7 @@ import { ColorSwatchPicker } from "@/components/ui/ColorSwatchPicker";
 import { useEditMode } from "@/components/disease-page/EditMode";
 import { CARD_COLOR_TINT, CARD_COLOR_TEXT } from "@/lib/card-colors";
 import { TEXT_ALIGN_CLASS, COLUMN_JUSTIFY_CLASS } from "@/lib/block-alignment";
+import { preserveScrollAcrossSave } from "@/lib/preserve-scroll";
 
 // A solid pastel fill with no border, bold uppercase tracked label —
 // same unified card look HighlightCardBlock and Paragraph's own
@@ -71,7 +72,7 @@ export function ClinicalPearlBlockView({
         <ColorSwatchPicker
           onPick={(next) => {
             setColorPickerOpen(false);
-            setBlockCardColorAction(block.id, next);
+            preserveScrollAcrossSave(() => setBlockCardColorAction(block.id, next));
           }}
         />
       )}

@@ -16,6 +16,7 @@ import {
   setSimpleImageFocalPointAction,
   setSimpleImageFitAction,
 } from "@/lib/actions/authoring";
+import { preserveScrollAcrossSave } from "@/lib/preserve-scroll";
 
 type ImageWidth = NonNullable<SimpleImageBlock["imageWidth"]>;
 type ImageFit = NonNullable<SimpleImageBlock["imageFit"]>;
@@ -103,7 +104,7 @@ export function SimpleImageBlockView({
     const formData = new FormData();
     formData.set("file", file);
     try {
-      await uploadSimpleImageAction(block.id, formData);
+      await preserveScrollAcrossSave(() => uploadSimpleImageAction(block.id, formData));
       setImageUrl(URL.createObjectURL(file));
     } catch (err) {
       setUploadError(err instanceof Error ? err.message : "Upload failed. Try again.");
@@ -174,7 +175,7 @@ export function SimpleImageBlockView({
                       onClick={() => {
                         setWidthOpen(false);
                         setImageWidth(option.value);
-                        setSimpleImageWidthAction(block.id, option.value);
+                        preserveScrollAcrossSave(() => setSimpleImageWidthAction(block.id, option.value));
                       }}
                       className={`rounded border px-2 py-1 font-ui text-xs ${
                         imageWidth === option.value
@@ -211,7 +212,7 @@ export function SimpleImageBlockView({
                         onClick={() => {
                           setFocalPointOpen(false);
                           setImageFocalPoint(option.value);
-                          setSimpleImageFocalPointAction(block.id, option.value);
+                          preserveScrollAcrossSave(() => setSimpleImageFocalPointAction(block.id, option.value));
                         }}
                         className={`flex size-8 items-center justify-center rounded border ${
                           imageFocalPoint === option.value
@@ -242,7 +243,7 @@ export function SimpleImageBlockView({
                 aria-pressed={imageFit === value}
                 onClick={() => {
                   setImageFit(value);
-                  setSimpleImageFitAction(block.id, value);
+                  preserveScrollAcrossSave(() => setSimpleImageFitAction(block.id, value));
                 }}
                 className={`flex size-6 items-center justify-center rounded transition-colors duration-base ${
                   imageFit === value
@@ -268,7 +269,7 @@ export function SimpleImageBlockView({
               aria-label="Remove image"
               onClick={() => {
                 setImageUrl(undefined);
-                removeSimpleImageAction(block.id);
+                preserveScrollAcrossSave(() => removeSimpleImageAction(block.id));
               }}
               className="absolute top-2 right-2 flex size-7 items-center justify-center rounded-full bg-surface text-secondary shadow-sm hover:text-warning"
             >

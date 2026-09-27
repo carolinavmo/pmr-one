@@ -7,6 +7,7 @@ import type { TabsBlock } from "@/lib/editorial-blocks";
 import { useEditMode } from "@/components/disease-page/EditMode";
 import { updateTabsAction } from "@/lib/actions/authoring";
 import { cardIcons, type CardIconName } from "@/components/ui/cardIcons";
+import { preserveScrollAcrossSave } from "@/lib/preserve-scroll";
 
 type Tab = TabsBlock["tabs"][number];
 
@@ -37,7 +38,7 @@ export function TabsBlockView({
 
   const commit = (next: Tab[]) => {
     setTabs(next);
-    updateTabsAction(block.id, next);
+    preserveScrollAcrossSave(() => updateTabsAction(block.id, next));
   };
 
   const clampedIndex = Math.min(activeIndex, Math.max(tabs.length - 1, 0));

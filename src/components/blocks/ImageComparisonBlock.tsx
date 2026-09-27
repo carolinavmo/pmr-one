@@ -11,6 +11,7 @@ import {
 } from "@/lib/actions/authoring";
 import { RichEditableText } from "@/components/ui/RichEditableText";
 import { TEXT_ALIGN_CLASS } from "@/lib/block-alignment";
+import { preserveScrollAcrossSave } from "@/lib/preserve-scroll";
 
 type Side = "left" | "right";
 
@@ -34,11 +35,16 @@ export function ImageComparisonBlockView({
   const [right, setRight] = useState(block.right);
   const titleAlign = block.layout?.textAlign ?? "left";
 
-  const commitLabels = (nextTitle: string, nextLeft: typeof left, nextRight: typeof right) => {
+  // Async and awaited by every caller (each is itself an onSave passed
+  // to RichEditableText) — RichEditableText's own commit() awaits
+  // onSave before restoring scroll, so this has to actually wait on
+  // the mutation rather than fire-and-forget it, or that restore fires
+  // before the save (and the revalidate it triggers) has landed.
+  const commitLabels = async (nextTitle: string, nextLeft: typeof left, nextRight: typeof right) => {
     setTitle(nextTitle);
     setLeft(nextLeft);
     setRight(nextRight);
-    updateImageComparisonLabelsAction(block.id, nextTitle, nextLeft.label, nextRight.label);
+    await preserveScrollAcrossSave(() => updateImageComparisonLabelsAction(block.id, nextTitle, nextLeft.label, nextRight.label));
   };
 
   if (!editing) {
@@ -147,7 +153,10 @@ function ImageSideEdit({
 }: {
   side: Side;
   value: { assetUrl?: string; label: string };
-  onLabelSave: (label: string) => void;
+  // Promise, not void — RichEditableText's own onSave (below) awaits
+  // it before restoring scroll, so it has to propagate all the way
+  // back to commitLabels' actual save rather than being dropped here.
+  onLabelSave: (label: string) => Promise<void>;
   onUploaded: (assetUrl: string) => void;
   onRemoved: () => void;
   blockId: string;
@@ -164,7 +173,7 @@ function ImageSideEdit({
     const formData = new FormData();
     formData.set("file", file);
     try {
-      await uploadImageComparisonSideAction(blockId, side, formData);
+      await preserveScrollAcrossSave(() => uploadImageComparisonSideAction(blockId, side, formData));
       onUploaded(URL.createObjectURL(file));
     } catch (err) {
       setUploadError(err instanceof Error ? err.message : "Upload failed. Try again.");
@@ -185,7 +194,7 @@ function ImageSideEdit({
               aria-label="Remove image"
               onClick={() => {
                 onRemoved();
-                removeImageComparisonSideAction(blockId, side);
+                preserveScrollAcrossSave(() => removeImageComparisonSideAction(blockId, side));
               }}
               className="absolute top-1 right-1 flex size-6 items-center justify-center rounded-full bg-surface text-secondary shadow-sm hover:text-warning"
             >

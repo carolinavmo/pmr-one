@@ -29,6 +29,7 @@ import {
   setIllustrationWidthAction,
   setIllustrationLegendPositionAction,
 } from "@/lib/actions/authoring";
+import { preserveScrollAcrossSave } from "@/lib/preserve-scroll";
 
 type Annotation = { label: string; x: number; y: number; color?: CardColor };
 
@@ -212,7 +213,7 @@ export function MedicalIllustrationBlockView({
 
   const commit = (next: Annotation[]) => {
     setAnnotations(next);
-    updateIllustrationAnnotationsAction(block.id, next);
+    preserveScrollAcrossSave(() => updateIllustrationAnnotationsAction(block.id, next));
   };
 
   const percentFromEvent = (e: { clientX: number; clientY: number }) => {
@@ -230,10 +231,10 @@ export function MedicalIllustrationBlockView({
           searchPlaceholder={illustration ? "Search for a replacement…" : "Search for an image…"}
           onSelectExisting={async (illustrationId) => {
             setPickerOpen(false);
-            await replaceIllustrationBlockAction(block.id, diseaseId, illustrationId);
+            await preserveScrollAcrossSave(() => replaceIllustrationBlockAction(block.id, diseaseId, illustrationId));
           }}
           onUploadNew={async (formData) => {
-            await uploadReplacementIllustrationAction(block.id, diseaseId, formData);
+            await preserveScrollAcrossSave(() => uploadReplacementIllustrationAction(block.id, diseaseId, formData));
             setPickerOpen(false);
           }}
         />
@@ -307,7 +308,7 @@ export function MedicalIllustrationBlockView({
               type="button"
               aria-label={label}
               aria-pressed={legendPosition === value}
-              onClick={() => setIllustrationLegendPositionAction(block.id, value)}
+              onClick={() => preserveScrollAcrossSave(() => setIllustrationLegendPositionAction(block.id, value))}
               className={`flex size-6 items-center justify-center rounded transition-colors duration-base ${
                 legendPosition === value
                   ? "bg-surface-raised text-primary"
@@ -335,7 +336,7 @@ export function MedicalIllustrationBlockView({
                     type="button"
                     onClick={() => {
                       setWidthOpen(false);
-                      setIllustrationWidthAction(block.id, option.value);
+                      preserveScrollAcrossSave(() => setIllustrationWidthAction(block.id, option.value));
                     }}
                     className={`rounded border px-2 py-1 font-ui text-xs ${
                       imageWidth === option.value
@@ -359,7 +360,7 @@ export function MedicalIllustrationBlockView({
           </button>
           <button
             type="button"
-            onClick={() => removeIllustrationImageAction(block.id)}
+            onClick={() => preserveScrollAcrossSave(() => removeIllustrationImageAction(block.id))}
             aria-label="Delete image"
             title="Delete image (keeps this block)"
             className="flex items-center gap-1 rounded px-2 py-1 font-ui text-xs text-secondary hover:bg-warning/10 hover:text-warning"

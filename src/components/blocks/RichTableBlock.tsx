@@ -13,6 +13,7 @@ import { cardIcons, type CardIconName } from "@/components/ui/cardIcons";
 import { RichEditableText } from "@/components/ui/RichEditableText";
 import { sanitizeRichText } from "@/lib/rich-text";
 import { TEXT_ALIGN_CLASS } from "@/lib/block-alignment";
+import { preserveScrollAcrossSave } from "@/lib/preserve-scroll";
 
 type Column = RichTableBlock["columns"][number];
 type Row = RichTableBlock["rows"][number];
@@ -94,7 +95,9 @@ export function RichTableBlockView({
     setBadgeColumnTitle(nextBadgeColumnTitle);
     setColumns(nextColumns);
     setRows(nextRows);
-    updateRichTableAction(block.id, nextTitle, nextBadgeColumnTitle, nextColumns, nextRows, showBadgeColumn);
+    preserveScrollAcrossSave(() =>
+      updateRichTableAction(block.id, nextTitle, nextBadgeColumnTitle, nextColumns, nextRows, showBadgeColumn)
+    );
   };
 
   // The one field commit() doesn't thread through (every other call
@@ -105,7 +108,7 @@ export function RichTableBlockView({
   const toggleBadgeColumn = () => {
     const next = !showBadgeColumn;
     setShowBadgeColumn(next);
-    updateRichTableAction(block.id, title, badgeColumnTitle, columns, rows, next);
+    preserveScrollAcrossSave(() => updateRichTableAction(block.id, title, badgeColumnTitle, columns, rows, next));
   };
 
   // A "text" cell's own RichEditableText reports its final HTML at

@@ -10,6 +10,7 @@ import { updateBlockRichTextAction, setBlockCardColorAction } from "@/lib/action
 import { CARD_COLOR_CARD, CARD_COLOR_TEXT } from "@/lib/card-colors";
 import { TEXT_ALIGN_CLASS, ROW_ITEMS_CLASS } from "@/lib/block-alignment";
 import { PitfallCallout } from "@/components/ui/callouts";
+import { preserveScrollAcrossSave } from "@/lib/preserve-scroll";
 
 // DESIGN-BRIEF.md's Pitfall callout (red, 2px border, "⚠ PITFALL") is
 // now the default — #133's author-overridable color is still honored
@@ -42,7 +43,7 @@ export function WarningPitfallBlockView({
         <ColorSwatchPicker
           onPick={(next) => {
             setColorPickerOpen(false);
-            setBlockCardColorAction(block.id, next);
+            preserveScrollAcrossSave(() => setBlockCardColorAction(block.id, next));
           }}
         />
       )}

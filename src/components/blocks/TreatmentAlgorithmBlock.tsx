@@ -14,6 +14,7 @@ import {
 import { cardIcons, type CardIconName } from "@/components/ui/cardIcons";
 import { RichEditableText } from "@/components/ui/RichEditableText";
 import type { EditorialBlock } from "@/lib/editorial-blocks";
+import { preserveScrollAcrossSave } from "@/lib/preserve-scroll";
 
 type Step = TreatmentAlgorithmBlock["algorithm"]["steps"][number];
 type Flow = ReturnType<typeof buildFlow>;
@@ -83,19 +84,21 @@ export function TreatmentAlgorithmBlockView({
   // to its current value straight off `step`, not a parallel draft.
   const commitStep = (step: Step, patch: Partial<Step> = {}) => {
     const next = { ...step, ...patch };
-    updateTreatmentAlgorithmStepAction(
-      step.id,
-      next.instruction,
-      next.branchCondition ?? "",
-      next.icon,
-      next.nextStepIfTrue,
-      next.nextStepIfFalse
+    preserveScrollAcrossSave(() =>
+      updateTreatmentAlgorithmStepAction(
+        step.id,
+        next.instruction,
+        next.branchCondition ?? "",
+        next.icon,
+        next.nextStepIfTrue,
+        next.nextStepIfFalse
+      )
     );
   };
 
   const addTrunkStep = async () => {
     const afterId = flow.trunk.length > 0 ? flow.trunk[flow.trunk.length - 1].id : null;
-    await insertTreatmentAlgorithmStepAction(algorithm.id, afterId, "");
+    await preserveScrollAcrossSave(() => insertTreatmentAlgorithmStepAction(algorithm.id, afterId, ""));
   };
 
   // A step only counts as a decision once it has a branch target set
@@ -109,16 +112,24 @@ export function TreatmentAlgorithmBlockView({
   // extends the trunk instead.
   const addDecision = async () => {
     const afterId = flow.trunk.length > 0 ? flow.trunk[flow.trunk.length - 1].id : null;
-    const decisionId = await insertTreatmentAlgorithmStepAction(algorithm.id, afterId, "");
-    const yesId = await insertTreatmentAlgorithmStepAction(algorithm.id, decisionId, "");
-    await updateTreatmentAlgorithmStepAction(decisionId, "", "", undefined, yesId, undefined);
+    const decisionId = await preserveScrollAcrossSave(() =>
+      insertTreatmentAlgorithmStepAction(algorithm.id, afterId, "")
+    );
+    const yesId = await preserveScrollAcrossSave(() =>
+      insertTreatmentAlgorithmStepAction(algorithm.id, decisionId, "")
+    );
+    await preserveScrollAcrossSave(() =>
+      updateTreatmentAlgorithmStepAction(decisionId, "", "", undefined, yesId, undefined)
+    );
   };
 
   const addOutcome = async (branch: "yes" | "no") => {
     if (!flow.decision) return;
     const chain = branch === "yes" ? flow.yesChain : flow.noChain;
     const afterId = chain.length > 0 ? chain[chain.length - 1].id : steps[steps.length - 1]?.id ?? null;
-    const newId = await insertTreatmentAlgorithmStepAction(algorithm.id, afterId, "");
+    const newId = await preserveScrollAcrossSave(() =>
+      insertTreatmentAlgorithmStepAction(algorithm.id, afterId, "")
+    );
     if (chain.length === 0) {
       commitStep(flow.decision, {
         nextStepIfTrue: branch === "yes" ? newId : flow.decision.nextStepIfTrue,
@@ -131,7 +142,7 @@ export function TreatmentAlgorithmBlockView({
     const index = group.findIndex((s) => s.id === step.id);
     if (direction === "up" && index === 0) return;
     if (direction === "down" && index === group.length - 1) return;
-    moveTreatmentAlgorithmStepAction(algorithm.id, step.id, step.order, direction);
+    preserveScrollAcrossSave(() => moveTreatmentAlgorithmStepAction(algorithm.id, step.id, step.order, direction));
   };
 
   if (!editing) {
@@ -173,7 +184,7 @@ export function TreatmentAlgorithmBlockView({
             onMoveDown={() => moveWithinGroup(flow.trunk, step, "down")}
             canMoveUp={flow.trunk.findIndex((s) => s.id === step.id) > 0}
             canMoveDown={flow.trunk.findIndex((s) => s.id === step.id) < flow.trunk.length - 1}
-            onDelete={() => deleteTreatmentAlgorithmStepAction(step.id)}
+            onDelete={() => preserveScrollAcrossSave(() => deleteTreatmentAlgorithmStepAction(step.id))}
           />
         )}
         renderDecision={(step) => (
@@ -183,7 +194,7 @@ export function TreatmentAlgorithmBlockView({
             diseaseSlug={diseaseSlug}
             onInstructionSave={(html) => commitStep(step, { instruction: html })}
             onIconPick={(icon) => commitStep(step, { icon })}
-            onDelete={() => deleteTreatmentAlgorithmStepAction(step.id)}
+            onDelete={() => preserveScrollAcrossSave(() => deleteTreatmentAlgorithmStepAction(step.id))}
           />
         )}
         renderBranch={(label, tone, chain) => (
@@ -198,7 +209,7 @@ export function TreatmentAlgorithmBlockView({
             onIconPick={(step, icon) => commitStep(step, { icon })}
             onMoveUp={(step) => moveWithinGroup(chain, step, "up")}
             onMoveDown={(step) => moveWithinGroup(chain, step, "down")}
-            onDelete={(step) => deleteTreatmentAlgorithmStepAction(step.id)}
+            onDelete={(step) => preserveScrollAcrossSave(() => deleteTreatmentAlgorithmStepAction(step.id))}
             onAdd={() => addOutcome(label === "Yes" ? "yes" : "no")}
           />
         )}

@@ -9,6 +9,7 @@ import { CARD_COLOR_CARD } from "@/lib/card-colors";
 import { TEXT_COLOR_CLASS } from "@/lib/rich-text";
 import { ColorSwatchPicker } from "@/components/ui/ColorSwatchPicker";
 import { cardIcons, type CardIconName } from "@/components/ui/cardIcons";
+import { preserveScrollAcrossSave } from "@/lib/preserve-scroll";
 
 function isCardIconName(value: string): value is CardIconName {
   return value in cardIcons;
@@ -32,7 +33,7 @@ export function BadgeRowBlockView({
 
   const commit = (next: typeof badges) => {
     setBadges(next);
-    updateBadgeRowAction(block.id, next);
+    preserveScrollAcrossSave(() => updateBadgeRowAction(block.id, next));
   };
 
   if (badges.length === 0 && !editing) return null;

@@ -7,6 +7,7 @@ import { useEditMode } from "@/components/disease-page/EditMode";
 import { ZoomableImage } from "@/components/ui/ZoomableImage";
 import { RichEditableText } from "@/components/ui/RichEditableText";
 import { FOCAL_POINT_OPTIONS, FOCAL_POINT_CLASS, type ImageFocalPoint } from "@/lib/image-focal-point";
+import { preserveScrollAcrossSave } from "@/lib/preserve-scroll";
 import {
   addImageRowItemAction,
   removeImageRowItemAction,
@@ -83,7 +84,7 @@ export function ImageRowBlockView({
                 aria-pressed={rowHeight === option.value}
                 onClick={() => {
                   setRowHeight(option.value);
-                  setImageRowHeightAction(block.id, option.value);
+                  preserveScrollAcrossSave(() => setImageRowHeightAction(block.id, option.value));
                 }}
                 className={`flex h-6 min-w-6 items-center justify-center rounded px-1 font-ui text-xs transition-colors duration-base ${
                   rowHeight === option.value
@@ -124,7 +125,7 @@ export function ImageRowBlockView({
             }
             onRemove={() => {
               setImages((current) => current.filter((it) => it.id !== item.id));
-              removeImageRowItemAction(block.id, item.id);
+              preserveScrollAcrossSave(() => removeImageRowItemAction(block.id, item.id));
             }}
           />
         ))}
@@ -133,7 +134,7 @@ export function ImageRowBlockView({
         <button
           type="button"
           onClick={async () => {
-            const newItem = await addImageRowItemAction(block.id);
+            const newItem = await preserveScrollAcrossSave(() => addImageRowItemAction(block.id));
             setImages((current) => [...current, newItem]);
           }}
           className="flex w-fit items-center gap-1.5 self-center rounded px-2 py-1 font-ui text-xs text-accent hover:bg-accent/10"
@@ -187,7 +188,7 @@ function ImageRowItem({
     const formData = new FormData();
     formData.set("file", file);
     try {
-      await uploadImageRowItemImageAction(block.id, item.id, formData);
+      await preserveScrollAcrossSave(() => uploadImageRowItemImageAction(block.id, item.id, formData));
       onImageChange(URL.createObjectURL(file));
     } catch (err) {
       setUploadError(err instanceof Error ? err.message : "Upload failed. Try again.");
@@ -240,7 +241,7 @@ function ImageRowItem({
             aria-label="Remove image"
             onClick={() => {
               onImageChange(undefined);
-              removeImageRowItemImageAction(block.id, item.id);
+              preserveScrollAcrossSave(() => removeImageRowItemImageAction(block.id, item.id));
             }}
             className="absolute top-1.5 right-1.5 flex size-6 items-center justify-center rounded-full bg-surface-raised text-secondary shadow-sm hover:text-warning"
           >
@@ -272,7 +273,7 @@ function ImageRowItem({
               aria-pressed={fit === value}
               onClick={() => {
                 onFitChange(value);
-                setImageRowItemFitAction(block.id, item.id, value);
+                preserveScrollAcrossSave(() => setImageRowItemFitAction(block.id, item.id, value));
               }}
               className={`flex size-6 items-center justify-center rounded transition-colors duration-base ${
                 fit === value
@@ -305,7 +306,9 @@ function ImageRowItem({
                         onClick={() => {
                           setFocalPointOpen(false);
                           onFocalPointChange(option.value);
-                          setImageRowItemFocalPointAction(block.id, item.id, option.value);
+                          preserveScrollAcrossSave(() =>
+                            setImageRowItemFocalPointAction(block.id, item.id, option.value)
+                          );
                         }}
                         className={`flex size-8 items-center justify-center rounded border ${
                           focalPoint === option.value
@@ -334,7 +337,7 @@ function ImageRowItem({
           value={item.label}
           onSave={async (html) => {
             onLabelChange(html);
-            updateImageRowItemLabelAction(block.id, item.id, html);
+            await updateImageRowItemLabelAction(block.id, item.id, html);
           }}
           placeholder={editing ? "Label" : ""}
           className="min-w-0 flex-1 text-center font-ui text-sm text-secondary"

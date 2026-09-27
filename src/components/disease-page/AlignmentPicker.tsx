@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 import type { EditorialBlock, HorizontalAlign, VerticalAlign } from "@/lib/editorial-blocks";
 import { updateBlockAlignmentAction } from "@/lib/actions/authoring";
+import { preserveScrollAcrossSave } from "@/lib/preserve-scroll";
 
 // section_heading is a bare single-line <h2> with no icon/container to
 // hang a vertical-align class on — offering the control there would be
@@ -86,7 +87,7 @@ export function AlignmentPicker({ block }: AlignmentPickerProps) {
   const rowAlign: VerticalAlign = layout?.rowAlign ?? "top";
 
   const set = (fields: Parameters<typeof updateBlockAlignmentAction>[1]) =>
-    updateBlockAlignmentAction(block.id, fields);
+    preserveScrollAcrossSave(() => updateBlockAlignmentAction(block.id, fields));
 
   return (
     <div ref={ref} className="relative">

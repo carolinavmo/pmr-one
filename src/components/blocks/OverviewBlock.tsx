@@ -14,6 +14,7 @@ import {
   setOverviewImageWidthAction,
   setOverviewImagePositionAction,
 } from "@/lib/actions/authoring";
+import { preserveScrollAcrossSave } from "@/lib/preserve-scroll";
 
 type ImageWidth = NonNullable<OverviewBlock["imageWidth"]>;
 
@@ -78,7 +79,7 @@ export function OverviewBlockView({
     const formData = new FormData();
     formData.set("file", file);
     try {
-      await uploadOverviewImageAction(block.id, formData);
+      await preserveScrollAcrossSave(() => uploadOverviewImageAction(block.id, formData));
       setImageUrl(URL.createObjectURL(file));
     } catch (err) {
       setUploadError(err instanceof Error ? err.message : "Upload failed. Try again.");
@@ -114,7 +115,7 @@ export function OverviewBlockView({
                   aria-label="Remove image"
                   onClick={() => {
                     setImageUrl(undefined);
-                    removeOverviewImageAction(block.id);
+                    preserveScrollAcrossSave(() => removeOverviewImageAction(block.id));
                   }}
                   className="absolute top-2 right-2 flex size-7 items-center justify-center rounded-full bg-surface text-secondary shadow-sm hover:text-warning"
                 >
@@ -167,7 +168,7 @@ export function OverviewBlockView({
                       <button
                         key={option.value}
                         type="button"
-                        onClick={() => setOverviewImageWidthAction(block.id, option.value)}
+                        onClick={() => preserveScrollAcrossSave(() => setOverviewImageWidthAction(block.id, option.value))}
                         className={`rounded border px-2 py-1 font-ui text-xs ${
                           imageWidth === option.value
                             ? "border-accent bg-accent/10 text-accent"
@@ -189,7 +190,7 @@ export function OverviewBlockView({
                         type="button"
                         title={option.label}
                         aria-label={option.label}
-                        onClick={() => setOverviewImagePositionAction(block.id, option.value)}
+                        onClick={() => preserveScrollAcrossSave(() => setOverviewImagePositionAction(block.id, option.value))}
                         className={`flex size-8 items-center justify-center rounded border ${
                           imagePosition === option.value
                             ? "border-accent bg-accent/10"

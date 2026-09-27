@@ -8,6 +8,7 @@ import { updateCitationCardKickerAction, setBlockCardColorAction } from "@/lib/a
 import { ColorSwatchPicker } from "@/components/ui/ColorSwatchPicker";
 import { CARD_COLOR_CARD } from "@/lib/card-colors";
 import { RichEditableText } from "@/components/ui/RichEditableText";
+import { preserveScrollAcrossSave } from "@/lib/preserve-scroll";
 
 // A single prominent citation — singular embed like Risk Factor/
 // Clinical Pearl, reusing the same shared `reference` table Reference
@@ -47,7 +48,7 @@ export function CitationCardBlockView({
             <ColorSwatchPicker
               onPick={(next) => {
                 setColorPickerOpen(false);
-                setBlockCardColorAction(block.id, next);
+                preserveScrollAcrossSave(() => setBlockCardColorAction(block.id, next));
               }}
             />
           )}

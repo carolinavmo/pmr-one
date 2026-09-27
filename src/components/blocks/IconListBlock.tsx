@@ -10,6 +10,7 @@ import { TEXT_COLOR_CLASS } from "@/lib/rich-text";
 import { TEXT_ALIGN_CLASS } from "@/lib/block-alignment";
 import { RichEditableText } from "@/components/ui/RichEditableText";
 import { cardIcons, type CardIconName } from "@/components/ui/cardIcons";
+import { preserveScrollAcrossSave } from "@/lib/preserve-scroll";
 
 function isCardIconName(value: string): value is CardIconName {
   return value in cardIcons;
@@ -80,7 +81,9 @@ export function IconListBlockView({
     setColor(nextColor);
     setItems(nextItems);
     setTransparentIcons(nextTransparentIcons);
-    updateIconListAction(block.id, nextTitle, nextColor, nextItems, nextTransparentIcons);
+    preserveScrollAcrossSave(() =>
+      updateIconListAction(block.id, nextTitle, nextColor, nextItems, nextTransparentIcons)
+    );
   };
 
   if (items.length === 0 && !editing) return null;

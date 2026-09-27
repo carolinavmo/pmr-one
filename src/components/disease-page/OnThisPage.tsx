@@ -7,6 +7,7 @@ import type { SectionSummary } from "@/lib/sections";
 import { reorderSectionAction } from "@/lib/actions/authoring";
 import { notifySectionIndexChanged } from "@/lib/section-events";
 import { onAnySectionEditingChanged } from "@/lib/any-section-editing";
+import { preserveScrollAcrossSave } from "@/lib/preserve-scroll";
 
 interface OnThisPageProps {
   sections: SectionSummary[];
@@ -132,8 +133,10 @@ export function OnThisPage({ sections, diseaseId, canEdit }: OnThisPageProps) {
               onDrop={(e) => {
                 e.preventDefault();
                 if (draggingId && dropZone?.blockId === section.blockId) {
-                  void reorderSectionAction(diseaseId, draggingId, section.blockId, dropZone.placement).then(
-                    notifySectionIndexChanged
+                  void preserveScrollAcrossSave(() =>
+                    reorderSectionAction(diseaseId, draggingId, section.blockId, dropZone.placement).then(
+                      notifySectionIndexChanged
+                    )
                   );
                 }
                 setDraggingId(null);

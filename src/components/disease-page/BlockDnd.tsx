@@ -3,6 +3,7 @@
 import { createContext, useContext, useState, type ReactNode } from "react";
 import { reorderBlockAction, stackBlockAction } from "@/lib/actions/authoring";
 import { notifySectionIndexChanged } from "@/lib/section-events";
+import { preserveScrollAcrossSave } from "@/lib/preserve-scroll";
 
 export type DropZone = "before" | "stack-above" | "stack-below" | "after";
 
@@ -58,11 +59,15 @@ export function BlockDndProvider({
       // type through the drag payload just to gate it precisely —
       // edit-mode-only and cheap (see section-events.ts).
       if (zone === "stack-above" || zone === "stack-below") {
-        void stackBlockAction(diseaseId, id, targetId, zone === "stack-above" ? "above" : "below").then(
-          notifySectionIndexChanged
+        void preserveScrollAcrossSave(() =>
+          stackBlockAction(diseaseId, id, targetId, zone === "stack-above" ? "above" : "below").then(
+            notifySectionIndexChanged
+          )
         );
       } else {
-        void reorderBlockAction(diseaseId, id, targetId, zone).then(notifySectionIndexChanged);
+        void preserveScrollAcrossSave(() =>
+          reorderBlockAction(diseaseId, id, targetId, zone).then(notifySectionIndexChanged)
+        );
       }
     },
   };

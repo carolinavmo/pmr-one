@@ -10,6 +10,7 @@ import {
   removeProtocolExerciseAction,
   moveProtocolExerciseAction,
 } from "@/lib/actions/authoring";
+import { preserveScrollAcrossSave } from "@/lib/preserve-scroll";
 
 // Exercises are separately reusable Knowledge Objects (a stretch could
 // appear in several protocols), the same many-to-many shape
@@ -80,7 +81,9 @@ export function RehabilitationProgressionBlockView({
                 aria-label="Move exercise up"
                 disabled={index === 0}
                 onClick={() =>
-                  moveProtocolExerciseAction(protocol.id, exercise.id, exercise.order, "up")
+                  preserveScrollAcrossSave(() =>
+                    moveProtocolExerciseAction(protocol.id, exercise.id, exercise.order, "up")
+                  )
                 }
                 className="flex size-6 items-center justify-center rounded text-secondary hover:bg-border/40 hover:text-primary disabled:opacity-30"
               >
@@ -91,7 +94,9 @@ export function RehabilitationProgressionBlockView({
                 aria-label="Move exercise down"
                 disabled={index === exercises.length - 1}
                 onClick={() =>
-                  moveProtocolExerciseAction(protocol.id, exercise.id, exercise.order, "down")
+                  preserveScrollAcrossSave(() =>
+                    moveProtocolExerciseAction(protocol.id, exercise.id, exercise.order, "down")
+                  )
                 }
                 className="flex size-6 items-center justify-center rounded text-secondary hover:bg-border/40 hover:text-primary disabled:opacity-30"
               >
@@ -100,7 +105,7 @@ export function RehabilitationProgressionBlockView({
               <button
                 type="button"
                 aria-label="Remove exercise"
-                onClick={() => removeProtocolExerciseAction(protocol.id, exercise.id)}
+                onClick={() => preserveScrollAcrossSave(() => removeProtocolExerciseAction(protocol.id, exercise.id))}
                 className="flex size-6 items-center justify-center rounded text-secondary hover:bg-warning/10 hover:text-warning"
               >
                 <X className="size-3.5" aria-hidden="true" />
@@ -184,7 +189,9 @@ function ExerciseSearchPanel({
                 type="button"
                 onClick={async () => {
                   onDone();
-                  await addProtocolExerciseAction(protocolId, { exerciseId: result.id });
+                  await preserveScrollAcrossSave(() =>
+                    addProtocolExerciseAction(protocolId, { exerciseId: result.id })
+                  );
                 }}
                 className="flex w-full flex-col items-start rounded px-2 py-1 text-left hover:bg-border/40"
               >
@@ -209,7 +216,9 @@ function ExerciseSearchPanel({
             type="button"
             onClick={async () => {
               onDone();
-              await addProtocolExerciseAction(protocolId, { exerciseName: trimmed, instructions });
+              await preserveScrollAcrossSave(() =>
+                addProtocolExerciseAction(protocolId, { exerciseName: trimmed, instructions })
+              );
             }}
             className="flex w-fit items-center gap-1.5 rounded px-2 py-1 font-ui text-xs text-accent hover:bg-accent/10"
           >

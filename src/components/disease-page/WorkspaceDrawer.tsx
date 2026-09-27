@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import { saveNoteAction } from "@/lib/actions/workspace";
 import { deleteAnnotationAction } from "@/lib/actions/annotations";
+import { preserveScrollAcrossSave } from "@/lib/preserve-scroll";
 import { useAnnotations } from "@/components/annotations/AnnotationProvider";
 import { CARD_COLOR_SWATCH } from "@/lib/card-colors";
 import { Button } from "@/components/ui/Button";
@@ -56,7 +57,7 @@ export function WorkspaceDrawer({
   const { allAnnotations, locatedIds, removeAnnotation } = useAnnotations();
 
   async function handleDeleteAnnotation(id: string) {
-    const result = await deleteAnnotationAction(id);
+    const result = await preserveScrollAcrossSave(() => deleteAnnotationAction(id));
     if (result.ok) removeAnnotation(id);
   }
 

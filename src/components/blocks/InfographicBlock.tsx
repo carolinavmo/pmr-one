@@ -6,6 +6,7 @@ import type { InfographicBlock } from "@/lib/editorial-blocks";
 import { useEditMode } from "@/components/disease-page/EditMode";
 import { updateInfographicTilesAction } from "@/lib/actions/authoring";
 import { RichEditableText } from "@/components/ui/RichEditableText";
+import { preserveScrollAcrossSave } from "@/lib/preserve-scroll";
 
 type Tile = { value: string; label: string };
 
@@ -27,7 +28,7 @@ export function InfographicBlockView({
 
   const commit = (next: Tile[]) => {
     setTiles(next);
-    updateInfographicTilesAction(block.id, next);
+    preserveScrollAcrossSave(() => updateInfographicTilesAction(block.id, next));
   };
 
   if (!editing) {

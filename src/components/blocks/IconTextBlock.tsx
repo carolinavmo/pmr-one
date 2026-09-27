@@ -10,6 +10,7 @@ import { ColorSwatchPicker } from "@/components/ui/ColorSwatchPicker";
 import { RichEditableText } from "@/components/ui/RichEditableText";
 import { TEXT_ALIGN_CLASS } from "@/lib/block-alignment";
 import { cardIcons, type CardIconName } from "@/components/ui/cardIcons";
+import { preserveScrollAcrossSave } from "@/lib/preserve-scroll";
 
 function isCardIconName(value: string): value is CardIconName {
   return value in cardIcons;
@@ -73,14 +74,16 @@ export function IconTextBlockView({
     setDescription(next.description);
     setColor(next.color);
     setTitleLayout(next.titleLayout);
-    updateIconTextAction(block.id, {
-      title: next.title || undefined,
-      icon: next.icon,
-      label: next.label,
-      description: next.description || undefined,
-      color: next.color,
-      titleLayout: next.titleLayout,
-    });
+    preserveScrollAcrossSave(() =>
+      updateIconTextAction(block.id, {
+        title: next.title || undefined,
+        icon: next.icon,
+        label: next.label,
+        description: next.description || undefined,
+        color: next.color,
+        titleLayout: next.titleLayout,
+      })
+    );
   };
 
   const Icon = icon && isCardIconName(icon) ? cardIcons[icon] : null;

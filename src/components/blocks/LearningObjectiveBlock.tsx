@@ -9,6 +9,7 @@ import { useEditMode } from "@/components/disease-page/EditMode";
 import { updateBlockRichTextAction, setBlockCardColorAction } from "@/lib/actions/authoring";
 import { CARD_COLOR_CARD, CARD_COLOR_TEXT } from "@/lib/card-colors";
 import { TEXT_ALIGN_CLASS, ROW_ITEMS_CLASS } from "@/lib/block-alignment";
+import { preserveScrollAcrossSave } from "@/lib/preserve-scroll";
 
 // A standalone version of the same "Learning objective:" treatment a
 // paragraph callout already carries inline (ParagraphBlock.learningObjective)
@@ -43,7 +44,7 @@ export function LearningObjectiveBlockView({
             <ColorSwatchPicker
               onPick={(next) => {
                 setColorPickerOpen(false);
-                setBlockCardColorAction(block.id, next);
+                preserveScrollAcrossSave(() => setBlockCardColorAction(block.id, next));
               }}
             />
           )}

@@ -49,6 +49,7 @@ import {
   CARD_COLOR_BORDER_STRONG,
 } from "@/lib/card-colors";
 import { FOCAL_POINT_OPTIONS, FOCAL_POINT_CLASS, type ImageFocalPoint } from "@/lib/image-focal-point";
+import { preserveScrollAcrossSave } from "@/lib/preserve-scroll";
 
 type Column = HighlightTableBlock["columns"][number];
 type Row = HighlightTableBlock["rows"][number];
@@ -179,7 +180,7 @@ export function HighlightTableBlockView({
     const formData = new FormData();
     formData.set("file", file);
     try {
-      await uploadHighlightCardImageAction(block.id, formData);
+      await preserveScrollAcrossSave(() => uploadHighlightCardImageAction(block.id, formData));
       setImageUrl(URL.createObjectURL(file));
     } finally {
       setUploadingImage(false);
@@ -196,20 +197,24 @@ export function HighlightTableBlockView({
     setBadgeColumnTitle(nextBadgeColumnTitle);
     setColumns(nextColumns);
     setRows(nextRows);
-    updateHighlightTableAction(
-      block.id,
-      nextTitle,
-      nextBadgeColumnTitle,
-      nextColumns,
-      nextRows,
-      showBadgeColumn
+    preserveScrollAcrossSave(() =>
+      updateHighlightTableAction(
+        block.id,
+        nextTitle,
+        nextBadgeColumnTitle,
+        nextColumns,
+        nextRows,
+        showBadgeColumn
+      )
     );
   };
 
   const toggleBadgeColumn = () => {
     const next = !showBadgeColumn;
     setShowBadgeColumn(next);
-    updateHighlightTableAction(block.id, title, badgeColumnTitle, columns, rows, next);
+    preserveScrollAcrossSave(() =>
+      updateHighlightTableAction(block.id, title, badgeColumnTitle, columns, rows, next)
+    );
   };
 
   const saveCell = async (rowIndex: number, colIndex: number, html: string) => {
@@ -282,7 +287,7 @@ export function HighlightTableBlockView({
           aria-pressed={imagePosition === value}
           onClick={() => {
             setImagePosition(value);
-            setHighlightCardImagePositionAction(block.id, value);
+            preserveScrollAcrossSave(() => setHighlightCardImagePositionAction(block.id, value));
           }}
           className={`flex size-6 items-center justify-center rounded transition-colors duration-base ${
             imagePosition === value
@@ -313,7 +318,7 @@ export function HighlightTableBlockView({
                   onClick={() => {
                     setWidthOpen(false);
                     setImageWidth(option.value);
-                    setHighlightCardImageWidthAction(block.id, option.value);
+                    preserveScrollAcrossSave(() => setHighlightCardImageWidthAction(block.id, option.value));
                   }}
                   className={`rounded border px-1.5 py-1 font-ui text-xs ${
                     effectiveWidth === option.value
@@ -350,7 +355,7 @@ export function HighlightTableBlockView({
                     onClick={() => {
                       setFocalPointOpen(false);
                       setImageFocalPoint(option.value);
-                      setHighlightCardImageFocalPointAction(block.id, option.value);
+                      preserveScrollAcrossSave(() => setHighlightCardImageFocalPointAction(block.id, option.value));
                     }}
                     className={`flex size-8 items-center justify-center rounded border ${
                       imageFocalPoint === option.value
@@ -381,7 +386,7 @@ export function HighlightTableBlockView({
             aria-pressed={imageFit === value}
             onClick={() => {
               setImageFit(value);
-              setHighlightCardImageFitAction(block.id, value);
+              preserveScrollAcrossSave(() => setHighlightCardImageFitAction(block.id, value));
             }}
             className={`flex size-6 items-center justify-center rounded transition-colors duration-base ${
               imageFit === value
@@ -407,7 +412,7 @@ export function HighlightTableBlockView({
             aria-label="Remove image"
             onClick={() => {
               setImageUrl(undefined);
-              removeHighlightCardImageAction(block.id);
+              preserveScrollAcrossSave(() => removeHighlightCardImageAction(block.id));
             }}
             className="absolute top-1.5 right-1.5 flex size-6 items-center justify-center rounded-full bg-surface-raised text-secondary shadow-sm hover:text-warning"
           >
@@ -871,7 +876,7 @@ export function HighlightTableBlockView({
           <ColorSwatchPicker
             onPick={(next) => {
               setColorPickerOpen(false);
-              setBlockCardColorAction(block.id, next);
+              preserveScrollAcrossSave(() => setBlockCardColorAction(block.id, next));
             }}
           />
         )}
