@@ -458,12 +458,29 @@ export function IndexSidebar({ tree, isSignedIn, onNavigate, headerAction }: Ind
     // eslint-disable-next-line react-hooks/exhaustive-deps -- deliberately keyed on the primitive slug, not the activePath object reference, which changes on every `subjects` rebuild even when the disease itself hasn't.
   }, [activePath?.page.slug, isSignedIn]);
 
+  // Scroll-to-hash on load only — not on every re-run this effect
+  // sees. sectionIndex is refetched (a new object reference) whenever
+  // notifySectionIndexChanged() fires anywhere on the page, including
+  // for saves that have nothing to do with navigation (a block move,
+  // a heading rename elsewhere). Without the dedupe below, each of
+  // those refetches re-ran this effect and jumped the reader straight
+  // back to whatever #subsectionId is still sitting in the URL from
+  // however they originally got here — a real, reported bug ("editing
+  // and saving scrolls back to the subsection"), racing against and
+  // usually winning over preserve-scroll.ts's own restore, since this
+  // fires only after a network round trip. Keying the dedupe on
+  // page+hash (not hash alone) still lets an actual navigation to a
+  // new hash, or a hash reused on a different disease page, scroll.
+  const handledHashKeyRef = useRef<string | null>(null);
   useEffect(() => {
     if (!sectionIndex || !activePath || sectionIndex.diseaseSlug !== activePath.page.slug) return;
     const hash = window.location.hash.slice(1);
     if (!hash) return;
+    const hashKey = `${activePath.page.slug}#${hash}`;
+    if (handledHashKeyRef.current === hashKey) return;
     for (const section of sectionIndex.sections) {
       if (section.id === hash) {
+        handledHashKeyRef.current = hashKey;
         // eslint-disable-next-line react-hooks/set-state-in-effect -- synchronizing from the URL hash, external to React; there's no render-time value this replaces.
         setCurrentSectionId(section.id);
         setCurrentSubsectionId(null);
@@ -472,6 +489,7 @@ export function IndexSidebar({ tree, isSignedIn, onNavigate, headerAction }: Ind
       }
       const sub = section.subsections.find((s) => s.id === hash);
       if (sub) {
+        handledHashKeyRef.current = hashKey;
         setCurrentSectionId(section.id);
         setCurrentSubsectionId(sub.id);
         requestAnimationFrame(() => document.getElementById(hash)?.scrollIntoView({ block: "start" }));
