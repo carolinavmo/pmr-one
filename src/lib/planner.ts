@@ -680,6 +680,7 @@ interface GeneratedTaskSeed {
   targetRef: string;
   title: string;
   estimateMinutes: number;
+  topicId: string;
 }
 
 // Largest-remainder apportionment — weights are relative, not
@@ -705,9 +706,10 @@ export interface GenerateResult {
 // Idempotent for completed tasks: only ever deletes this plan's
 // *pending* rows before laying out a fresh schedule — a 'done' task,
 // wherever it sits, is never touched (PLANNER-SPEC.md rule: "Nothing
-// is silently deleted"). Safe to call again after edits (a real
-// "Adjust the pace" UI is Pass 4; this function is already exactly
-// what that action would call).
+// is silently deleted"). Safe to call again after topic/pace edits —
+// re-picks content from scratch, unlike adjustPlanPace below, which
+// re-times the tasks that already exist without touching what they
+// point at.
 export async function generateTasksForPlan(userId: string, planId: string): Promise<GenerateResult> {
   const plan = await getPlanById(userId, planId);
   if (!plan || !plan.targetDate) return { created: 0, reason: "no-target-date" };
@@ -763,7 +765,7 @@ export async function generateTasksForPlan(userId: string, planId: string): Prom
       if (opts.length === 0) continue;
       const item = opts[cursors[type] % opts.length];
       cursors[type]++;
-      queue.push({ type, targetRef: item.id, title: item.title, estimateMinutes: item.minutes });
+      queue.push({ type, targetRef: item.id, title: item.title, estimateMinutes: item.minutes, topicId: withContent[i].topic.id });
     }
     topicQueues.push(queue);
   }
@@ -794,6 +796,7 @@ export async function generateTasksForPlan(userId: string, planId: string): Prom
   const minutes: number[] = [];
   const dates: string[] = [];
   const positions: number[] = [];
+  const topicIds: string[] = [];
 
   const cursor = new Date(today);
   let taskIdx = 0;
@@ -811,6 +814,7 @@ export async function generateTasksForPlan(userId: string, planId: string): Prom
         minutes.push(seed.estimateMinutes);
         dates.push(cursor.toISOString().slice(0, 10));
         positions.push(position++);
+        topicIds.push(seed.topicId);
       }
     }
     cursor.setUTCDate(cursor.getUTCDate() + 1);
@@ -821,11 +825,11 @@ export async function generateTasksForPlan(userId: string, planId: string): Prom
     await client.query("BEGIN");
     await client.query(`DELETE FROM study_plan_task WHERE plan_id = $1 AND state = 'pending'`, [planId]);
     await client.query(
-      `INSERT INTO study_plan_task (user_id, plan_id, type, target_ref, title, estimate_minutes, scheduled_for, position)
-       SELECT $1, $2, x.type, x.target_ref, x.title, x.estimate_minutes, x.scheduled_for, x.position
-       FROM unnest($3::text[], $4::text[], $5::text[], $6::int[], $7::date[], $8::int[])
-         AS x(type, target_ref, title, estimate_minutes, scheduled_for, position)`,
-      [userId, planId, types, targetRefs, titles, minutes, dates, positions]
+      `INSERT INTO study_plan_task (user_id, plan_id, type, target_ref, title, estimate_minutes, scheduled_for, position, topic_id)
+       SELECT $1, $2, x.type, x.target_ref, x.title, x.estimate_minutes, x.scheduled_for, x.position, x.topic_id
+       FROM unnest($3::text[], $4::text[], $5::text[], $6::int[], $7::date[], $8::int[], $9::uuid[])
+         AS x(type, target_ref, title, estimate_minutes, scheduled_for, position, topic_id)`,
+      [userId, planId, types, targetRefs, titles, minutes, dates, positions, topicIds]
     );
     await client.query("COMMIT");
   } catch (err) {
@@ -836,4 +840,181 @@ export async function generateTasksForPlan(userId: string, planId: string): Prom
   }
 
   return { created: types.length };
+}
+
+// "Adjust the pace" re-spreads only pending tasks (PLANNER-IMPLEMENTATION.md
+// Pass 4) — deliberately NOT generateTasksForPlan's "delete and re-pick
+// content from the topic weights" behaviour. A user who fell behind
+// doesn't want their in-progress reading list swapped out; they want
+// the same remaining tasks laid back out across the time that's left.
+// Order is preserved (current scheduled_for, then position) so
+// topic-interleaving already baked in by the generator survives the
+// re-lay untouched.
+export async function adjustPlanPace(userId: string, planId: string): Promise<GenerateResult> {
+  const plan = await getPlanById(userId, planId);
+  if (!plan || !plan.targetDate) return { created: 0, reason: "no-target-date" };
+
+  const { rows } = await pool.query<{ id: string }>(
+    `SELECT id FROM study_plan_task WHERE plan_id = $1 AND user_id = $2 AND state = 'pending' ORDER BY scheduled_for, position`,
+    [planId, userId]
+  );
+  if (rows.length === 0) return { created: 0, reason: "no-content" };
+
+  const studyDaySet = new Set(plan.studyDays);
+  const today = new Date();
+  today.setUTCHours(0, 0, 0, 0);
+
+  const ids: string[] = [];
+  const dates: string[] = [];
+  const positions: number[] = [];
+
+  const cursor = new Date(today);
+  let taskIdx = 0;
+  let position = 0;
+  let safety = 0;
+  while (taskIdx < rows.length && safety < 3650) {
+    safety++;
+    const isoDow = ((cursor.getUTCDay() + 6) % 7) + 1;
+    if (studyDaySet.has(isoDow)) {
+      for (let slot = 0; slot < plan.maxTasksPerDay && taskIdx < rows.length; slot++) {
+        ids.push(rows[taskIdx].id);
+        dates.push(cursor.toISOString().slice(0, 10));
+        positions.push(position++);
+        taskIdx++;
+      }
+    }
+    cursor.setUTCDate(cursor.getUTCDate() + 1);
+  }
+
+  await pool.query(
+    `UPDATE study_plan_task AS t
+     SET scheduled_for = x.scheduled_for, original_date = NULL, position = x.position
+     FROM unnest($1::uuid[], $2::date[], $3::int[]) AS x(id, scheduled_for, position)
+     WHERE t.id = x.id`,
+    [ids, dates, positions]
+  );
+
+  return { created: ids.length };
+}
+
+export interface PlanStats {
+  onTrackDelta: number;
+  overdueCount: number;
+  pacePerWeek: number;
+  hoursPerWeekAvg: number;
+  projectedFinishIso: string | null;
+}
+
+// PLANNER-IMPLEMENTATION.md Pass 4: "on_track = tasks_done minus
+// tasks_that_should_be_done_by_now" and "projected_finish uses the
+// actual pace over the last four weeks, not the plan's intended pace."
+// tasksScheduledByNow counts every task (any state) whose scheduled_for
+// has already arrived — a rolled-forward task's scheduled_for is
+// always today (see rollForwardMissedTasks), so this stays correct
+// whether or not that sweep has already run this request.
+export async function getPlanStats(plan: StudyPlan, todayIso: string): Promise<PlanStats> {
+  const { rows } = await pool.query<{
+    scheduled_by_now: string;
+    overdue_count: string;
+    done_last_4w: string;
+    minutes_last_4w: string;
+  }>(
+    `SELECT
+       COUNT(*) FILTER (WHERE scheduled_for <= $2::date) AS scheduled_by_now,
+       COUNT(*) FILTER (WHERE state = 'pending' AND original_date IS NOT NULL) AS overdue_count,
+       COUNT(*) FILTER (WHERE state = 'done' AND completed_at >= $2::date - INTERVAL '28 days') AS done_last_4w,
+       COALESCE(SUM(estimate_minutes) FILTER (WHERE state = 'done' AND completed_at >= $2::date - INTERVAL '28 days'), 0) AS minutes_last_4w
+     FROM study_plan_task
+     WHERE plan_id = $1`,
+    [plan.id, todayIso]
+  );
+  const r = rows[0];
+  const scheduledByNow = Number(r.scheduled_by_now);
+  const overdueCount = Number(r.overdue_count);
+  const pacePerWeek = Math.round(Number(r.done_last_4w) / 4);
+  const hoursPerWeekAvg = Math.round((Number(r.minutes_last_4w) / 60 / 4) * 10) / 10;
+
+  const tasksRemaining = plan.tasksTotal - plan.tasksDone;
+  let projectedFinishIso: string | null = null;
+  if (tasksRemaining <= 0) {
+    projectedFinishIso = todayIso;
+  } else if (pacePerWeek > 0) {
+    const weeksNeeded = Math.ceil(tasksRemaining / pacePerWeek);
+    const finish = new Date(`${todayIso}T00:00:00Z`);
+    finish.setUTCDate(finish.getUTCDate() + weeksNeeded * 7);
+    projectedFinishIso = finish.toISOString().slice(0, 10);
+  }
+
+  return {
+    onTrackDelta: plan.tasksDone - scheduledByNow,
+    overdueCount,
+    pacePerWeek,
+    hoursPerWeekAvg,
+    projectedFinishIso,
+  };
+}
+
+export interface TopicCoverage {
+  id: string;
+  label: string;
+  weight: number;
+  taskCount: number;
+  doneCount: number;
+}
+
+// "Coverage beats completion" (PLANNER-SPEC.md rule 3) — 62% overall
+// can hide a topic that hasn't started; this is the query the topic
+// bars read from. A topic with zero tasks (e.g. it had no content when
+// the plan was generated, see generateTasksForPlan's own withContent
+// filter) still shows, at 0%, rather than disappearing.
+export async function getPlanTopicCoverage(planId: string): Promise<TopicCoverage[]> {
+  const { rows } = await pool.query<{ id: string; label: string; weight: number; task_count: string; done_count: string }>(
+    `SELECT pt.id, pt.label, pt.weight,
+       COUNT(t.id)::int AS task_count,
+       COUNT(t.id) FILTER (WHERE t.state = 'done')::int AS done_count
+     FROM study_plan_topic pt
+     LEFT JOIN study_plan_task t ON t.topic_id = pt.id
+     WHERE pt.plan_id = $1
+     GROUP BY pt.id
+     ORDER BY pt.position`,
+    [planId]
+  );
+  return rows.map((r) => ({ id: r.id, label: r.label, weight: r.weight, taskCount: Number(r.task_count), doneCount: Number(r.done_count) }));
+}
+
+export type WeekSquareState = "done" | "missed" | "planned";
+
+export interface PlanWeek {
+  weekStartIso: string;
+  squares: WeekSquareState[];
+}
+
+// "One row per week, one square per task" (PLANNER-SPEC.md) — a task
+// that rolled forward is bucketed into the week it was *originally*
+// due (original_date), coloured missed, rather than the week it
+// happens to sit in today; everything else uses its own scheduled_for.
+// That's the only way the grid can show where a week actually fell
+// short, given scheduled_for gets overwritten to today the moment a
+// task rolls forward.
+export async function getPlanWeeks(userId: string, planId: string, fromIso: string, toIso: string): Promise<PlanWeek[]> {
+  const tasks = await getTasksInRange(userId, fromIso, toIso);
+  const planTasks = tasks.filter((t) => t.planId === planId);
+
+  const byWeek = new Map<string, WeekSquareState[]>();
+  for (const task of planTasks) {
+    const homeDate = task.originalDate ?? task.scheduledFor;
+    const d = new Date(`${homeDate}T00:00:00Z`);
+    const dow = (d.getUTCDay() + 6) % 7;
+    d.setUTCDate(d.getUTCDate() - dow);
+    const weekStartIso = d.toISOString().slice(0, 10);
+
+    const state: WeekSquareState = task.state === "done" ? "done" : task.originalDate !== null ? "missed" : "planned";
+    const list = byWeek.get(weekStartIso) ?? [];
+    list.push(state);
+    byWeek.set(weekStartIso, list);
+  }
+
+  return Array.from(byWeek.entries())
+    .sort(([a], [b]) => a.localeCompare(b))
+    .map(([weekStartIso, squares]) => ({ weekStartIso, squares }));
 }

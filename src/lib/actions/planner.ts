@@ -12,6 +12,7 @@ import {
   toggleTaskState,
   searchTaskTargets,
   generateTasksForPlan,
+  adjustPlanPace,
   type CreatePlanInput,
   type CreateTaskInput,
   type PlanStatus,
@@ -38,6 +39,17 @@ export async function regeneratePlanAction(planId: string): Promise<GenerateResu
   const session = await auth();
   if (!session) throw new Error("Unauthorized");
   const result = await generateTasksForPlan(session.user.id, planId);
+  revalidatePlannerSurfaces();
+  return result;
+}
+
+// "Adjust the pace" (PLANNER-IMPLEMENTATION.md Pass 4) — re-times the
+// plan's existing pending tasks across the weeks left rather than
+// picking new content the way regeneratePlanAction does.
+export async function adjustPlanPaceAction(planId: string): Promise<GenerateResult> {
+  const session = await auth();
+  if (!session) throw new Error("Unauthorized");
+  const result = await adjustPlanPace(session.user.id, planId);
   revalidatePlannerSurfaces();
   return result;
 }

@@ -6,11 +6,13 @@ import { RefreshCw } from "lucide-react";
 import { useRouter } from "@/i18n/navigation";
 import { regeneratePlanAction } from "@/lib/actions/planner";
 
-// "Adjust the pace" (PLANNER-IMPLEMENTATION.md Pass 4) reduced to what
-// Pass 2 actually has: re-run the same generator that ran at creation.
-// Only ever replaces this plan's own pending tasks — nothing done is
-// touched (see generateTasksForPlan's own comment) — so this is safe
-// to press any time the plan's topics or pace stop matching reality.
+// Re-runs the generator — picks fresh content from the topic weights,
+// same as plan creation. Distinct from AdjustPaceButton (Pass 4's
+// "Adjust the pace"), which re-times the tasks that already exist
+// instead of re-picking what they point at. Only ever replaces this
+// plan's own pending tasks — nothing done is touched (see
+// generateTasksForPlan's own comment) — so this is safe to press any
+// time the plan's topics stop matching reality.
 export function RegeneratePlanButton({ planId }: { planId: string }) {
   const t = useTranslations("studyPlanner");
   const router = useRouter();
