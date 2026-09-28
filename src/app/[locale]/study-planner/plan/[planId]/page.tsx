@@ -19,6 +19,7 @@ import { RegeneratePlanButton } from "@/components/planner/RegeneratePlanButton"
 import { AdjustPaceButton } from "@/components/planner/AdjustPaceButton";
 import { PlanPauseButton } from "@/components/planner/PlanPauseButton";
 import { EditPlanButton } from "@/components/planner/EditPlanButton";
+import { AddTaskButton } from "@/components/planner/AddTaskButton";
 import { PlanTabs } from "@/components/planner/PlanTabs";
 import { Play } from "lucide-react";
 
@@ -84,6 +85,18 @@ export default async function StudyPlanPage({ params }: PlanPageProps) {
         : t("planOnTrackExact");
   const isBehind = stats.onTrackDelta < 0;
 
+  const editablePlan = {
+    id: plan.id,
+    name: plan.name,
+    kind: plan.kind,
+    colourKey: plan.colourKey,
+    targetDate: plan.targetDate,
+    studyDays: plan.studyDays,
+    sessionMinutes: plan.sessionMinutes,
+    maxTasksPerDay: plan.maxTasksPerDay,
+    topics: planTopics.map((topic) => ({ topicRef: topic.topicRef, label: topic.label, weight: topic.weight })),
+  };
+
   return (
     <main className="mx-auto flex w-full max-w-6xl flex-col gap-6 px-6 py-16">
       <div
@@ -102,19 +115,7 @@ export default async function StudyPlanPage({ params }: PlanPageProps) {
         <div className="flex-1">
           <div className="flex items-center gap-1.5">
             <h1 className="font-heading text-3xl font-black text-primary">{plan.name}</h1>
-            <EditPlanButton
-              plan={{
-                id: plan.id,
-                name: plan.name,
-                kind: plan.kind,
-                colourKey: plan.colourKey,
-                targetDate: plan.targetDate,
-                studyDays: plan.studyDays,
-                sessionMinutes: plan.sessionMinutes,
-                maxTasksPerDay: plan.maxTasksPerDay,
-                topics: planTopics.map((topic) => ({ topicRef: topic.topicRef, label: topic.label, weight: topic.weight })),
-              }}
-            />
+            <EditPlanButton plan={editablePlan} />
           </div>
           <p className="mt-1 font-ui text-sm font-bold text-secondary">
             {plan.targetDate ? t("planCardDeadline", { date: plan.targetDate }) : t(`planKind_${plan.kind}`)}
@@ -144,6 +145,8 @@ export default async function StudyPlanPage({ params }: PlanPageProps) {
             <Play className="size-3.5" aria-hidden="true" />
             {t("planTodaysTasks", { count: todayCount })}
           </Link>
+          <AddTaskButton planId={plan.id} plans={plans} />
+          <EditPlanButton plan={editablePlan} labeled />
           <AdjustPaceButton planId={plan.id} />
           <RegeneratePlanButton planId={plan.id} />
           <PlanPauseButton planId={plan.id} status={plan.status} />

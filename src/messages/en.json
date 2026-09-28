@@ -44,6 +44,7 @@
     "signOut": "Sign out",
     "openExplore": "Open Explore",
     "closeExplore": "Close Explore",
+    "closeSearch": "Close search",
     "languageSwitcher": "Change language",
     "exploreLibrary": "Explore library",
     "mainNav": "Main"
@@ -484,7 +485,8 @@
     "editTask": "Edit task",
     "saving": "Saving…",
     "saveChanges": "Save changes",
-    "editPlan": "Edit plan"
+    "editPlan": "Edit plan",
+    "addTaskCta": "Add task"
   },
   "myAtlas": {
     "pageTitle": "My Handbook",

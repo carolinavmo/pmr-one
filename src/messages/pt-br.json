@@ -44,6 +44,7 @@
     "signOut": "Sair",
     "openExplore": "Abrir Explorar",
     "closeExplore": "Fechar Explorar",
+    "closeSearch": "Fechar busca",
     "languageSwitcher": "Mudar idioma",
     "exploreLibrary": "Explorar biblioteca",
     "mainNav": "Principal"
@@ -484,7 +485,8 @@
     "editTask": "Editar tarefa",
     "saving": "Salvando…",
     "saveChanges": "Salvar alterações",
-    "editPlan": "Editar plano"
+    "editPlan": "Editar plano",
+    "addTaskCta": "Adicionar tarefa"
   },
   "myAtlas": {
     "pageTitle": "Meu Manual",

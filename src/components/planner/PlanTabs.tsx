@@ -9,6 +9,7 @@ import { TaskRow } from "./TaskRow";
 import { PlanCoverageList } from "./PlanCoverageList";
 import { PlanWeekSquares } from "./PlanWeekSquares";
 import { AdjustPaceButton } from "./AdjustPaceButton";
+import { AddTaskButton } from "./AddTaskButton";
 
 const DAY_KEYS = ["mon", "tue", "wed", "thu", "fri", "sat", "sun"] as const;
 
@@ -123,9 +124,17 @@ export function PlanTabs({
       )}
 
       {tab === "schedule" && (
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-col gap-3">
+          {tasks.length > 0 && (
+            <div className="flex items-center justify-end">
+              <AddTaskButton planId={planId} plans={plans} />
+            </div>
+          )}
           {tasks.length === 0 ? (
-            <p className="rounded-xl border border-dashed border-border p-6 text-center font-ui text-sm text-secondary">{t("planNoTasksYet")}</p>
+            <div className="flex flex-col items-center gap-3 rounded-xl border border-dashed border-border p-6 text-center">
+              <p className="font-ui text-sm text-secondary">{t("planNoTasksYet")}</p>
+              <AddTaskButton planId={planId} plans={plans} prominent />
+            </div>
           ) : (
             tasks.map((task) => (
               <TaskRow

@@ -33,7 +33,9 @@ export interface EditableTask {
 // `initialDate` lets the calendar's day panel ("+ Add a task to this
 // day") and clicking empty space in a day cell pre-date the drawer
 // instead of always defaulting to today — the rail's own "New task"
-// button omits it and gets today, same as before.
+// button omits it and gets today, same as before. `initialPlanId`
+// does the same for AddTaskButton's own "+ Add task" on a plan's page
+// — opened from there, of course it's for that plan, not one-off.
 //
 // `editTask` switches the same drawer into edit mode — same fields,
 // same layout, just seeded from an existing task and submitting
@@ -50,12 +52,14 @@ export function NewTaskDrawer({
   onClose,
   plans,
   initialDate,
+  initialPlanId,
   editTask,
 }: {
   open: boolean;
   onClose: () => void;
   plans: StudyPlan[];
   initialDate?: string;
+  initialPlanId?: string;
   editTask?: EditableTask;
 }) {
   const t = useTranslations("studyPlanner");
@@ -68,7 +72,7 @@ export function NewTaskDrawer({
   const [customTitle, setCustomTitle] = useState(editTask?.title ?? "");
   const [customMinutes, setCustomMinutes] = useState(editTask?.estimateMinutes ?? 15);
   const [scheduledFor, setScheduledFor] = useState(editTask?.scheduledFor ?? initialDate ?? todayIso());
-  const [planId, setPlanId] = useState<string | null>(editTask?.planId ?? null);
+  const [planId, setPlanId] = useState<string | null>(editTask?.planId ?? initialPlanId ?? null);
   const [isPending, startTransition] = useTransition();
 
   const [wasOpen, setWasOpen] = useState(open);
@@ -89,7 +93,7 @@ export function NewTaskDrawer({
         setCustomTitle("");
         setCustomMinutes(15);
         setScheduledFor(initialDate ?? todayIso());
-        setPlanId(null);
+        setPlanId(initialPlanId ?? null);
       }
     }
   }
