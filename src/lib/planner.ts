@@ -1107,6 +1107,41 @@ export async function getPlanItems(planId: string): Promise<PlanItem[]> {
   return rows.map((r) => ({ id: r.id, kind: r.kind, refId: r.ref_id }));
 }
 
+export interface PlanItemDetailed extends PlanItem {
+  label: string;
+}
+
+// The Content section's own read — same batched-lookup shape as
+// attachStartHrefs, one IN-query per kind rather than N+1, since a
+// plan_item's ref_id points at a different table per kind and there's
+// no single join that covers all four at once.
+export async function getPlanItemsDetailed(planId: string): Promise<PlanItemDetailed[]> {
+  const items = await getPlanItems(planId);
+  if (items.length === 0) return [];
+
+  const idsByKind: Record<PlanItemKind, string[]> = { folder: [], page: [], deck: [], question_set: [] };
+  for (const item of items) idsByKind[item.kind].push(item.refId);
+
+  const [topicRows, diseaseRows, deckRows, setRows] = await Promise.all([
+    idsByKind.folder.length ? pool.query<{ id: string; name: string }>(`SELECT id, name FROM topic WHERE id = ANY($1::uuid[])`, [idsByKind.folder]) : Promise.resolve({ rows: [] }),
+    idsByKind.page.length
+      ? pool.query<{ id: string; canonical_name: string }>(`SELECT id, canonical_name FROM disease WHERE id = ANY($1::uuid[])`, [idsByKind.page])
+      : Promise.resolve({ rows: [] }),
+    idsByKind.deck.length ? pool.query<{ id: string; name: string }>(`SELECT id, name FROM flashcard_deck WHERE id = ANY($1::uuid[])`, [idsByKind.deck]) : Promise.resolve({ rows: [] }),
+    idsByKind.question_set.length
+      ? pool.query<{ id: string; name: string }>(`SELECT id, name FROM question_set WHERE id = ANY($1::uuid[])`, [idsByKind.question_set])
+      : Promise.resolve({ rows: [] }),
+  ]);
+  const labelsByKind: Record<PlanItemKind, Map<string, string>> = {
+    folder: new Map(topicRows.rows.map((r) => [r.id, r.name])),
+    page: new Map(diseaseRows.rows.map((r) => [r.id, r.canonical_name])),
+    deck: new Map(deckRows.rows.map((r) => [r.id, r.name])),
+    question_set: new Map(setRows.rows.map((r) => [r.id, r.name])),
+  };
+
+  return items.map((item) => ({ ...item, label: labelsByKind[item.kind].get(item.refId) ?? item.refId }));
+}
+
 // Replace-all — mirrors setPlanTopics: only ever called right after
 // creation, when there are no study_plan_task rows pointing at any
 // item yet.
@@ -1526,6 +1561,39 @@ export async function getPlanTopicCoverage(planId: string): Promise<TopicCoverag
     [planId]
   );
   return rows.map((r) => ({ id: r.id, label: r.label, weight: r.weight, taskCount: Number(r.task_count), doneCount: Number(r.done_count) }));
+}
+
+export interface PlanItemCoverage {
+  id: string;
+  label: string;
+  kind: PlanItemKind;
+  taskCount: number;
+  doneCount: number;
+}
+
+// v2's own equivalent of getPlanTopicCoverage — "coverage beats
+// completion" (PLANNER-SPEC.md rule 3) applies just as much to an
+// ordered-content plan's folders/items as it did to a weighted plan's
+// topics, just keyed by plan_item_id instead of topic_id.
+export async function getPlanItemCoverage(planId: string): Promise<PlanItemCoverage[]> {
+  const items = await getPlanItemsDetailed(planId);
+  if (items.length === 0) return [];
+
+  const { rows } = await pool.query<{ plan_item_id: string; task_count: string; done_count: string }>(
+    `SELECT plan_item_id, COUNT(*)::int AS task_count, COUNT(*) FILTER (WHERE state = 'done')::int AS done_count
+     FROM study_plan_task WHERE plan_id = $1 AND plan_item_id IS NOT NULL
+     GROUP BY plan_item_id`,
+    [planId]
+  );
+  const countsById = new Map(rows.map((r) => [r.plan_item_id, { taskCount: Number(r.task_count), doneCount: Number(r.done_count) }]));
+
+  return items.map((item) => ({
+    id: item.id,
+    label: item.label,
+    kind: item.kind,
+    taskCount: countsById.get(item.id)?.taskCount ?? 0,
+    doneCount: countsById.get(item.id)?.doneCount ?? 0,
+  }));
 }
 
 export type WeekSquareState = "done" | "missed" | "planned";

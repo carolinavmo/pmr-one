@@ -4,9 +4,10 @@ import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { AlertTriangle } from "lucide-react";
 import { useRouter } from "@/i18n/navigation";
-import type { StartableTask, TopicCoverage, PlanWeek, StudyPlan } from "@/lib/planner";
+import type { StartableTask, TopicCoverage, PlanItemCoverage, PlanWeek, StudyPlan } from "@/lib/planner";
 import { TaskRow } from "./TaskRow";
 import { PlanCoverageList } from "./PlanCoverageList";
+import { PlanItemCoverageList } from "./PlanItemCoverageList";
 import { PlanWeekSquares } from "./PlanWeekSquares";
 import { AdjustPaceButton } from "./AdjustPaceButton";
 import { AddTaskButton } from "./AddTaskButton";
@@ -21,10 +22,12 @@ type Tab = "overview" | "topics" | "schedule" | "settings";
 // summarizes, just given the full width.
 export function PlanTabs({
   planId,
+  mode,
   studyDays,
   sessionMinutes,
   maxTasksPerDay,
   topics,
+  itemCoverage,
   weeks,
   todayIso,
   tasks,
@@ -32,10 +35,12 @@ export function PlanTabs({
   plans,
 }: {
   planId: string;
+  mode: StudyPlan["mode"];
   studyDays: number[];
   sessionMinutes: number;
   maxTasksPerDay: number;
   topics: TopicCoverage[];
+  itemCoverage: PlanItemCoverage[];
   weeks: PlanWeek[];
   todayIso: string;
   tasks: StartableTask[];
@@ -50,10 +55,11 @@ export function PlanTabs({
     .map((key) => t(`weekDay_${key}`))
     .join(" · ");
 
+  const contentCount = itemCoverage.length > 0 ? itemCoverage.length : topics.length;
   const TABS: { key: Tab; label: string }[] = [
     { key: "overview", label: t("planTabOverview") },
-    { key: "topics", label: t("planTabTopics", { count: topics.length }) },
-    { key: "schedule", label: t("planTabSchedule") },
+    { key: "topics", label: t("planTabTopics", { count: contentCount }) },
+    { key: "schedule", label: t(mode === "scheduled" ? "planTabSchedule" : "planTabUpNext") },
     { key: "settings", label: t("planTabSettings") },
   ];
 
@@ -103,12 +109,16 @@ export function PlanTabs({
         <div className="flex flex-col gap-6 lg:flex-row">
           <div className="flex-1">
             <SectionHeading title={t("planCoverageHeading")} subtitle={t("planCoverageSubtitle")} />
-            <PlanCoverageList topics={topics} />
+            {itemCoverage.length > 0 ? <PlanItemCoverageList items={itemCoverage} /> : <PlanCoverageList topics={topics} />}
           </div>
           <div className="flex-1 flex-col">
-            <SectionHeading title={t("planWeeksHeading")} subtitle={t("planWeeksSubtitle")} />
-            <PlanWeekSquares weeks={weeks} todayIso={todayIso} />
-            <div className="mt-4 flex flex-col gap-3">
+            {mode === "scheduled" && (
+              <>
+                <SectionHeading title={t("planWeeksHeading")} subtitle={t("planWeeksSubtitle")} />
+                <PlanWeekSquares weeks={weeks} todayIso={todayIso} />
+              </>
+            )}
+            <div className={mode === "scheduled" ? "mt-4 flex flex-col gap-3" : "flex flex-col gap-3"}>
               {settingsPreview}
               {fallBehindWarning}
             </div>
@@ -119,7 +129,7 @@ export function PlanTabs({
       {tab === "topics" && (
         <div>
           <SectionHeading title={t("planCoverageHeading")} subtitle={t("planCoverageSubtitle")} />
-          <PlanCoverageList topics={topics} />
+          {itemCoverage.length > 0 ? <PlanItemCoverageList items={itemCoverage} /> : <PlanCoverageList topics={topics} />}
         </div>
       )}
 
