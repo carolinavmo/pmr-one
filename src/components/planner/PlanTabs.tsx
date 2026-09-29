@@ -31,6 +31,7 @@ export function PlanTabs({
   weeks,
   todayIso,
   tasks,
+  allTasks,
   overdueCount,
   plans,
 }: {
@@ -44,6 +45,10 @@ export function PlanTabs({
   weeks: PlanWeek[];
   todayIso: string;
   tasks: StartableTask[];
+  // Every task in the plan, any state — "see everything" (direct
+  // feedback), unlike `tasks` above which Schedule/Up next keep to
+  // pending only. Only the coverage lists (Overview/Topics) use this.
+  allTasks: StartableTask[];
   overdueCount: number;
   plans: StudyPlan[];
 }) {
@@ -109,7 +114,11 @@ export function PlanTabs({
         <div className="flex flex-col gap-6 lg:flex-row">
           <div className="flex-1">
             <SectionHeading title={t("planCoverageHeading")} subtitle={t("planCoverageSubtitle")} />
-            {itemCoverage.length > 0 ? <PlanItemCoverageList items={itemCoverage} /> : <PlanCoverageList topics={topics} />}
+            {itemCoverage.length > 0 ? (
+              <PlanItemCoverageList items={itemCoverage} tasks={allTasks} planId={planId} plans={plans} />
+            ) : (
+              <PlanCoverageList topics={topics} tasks={allTasks} planId={planId} plans={plans} />
+            )}
           </div>
           <div className="flex-1 flex-col">
             {mode === "scheduled" && (
@@ -129,7 +138,11 @@ export function PlanTabs({
       {tab === "topics" && (
         <div>
           <SectionHeading title={t("planCoverageHeading")} subtitle={t("planCoverageSubtitle")} />
-          {itemCoverage.length > 0 ? <PlanItemCoverageList items={itemCoverage} /> : <PlanCoverageList topics={topics} />}
+          {itemCoverage.length > 0 ? (
+            <PlanItemCoverageList items={itemCoverage} tasks={allTasks} planId={planId} plans={plans} />
+          ) : (
+            <PlanCoverageList topics={topics} tasks={allTasks} planId={planId} plans={plans} />
+          )}
         </div>
       )}
 

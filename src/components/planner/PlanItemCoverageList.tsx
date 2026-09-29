@@ -1,16 +1,34 @@
 "use client";
 
+import { useState } from "react";
 import { useTranslations } from "next-intl";
-import type { PlanItemCoverage } from "@/lib/planner";
+import { ChevronDown } from "lucide-react";
+import { useRouter } from "@/i18n/navigation";
+import type { PlanItemCoverage, StartableTask, StudyPlan } from "@/lib/planner";
+import { TaskRow } from "./TaskRow";
+import { AddTaskButton } from "./AddTaskButton";
 
 // The ordered-content model's own PlanCoverageList — same "coverage
 // beats completion" bars, keyed by plan_item instead of the legacy
 // study_plan_topic. Kept separate from PlanCoverageList rather than a
 // shared generic component: the two shapes (weight vs. kind) only
 // coincidentally look alike, and a plan is always fully on one model
-// or the other, never both.
-export function PlanItemCoverageList({ items }: { items: PlanItemCoverage[] }) {
+// or the other, never both. Same expand-in-place task list, filtered
+// by plan_item_id instead of topic_id.
+export function PlanItemCoverageList({
+  items,
+  tasks,
+  planId,
+  plans,
+}: {
+  items: PlanItemCoverage[];
+  tasks: StartableTask[];
+  planId: string;
+  plans: StudyPlan[];
+}) {
   const t = useTranslations("studyPlanner");
+  const router = useRouter();
+  const [openId, setOpenId] = useState<string | null>(null);
 
   if (items.length === 0) {
     return <p className="rounded-xl border border-dashed border-border p-4 text-center font-ui text-sm text-secondary">{t("planNoTopicsYet")}</p>;
@@ -21,21 +39,56 @@ export function PlanItemCoverageList({ items }: { items: PlanItemCoverage[] }) {
       {items.map((item) => {
         const percent = item.taskCount === 0 ? 0 : Math.round((item.doneCount / item.taskCount) * 100);
         const barColor = percent >= 66 ? "var(--color-trust)" : percent >= 33 ? "var(--color-insight)" : "var(--color-warning)";
+        const open = openId === item.id;
+        const itemTasks = tasks.filter((task) => task.planItemId === item.id);
         return (
-          <div key={item.id} className="flex items-center gap-3 rounded-xl border border-border px-3.5 py-2.5">
-            <span className="shrink-0 rounded-md bg-border/40 px-2 py-0.5 font-ui text-[10px] font-black tracking-[0.9px] text-secondary uppercase">
-              {t(`planItemKind_${item.kind}`)}
-            </span>
-            <div className="min-w-0 flex-1">
-              <span className="block truncate font-ui text-sm font-black text-navy">{item.label}</span>
-              <span className="font-ui text-xs font-bold text-secondary">{t("planTopicTaskCount", { count: item.taskCount })}</span>
-            </div>
-            <div className="h-2 w-[100px] shrink-0 overflow-hidden rounded-full bg-border/40">
-              {item.taskCount > 0 && <span className="block h-2 rounded-full" style={{ width: `${percent}%`, backgroundColor: barColor }} />}
-            </div>
-            <span className="w-[88px] shrink-0 text-right font-ui text-xs font-black" style={{ color: item.taskCount === 0 ? "var(--color-text-secondary)" : barColor }}>
-              {item.taskCount === 0 ? t("planTopicNoContent") : percent === 0 ? t("planTopicNotStarted") : `${percent}%`}
-            </span>
+          <div key={item.id} className="rounded-xl border border-border">
+            <button
+              type="button"
+              onClick={() => setOpenId(open ? null : item.id)}
+              aria-expanded={open}
+              className="flex w-full items-center gap-3 px-3.5 py-2.5 text-left"
+            >
+              <ChevronDown className={`size-3.5 shrink-0 text-secondary transition-transform duration-base ${open ? "rotate-0" : "-rotate-90"}`} aria-hidden="true" />
+              <span className="shrink-0 rounded-md bg-border/40 px-2 py-0.5 font-ui text-[10px] font-black tracking-[0.9px] text-secondary uppercase">
+                {t(`planItemKind_${item.kind}`)}
+              </span>
+              <div className="min-w-0 flex-1">
+                <span className="block truncate font-ui text-sm font-black text-navy">{item.label}</span>
+                <span className="font-ui text-xs font-bold text-secondary">{t("planTopicTaskCount", { count: item.taskCount })}</span>
+              </div>
+              <div className="h-2 w-[100px] shrink-0 overflow-hidden rounded-full bg-border/40">
+                {item.taskCount > 0 && <span className="block h-2 rounded-full" style={{ width: `${percent}%`, backgroundColor: barColor }} />}
+              </div>
+              <span className="w-[88px] shrink-0 text-right font-ui text-xs font-black" style={{ color: item.taskCount === 0 ? "var(--color-text-secondary)" : barColor }}>
+                {item.taskCount === 0 ? t("planTopicNoContent") : percent === 0 ? t("planTopicNotStarted") : `${percent}%`}
+              </span>
+            </button>
+            {open && (
+              <div className="flex flex-col gap-2 border-t border-border p-3">
+                {itemTasks.map((task) => (
+                  <TaskRow
+                    key={task.id}
+                    id={task.id}
+                    type={task.type}
+                    title={task.title}
+                    estimateLabel={t("estimateMinutes", { minutes: task.estimateMinutes })}
+                    estimateMinutes={task.estimateMinutes}
+                    scheduledFor={task.scheduledFor}
+                    planId={task.planId}
+                    plans={plans}
+                    state={task.state}
+                    startHref={task.startHref}
+                    overdue={task.state !== "done" && task.originalDate !== null}
+                    onDeleted={() => router.refresh()}
+                  />
+                ))}
+                {itemTasks.length === 0 && <p className="py-1 text-center font-ui text-xs text-secondary">{t("planNoTasksYet")}</p>}
+                <div className="flex justify-end">
+                  <AddTaskButton planId={planId} plans={plans} initialPlanItemId={item.id} compact />
+                </div>
+              </div>
+            )}
           </div>
         );
       })}

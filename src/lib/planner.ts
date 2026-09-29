@@ -59,6 +59,13 @@ export interface PlannerTask {
   originalDate: string | null;
   state: TaskState;
   completedAt: string | null;
+  // Which legacy topic (weighted model) or ordered-content item this
+  // task was generated from/scoped to — a task belongs to at most one
+  // of the two, matching a plan's own topics vs. items exclusivity.
+  // Surfaced so a topic/folder's own coverage row can list exactly its
+  // tasks rather than the plan's flat list.
+  topicId: string | null;
+  planItemId: string | null;
 }
 
 function mapTaskRow(r: {
@@ -75,6 +82,8 @@ function mapTaskRow(r: {
   original_date: string | null;
   state: TaskState;
   completed_at: string | Date | null;
+  topic_id: string | null;
+  plan_item_id: string | null;
 }): PlannerTask {
   return {
     id: r.id,
@@ -90,13 +99,16 @@ function mapTaskRow(r: {
     originalDate: r.original_date,
     state: r.state,
     completedAt: r.completed_at instanceof Date ? r.completed_at.toISOString() : r.completed_at,
+    topicId: r.topic_id,
+    planItemId: r.plan_item_id,
   };
 }
 
 const TASK_SELECT = `
   SELECT t.id, t.plan_id, p.name AS plan_name, p.colour_key AS plan_colour_key,
     t.type, t.target_ref, t.title, t.estimate_minutes, t.scheduled_for::text AS scheduled_for,
-    t.queue_position, t.original_date::text AS original_date, t.state, t.completed_at
+    t.queue_position, t.original_date::text AS original_date, t.state, t.completed_at,
+    t.topic_id, t.plan_item_id
   FROM study_plan_task t
   LEFT JOIN study_plan p ON p.id = t.plan_id
 `;
@@ -110,6 +122,21 @@ export async function getQueueTasks(userId: string, limit: number): Promise<Plan
     `${TASK_SELECT} WHERE t.user_id = $1 AND t.state = 'pending' AND t.scheduled_for IS NULL
      ORDER BY t.queue_position LIMIT $2`,
     [userId, limit]
+  );
+  return rows.map(mapTaskRow);
+}
+
+// Every task belonging to one plan, any state, any mode — the plan
+// page's own read (Schedule/Up next filters to pending itself; the
+// per-topic/per-item task lists on Overview/Topics want the done ones
+// too, "see everything" rather than only what's left). Scoped directly
+// by plan_id rather than assembled from getTasksInRange + getQueueTasks,
+// since those two are date-range/queue-shaped for other callers and
+// would otherwise need re-filtering back down to "this one plan."
+export async function getTasksForPlan(userId: string, planId: string, limit = 300): Promise<PlannerTask[]> {
+  const { rows } = await pool.query(
+    `${TASK_SELECT} WHERE t.user_id = $1 AND t.plan_id = $2 ORDER BY t.position, t.created_at LIMIT $3`,
+    [userId, planId, limit]
   );
   return rows.map(mapTaskRow);
 }
@@ -459,13 +486,31 @@ export interface CreateTaskInput {
   title: string;
   estimateMinutes: number;
   scheduledFor: string;
+  // Set when "add task" was opened from inside a specific topic/folder
+  // row (Overview/Topics tab) rather than the plan generally — a task
+  // created that way is attributed to that row from the start, same
+  // coverage-by-topic attribution the generator itself gives a task.
+  // At most one is ever set, matching a plan's own topics/items
+  // exclusivity.
+  topicId?: string | null;
+  planItemId?: string | null;
 }
 
 export async function createTask(userId: string, input: CreateTaskInput): Promise<string> {
   const { rows } = await pool.query(
-    `INSERT INTO study_plan_task (user_id, plan_id, type, target_ref, title, estimate_minutes, scheduled_for)
-     VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id`,
-    [userId, input.planId, input.type, input.targetRef, input.title, input.estimateMinutes, input.scheduledFor]
+    `INSERT INTO study_plan_task (user_id, plan_id, type, target_ref, title, estimate_minutes, scheduled_for, topic_id, plan_item_id)
+     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING id`,
+    [
+      userId,
+      input.planId,
+      input.type,
+      input.targetRef,
+      input.title,
+      input.estimateMinutes,
+      input.scheduledFor,
+      input.topicId ?? null,
+      input.planItemId ?? null,
+    ]
   );
   return rows[0].id;
 }

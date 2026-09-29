@@ -10,8 +10,7 @@ import {
   getPlanTopics,
   getPlanItems,
   getPlanItemCoverage,
-  getTasksInRange,
-  getQueueTasks,
+  getTasksForPlan,
   attachStartHrefs,
   getPlanStats,
   getPlanTopicCoverage,
@@ -65,26 +64,21 @@ export default async function StudyPlanPage({ params }: PlanPageProps) {
   const plan = await getPlanById(userId, planId);
   if (!plan) notFound();
 
-  const [stats, topicCoverage, itemCoverage, weeks, pendingTasksRaw, queueTasksRaw, plans, planTopics, planItems] = await Promise.all([
+  const [stats, topicCoverage, itemCoverage, weeks, planTasksRaw, plans, planTopics, planItems] = await Promise.all([
     getPlanStats(plan, today),
     getPlanTopicCoverage(planId),
     getPlanItemCoverage(planId),
     getPlanWeeks(userId, planId, addDays(today, -56), addDays(today, 56)),
-    getTasksInRange(userId, addDays(today, -730), addDays(today, 730)),
-    // Dated tasks and queue tasks are mutually exclusive per task, and
-    // a plan's own mode decides which kind it ever has — getTasksInRange's
-    // own `scheduled_for BETWEEN` is NULL-safe and so never returns a
-    // flexible/target plan's queue, which is why that queue is fetched
-    // separately here rather than widening that query for every caller.
-    getQueueTasks(userId, 200),
+    // Every task in the plan, any state — Schedule/Up next below filter
+    // this down to pending only; the coverage lists (Overview/Topics)
+    // want the done ones too, "see everything" per direct feedback.
+    getTasksForPlan(userId, planId),
     getPlans(userId, "active"),
     getPlanTopics(planId),
     getPlanItems(planId),
   ]);
-  const relevantDated = pendingTasksRaw.filter((task) => task.planId === planId && task.state === "pending");
-  const relevantQueued = queueTasksRaw.filter((task) => task.planId === planId);
-  const relevant = [...relevantDated, ...relevantQueued].slice(0, 60);
-  const tasks = await attachStartHrefs(relevant);
+  const allTasks = await attachStartHrefs(planTasksRaw);
+  const tasks = allTasks.filter((task) => task.state === "pending").slice(0, 60);
   const todayCount = tasks.filter((task) => task.scheduledFor === today).length;
 
   const percent = plan.tasksTotal === 0 ? 0 : Math.round((plan.tasksDone / plan.tasksTotal) * 100);
@@ -188,6 +182,7 @@ export default async function StudyPlanPage({ params }: PlanPageProps) {
         weeks={weeks}
         todayIso={today}
         tasks={tasks}
+        allTasks={allTasks}
         overdueCount={stats.overdueCount}
         plans={plans}
       />

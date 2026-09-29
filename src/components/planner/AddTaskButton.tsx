@@ -19,12 +19,22 @@ export function AddTaskButton({
   planId,
   plans,
   initialDate,
+  initialTopicId,
+  initialPlanItemId,
   prominent,
+  compact,
 }: {
   planId: string;
   plans: StudyPlan[];
   initialDate?: string;
+  initialTopicId?: string;
+  initialPlanItemId?: string;
   prominent?: boolean;
+  // A small icon-only variant for a topic/folder row's own inline
+  // "add task" affordance — that context is already labeled by the
+  // row itself, so a full button would repeat "Add task" once per
+  // topic on the page.
+  compact?: boolean;
 }) {
   const t = useTranslations("studyPlanner");
   const [open, setOpen] = useState(false);
@@ -34,16 +44,29 @@ export function AddTaskButton({
       <button
         type="button"
         onClick={() => setOpen(true)}
+        aria-label={t("addTaskCta")}
         className={
-          prominent
-            ? "flex items-center justify-center gap-1.5 rounded-xl border-2 border-dashed border-border px-3.5 py-3 font-ui text-sm font-bold text-secondary hover:border-accent hover:text-accent"
-            : "flex items-center justify-center gap-1.5 rounded-lg border border-border px-3.5 py-2 font-ui text-sm font-bold text-primary hover:bg-border/30"
+          compact
+            ? "flex shrink-0 items-center gap-1 rounded-md border border-dashed border-border px-2 py-1 font-ui text-xs font-bold text-secondary hover:border-accent hover:text-accent"
+            : prominent
+              ? "flex items-center justify-center gap-1.5 rounded-xl border-2 border-dashed border-border px-3.5 py-3 font-ui text-sm font-bold text-secondary hover:border-accent hover:text-accent"
+              : "flex items-center justify-center gap-1.5 rounded-lg border border-border px-3.5 py-2 font-ui text-sm font-bold text-primary hover:bg-border/30"
         }
       >
         <Plus className="size-3.5" aria-hidden="true" />
-        {t("addTaskCta")}
+        {!compact && t("addTaskCta")}
       </button>
-      {open && <NewTaskDrawer open onClose={() => setOpen(false)} plans={plans} initialPlanId={planId} initialDate={initialDate} />}
+      {open && (
+        <NewTaskDrawer
+          open
+          onClose={() => setOpen(false)}
+          plans={plans}
+          initialPlanId={planId}
+          initialDate={initialDate}
+          initialTopicId={initialTopicId}
+          initialPlanItemId={initialPlanItemId}
+        />
+      )}
     </>
   );
 }

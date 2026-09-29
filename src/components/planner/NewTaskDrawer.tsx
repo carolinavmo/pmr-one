@@ -57,6 +57,8 @@ export function NewTaskDrawer({
   plans,
   initialDate,
   initialPlanId,
+  initialTopicId,
+  initialPlanItemId,
   editTask,
 }: {
   open: boolean;
@@ -64,6 +66,13 @@ export function NewTaskDrawer({
   plans: StudyPlan[];
   initialDate?: string;
   initialPlanId?: string;
+  // Scopes a newly created task to one topic/folder row (Overview/
+  // Topics tab's own "add task" affordance) — never used in edit mode,
+  // and dropped if the plan dropdown is changed away from
+  // initialPlanId, same as updateTask's own "topic_id clears when the
+  // plan changes" rule.
+  initialTopicId?: string;
+  initialPlanItemId?: string;
   editTask?: EditableTask;
 }) {
   const t = useTranslations("studyPlanner");
@@ -142,6 +151,7 @@ export function NewTaskDrawer({
           planId,
         });
       } else {
+        const stillScoped = planId === (initialPlanId ?? null);
         await createTaskAction({
           planId,
           type,
@@ -149,6 +159,8 @@ export function NewTaskDrawer({
           title: type === "custom" ? customTitle.trim() : selected!.title,
           estimateMinutes: type === "custom" ? customMinutes : selected!.estimateMinutes,
           scheduledFor,
+          topicId: stillScoped ? (initialTopicId ?? null) : null,
+          planItemId: stillScoped ? (initialPlanItemId ?? null) : null,
         });
       }
       onClose();
