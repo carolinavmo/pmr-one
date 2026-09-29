@@ -17,9 +17,6 @@ import {
   getPlanWeeks,
 } from "@/lib/planner";
 import { QBANK_FOLDER_COLOR_TINT, QBANK_FOLDER_COLOR_ACCENT } from "@/lib/qbank-folder-colors";
-import { RegeneratePlanButton } from "@/components/planner/RegeneratePlanButton";
-import { AdjustPaceButton } from "@/components/planner/AdjustPaceButton";
-import { PlanPauseButton } from "@/components/planner/PlanPauseButton";
 import { EditPlanButton } from "@/components/planner/EditPlanButton";
 import { AddTaskButton } from "@/components/planner/AddTaskButton";
 import { PlanTabs } from "@/components/planner/PlanTabs";
@@ -158,9 +155,6 @@ export default async function StudyPlanPage({ params }: PlanPageProps) {
           </Link>
           <AddTaskButton planId={plan.id} plans={plans} />
           <EditPlanButton plan={editablePlan} labeled />
-          <AdjustPaceButton planId={plan.id} />
-          <RegeneratePlanButton planId={plan.id} />
-          <PlanPauseButton planId={plan.id} status={plan.status} />
         </div>
       </div>
 

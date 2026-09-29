@@ -424,10 +424,6 @@ export async function createPlan(userId: string, input: CreatePlanInput): Promis
   return { id, generated };
 }
 
-export async function setPlanStatus(userId: string, planId: string, status: PlanStatus): Promise<void> {
-  await pool.query(`UPDATE study_plan SET status = $3, updated_at = now() WHERE id = $1 AND user_id = $2`, [planId, userId, status]);
-}
-
 export interface UpdatePlanInput {
   name: string;
   kind: PlanKind;
@@ -477,6 +473,28 @@ export async function updatePlan(userId: string, planId: string, input: UpdatePl
   } else {
     await updatePlanTopics(planId, input.topics);
   }
+}
+
+export interface UpdatePlanScheduleInput {
+  studyDays: number[];
+  sessionMinutes: number;
+  maxTasksPerDay: number;
+}
+
+// A lighter-weight sibling of updatePlan — the Schedule tab's own
+// inline "edit study days / session length" (direct feedback), which
+// only ever touches these three columns rather than requiring the
+// full plan-editing payload (name, colour, content, …) updatePlan
+// needs. Same "settings changing never rewrites tasks" rule as
+// updatePlan itself — Regenerate/Adjust the pace existed for that
+// before this session removed both; a study-days/session-length edit
+// alone still shouldn't silently re-lay the schedule.
+export async function updatePlanSchedule(userId: string, planId: string, input: UpdatePlanScheduleInput): Promise<void> {
+  await pool.query(
+    `UPDATE study_plan SET study_days = $3, session_minutes = $4, max_tasks_per_day = $5, updated_at = now()
+     WHERE id = $1 AND user_id = $2`,
+    [planId, userId, input.studyDays, input.sessionMinutes, input.maxTasksPerDay]
+  );
 }
 
 export interface CreateTaskInput {
@@ -947,10 +965,7 @@ export interface GenerateResult {
 // Idempotent for completed tasks: only ever deletes this plan's
 // *pending* rows before laying out a fresh schedule — a 'done' task,
 // wherever it sits, is never touched (PLANNER-SPEC.md rule: "Nothing
-// is silently deleted"). Safe to call again after topic/pace edits —
-// re-picks content from scratch, unlike adjustPlanPace below, which
-// re-times the tasks that already exist without touching what they
-// point at.
+// is silently deleted").
 //
 // Legacy weighted-subject path (pre-migration-0074). A plan created
 // before Study Planner v2's ordered-content model has no
@@ -1466,61 +1481,6 @@ export async function generateTasksForPlan(userId: string, planId: string): Prom
     return generateTasksForPlanV2(userId, planId, plan, items);
   }
   return generateTasksForPlanLegacy(userId, planId);
-}
-
-// "Adjust the pace" re-spreads only pending tasks (PLANNER-IMPLEMENTATION.md
-// Pass 4) — deliberately NOT generateTasksForPlan's "delete and re-pick
-// content from the topic weights" behaviour. A user who fell behind
-// doesn't want their in-progress reading list swapped out; they want
-// the same remaining tasks laid back out across the time that's left.
-// Order is preserved (current scheduled_for, then position) so
-// topic-interleaving already baked in by the generator survives the
-// re-lay untouched.
-export async function adjustPlanPace(userId: string, planId: string): Promise<GenerateResult> {
-  const plan = await getPlanById(userId, planId);
-  if (!plan || !plan.targetDate) return { created: 0, reason: "no-target-date" };
-
-  const { rows } = await pool.query<{ id: string }>(
-    `SELECT id FROM study_plan_task WHERE plan_id = $1 AND user_id = $2 AND state = 'pending' ORDER BY scheduled_for, position`,
-    [planId, userId]
-  );
-  if (rows.length === 0) return { created: 0, reason: "no-content" };
-
-  const studyDaySet = new Set(plan.studyDays);
-  const today = new Date();
-  today.setUTCHours(0, 0, 0, 0);
-
-  const ids: string[] = [];
-  const dates: string[] = [];
-  const positions: number[] = [];
-
-  const cursor = new Date(today);
-  let taskIdx = 0;
-  let position = 0;
-  let safety = 0;
-  while (taskIdx < rows.length && safety < 3650) {
-    safety++;
-    const isoDow = ((cursor.getUTCDay() + 6) % 7) + 1;
-    if (studyDaySet.has(isoDow)) {
-      for (let slot = 0; slot < plan.maxTasksPerDay && taskIdx < rows.length; slot++) {
-        ids.push(rows[taskIdx].id);
-        dates.push(cursor.toISOString().slice(0, 10));
-        positions.push(position++);
-        taskIdx++;
-      }
-    }
-    cursor.setUTCDate(cursor.getUTCDate() + 1);
-  }
-
-  await pool.query(
-    `UPDATE study_plan_task AS t
-     SET scheduled_for = x.scheduled_for, original_date = NULL, position = x.position
-     FROM unnest($1::uuid[], $2::date[], $3::int[]) AS x(id, scheduled_for, position)
-     WHERE t.id = x.id`,
-    [ids, dates, positions]
-  );
-
-  return { created: ids.length };
 }
 
 export interface PlanStats {

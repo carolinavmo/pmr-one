@@ -9,8 +9,8 @@ import { TaskRow } from "./TaskRow";
 import { PlanCoverageList } from "./PlanCoverageList";
 import { PlanItemCoverageList } from "./PlanItemCoverageList";
 import { PlanWeekSquares } from "./PlanWeekSquares";
-import { AdjustPaceButton } from "./AdjustPaceButton";
 import { AddTaskButton } from "./AddTaskButton";
+import { PlanScheduleSettings } from "./PlanScheduleSettings";
 
 const DAY_KEYS = ["mon", "tue", "wed", "thu", "fri", "sat", "sun"] as const;
 
@@ -89,7 +89,6 @@ export function PlanTabs({
         {t("planFallingBehindHeading")}
       </div>
       <p className="font-ui text-sm text-secondary">{t("planFallingBehindBody")}</p>
-      {overdueCount > 5 && <AdjustPaceButton planId={planId} prominent />}
     </div>
   );
 
@@ -148,6 +147,7 @@ export function PlanTabs({
 
       {tab === "schedule" && (
         <div className="flex flex-col gap-3">
+          <PlanScheduleSettings planId={planId} studyDays={studyDays} sessionMinutes={sessionMinutes} maxTasksPerDay={maxTasksPerDay} />
           {tasks.length > 0 && (
             <div className="flex items-center justify-end">
               <AddTaskButton planId={planId} plans={plans} />

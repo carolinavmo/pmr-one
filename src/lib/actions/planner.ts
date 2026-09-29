@@ -6,21 +6,19 @@ import { getSubjects } from "@/lib/flashcards";
 import {
   createPlan,
   updatePlan,
-  setPlanStatus,
+  updatePlanSchedule,
   createTask,
   rescheduleTask,
   updateTask,
   deleteTask,
   toggleTaskState,
   searchTaskTargets,
-  generateTasksForPlan,
-  adjustPlanPace,
   getFolderOptions,
   type CreatePlanInput,
   type UpdatePlanInput,
+  type UpdatePlanScheduleInput,
   type CreateTaskInput,
   type UpdateTaskInput,
-  type PlanStatus,
   type TaskState,
   type TaskType,
   type TaskTargetOption,
@@ -38,9 +36,8 @@ export async function createPlanAction(input: CreatePlanInput): Promise<{ id: st
 
 // "Any plan can be reshaped" (PLANNER-SPEC.md rule 4) — the plan's own
 // settings (name, colour, target date, study days, session length,
-// topics/weights), not its tasks. Regenerate/Adjust the pace remain
-// the separate, explicit actions for bringing the schedule itself in
-// line with a changed setting (see updatePlan's own comment).
+// topics/weights), not its tasks. Never touches study_plan_task, see
+// updatePlan's own comment for why.
 export async function updatePlanAction(planId: string, input: UpdatePlanInput): Promise<void> {
   const session = await auth();
   if (!session) throw new Error("Unauthorized");
@@ -48,28 +45,13 @@ export async function updatePlanAction(planId: string, input: UpdatePlanInput): 
   revalidatePlannerSurfaces();
 }
 
-// Re-runs the generator for an existing plan — the same function
-// createPlanAction calls on first creation, exposed here for "Adjust
-// the pace" (Pass 4's own name for this) and for a plan whose topics
-// were only added after creation. Never touches tasks already marked
-// done (see generateTasksForPlan's own comment).
-export async function regeneratePlanAction(planId: string): Promise<GenerateResult> {
+// The Schedule tab's own inline edit (direct feedback) — study days
+// and session length only, without the full plan-editing payload.
+export async function updatePlanScheduleAction(planId: string, input: UpdatePlanScheduleInput): Promise<void> {
   const session = await auth();
   if (!session) throw new Error("Unauthorized");
-  const result = await generateTasksForPlan(session.user.id, planId);
+  await updatePlanSchedule(session.user.id, planId, input);
   revalidatePlannerSurfaces();
-  return result;
-}
-
-// "Adjust the pace" (PLANNER-IMPLEMENTATION.md Pass 4) — re-times the
-// plan's existing pending tasks across the weeks left rather than
-// picking new content the way regeneratePlanAction does.
-export async function adjustPlanPaceAction(planId: string): Promise<GenerateResult> {
-  const session = await auth();
-  if (!session) throw new Error("Unauthorized");
-  const result = await adjustPlanPace(session.user.id, planId);
-  revalidatePlannerSurfaces();
-  return result;
 }
 
 // The topic picker's own option list — the shared flashcard_subject
@@ -90,13 +72,6 @@ export async function listPlanFolderOptionsAction(): Promise<FolderOption[]> {
   const session = await auth();
   if (!session) throw new Error("Unauthorized");
   return getFolderOptions();
-}
-
-export async function setPlanStatusAction(planId: string, status: PlanStatus): Promise<void> {
-  const session = await auth();
-  if (!session) throw new Error("Unauthorized");
-  await setPlanStatus(session.user.id, planId, status);
-  revalidatePlannerSurfaces();
 }
 
 export async function createTaskAction(input: CreateTaskInput): Promise<string> {
