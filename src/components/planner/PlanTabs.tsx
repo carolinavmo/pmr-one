@@ -112,7 +112,10 @@ export function PlanTabs({
       {tab === "overview" && (
         <div className="flex flex-col gap-6 lg:flex-row">
           <div className="flex-1">
-            <SectionHeading title={t("planCoverageHeading")} subtitle={t("planCoverageSubtitle")} />
+            <div className="flex items-center justify-between">
+              <SectionHeading title={t("planCoverageHeading")} subtitle={t("planCoverageSubtitle")} />
+              <AddTaskButton planId={planId} plans={plans} />
+            </div>
             {itemCoverage.length > 0 ? (
               <PlanItemCoverageList items={itemCoverage} tasks={allTasks} planId={planId} plans={plans} />
             ) : (
@@ -136,11 +139,14 @@ export function PlanTabs({
 
       {tab === "topics" && (
         <div>
-          <SectionHeading title={t("planCoverageHeading")} subtitle={t("planCoverageSubtitle")} />
+          <div className="flex items-center justify-between">
+            <SectionHeading title={t("planCoverageHeading")} subtitle={t("planCoverageSubtitle")} />
+            <AddTaskButton planId={planId} plans={plans} />
+          </div>
           {itemCoverage.length > 0 ? (
-            <PlanItemCoverageList items={itemCoverage} tasks={allTasks} planId={planId} plans={plans} />
+            <PlanItemCoverageList items={itemCoverage} tasks={allTasks} planId={planId} plans={plans} groupByType />
           ) : (
-            <PlanCoverageList topics={topics} tasks={allTasks} planId={planId} plans={plans} />
+            <PlanCoverageList topics={topics} tasks={allTasks} planId={planId} plans={plans} groupByType />
           )}
         </div>
       )}

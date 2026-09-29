@@ -4,9 +4,14 @@ import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { ChevronDown } from "lucide-react";
 import { useRouter } from "@/i18n/navigation";
-import type { TopicCoverage, StartableTask, StudyPlan } from "@/lib/planner";
+import type { TopicCoverage, StartableTask, StudyPlan, TaskType } from "@/lib/planner";
 import { TaskRow } from "./TaskRow";
 import { AddTaskButton } from "./AddTaskButton";
+
+// Reading order for a topic's own task-type groups — matches the
+// generator's own read → flashcards → questions cycle, course/custom
+// tacked on after since neither is ever generator output.
+const TYPE_ORDER: TaskType[] = ["read", "flashcards", "questions", "course", "custom"];
 
 // PLANNER-SPEC.md rule 3, "Coverage beats completion" — 62% overall
 // can hide a topic that hasn't started; these bars are the point. A
@@ -22,7 +27,22 @@ import { AddTaskButton } from "./AddTaskButton";
 // TaskRow/AddTaskButton exactly as Schedule does, just pre-filtered to
 // this topic's task_id and pre-scoped so a task added from here is
 // attributed to it from the start.
-export function PlanCoverageList({ topics, tasks, planId, plans }: { topics: TopicCoverage[]; tasks: StartableTask[]; planId: string; plans: StudyPlan[] }) {
+export function PlanCoverageList({
+  topics,
+  tasks,
+  planId,
+  plans,
+  groupByType,
+}: {
+  topics: TopicCoverage[];
+  tasks: StartableTask[];
+  planId: string;
+  plans: StudyPlan[];
+  // The Topics tab's own request (direct feedback) — split a topic's
+  // tasks into read/flashcards/questions sections instead of one
+  // mixed list. Overview keeps the flat list.
+  groupByType?: boolean;
+}) {
   const t = useTranslations("studyPlanner");
   const router = useRouter();
   const [openId, setOpenId] = useState<string | null>(null);
@@ -30,6 +50,24 @@ export function PlanCoverageList({ topics, tasks, planId, plans }: { topics: Top
   if (topics.length === 0) {
     return <p className="rounded-xl border border-dashed border-border p-4 text-center font-ui text-sm text-secondary">{t("planNoTopicsYet")}</p>;
   }
+
+  const renderTask = (task: StartableTask) => (
+    <TaskRow
+      key={task.id}
+      id={task.id}
+      type={task.type}
+      title={task.title}
+      estimateLabel={t("estimateMinutes", { minutes: task.estimateMinutes })}
+      estimateMinutes={task.estimateMinutes}
+      scheduledFor={task.scheduledFor}
+      planId={task.planId}
+      plans={plans}
+      state={task.state}
+      startHref={task.startHref}
+      overdue={task.state !== "done" && task.originalDate !== null}
+      onDeleted={() => router.refresh()}
+    />
+  );
 
   return (
     <div className="flex flex-col gap-2">
@@ -59,24 +97,15 @@ export function PlanCoverageList({ topics, tasks, planId, plans }: { topics: Top
               </span>
             </button>
             {open && (
-              <div className="flex flex-col gap-2 border-t border-border p-3">
-                {topicTasks.map((task) => (
-                  <TaskRow
-                    key={task.id}
-                    id={task.id}
-                    type={task.type}
-                    title={task.title}
-                    estimateLabel={t("estimateMinutes", { minutes: task.estimateMinutes })}
-                    estimateMinutes={task.estimateMinutes}
-                    scheduledFor={task.scheduledFor}
-                    planId={task.planId}
-                    plans={plans}
-                    state={task.state}
-                    startHref={task.startHref}
-                    overdue={task.state !== "done" && task.originalDate !== null}
-                    onDeleted={() => router.refresh()}
-                  />
-                ))}
+              <div className="flex flex-col gap-3 border-t border-border p-3">
+                {groupByType
+                  ? TYPE_ORDER.filter((type) => topicTasks.some((task) => task.type === type)).map((type) => (
+                      <div key={type} className="flex flex-col gap-2">
+                        <span className="font-ui text-[10px] font-black tracking-[1.2px] text-secondary uppercase">{t(`type_${type}`)}</span>
+                        {topicTasks.filter((task) => task.type === type).map(renderTask)}
+                      </div>
+                    ))
+                  : topicTasks.map(renderTask)}
                 {topicTasks.length === 0 && <p className="py-1 text-center font-ui text-xs text-secondary">{t("planNoTasksYet")}</p>}
                 <div className="flex justify-end">
                   <AddTaskButton planId={planId} plans={plans} initialTopicId={topic.id} compact />

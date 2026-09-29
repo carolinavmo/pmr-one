@@ -4,9 +4,14 @@ import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { ChevronDown } from "lucide-react";
 import { useRouter } from "@/i18n/navigation";
-import type { PlanItemCoverage, StartableTask, StudyPlan } from "@/lib/planner";
+import type { PlanItemCoverage, StartableTask, StudyPlan, TaskType } from "@/lib/planner";
 import { TaskRow } from "./TaskRow";
 import { AddTaskButton } from "./AddTaskButton";
+
+// Reading order for an item's own task-type groups — matches the v2
+// generator's own read → flashcards cycle within a folder; a
+// page/deck/question_set plan_item only ever has one type anyway.
+const TYPE_ORDER: TaskType[] = ["read", "flashcards", "questions", "course", "custom"];
 
 // The ordered-content model's own PlanCoverageList — same "coverage
 // beats completion" bars, keyed by plan_item instead of the legacy
@@ -20,11 +25,16 @@ export function PlanItemCoverageList({
   tasks,
   planId,
   plans,
+  groupByType,
 }: {
   items: PlanItemCoverage[];
   tasks: StartableTask[];
   planId: string;
   plans: StudyPlan[];
+  // The Topics tab's own request (direct feedback) — split an item's
+  // tasks into read/flashcards/questions sections instead of one
+  // mixed list. Overview keeps the flat list.
+  groupByType?: boolean;
 }) {
   const t = useTranslations("studyPlanner");
   const router = useRouter();
@@ -33,6 +43,24 @@ export function PlanItemCoverageList({
   if (items.length === 0) {
     return <p className="rounded-xl border border-dashed border-border p-4 text-center font-ui text-sm text-secondary">{t("planNoTopicsYet")}</p>;
   }
+
+  const renderTask = (task: StartableTask) => (
+    <TaskRow
+      key={task.id}
+      id={task.id}
+      type={task.type}
+      title={task.title}
+      estimateLabel={t("estimateMinutes", { minutes: task.estimateMinutes })}
+      estimateMinutes={task.estimateMinutes}
+      scheduledFor={task.scheduledFor}
+      planId={task.planId}
+      plans={plans}
+      state={task.state}
+      startHref={task.startHref}
+      overdue={task.state !== "done" && task.originalDate !== null}
+      onDeleted={() => router.refresh()}
+    />
+  );
 
   return (
     <div className="flex flex-col gap-2">
@@ -65,24 +93,15 @@ export function PlanItemCoverageList({
               </span>
             </button>
             {open && (
-              <div className="flex flex-col gap-2 border-t border-border p-3">
-                {itemTasks.map((task) => (
-                  <TaskRow
-                    key={task.id}
-                    id={task.id}
-                    type={task.type}
-                    title={task.title}
-                    estimateLabel={t("estimateMinutes", { minutes: task.estimateMinutes })}
-                    estimateMinutes={task.estimateMinutes}
-                    scheduledFor={task.scheduledFor}
-                    planId={task.planId}
-                    plans={plans}
-                    state={task.state}
-                    startHref={task.startHref}
-                    overdue={task.state !== "done" && task.originalDate !== null}
-                    onDeleted={() => router.refresh()}
-                  />
-                ))}
+              <div className="flex flex-col gap-3 border-t border-border p-3">
+                {groupByType
+                  ? TYPE_ORDER.filter((type) => itemTasks.some((task) => task.type === type)).map((type) => (
+                      <div key={type} className="flex flex-col gap-2">
+                        <span className="font-ui text-[10px] font-black tracking-[1.2px] text-secondary uppercase">{t(`type_${type}`)}</span>
+                        {itemTasks.filter((task) => task.type === type).map(renderTask)}
+                      </div>
+                    ))
+                  : itemTasks.map(renderTask)}
                 {itemTasks.length === 0 && <p className="py-1 text-center font-ui text-xs text-secondary">{t("planNoTasksYet")}</p>}
                 <div className="flex justify-end">
                   <AddTaskButton planId={planId} plans={plans} initialPlanItemId={item.id} compact />
