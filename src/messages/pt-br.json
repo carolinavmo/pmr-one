@@ -472,6 +472,7 @@
     "planMetricProjectedFinish": "conclusão prevista",
     "planMetricNoData": "—",
     "planNoTopicsYet": "Ainda sem tópicos.",
+    "planUncategorizedTasks": "Sem tópico associado",
     "planTopicTaskCount": "{count, plural, one {# tarefa} other {# tarefas}}",
     "planTopicNoContent": "ainda sem conteúdo",
     "planTopicNotStarted": "não iniciado",
