@@ -8,6 +8,7 @@ import {
   getPlanById,
   getPlans,
   getPlanTopics,
+  getPlanItems,
   getTasksInRange,
   attachStartHrefs,
   getPlanStats,
@@ -62,13 +63,14 @@ export default async function StudyPlanPage({ params }: PlanPageProps) {
   const plan = await getPlanById(userId, planId);
   if (!plan) notFound();
 
-  const [stats, topicCoverage, weeks, pendingTasksRaw, plans, planTopics] = await Promise.all([
+  const [stats, topicCoverage, weeks, pendingTasksRaw, plans, planTopics, planItems] = await Promise.all([
     getPlanStats(plan, today),
     getPlanTopicCoverage(planId),
     getPlanWeeks(userId, planId, addDays(today, -56), addDays(today, 56)),
     getTasksInRange(userId, addDays(today, -730), addDays(today, 730)),
     getPlans(userId, "active"),
     getPlanTopics(planId),
+    getPlanItems(planId),
   ]);
   const relevant = pendingTasksRaw.filter((task) => task.planId === planId && task.state === "pending").slice(0, 60);
   const tasks = await attachStartHrefs(relevant);
@@ -91,10 +93,14 @@ export default async function StudyPlanPage({ params }: PlanPageProps) {
     kind: plan.kind,
     colourKey: plan.colourKey,
     targetDate: plan.targetDate,
+    mode: plan.mode,
+    orderMode: plan.orderMode,
+    weeklyTarget: plan.weeklyTarget,
     studyDays: plan.studyDays,
     sessionMinutes: plan.sessionMinutes,
     maxTasksPerDay: plan.maxTasksPerDay,
     topics: planTopics.map((topic) => ({ topicRef: topic.topicRef, label: topic.label, weight: topic.weight })),
+    items: planItems.map((item) => ({ kind: item.kind, refId: item.refId })),
   };
 
   return (
@@ -120,7 +126,7 @@ export default async function StudyPlanPage({ params }: PlanPageProps) {
           <p className="mt-1 font-ui text-sm font-bold text-secondary">
             {plan.targetDate ? t("planCardDeadline", { date: plan.targetDate }) : t(`planKind_${plan.kind}`)}
             {weeksLeft !== null && ` · ${t("planWeeksLeft", { count: weeksLeft })}`}
-            {` · ${t("planBuiltFromTopics", { count: topicCoverage.length })}`}
+            {` · ${planItems.length > 0 ? t("planBuiltFromFolders", { count: planItems.length }) : t("planBuiltFromTopics", { count: topicCoverage.length })}`}
           </p>
           {plan.status === "active" && (
             <span

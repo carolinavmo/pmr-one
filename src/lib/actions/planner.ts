@@ -15,6 +15,7 @@ import {
   searchTaskTargets,
   generateTasksForPlan,
   adjustPlanPace,
+  getFolderOptions,
   type CreatePlanInput,
   type UpdatePlanInput,
   type CreateTaskInput,
@@ -24,6 +25,7 @@ import {
   type TaskType,
   type TaskTargetOption,
   type GenerateResult,
+  type FolderOption,
 } from "@/lib/planner";
 
 export async function createPlanAction(input: CreatePlanInput): Promise<{ id: string; generated: GenerateResult }> {
@@ -79,6 +81,15 @@ export async function listPlanTopicOptionsAction(): Promise<{ id: string; name: 
   if (!session) throw new Error("Unauthorized");
   const subjects = await getSubjects();
   return subjects.map((s) => ({ id: s.id, name: s.name }));
+}
+
+// The v2 Content picker's own option list — see getFolderOptions's
+// own comment for why this is knowledge-graph topics, not the legacy
+// picker's flashcard_subject rows above.
+export async function listPlanFolderOptionsAction(): Promise<FolderOption[]> {
+  const session = await auth();
+  if (!session) throw new Error("Unauthorized");
+  return getFolderOptions();
 }
 
 export async function setPlanStatusAction(planId: string, status: PlanStatus): Promise<void> {

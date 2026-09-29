@@ -4,8 +4,8 @@ import { useEffect, useState, useTransition } from "react";
 import { useTranslations } from "next-intl";
 import { X, Check } from "lucide-react";
 import { useRouter } from "@/i18n/navigation";
-import { createPlanAction, updatePlanAction, listPlanTopicOptionsAction } from "@/lib/actions/planner";
-import type { PlanKind, PlanTopicInput } from "@/lib/planner";
+import { createPlanAction, updatePlanAction, listPlanTopicOptionsAction, listPlanFolderOptionsAction } from "@/lib/actions/planner";
+import type { PlanKind, PlanTopicInput, PlanMode, OrderMode, PlanItemInput, FolderOption } from "@/lib/planner";
 import { QBANK_FOLDER_COLOR_ORDER, QBANK_FOLDER_COLOR_ACCENT, type QbankFolderColor } from "@/lib/qbank-folder-colors";
 import { Button } from "@/components/ui/Button";
 
@@ -13,6 +13,8 @@ const KINDS: PlanKind[] = ["exam", "rotation", "routine", "custom"];
 // 1=Mon…7=Sun, matching study_plan.study_days.
 const DAY_NUMBERS = [1, 2, 3, 4, 5, 6, 7];
 const DEFAULT_TOPIC_WEIGHT = 5;
+const MODES: PlanMode[] = ["scheduled", "flexible", "target"];
+const ORDER_MODES: OrderMode[] = ["interleave", "one_topic", "as_listed"];
 
 export interface EditablePlan {
   id: string;
@@ -20,10 +22,14 @@ export interface EditablePlan {
   kind: PlanKind;
   colourKey: QbankFolderColor;
   targetDate: string | null;
+  mode: PlanMode;
+  orderMode: OrderMode;
   studyDays: number[];
   sessionMinutes: number;
   maxTasksPerDay: number;
+  weeklyTarget: number | null;
   topics: PlanTopicInput[];
+  items: PlanItemInput[];
 }
 
 // A plan's own fields, same plain-form shape as NewQuestionSetDrawer,
@@ -52,16 +58,31 @@ export function NewPlanDrawer({
 }) {
   const t = useTranslations("studyPlanner");
   const router = useRouter();
+  // A plan already carrying legacy weighted topics (and no ordered
+  // items) keeps editing through the old picker below — its content
+  // isn't expressible in the new model without silently reweighting
+  // it, and regenerating already has its own explicit action. Every
+  // other case (a brand new plan, or a plan already on the ordered
+  // model) gets the new Content picker.
+  const usesLegacyTopics = !!editPlan && editPlan.topics.length > 0 && editPlan.items.length === 0;
+
   const [name, setName] = useState(editPlan?.name ?? "");
   const [kind, setKind] = useState<PlanKind>(editPlan?.kind ?? initialKind ?? "exam");
   const [colourKey, setColourKey] = useState<QbankFolderColor>(editPlan?.colourKey ?? "peach");
   const [targetDate, setTargetDate] = useState(editPlan?.targetDate ?? "");
+  const [mode, setMode] = useState<PlanMode>(editPlan?.mode ?? (initialKind === "routine" ? "target" : "scheduled"));
+  const [orderMode, setOrderMode] = useState<OrderMode>(editPlan?.orderMode ?? "interleave");
+  const [weeklyTarget, setWeeklyTarget] = useState(editPlan?.weeklyTarget ?? 10);
   const [studyDays, setStudyDays] = useState<number[]>(editPlan?.studyDays ?? [1, 2, 3, 4, 5]);
   const [sessionMinutes, setSessionMinutes] = useState(editPlan?.sessionMinutes ?? 30);
   const [maxTasksPerDay, setMaxTasksPerDay] = useState(editPlan?.maxTasksPerDay ?? 3);
   const [topicOptions, setTopicOptions] = useState<{ id: string; name: string }[]>([]);
   const [topicWeights, setTopicWeights] = useState<Record<string, number>>(
     editPlan ? Object.fromEntries(editPlan.topics.map((topic) => [topic.topicRef, topic.weight])) : {}
+  );
+  const [folderOptions, setFolderOptions] = useState<FolderOption[]>([]);
+  const [selectedFolderIds, setSelectedFolderIds] = useState<Set<string>>(
+    new Set((editPlan?.items ?? []).filter((item) => item.kind === "folder").map((item) => item.refId))
   );
   const [isPending, startTransition] = useTransition();
 
@@ -74,27 +95,40 @@ export function NewPlanDrawer({
         setKind(editPlan.kind);
         setColourKey(editPlan.colourKey);
         setTargetDate(editPlan.targetDate ?? "");
+        setMode(editPlan.mode);
+        setOrderMode(editPlan.orderMode);
+        setWeeklyTarget(editPlan.weeklyTarget ?? 10);
         setStudyDays(editPlan.studyDays);
         setSessionMinutes(editPlan.sessionMinutes);
         setMaxTasksPerDay(editPlan.maxTasksPerDay);
         setTopicWeights(Object.fromEntries(editPlan.topics.map((topic) => [topic.topicRef, topic.weight])));
+        setSelectedFolderIds(new Set(editPlan.items.filter((item) => item.kind === "folder").map((item) => item.refId)));
       } else {
         setName("");
         setKind(initialKind ?? "exam");
         setColourKey("peach");
         setTargetDate("");
+        setMode(initialKind === "routine" ? "target" : "scheduled");
+        setOrderMode("interleave");
+        setWeeklyTarget(10);
         setStudyDays([1, 2, 3, 4, 5]);
         setSessionMinutes(30);
         setMaxTasksPerDay(3);
         setTopicWeights({});
+        setSelectedFolderIds(new Set());
       }
     }
   }
 
   useEffect(() => {
-    if (!open || topicOptions.length > 0) return;
+    if (!open || !usesLegacyTopics || topicOptions.length > 0) return;
     listPlanTopicOptionsAction().then(setTopicOptions);
-  }, [open, topicOptions.length]);
+  }, [open, usesLegacyTopics, topicOptions.length]);
+
+  useEffect(() => {
+    if (!open || usesLegacyTopics || folderOptions.length > 0) return;
+    listPlanFolderOptionsAction().then(setFolderOptions);
+  }, [open, usesLegacyTopics, folderOptions.length]);
 
   useEffect(() => {
     if (!open) return;
@@ -118,53 +152,55 @@ export function NewPlanDrawer({
     });
   }
 
+  function toggleFolder(id: string) {
+    setSelectedFolderIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  }
+
   function handleSubmit() {
     if (!name.trim() || studyDays.length === 0) return;
     startTransition(async () => {
-      const topics = Object.entries(topicWeights).map(([topicRef, weight]) => ({
-        topicRef,
-        // Falls back to the label edit mode already knows (from the
-        // plan's own current topics) before the raw id, in case
-        // topicOptions hasn't finished loading yet.
-        label: topicOptions.find((o) => o.id === topicRef)?.name ?? editPlan?.topics.find((t) => t.topicRef === topicRef)?.label ?? topicRef,
-        weight,
-      }));
-      // This drawer only ever builds the legacy weighted-topic shape
-      // (the ordered-content picker, Order control and Mode selector
-      // are a deferred rewrite — PLANNER-IMPLEMENTATION.md Pass 6) —
-      // every plan it creates or edits is deliberately "scheduled" /
-      // "interleave" with no weekly target, matching this feature's
-      // behavior before Study Planner v2's content model existed.
+      const shared = {
+        name: name.trim(),
+        kind,
+        colourKey,
+        targetDate: mode === "scheduled" ? targetDate || null : null,
+        mode,
+        orderMode,
+        studyDays,
+        sessionMinutes,
+        maxTasksPerDay,
+        weeklyTarget: mode === "target" ? weeklyTarget : null,
+      };
+      // A legacy-topics edit keeps building the old weighted shape —
+      // updatePlan only takes the ordered-content path when `items`
+      // is actually passed (see its own comment), so leaving it out
+      // here is what keeps this plan's real content untouched.
+      const payload = usesLegacyTopics
+        ? {
+            ...shared,
+            topics: Object.entries(topicWeights).map(([topicRef, weight]) => ({
+              topicRef,
+              label: topicOptions.find((o) => o.id === topicRef)?.name ?? editPlan?.topics.find((t) => t.topicRef === topicRef)?.label ?? topicRef,
+              weight,
+            })),
+          }
+        : {
+            ...shared,
+            topics: [],
+            items: [...selectedFolderIds].map((refId): PlanItemInput => ({ kind: "folder", refId })),
+          };
+
       if (editPlan) {
-        await updatePlanAction(editPlan.id, {
-          name: name.trim(),
-          kind,
-          colourKey,
-          targetDate: targetDate || null,
-          mode: "scheduled",
-          orderMode: "interleave",
-          studyDays,
-          sessionMinutes,
-          maxTasksPerDay,
-          weeklyTarget: null,
-          topics,
-        });
+        await updatePlanAction(editPlan.id, payload);
         onClose();
         router.refresh();
       } else {
-        const { id } = await createPlanAction({
-          name: name.trim(),
-          kind,
-          colourKey,
-          targetDate: targetDate || null,
-          mode: "scheduled",
-          orderMode: "interleave",
-          studyDays,
-          sessionMinutes,
-          maxTasksPerDay,
-          weeklyTarget: null,
-          topics,
-        });
+        const { id } = await createPlanAction(payload);
         onClose();
         router.push(`/study-planner/plan/${id}`);
       }
@@ -234,13 +270,47 @@ export function NewPlanDrawer({
           </div>
         </div>
 
-        {kind !== "routine" && (
+        {!usesLegacyTopics && (
+          <div className="flex flex-col gap-1.5">
+            <span className="font-ui text-xs text-secondary">{t("planModeLabel")}</span>
+            <div className="grid grid-cols-3 gap-1.5">
+              {MODES.map((m) => (
+                <button
+                  key={m}
+                  type="button"
+                  onClick={() => setMode(m)}
+                  className={`rounded-md border px-2 py-2 font-ui text-xs font-bold transition-colors duration-base ${
+                    mode === m ? "border-accent bg-accent/10 text-accent" : "border-border text-secondary hover:bg-border/40"
+                  }`}
+                >
+                  {t(`planMode_${m}`)}
+                </button>
+              ))}
+            </div>
+            <span className="font-ui text-[11px] text-secondary">{t(`planModeHint_${mode}`)}</span>
+          </div>
+        )}
+
+        {(usesLegacyTopics ? kind !== "routine" : mode === "scheduled") && (
           <label className="flex flex-col gap-1.5">
             <span className="font-ui text-xs text-secondary">{t("planTargetDateLabel")}</span>
             <input
               type="date"
               value={targetDate}
               onChange={(e) => setTargetDate(e.target.value)}
+              className="rounded-md border border-border bg-surface-raised px-3 py-2 font-ui text-sm text-primary outline-none focus:border-accent"
+            />
+          </label>
+        )}
+
+        {!usesLegacyTopics && mode === "target" && (
+          <label className="flex flex-col gap-1.5">
+            <span className="font-ui text-xs text-secondary">{t("planWeeklyTargetLabel")}</span>
+            <input
+              type="number"
+              min={1}
+              value={weeklyTarget}
+              onChange={(e) => setWeeklyTarget(Math.max(1, Number(e.target.value)))}
               className="rounded-md border border-border bg-surface-raised px-3 py-2 font-ui text-sm text-primary outline-none focus:border-accent"
             />
           </label>
@@ -264,42 +334,97 @@ export function NewPlanDrawer({
           </div>
         </div>
 
-        <div className="flex flex-col gap-1.5">
-          <span className="font-ui text-xs text-secondary">{t("planTopicsLabel")}</span>
-          <div className="flex flex-col gap-1 rounded-md border border-border p-2">
-            {topicOptions.length === 0 ? (
-              <p className="px-1 py-1 font-ui text-xs text-secondary">{t("taskSearching")}</p>
-            ) : (
-              topicOptions.map((topic) => {
-                const checked = topic.id in topicWeights;
-                return (
-                  <div key={topic.id} className="flex items-center gap-2 rounded px-1 py-1 hover:bg-border/20">
-                    <button
-                      type="button"
-                      onClick={() => toggleTopic(topic.id)}
-                      aria-pressed={checked}
-                      className={`flex size-5 shrink-0 items-center justify-center rounded-[6px] border-2 ${checked ? "border-trust bg-trust" : "border-border"}`}
-                    >
-                      {checked && <Check className="size-3 text-white" aria-hidden="true" strokeWidth={3} />}
-                    </button>
-                    <span className="flex-1 truncate font-ui text-sm text-primary">{topic.name}</span>
-                    {checked && (
-                      <input
-                        type="number"
-                        min={1}
-                        max={20}
-                        value={topicWeights[topic.id]}
-                        onChange={(e) => setTopicWeights((prev) => ({ ...prev, [topic.id]: Math.max(1, Number(e.target.value)) }))}
-                        className="w-14 shrink-0 rounded border border-border bg-surface-raised px-1.5 py-1 text-center font-ui text-xs text-primary outline-none focus:border-accent"
-                      />
-                    )}
-                  </div>
-                );
-              })
-            )}
+        {usesLegacyTopics ? (
+          <div className="flex flex-col gap-1.5">
+            <span className="font-ui text-xs text-secondary">{t("planTopicsLabel")}</span>
+            <div className="flex flex-col gap-1 rounded-md border border-border p-2">
+              {topicOptions.length === 0 ? (
+                <p className="px-1 py-1 font-ui text-xs text-secondary">{t("taskSearching")}</p>
+              ) : (
+                topicOptions.map((topic) => {
+                  const checked = topic.id in topicWeights;
+                  return (
+                    <div key={topic.id} className="flex items-center gap-2 rounded px-1 py-1 hover:bg-border/20">
+                      <button
+                        type="button"
+                        onClick={() => toggleTopic(topic.id)}
+                        aria-pressed={checked}
+                        className={`flex size-5 shrink-0 items-center justify-center rounded-[6px] border-2 ${checked ? "border-trust bg-trust" : "border-border"}`}
+                      >
+                        {checked && <Check className="size-3 text-white" aria-hidden="true" strokeWidth={3} />}
+                      </button>
+                      <span className="flex-1 truncate font-ui text-sm text-primary">{topic.name}</span>
+                      {checked && (
+                        <input
+                          type="number"
+                          min={1}
+                          max={20}
+                          value={topicWeights[topic.id]}
+                          onChange={(e) => setTopicWeights((prev) => ({ ...prev, [topic.id]: Math.max(1, Number(e.target.value)) }))}
+                          className="w-14 shrink-0 rounded border border-border bg-surface-raised px-1.5 py-1 text-center font-ui text-xs text-primary outline-none focus:border-accent"
+                        />
+                      )}
+                    </div>
+                  );
+                })
+              )}
+            </div>
+            <span className="font-ui text-[11px] text-secondary">{t("planTopicsHint")}</span>
           </div>
-          <span className="font-ui text-[11px] text-secondary">{t("planTopicsHint")}</span>
-        </div>
+        ) : (
+          <>
+            <div className="flex flex-col gap-1.5">
+              <span className="font-ui text-xs text-secondary">{t("planContentLabel")}</span>
+              <div className="flex flex-col gap-1 rounded-md border border-border p-2">
+                {folderOptions.length === 0 ? (
+                  <p className="px-1 py-1 font-ui text-xs text-secondary">{t("taskSearching")}</p>
+                ) : (
+                  folderOptions.map((folder) => {
+                    const checked = selectedFolderIds.has(folder.id);
+                    return (
+                      <button
+                        key={folder.id}
+                        type="button"
+                        onClick={() => toggleFolder(folder.id)}
+                        aria-pressed={checked}
+                        className="flex items-center gap-2 rounded px-1 py-1 text-left hover:bg-border/20"
+                      >
+                        <span
+                          className={`flex size-5 shrink-0 items-center justify-center rounded-[6px] border-2 ${checked ? "border-trust bg-trust" : "border-border"}`}
+                        >
+                          {checked && <Check className="size-3 text-white" aria-hidden="true" strokeWidth={3} />}
+                        </span>
+                        <span className="flex-1 truncate font-ui text-sm text-primary">{folder.name}</span>
+                        <span className="shrink-0 font-ui text-[11px] text-secondary">
+                          {t("planFolderContentCount", { diseases: folder.diseaseCount, decks: folder.deckCount })}
+                        </span>
+                      </button>
+                    );
+                  })
+                )}
+              </div>
+              <span className="font-ui text-[11px] text-secondary">{t("planContentHint")}</span>
+            </div>
+
+            <div className="flex flex-col gap-1.5">
+              <span className="font-ui text-xs text-secondary">{t("planOrderLabel")}</span>
+              <div className="grid grid-cols-3 gap-1.5">
+                {ORDER_MODES.map((o) => (
+                  <button
+                    key={o}
+                    type="button"
+                    onClick={() => setOrderMode(o)}
+                    className={`rounded-md border px-2 py-2 font-ui text-xs font-bold transition-colors duration-base ${
+                      orderMode === o ? "border-accent bg-accent/10 text-accent" : "border-border text-secondary hover:bg-border/40"
+                    }`}
+                  >
+                    {t(`planOrder_${o}`)}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </>
+        )}
 
         <div className="flex gap-3">
           <label className="flex flex-1 flex-col gap-1.5">

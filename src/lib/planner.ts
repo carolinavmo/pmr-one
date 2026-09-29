@@ -1067,6 +1067,38 @@ export interface PlanItem extends PlanItemInput {
   id: string;
 }
 
+export interface FolderOption {
+  id: string;
+  name: string;
+  diseaseCount: number;
+  deckCount: number;
+}
+
+// The Content picker's own option list — every topic that resolves to
+// real content (pickReadTargetsForTopic's own join: a published
+// disease directly filed under it), each with a disease/deck count so
+// the picker can show what a folder actually contains before it's
+// added, same spirit as the legacy topic picker's own preview. Flat,
+// not the tree topics.ts builds for the Explore sidebar — a plan's
+// content list doesn't nest, so there's nothing for hierarchy to buy
+// here, and it keeps this independent of that file's separator/tree
+// concerns.
+export async function getFolderOptions(): Promise<FolderOption[]> {
+  const { rows } = await pool.query<{ id: string; name: string; disease_count: string; deck_count: string }>(
+    `SELECT t.id, t.name,
+       COUNT(DISTINCT dis.id)::int AS disease_count,
+       COUNT(DISTINCT fd.id)::int AS deck_count
+     FROM topic t
+     LEFT JOIN disease dis ON dis.topic_id = t.id AND dis.status = 'published'
+     LEFT JOIN flashcard_deck fd ON fd.source_disease_id = dis.id AND fd.status = 'published'
+     WHERE t.kind = 'topic'
+     GROUP BY t.id, t.name
+     HAVING COUNT(DISTINCT dis.id) > 0
+     ORDER BY t.position, t.name`
+  );
+  return rows.map((r) => ({ id: r.id, name: r.name, diseaseCount: Number(r.disease_count), deckCount: Number(r.deck_count) }));
+}
+
 export async function getPlanItems(planId: string): Promise<PlanItem[]> {
   const { rows } = await pool.query<{ id: string; kind: PlanItemKind; ref_id: string }>(
     `SELECT id, kind, ref_id FROM study_plan_item WHERE plan_id = $1 ORDER BY position`,

@@ -10,6 +10,7 @@ import {
   getWeekSummary,
   getActiveStudyDayNumbers,
   getUpcomingTasks,
+  getQueueTasks,
   getHoursThisWeek,
   getWeekProgress,
   attachStartHrefs,
@@ -18,6 +19,7 @@ import { PlannerTodayPanel } from "@/components/planner/PlannerTodayPanel";
 import { WeekStrip } from "@/components/planner/WeekStrip";
 import { PlanCardsGrid } from "@/components/planner/PlanCardsGrid";
 import { ComingUpList } from "@/components/planner/ComingUpList";
+import { UpNextList } from "@/components/planner/UpNextList";
 import { PlannerEmptyState } from "@/components/planner/PlannerEmptyState";
 import { StudyPlannerMockup } from "@/components/home/FeatureMockups";
 
@@ -115,21 +117,26 @@ export default async function StudyPlannerPage() {
   // to today before anything below counts it.
   await rollForwardMissedTasks(userId);
 
-  const [railStats, activePlans, allPlans, todayTasksRaw, studyDayNumbers, upcomingTasksRaw, hoursThisWeek, weekProgress] = await Promise.all([
+  const [railStats, activePlans, allPlans, todayTasksRaw, studyDayNumbers, upcomingTasksRaw, queueTasksRaw, hoursThisWeek, weekProgress] = await Promise.all([
     getPlannerRailStats(userId, today, week.to),
     getPlans(userId, "active"),
     getPlans(userId, "all"),
     getTasksForDate(userId, today),
     getActiveStudyDayNumbers(userId),
     getUpcomingTasks(userId, today, 7, 6),
+    getQueueTasks(userId, 20),
     getHoursThisWeek(userId, week.from, week.to),
     getWeekProgress(userId, week.from, week.to),
   ]);
   const weekDays = await getWeekSummary(userId, week.from, week.to, studyDayNumbers);
 
-  const [todayTasks, upcomingTasks] = await Promise.all([attachStartHrefs(todayTasksRaw), attachStartHrefs(upcomingTasksRaw)]);
+  const [todayTasks, upcomingTasks, queueTasks] = await Promise.all([
+    attachStartHrefs(todayTasksRaw),
+    attachStartHrefs(upcomingTasksRaw),
+    attachStartHrefs(queueTasksRaw),
+  ]);
 
-  const isEmpty = allPlans.length === 0 && todayTasks.length === 0 && upcomingTasks.length === 0 && railStats.doneCount === 0;
+  const isEmpty = allPlans.length === 0 && todayTasks.length === 0 && upcomingTasks.length === 0 && queueTasks.length === 0 && railStats.doneCount === 0;
 
   if (isEmpty) {
     return (
@@ -153,6 +160,16 @@ export default async function StudyPlannerPage() {
       </div>
 
       <PlannerTodayPanel tasks={todayTasks} plans={activePlans} />
+
+      {queueTasks.length > 0 && (
+        <>
+          <div className="flex items-baseline gap-2.5">
+            <h2 className="font-heading text-lg font-black text-navy">{t("upNextHeading")}</h2>
+            <span className="font-ui text-xs font-bold text-secondary">{t("upNextSubtitle", { count: queueTasks.length })}</span>
+          </div>
+          <UpNextList tasks={queueTasks} plans={activePlans} />
+        </>
+      )}
 
       <div id="week" className="flex scroll-mt-24 items-baseline gap-2.5">
         <h2 className="font-heading text-lg font-black text-navy">{t("weekHeading")}</h2>
