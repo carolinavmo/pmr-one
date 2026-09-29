@@ -20,7 +20,11 @@ export interface EditableTask {
   type: TaskType;
   title: string;
   estimateMinutes: number;
-  scheduledFor: string;
+  // Null for a flexible/target-mode plan's queued task. The drawer
+  // still edits it as if it had today's date — moving a queue task
+  // onto a real day here is a v2-editing concern the Content/Schedule
+  // tab rewrite (deferred) owns, not this general-purpose drawer.
+  scheduledFor: string | null;
   planId: string | null;
 }
 
@@ -86,7 +90,7 @@ export function NewTaskDrawer({
         setType(editTask.type);
         setCustomTitle(editTask.title);
         setCustomMinutes(editTask.estimateMinutes);
-        setScheduledFor(editTask.scheduledFor);
+        setScheduledFor(editTask.scheduledFor ?? todayIso());
         setPlanId(editTask.planId);
       } else {
         setType("custom");

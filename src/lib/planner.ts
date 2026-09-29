@@ -15,6 +15,17 @@ export type PlanStatus = "active" | "paused" | "done";
 export type TaskType = "read" | "flashcards" | "questions" | "course" | "custom";
 export type TaskState = "pending" | "done" | "skipped";
 
+// "A plan is an ordered list of library content plus how it runs"
+// (PLANNER-SPEC.md, "Share, flexible plans, and completion"). `mode`
+// replaces the old single always-scheduled assumption:
+//   scheduled — tasks land on specific days; a missed one goes overdue
+//   flexible  — no dates at all, an ordered queue you pull from
+//   target    — a weekly amount, no day assigned either
+// `orderMode` replaces weighted topics — see generateTasksForPlanV2's
+// own comment for how each option is interpreted.
+export type PlanMode = "scheduled" | "flexible" | "target";
+export type OrderMode = "interleave" | "one_topic" | "as_listed";
+
 export interface StudyPlan {
   id: string;
   name: string;
@@ -22,9 +33,12 @@ export interface StudyPlan {
   colourKey: QbankFolderColor;
   targetDate: string | null;
   status: PlanStatus;
+  mode: PlanMode;
+  orderMode: OrderMode;
   studyDays: number[];
   sessionMinutes: number;
   maxTasksPerDay: number;
+  weeklyTarget: number | null;
   tasksDone: number;
   tasksTotal: number;
 }
@@ -38,7 +52,10 @@ export interface PlannerTask {
   targetRef: string | null;
   title: string;
   estimateMinutes: number;
-  scheduledFor: string;
+  // Null means the task lives in a flexible/target plan's queue
+  // instead of on a calendar day — see PlanMode's own comment.
+  scheduledFor: string | null;
+  queuePosition: number | null;
   originalDate: string | null;
   state: TaskState;
   completedAt: string | null;
@@ -53,7 +70,8 @@ function mapTaskRow(r: {
   target_ref: string | null;
   title: string;
   estimate_minutes: number;
-  scheduled_for: string;
+  scheduled_for: string | null;
+  queue_position: number | null;
   original_date: string | null;
   state: TaskState;
   completed_at: string | Date | null;
@@ -68,6 +86,7 @@ function mapTaskRow(r: {
     title: r.title,
     estimateMinutes: r.estimate_minutes,
     scheduledFor: r.scheduled_for,
+    queuePosition: r.queue_position,
     originalDate: r.original_date,
     state: r.state,
     completedAt: r.completed_at instanceof Date ? r.completed_at.toISOString() : r.completed_at,
@@ -77,10 +96,23 @@ function mapTaskRow(r: {
 const TASK_SELECT = `
   SELECT t.id, t.plan_id, p.name AS plan_name, p.colour_key AS plan_colour_key,
     t.type, t.target_ref, t.title, t.estimate_minutes, t.scheduled_for::text AS scheduled_for,
-    t.original_date::text AS original_date, t.state, t.completed_at
+    t.queue_position, t.original_date::text AS original_date, t.state, t.completed_at
   FROM study_plan_task t
   LEFT JOIN study_plan p ON p.id = t.plan_id
 `;
+
+// The queue for a flexible/target-mode plan — unscheduled pending
+// tasks in generated order, surfaced on Today as "Up next"
+// (PLANNER-SPEC.md). Scheduled-mode tasks never have a queue_position,
+// so this naturally only ever returns flexible/target content.
+export async function getQueueTasks(userId: string, limit: number): Promise<PlannerTask[]> {
+  const { rows } = await pool.query(
+    `${TASK_SELECT} WHERE t.user_id = $1 AND t.state = 'pending' AND t.scheduled_for IS NULL
+     ORDER BY t.queue_position LIMIT $2`,
+    [userId, limit]
+  );
+  return rows.map(mapTaskRow);
+}
 
 // Missed tasks march forward one day at a time rather than a real
 // nightly cron (no scheduler infra exists in this app — same "no
@@ -203,9 +235,13 @@ export async function getWeekSummary(userId: string, from: string, to: string, s
   const tasks = await getTasksInRange(userId, from, to);
   const byDate = new Map<string, PlannerTask[]>();
   for (const t of tasks) {
-    const list = byDate.get(t.scheduledFor) ?? [];
+    // getTasksInRange's own query is `scheduled_for BETWEEN`, which is
+    // never true for a NULL (queue) task — every row here is
+    // guaranteed to carry a real date.
+    const scheduledFor = t.scheduledFor!;
+    const list = byDate.get(scheduledFor) ?? [];
     list.push(t);
-    byDate.set(t.scheduledFor, list);
+    byDate.set(scheduledFor, list);
   }
   const days: WeekDaySummary[] = [];
   const cursor = new Date(`${from}T00:00:00Z`);
@@ -248,9 +284,12 @@ function mapPlanRow(r: {
   colour_key: QbankFolderColor;
   target_date: string | null;
   status: PlanStatus;
+  mode: PlanMode;
+  order_mode: OrderMode;
   study_days: number[];
   session_minutes: number;
   max_tasks_per_day: number;
+  weekly_target: number | null;
   tasks_done: string;
   tasks_total: string;
 }): StudyPlan {
@@ -261,22 +300,29 @@ function mapPlanRow(r: {
     colourKey: r.colour_key,
     targetDate: r.target_date,
     status: r.status,
+    mode: r.mode,
+    orderMode: r.order_mode,
     studyDays: r.study_days,
     sessionMinutes: r.session_minutes,
     maxTasksPerDay: r.max_tasks_per_day,
+    weeklyTarget: r.weekly_target,
     tasksDone: Number(r.tasks_done),
     tasksTotal: Number(r.tasks_total),
   };
 }
 
+const PLAN_SELECT = `
+  SELECT p.id, p.name, p.kind, p.colour_key, p.target_date::text AS target_date, p.status,
+    p.mode, p.order_mode, p.study_days, p.session_minutes, p.max_tasks_per_day, p.weekly_target,
+    COUNT(t.id) FILTER (WHERE t.state = 'done')::int AS tasks_done,
+    COUNT(t.id)::int AS tasks_total
+  FROM study_plan p
+  LEFT JOIN study_plan_task t ON t.plan_id = p.id
+`;
+
 export async function getPlans(userId: string, status: PlanStatus | "all" = "active"): Promise<StudyPlan[]> {
   const { rows } = await pool.query(
-    `SELECT p.id, p.name, p.kind, p.colour_key, p.target_date::text AS target_date, p.status,
-       p.study_days, p.session_minutes, p.max_tasks_per_day,
-       COUNT(t.id) FILTER (WHERE t.state = 'done')::int AS tasks_done,
-       COUNT(t.id)::int AS tasks_total
-     FROM study_plan p
-     LEFT JOIN study_plan_task t ON t.plan_id = p.id
+    `${PLAN_SELECT}
      WHERE p.user_id = $1 ${status === "all" ? "" : "AND p.status = $2"}
      GROUP BY p.id
      ORDER BY p.position, p.created_at`,
@@ -287,12 +333,7 @@ export async function getPlans(userId: string, status: PlanStatus | "all" = "act
 
 export async function getPlanById(userId: string, planId: string): Promise<StudyPlan | null> {
   const { rows } = await pool.query(
-    `SELECT p.id, p.name, p.kind, p.colour_key, p.target_date::text AS target_date, p.status,
-       p.study_days, p.session_minutes, p.max_tasks_per_day,
-       COUNT(t.id) FILTER (WHERE t.state = 'done')::int AS tasks_done,
-       COUNT(t.id)::int AS tasks_total
-     FROM study_plan p
-     LEFT JOIN study_plan_task t ON t.plan_id = p.id
+    `${PLAN_SELECT}
      WHERE p.user_id = $1 AND p.id = $2
      GROUP BY p.id`,
     [userId, planId]
@@ -305,28 +346,51 @@ export interface CreatePlanInput {
   kind: PlanKind;
   colourKey: QbankFolderColor;
   targetDate: string | null;
+  mode: PlanMode;
+  orderMode: OrderMode;
   studyDays: number[];
   sessionMinutes: number;
   maxTasksPerDay: number;
-  // PlanTopicInput is declared further down (the generator section) —
-  // fine for a type reference, TS interfaces aren't subject to
-  // declaration-order the way a const binding is.
+  weeklyTarget: number | null;
+  // PlanTopicInput/PlanItemInput are declared further down (the
+  // generator section) — fine for a type reference, TS interfaces
+  // aren't subject to declaration-order the way a const binding is.
+  // `topics` is the legacy weighted-subject shape (still accepted so
+  // existing callers/plans keep working); `items` is the new ordered
+  // library-content list. A plan is created with one or the other —
+  // generateTasksForPlan's own dispatcher picks the generator to run
+  // based on which one actually has rows.
   topics?: PlanTopicInput[];
+  items?: PlanItemInput[];
 }
 
-// Creating a plan with topics runs the generator immediately — "a
-// plan generates tasks" isn't a separate step the caller has to
+// Creating a plan with topics/items runs the generator immediately —
+// "a plan generates tasks" isn't a separate step the caller has to
 // remember (PLANNER-IMPLEMENTATION.md: "This is the feature"). A plan
-// with no target date (a weekly routine) or no topics still gets
+// with no target date (a weekly routine) or no content still gets
 // created; it just has nothing to schedule yet.
 export async function createPlan(userId: string, input: CreatePlanInput): Promise<{ id: string; generated: GenerateResult }> {
   const { rows } = await pool.query(
-    `INSERT INTO study_plan (user_id, name, kind, colour_key, target_date, study_days, session_minutes, max_tasks_per_day)
-     VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING id`,
-    [userId, input.name, input.kind, input.colourKey, input.targetDate, input.studyDays, input.sessionMinutes, input.maxTasksPerDay]
+    `INSERT INTO study_plan (user_id, name, kind, colour_key, target_date, mode, order_mode, study_days, session_minutes, max_tasks_per_day, weekly_target)
+     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) RETURNING id`,
+    [
+      userId,
+      input.name,
+      input.kind,
+      input.colourKey,
+      input.targetDate,
+      input.mode,
+      input.orderMode,
+      input.studyDays,
+      input.sessionMinutes,
+      input.maxTasksPerDay,
+      input.weeklyTarget,
+    ]
   );
   const id = rows[0].id;
-  if (input.topics && input.topics.length > 0) {
+  if (input.items && input.items.length > 0) {
+    await setPlanItems(id, input.items);
+  } else if (input.topics && input.topics.length > 0) {
     await setPlanTopics(id, input.topics);
   }
   const generated = await generateTasksForPlan(userId, id);
@@ -342,28 +406,50 @@ export interface UpdatePlanInput {
   kind: PlanKind;
   colourKey: QbankFolderColor;
   targetDate: string | null;
+  mode: PlanMode;
+  orderMode: OrderMode;
   studyDays: number[];
   sessionMinutes: number;
   maxTasksPerDay: number;
+  weeklyTarget: number | null;
   topics: PlanTopicInput[];
+  items?: PlanItemInput[];
 }
 
 // "Any plan can be reshaped" (PLANNER-SPEC.md rule 4) — the edit path
 // setPlanTopics's own comment said Pass 2 didn't build yet. Deliberately
 // does NOT touch study_plan_task: editing study days, the target date
-// or topic weights can leave the existing schedule out of step with the
-// new settings, but that's what Regenerate/Adjust the pace are for —
-// two explicit, separately-understood actions already on this page,
-// not something an edit should silently trigger (a name/colour-only
-// edit has no business deleting and re-picking every pending task).
+// or content can leave the existing schedule out of step with the new
+// settings, but that's what Regenerate/Adjust the pace are for — two
+// explicit, separately-understood actions already on this page, not
+// something an edit should silently trigger (a name/colour-only edit
+// has no business deleting and re-picking every pending task).
 export async function updatePlan(userId: string, planId: string, input: UpdatePlanInput): Promise<void> {
   await pool.query(
     `UPDATE study_plan
-     SET name = $3, kind = $4, colour_key = $5, target_date = $6, study_days = $7, session_minutes = $8, max_tasks_per_day = $9, updated_at = now()
+     SET name = $3, kind = $4, colour_key = $5, target_date = $6, mode = $7, order_mode = $8,
+         study_days = $9, session_minutes = $10, max_tasks_per_day = $11, weekly_target = $12, updated_at = now()
      WHERE id = $1 AND user_id = $2`,
-    [planId, userId, input.name, input.kind, input.colourKey, input.targetDate, input.studyDays, input.sessionMinutes, input.maxTasksPerDay]
+    [
+      planId,
+      userId,
+      input.name,
+      input.kind,
+      input.colourKey,
+      input.targetDate,
+      input.mode,
+      input.orderMode,
+      input.studyDays,
+      input.sessionMinutes,
+      input.maxTasksPerDay,
+      input.weeklyTarget,
+    ]
   );
-  await updatePlanTopics(planId, input.topics);
+  if (input.items) {
+    await updatePlanItems(planId, input.items);
+  } else {
+    await updatePlanTopics(planId, input.topics);
+  }
 }
 
 export interface CreateTaskInput {
@@ -820,7 +906,13 @@ export interface GenerateResult {
 // re-picks content from scratch, unlike adjustPlanPace below, which
 // re-times the tasks that already exist without touching what they
 // point at.
-export async function generateTasksForPlan(userId: string, planId: string): Promise<GenerateResult> {
+//
+// Legacy weighted-subject path (pre-migration-0074). A plan created
+// before Study Planner v2's ordered-content model has no
+// study_plan_item rows, so generateTasksForPlan's dispatcher falls
+// back to this unchanged rather than forcing every old plan through a
+// one-time content migration — additive, same as the migration itself.
+async function generateTasksForPlanLegacy(userId: string, planId: string): Promise<GenerateResult> {
   const plan = await getPlanById(userId, planId);
   if (!plan || !plan.targetDate) return { created: 0, reason: "no-target-date" };
   const topics = await getPlanTopics(planId);
@@ -950,6 +1042,318 @@ export async function generateTasksForPlan(userId: string, planId: string): Prom
   }
 
   return { created: types.length };
+}
+
+// ============================================================
+// Study Planner v2 content model (migration 0074) — "A plan is an
+// ordered list of library content, not a set of weighted subjects."
+// kind='folder' resolves through the knowledge-graph `topic` table
+// (disease.topic_id), not flashcard_subject — the two are different
+// granularities (4 broad subjects vs ~20 real topics), and a folder's
+// own name in the mockups ("Spinal cord injury", "MSK — spine") reads
+// as a topic-tree name. Question sets have no per-topic linkage in
+// this schema, so a folder only ever expands to read + flashcards
+// content; a question set is only ever added as its own plan_item.
+// ============================================================
+
+export type PlanItemKind = "folder" | "page" | "deck" | "question_set";
+
+export interface PlanItemInput {
+  kind: PlanItemKind;
+  refId: string;
+}
+
+export interface PlanItem extends PlanItemInput {
+  id: string;
+}
+
+export async function getPlanItems(planId: string): Promise<PlanItem[]> {
+  const { rows } = await pool.query<{ id: string; kind: PlanItemKind; ref_id: string }>(
+    `SELECT id, kind, ref_id FROM study_plan_item WHERE plan_id = $1 ORDER BY position`,
+    [planId]
+  );
+  return rows.map((r) => ({ id: r.id, kind: r.kind, refId: r.ref_id }));
+}
+
+// Replace-all — mirrors setPlanTopics: only ever called right after
+// creation, when there are no study_plan_task rows pointing at any
+// item yet.
+export async function setPlanItems(planId: string, items: PlanItemInput[]): Promise<void> {
+  await pool.query(`DELETE FROM study_plan_item WHERE plan_id = $1`, [planId]);
+  for (let i = 0; i < items.length; i++) {
+    await pool.query(`INSERT INTO study_plan_item (plan_id, kind, ref_id, position) VALUES ($1, $2, $3, $4)`, [planId, items[i].kind, items[i].refId, i]);
+  }
+}
+
+// The edit path — mirrors updatePlanTopics: keeps a surviving item's
+// row (and id) in place, keyed by (kind, refId) since that pair is an
+// item's real identity (its own id is only ever used to link back
+// from study_plan_task.plan_item_id). A removed item's tasks fall
+// back to plan_item_id = NULL via the column's ON DELETE SET NULL,
+// same as a removed legacy topic falls back to topic_id = NULL.
+export async function updatePlanItems(planId: string, items: PlanItemInput[]): Promise<void> {
+  const existing = await getPlanItems(planId);
+  const keyOf = (k: PlanItemKind, ref: string) => `${k}:${ref}`;
+  const existingByKey = new Map(existing.map((it) => [keyOf(it.kind, it.refId), it]));
+  const incomingKeys = new Set(items.map((it) => keyOf(it.kind, it.refId)));
+
+  const client = await pool.connect();
+  try {
+    await client.query("BEGIN");
+    const toDelete = existing.filter((it) => !incomingKeys.has(keyOf(it.kind, it.refId))).map((it) => it.id);
+    if (toDelete.length > 0) {
+      await client.query(`DELETE FROM study_plan_item WHERE id = ANY($1::uuid[])`, [toDelete]);
+    }
+    for (let i = 0; i < items.length; i++) {
+      const item = items[i];
+      const existingRow = existingByKey.get(keyOf(item.kind, item.refId));
+      if (existingRow) {
+        await client.query(`UPDATE study_plan_item SET position = $2 WHERE id = $1`, [existingRow.id, i]);
+      } else {
+        await client.query(`INSERT INTO study_plan_item (plan_id, kind, ref_id, position) VALUES ($1, $2, $3, $4)`, [planId, item.kind, item.refId, i]);
+      }
+    }
+    await client.query("COMMIT");
+  } catch (err) {
+    await client.query("ROLLBACK");
+    throw err;
+  } finally {
+    client.release();
+  }
+}
+
+async function pickReadTargetsForTopic(topicId: string): Promise<GeneratorContentOption[]> {
+  const { rows } = await pool.query<{ id: string; canonical_name: string }>(
+    `SELECT id, canonical_name FROM disease WHERE topic_id = $1 AND status = 'published' ORDER BY position, canonical_name`,
+    [topicId]
+  );
+  if (rows.length === 0) return [];
+  const ids = rows.map((r) => r.id);
+  const { rows: blockRows } = await pool.query<{ disease_id: string; content_config: Record<string, unknown> }>(
+    `SELECT disease_id, content_config FROM editorial_block WHERE disease_id = ANY($1)`,
+    [ids]
+  );
+  const byDisease = new Map<string, unknown[]>();
+  for (const r of blockRows) {
+    const list = byDisease.get(r.disease_id) ?? [];
+    list.push(r.content_config);
+    byDisease.set(r.disease_id, list);
+  }
+  return rows.map((r) => ({ id: r.id, title: r.canonical_name, minutes: estimateReadingMinutesFromValues(byDisease.get(r.id) ?? []) }));
+}
+
+async function pickFlashcardTargetsForTopic(topicId: string): Promise<GeneratorContentOption[]> {
+  const { rows } = await pool.query<{ id: string; name: string; card_count: string }>(
+    `SELECT d.id, d.name, COUNT(f.id)::int AS card_count
+     FROM flashcard_deck d
+     JOIN disease dis ON dis.id = d.source_disease_id
+     LEFT JOIN flashcard f ON f.deck_id = d.id AND f.status = 'published' AND f.deleted_at IS NULL
+     WHERE dis.topic_id = $1 AND d.status = 'published' AND d.archived_at IS NULL
+     GROUP BY d.id
+     HAVING COUNT(f.id) > 0
+     ORDER BY d.position, d.name`,
+    [topicId]
+  );
+  return rows.map((r) => ({ id: r.id, title: r.name, minutes: Math.max(1, Math.round((Number(r.card_count) * 6) / 60)) }));
+}
+
+async function resolvePageItem(diseaseId: string): Promise<GeneratorContentOption | null> {
+  const { rows } = await pool.query<{ id: string; canonical_name: string }>(
+    `SELECT id, canonical_name FROM disease WHERE id = $1 AND status = 'published'`,
+    [diseaseId]
+  );
+  if (!rows[0]) return null;
+  const { rows: blockRows } = await pool.query<{ content_config: Record<string, unknown> }>(`SELECT content_config FROM editorial_block WHERE disease_id = $1`, [diseaseId]);
+  return { id: rows[0].id, title: rows[0].canonical_name, minutes: estimateReadingMinutesFromValues(blockRows.map((r) => r.content_config)) };
+}
+
+async function resolveDeckItem(deckId: string): Promise<GeneratorContentOption | null> {
+  const { rows } = await pool.query<{ id: string; name: string; card_count: string }>(
+    `SELECT d.id, d.name, COUNT(f.id)::int AS card_count
+     FROM flashcard_deck d LEFT JOIN flashcard f ON f.deck_id = d.id AND f.status = 'published' AND f.deleted_at IS NULL
+     WHERE d.id = $1 AND d.status = 'published' AND d.archived_at IS NULL
+     GROUP BY d.id`,
+    [deckId]
+  );
+  if (!rows[0]) return null;
+  return { id: rows[0].id, title: rows[0].name, minutes: Math.max(1, Math.round((Number(rows[0].card_count) * 6) / 60)) };
+}
+
+async function resolveQuestionSetItem(setId: string): Promise<GeneratorContentOption | null> {
+  const { rows } = await pool.query<{ id: string; name: string; question_count: string }>(
+    `SELECT s.id, s.name, COUNT(q.id)::int AS question_count
+     FROM question_set s LEFT JOIN question q ON q.set_id = s.id
+     WHERE s.id = $1
+     GROUP BY s.id`,
+    [setId]
+  );
+  if (!rows[0]) return null;
+  return { id: rows[0].id, title: rows[0].name, minutes: Math.max(1, Math.round((Number(rows[0].question_count) * 45) / 60)) };
+}
+
+interface GeneratedTaskSeedV2 {
+  type: TaskType;
+  targetRef: string;
+  title: string;
+  estimateMinutes: number;
+  planItemId: string;
+}
+
+function seedV2(type: TaskType, opt: GeneratorContentOption, planItemId: string): GeneratedTaskSeedV2 {
+  return { type, targetRef: opt.id, title: opt.title, estimateMinutes: opt.minutes, planItemId };
+}
+
+// Alternates two lists (read, then flashcards, then read, …) rather
+// than emitting all of one type before the other — "one_topic" still
+// benefits from type-spacing *within* the folder it's finishing before
+// moving on, same "spacing beats blocking" idea the legacy generator's
+// cross-topic interleave used, just applied one level down.
+function alternate(a: GeneratedTaskSeedV2[], b: GeneratedTaskSeedV2[]): GeneratedTaskSeedV2[] {
+  const out: GeneratedTaskSeedV2[] = [];
+  for (let i = 0; i < Math.max(a.length, b.length); i++) {
+    if (i < a.length) out.push(a[i]);
+    if (i < b.length) out.push(b[i]);
+  }
+  return out;
+}
+
+function roundRobin(groups: GeneratedTaskSeedV2[][]): GeneratedTaskSeedV2[] {
+  const out: GeneratedTaskSeedV2[] = [];
+  for (let idx = 0; ; idx++) {
+    let any = false;
+    for (const g of groups) {
+      if (idx < g.length) {
+        out.push(g[idx]);
+        any = true;
+      }
+    }
+    if (!any) break;
+  }
+  return out;
+}
+
+// Ordered-content generator (PLANNER-IMPLEMENTATION.md Pass 2, v2):
+// "content = plan_items expanded to pages/decks/sets, in position
+// order" and no weight/apportionment math — every resolvable atom in
+// every item is included, order only ever changes the SEQUENCE:
+//   interleave  — round-robin across items, one atom from each per pass
+//   one_topic   — finish an item's atoms before the next item's, with
+//                 read/flashcards alternated *within* a folder item
+//   as_listed   — exactly the stored item order, each item's atoms
+//                 flat (all its reads, then all its flashcards)
+// Then placed according to mode: scheduled lands on study days capped
+// at maxTasksPerDay same as the legacy walk; flexible/target set
+// scheduled_for = null and queue_position instead.
+async function generateTasksForPlanV2(userId: string, planId: string, plan: StudyPlan, items: PlanItem[]): Promise<GenerateResult> {
+  if (plan.mode === "scheduled" && !plan.targetDate) return { created: 0, reason: "no-target-date" };
+
+  const groups: GeneratedTaskSeedV2[][] = [];
+  for (const item of items) {
+    if (item.kind === "folder") {
+      const [readOpts, cardOpts] = await Promise.all([pickReadTargetsForTopic(item.refId), pickFlashcardTargetsForTopic(item.refId)]);
+      const reads = readOpts.map((o) => seedV2("read", o, item.id));
+      const cards = cardOpts.map((o) => seedV2("flashcards", o, item.id));
+      groups.push(plan.orderMode === "one_topic" ? alternate(reads, cards) : [...reads, ...cards]);
+    } else if (item.kind === "page") {
+      const opt = await resolvePageItem(item.refId);
+      groups.push(opt ? [seedV2("read", opt, item.id)] : []);
+    } else if (item.kind === "deck") {
+      const opt = await resolveDeckItem(item.refId);
+      groups.push(opt ? [seedV2("flashcards", opt, item.id)] : []);
+    } else {
+      const opt = await resolveQuestionSetItem(item.refId);
+      groups.push(opt ? [seedV2("questions", opt, item.id)] : []);
+    }
+  }
+
+  const ordered = plan.orderMode === "interleave" ? roundRobin(groups) : groups.flat();
+  if (ordered.length === 0) return { created: 0, reason: "no-content" };
+
+  const types: string[] = [];
+  const targetRefs: string[] = [];
+  const titles: string[] = [];
+  const minutes: number[] = [];
+  const dates: (string | null)[] = [];
+  const queuePositions: (number | null)[] = [];
+  const positions: number[] = [];
+  const planItemIds: string[] = [];
+
+  if (plan.mode === "scheduled") {
+    const studyDaySet = new Set(plan.studyDays);
+    const today = new Date();
+    today.setUTCHours(0, 0, 0, 0);
+    const cursor = new Date(today);
+    let taskIdx = 0;
+    let position = 0;
+    let safety = 0;
+    while (taskIdx < ordered.length && safety < 3650) {
+      safety++;
+      const isoDow = ((cursor.getUTCDay() + 6) % 7) + 1;
+      if (studyDaySet.has(isoDow)) {
+        for (let slot = 0; slot < plan.maxTasksPerDay && taskIdx < ordered.length; slot++) {
+          const seed = ordered[taskIdx++];
+          types.push(seed.type);
+          targetRefs.push(seed.targetRef);
+          titles.push(seed.title);
+          minutes.push(seed.estimateMinutes);
+          dates.push(cursor.toISOString().slice(0, 10));
+          queuePositions.push(null);
+          positions.push(position++);
+          planItemIds.push(seed.planItemId);
+        }
+      }
+      cursor.setUTCDate(cursor.getUTCDate() + 1);
+    }
+  } else {
+    // flexible / target — no dates, an ordered queue instead.
+    for (let i = 0; i < ordered.length; i++) {
+      const seed = ordered[i];
+      types.push(seed.type);
+      targetRefs.push(seed.targetRef);
+      titles.push(seed.title);
+      minutes.push(seed.estimateMinutes);
+      dates.push(null);
+      queuePositions.push(i);
+      positions.push(i);
+      planItemIds.push(seed.planItemId);
+    }
+  }
+
+  const client = await pool.connect();
+  try {
+    await client.query("BEGIN");
+    await client.query(`DELETE FROM study_plan_task WHERE plan_id = $1 AND state = 'pending'`, [planId]);
+    await client.query(
+      `INSERT INTO study_plan_task (user_id, plan_id, type, target_ref, title, estimate_minutes, scheduled_for, queue_position, position, plan_item_id)
+       SELECT $1, $2, x.type, x.target_ref, x.title, x.estimate_minutes, x.scheduled_for, x.queue_position, x.position, x.plan_item_id
+       FROM unnest($3::text[], $4::text[], $5::text[], $6::int[], $7::date[], $8::int[], $9::int[], $10::uuid[])
+         AS x(type, target_ref, title, estimate_minutes, scheduled_for, queue_position, position, plan_item_id)`,
+      [userId, planId, types, targetRefs, titles, minutes, dates, queuePositions, positions, planItemIds]
+    );
+    await client.query("COMMIT");
+  } catch (err) {
+    await client.query("ROLLBACK");
+    throw err;
+  } finally {
+    client.release();
+  }
+
+  return { created: types.length };
+}
+
+// The public entry point every caller uses. A plan created under the
+// new ordered-content model has study_plan_item rows and runs the v2
+// generator; a plan created before migration 0074 has none and falls
+// back to the legacy weighted-subject generator unchanged — additive,
+// same convention the migration's own header comment promises.
+export async function generateTasksForPlan(userId: string, planId: string): Promise<GenerateResult> {
+  const items = await getPlanItems(planId);
+  if (items.length > 0) {
+    const plan = await getPlanById(userId, planId);
+    if (!plan) return { created: 0 };
+    return generateTasksForPlanV2(userId, planId, plan, items);
+  }
+  return generateTasksForPlanLegacy(userId, planId);
 }
 
 // "Adjust the pace" re-spreads only pending tasks (PLANNER-IMPLEMENTATION.md

@@ -129,15 +129,24 @@ export function NewPlanDrawer({
         label: topicOptions.find((o) => o.id === topicRef)?.name ?? editPlan?.topics.find((t) => t.topicRef === topicRef)?.label ?? topicRef,
         weight,
       }));
+      // This drawer only ever builds the legacy weighted-topic shape
+      // (the ordered-content picker, Order control and Mode selector
+      // are a deferred rewrite — PLANNER-IMPLEMENTATION.md Pass 6) —
+      // every plan it creates or edits is deliberately "scheduled" /
+      // "interleave" with no weekly target, matching this feature's
+      // behavior before Study Planner v2's content model existed.
       if (editPlan) {
         await updatePlanAction(editPlan.id, {
           name: name.trim(),
           kind,
           colourKey,
           targetDate: targetDate || null,
+          mode: "scheduled",
+          orderMode: "interleave",
           studyDays,
           sessionMinutes,
           maxTasksPerDay,
+          weeklyTarget: null,
           topics,
         });
         onClose();
@@ -148,9 +157,12 @@ export function NewPlanDrawer({
           kind,
           colourKey,
           targetDate: targetDate || null,
+          mode: "scheduled",
+          orderMode: "interleave",
           studyDays,
           sessionMinutes,
           maxTasksPerDay,
+          weeklyTarget: null,
           topics,
         });
         onClose();

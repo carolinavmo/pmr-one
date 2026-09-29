@@ -1,0 +1,133 @@
+<!DOCTYPE html><html><head><meta charset="utf-8">
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="qb_style.css">
+<style>
+h2.s{display:flex;align-items:baseline;gap:12px;font-size:12.5px;font-weight:900;letter-spacing:2.4px;color:var(--acc-ink);margin-top:28px;padding-bottom:9px;border-bottom:2px solid var(--line)}
+h2.s em{font-style:normal;font-size:13.5px;font-weight:600;letter-spacing:0;color:var(--mute);margin-left:auto}
+.fr{margin-top:14px;border:1px solid var(--line);border-radius:14px;overflow:hidden;background:#fff;box-shadow:0 8px 22px rgba(20,40,74,.08)}
+/* task bar */
+.tbar{display:flex;align-items:center;gap:14px;background:var(--navy);color:#fff;padding:11px 20px}
+.tbar .k{font-size:10.5px;font-weight:900;letter-spacing:1.4px;color:var(--acc-dk)}
+.tbar b{font-size:15px;font-weight:900}
+.tbar .prog{display:flex;gap:5px;margin-left:4px}
+.tbar .prog i{width:26px;height:6px;border-radius:3px;background:rgba(255,255,255,.22);display:block}
+.tbar .prog i.on{background:var(--acc-dk)}
+.tbar .sp{margin-left:auto;display:flex;gap:9px;align-items:center}
+.tbar .gh{font-size:12.5px;font-weight:800;color:#C8D3E2;border:1px solid rgba(255,255,255,.25);border-radius:9px;padding:8px 13px}
+.tbar .pri{background:var(--acc);color:#fff;font-size:13px;font-weight:900;border-radius:9px;padding:9px 15px}
+.pagewrap{display:flex;min-height:420px}
+.lrail{width:250px;flex:none;background:var(--soft);border-right:1px solid var(--line);padding:16px 14px}
+.lrail .k{font-size:9.5px;font-weight:900;letter-spacing:1.3px;color:#9AA5B4;margin-bottom:9px}
+.lrail .toc a{display:block;font-size:12.5px;color:var(--mute);font-weight:700;padding:6px 0 6px 11px;border-left:2px solid var(--line)}
+.lrail .toc a.on{color:var(--acc-ink);border-left-color:var(--acc);font-weight:900}
+.lrail .box{margin-top:18px;border:1px solid var(--line);border-radius:12px;padding:13px;background:#fff}
+.lrail .box .t{font-size:12.5px;font-weight:900;color:var(--navy)}
+.lrail .box .s{font-size:11.5px;color:#9AA5B4;font-weight:700;margin-top:4px;line-height:1.35}
+.lrail .box .chk{display:flex;align-items:center;gap:10px;margin-top:11px;border:2px solid var(--line);border-radius:10px;padding:9px 11px}
+.lrail .box .chk i{width:18px;height:18px;border-radius:6px;border:2px solid #C6CED8;display:block;flex:none}
+.lrail .box .chk b{font-size:12.5px;font-weight:800;color:var(--mute)}
+.rdg{height:5px;background:#EEF1F5;border-radius:3px;overflow:hidden;margin-top:10px}
+.rdg i{display:block;height:5px;background:var(--acc);width:72%}
+.page{flex:1;padding:22px 30px}
+.page h3{font-size:26px;font-weight:900;color:var(--navy);letter-spacing:-.6px}
+.page .meta{font-size:12.5px;color:#9AA5B4;font-weight:700;margin-top:5px}
+.page p{font-size:15.5px;line-height:1.62;margin-top:12px;color:var(--ink)}
+.page p b{font-weight:800;color:var(--navy)}
+.endblock{border:2px solid var(--acc-bd);background:var(--acc-bg);border-radius:16px;padding:18px 20px;margin-top:20px;display:flex;align-items:center;gap:16px}
+.endblock .t{flex:1}
+.endblock .t b{display:block;font-size:17px;font-weight:900;color:var(--navy)}
+.endblock .t span{display:block;font-size:13.5px;color:var(--mute);font-weight:700;margin-top:4px}
+.endblock .pri{background:var(--acc);color:#fff;font-size:14px;font-weight:900;border-radius:11px;padding:12px 20px;white-space:nowrap}
+.endblock .gh{border:1px solid var(--acc-bd);background:#fff;color:var(--mute);font-size:12.5px;font-weight:800;border-radius:10px;padding:11px 15px;white-space:nowrap}
+/* session end */
+.sess{padding:26px 30px;text-align:center}
+.sess .ring{width:120px;height:120px;border-radius:50%;margin:0 auto;background:conic-gradient(#4FBF86 88%,#EEF1F5 0);display:flex;align-items:center;justify-content:center;position:relative}
+.sess .ring::after{content:"";position:absolute;width:94px;height:94px;border-radius:50%;background:#fff}
+.sess .ring em{position:relative;z-index:2;font-style:normal;font-size:26px;font-weight:900;color:var(--navy)}
+.sess h3{font-size:27px;font-weight:900;color:var(--navy);margin-top:16px;letter-spacing:-.7px}
+.sess .done{display:inline-flex;align-items:center;gap:9px;background:var(--grn-bg);border:2px solid var(--grn-bd);color:var(--grn);font-size:14px;font-weight:900;border-radius:20px;padding:9px 16px;margin-top:12px}
+.sess .nxt{display:flex;gap:11px;justify-content:center;margin-top:18px}
+.sess .nxt .pri{background:var(--navy);color:#fff;font-size:14.5px;font-weight:900;border-radius:11px;padding:13px 22px}
+.sess .nxt .gh{border:1px solid var(--line);color:var(--mute);font-size:13px;font-weight:800;border-radius:10px;padding:12px 18px}
+/* rules table */
+.tb2{width:100%;border-collapse:collapse;font-size:14.5px}
+.tb2 th{background:var(--navy);color:#fff;font-size:11px;font-weight:900;letter-spacing:1.3px;padding:11px 14px;text-align:left}
+.tb2 td{padding:12px 14px;border-bottom:1px solid #EEF1F5;vertical-align:top;line-height:1.4}
+.tb2 td b{color:var(--navy);font-weight:900}
+.tb2 tr:last-child td{border-bottom:none}
+.tb2 td:first-child{width:180px;font-weight:900;color:var(--navy)}
+</style></head><body>
+<div class="sheet" id="d">
+ <div class="tb"><i style="background:var(--acc)"></i><i style="background:var(--navy)"></i></div>
+ <div class="bh"><img src="logo.png" alt=""><b>PM&amp;R <span style="color:var(--acc)">Explained</span></b></div>
+ <h1 class="t">Start, finish, and the task bar</h1>
+ <div class="dek">Start opens the thing itself. A slim <b>task bar travels with you</b> into the library, the flashcards or the question bank — so completing, skipping and moving on works the same everywhere, rather than a checkbox that only exists on reading pages.</div>
+
+ <h2 class="s">READING A PAGE OPENED FROM A TASK<em>the task bar on top, the page unchanged beneath it</em></h2>
+ <div class="fr">
+  <div class="tbar"><span class="k">TASK 2 OF 3</span><b>Board exam · today</b>
+   <div class="prog"><i class="on"></i><i class="on"></i><i></i></div>
+   <div class="sp"><span class="gh">Skip</span><span class="gh">Back to planner</span><span class="pri">✓ Mark as read</span></div></div>
+  <div class="pagewrap">
+   <div class="lrail">
+    <div class="k">ON THIS PAGE</div>
+    <div class="toc"><a class="on">Definition</a><a>Anatomy</a><a>Presentation</a><a>Examination</a><a>Management</a><a>Prognosis</a></div>
+    <div class="box"><div class="t">Reading progress</div>
+     <div class="rdg"><i></i></div>
+     <div class="s">72% of the page · about 4 minutes left</div>
+     <div class="chk"><i></i><b>Mark as read</b></div>
+     <div class="s" style="margin-top:8px">Ticks itself when you reach the end.</div></div>
+   </div>
+   <div class="page">
+    <h3>Anterior cord syndrome</h3>
+    <div class="meta">Neurology › Spinal cord injury · reviewed Aug 2026 · 12 min read</div>
+    <p>Anterior cord syndrome follows injury to the <b>anterior two-thirds of the spinal cord</b>, the territory of the anterior spinal artery. Motor function and pain and temperature sensation are lost below the level, while the dorsal columns — proprioception, vibration and fine touch — are preserved.</p>
+    <p>The dissociation is the diagnosis: weakness with <b>absent pin-prick but intact position sense</b>. Light touch travels in both systems and is often preserved, so it cannot be used to make the distinction…</p>
+    <div class="endblock"><div class="t"><b>You have reached the end of the page</b><span>This completes <b style="display:inline">Read: Anterior cord syndrome</b> in your board exam plan.</span></div>
+     <span class="gh">Not yet</span><span class="pri">✓ Done · next task →</span></div>
+   </div>
+  </div>
+ </div>
+
+ <h2 class="s">A SESSION OPENED FROM A TASK<em>cards and questions complete themselves</em></h2>
+ <div class="fr">
+  <div class="tbar"><span class="k">TASK 3 OF 3</span><b>Board exam · today</b>
+   <div class="prog"><i class="on"></i><i class="on"></i><i class="on"></i></div>
+   <div class="sp"><span class="gh">Back to planner</span></div></div>
+  <div class="sess">
+   <div class="ring"><em>88%</em></div>
+   <h3>20 cards done in 5 min 40 s</h3>
+   <div class="done">✓ Task completed automatically</div>
+   <div class="nxt"><span class="pri">Back to today — all 3 done ✓</span><span class="gh">Study more</span></div>
+  </div>
+ </div>
+
+ <h2 class="s">WHEN A TASK COUNTS AS DONE<em>one rule per type, and always a manual override</em></h2>
+ <div class="fr"><div style="padding:0">
+  <table class="tb2">
+   <tr><th>TASK TYPE</th><th>COMPLETES AUTOMATICALLY WHEN</th><th>MANUAL OVERRIDE</th></tr>
+   <tr><td>Read a page</td>
+    <td>The reader reaches the <b>end of the page</b> and has been on it for at least <b>30 seconds</b> — so a fast scroll does not count.</td>
+    <td><b>Mark as read</b> in the task bar, in the left rail, or the end-of-page block.</td></tr>
+   <tr><td>Flashcards</td>
+    <td>The <b>session ends</b> — every card in it has been graded.</td>
+    <td>Leaving early keeps the task open, with "12 of 20 done" shown on the task row.</td></tr>
+   <tr><td>Questions</td>
+    <td>The <b>set is submitted</b>, or every question in the session has been answered.</td>
+    <td>Same — partial progress is kept and shown.</td></tr>
+   <tr><td>Course lesson</td>
+    <td>The <b>lesson is finished</b>, using the course's own completion rule.</td>
+    <td>Checkbox on the task row.</td></tr>
+   <tr><td>Something else</td>
+    <td>Never — there is nothing to observe.</td>
+    <td>The <b>checkbox</b> is the only way, which is why custom tasks always show one.</td></tr>
+  </table>
+ </div></div>
+
+ <div class="notes">
+  <div class="nb"><b>START OPENS THE THING</b><p>No intermediate screen. The page, the session or the question set loads with the <em>task bar</em> pinned above it — position in the day, skip, back, and complete.</p></div>
+  <div class="nb"><b>YES, IT MARKS ITSELF</b><p>Reaching the end of a page, finishing a session or submitting a set completes the task. The manual controls exist for offline work and for pages you only needed half of.</p></div>
+  <div class="nb"><b>WHY NOT JUST A SIDEBAR CHECKBOX</b><p>A checkbox on reading pages would solve one type out of five, and would sit in a rail that means something different in every feature. <em>The task bar is one component, everywhere.</em></p></div>
+ </div>
+</div>
+</body></html>

@@ -1,0 +1,195 @@
+<!DOCTYPE html><html><head><meta charset="utf-8">
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="qb_style.css">
+<style>
+h2.s{display:flex;align-items:baseline;gap:12px;font-size:12.5px;font-weight:900;letter-spacing:2.4px;color:var(--acc-ink);margin-top:28px;padding-bottom:9px;border-bottom:2px solid var(--line)}
+h2.s em{font-style:normal;font-size:13.5px;font-weight:600;letter-spacing:0;color:var(--mute);margin-left:auto}
+.fr{margin-top:14px;border:1px solid var(--line);border-radius:14px;overflow:hidden;background:#fff;box-shadow:0 8px 22px rgba(20,40,74,.08)}
+.crumb{display:flex;align-items:center;gap:8px;font-size:12.5px;color:#9AA5B4;font-weight:700;padding:16px 24px 0}
+.crumb b{color:var(--mute)}
+.phead{display:flex;gap:20px;align-items:center;background:#FFF0E4;border-bottom:1px solid #F8D7BC;padding:18px 24px}
+.ring{width:82px;height:82px;border-radius:50%;flex:none;display:flex;align-items:center;justify-content:center;position:relative;background:conic-gradient(#D9762F 62%,#F8D7BC 0)}
+.ring::after{content:"";position:absolute;width:62px;height:62px;border-radius:50%;background:#FFF0E4}
+.ring em{position:relative;z-index:2;font-style:normal;font-size:19px;font-weight:900;color:var(--navy)}
+.phead .t{flex:1}
+.phead h2{font-size:26px;font-weight:900;color:var(--navy);letter-spacing:-.8px}
+.phead .s{font-size:13px;color:var(--mute);font-weight:700;margin-top:4px}
+.phead .acts{display:flex;gap:8px}
+.phead .acts span{font-size:12.5px;font-weight:800;border-radius:10px;padding:10px 14px;background:#fff;border:1px solid #F8D7BC;color:var(--mute)}
+.phead .acts .pri{background:var(--acc);border-color:var(--acc);color:#fff;font-weight:900}
+.tabs{display:flex;gap:4px;padding:0 24px;border-bottom:1px solid var(--line)}
+.tabs a{font-size:13.5px;font-weight:800;color:var(--mute);padding:12px 14px;border-bottom:3px solid transparent;margin-bottom:-1px}
+.tabs a.on{color:var(--navy);border-bottom-color:#D9762F}
+.pad{padding:18px 24px 22px}
+.sh{display:flex;align-items:baseline;gap:10px;margin-bottom:11px}
+.sh h4{font-size:16.5px;font-weight:900;color:var(--navy)}
+.sh span{font-size:12px;color:#9AA5B4;font-weight:700}
+.sh a{margin-left:auto;font-size:12.5px;font-weight:900;color:#fff;background:var(--navy);border-radius:9px;padding:8px 14px}
+/* content rows */
+.fold{border:1px solid var(--line);border-radius:12px;margin-bottom:8px;overflow:hidden}
+.fold .hd{display:flex;align-items:center;gap:11px;padding:11px 14px;background:var(--soft)}
+.fold .hd .ic{width:9px;height:9px;border-radius:3px;background:#D9762F}
+.fold .hd b{font-size:14.5px;font-weight:900;color:var(--navy)}
+.fold .hd span{font-size:11.5px;color:#9AA5B4;font-weight:700}
+.fold .hd .mn{margin-left:auto}
+.dgf{color:#C6CED8;font-size:13px;font-weight:900}
+.fold .hd .w i{width:24px;height:24px;border:1px solid var(--line);border-radius:7px;background:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:900;color:var(--mute);font-style:normal}
+.fold .hd .w b2{font-size:13px;font-weight:900;color:var(--navy);width:46px;text-align:center}
+.fold .hd .mn{width:26px;height:26px;border:1px solid var(--line);border-radius:8px;background:#fff;display:flex;align-items:center;justify-content:center;font-size:13px;color:var(--mute);font-weight:900}
+.pg{display:flex;align-items:center;gap:11px;padding:9px 14px 9px 34px;border-top:1px solid #F2F4F7;font-size:13.5px}
+.pg .dg{color:#C6CED8;font-size:13px;font-weight:900;cursor:grab}
+.pg b{flex:1;font-weight:800;color:var(--navy)}
+.pg .tg{font-size:9.5px;font-weight:900;letter-spacing:.8px;border-radius:5px;padding:2px 7px;background:#FFF0E4;color:#D9762F}
+.pg span{font-size:11.5px;color:#9AA5B4;font-weight:700}
+.pg .x{width:24px;height:24px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:12px;color:#B4BDC8;font-weight:900}
+.addbox{border:2px dashed var(--acc-bd);background:var(--acc-bg);border-radius:14px;padding:16px 18px;margin-top:10px}
+.addbox .k{font-size:11px;font-weight:900;letter-spacing:1.3px;color:var(--acc-ink)}
+.addbox .srch{background:#fff;border:1px solid var(--acc-bd);border-radius:10px;padding:11px 14px;font-size:13.5px;color:#A6B0BC;margin-top:9px}
+.pick{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px}
+.pk{display:flex;align-items:center;gap:10px;background:#fff;border:1px solid var(--line);border-radius:11px;padding:10px 12px}
+.pk .cb{width:18px;height:18px;border-radius:6px;border:2px solid var(--line);flex:none}
+.pk .cb.on{background:var(--acc);border-color:var(--acc);color:#fff;font-size:10px;font-weight:900;display:flex;align-items:center;justify-content:center}
+.pk b{flex:1;font-size:13px;font-weight:800;color:var(--navy)}
+.pk span{font-size:11px;color:#9AA5B4;font-weight:700}
+.addfoot{display:flex;align-items:center;gap:12px;margin-top:12px}
+.addfoot .note{font-size:13px;color:var(--acc-ink);font-weight:800}
+.addfoot .gh{margin-left:auto;font-size:12.5px;font-weight:800;color:var(--mute);border:1px solid var(--line);background:#fff;border-radius:9px;padding:9px 14px}
+.addfoot .pri{background:var(--acc);color:#fff;font-size:13px;font-weight:900;border-radius:9px;padding:10px 16px}
+/* schedule */
+.bulk{display:flex;align-items:center;gap:12px;background:var(--navy);color:#fff;border-radius:12px;padding:11px 16px;margin-bottom:12px}
+.bulk b{font-size:14px;font-weight:900}
+.bulk span{font-size:12.5px;font-weight:800;background:rgba(255,255,255,.14);border-radius:9px;padding:8px 13px}
+.bulk .x{margin-left:auto;font-size:12.5px;font-weight:800;color:#9DB0CA}
+.wkh{display:flex;align-items:center;gap:10px;margin:14px 0 8px}
+.wkh b{font-size:13.5px;font-weight:900;color:var(--navy)}
+.wkh span{font-size:11.5px;color:#9AA5B4;font-weight:700}
+.wkh .ln{flex:1;height:1px;background:var(--line)}
+.tr{display:flex;align-items:center;gap:11px;border:1px solid var(--line);border-radius:11px;padding:10px 13px;margin-bottom:7px;position:relative}
+.tr.sel{border-color:var(--acc);background:var(--acc-bg)}
+.tr .cb{width:18px;height:18px;border-radius:6px;border:2px solid var(--line);flex:none}
+.tr .cb.on{background:var(--acc);border-color:var(--acc);color:#fff;font-size:10px;font-weight:900;display:flex;align-items:center;justify-content:center}
+.tr .dg{color:#C6CED8;font-size:13px;font-weight:900}
+.tr .tg{font-size:9.5px;font-weight:900;letter-spacing:.8px;border-radius:5px;padding:2px 7px}
+.tr b{flex:1;font-size:13.5px;font-weight:800;color:var(--navy)}
+.tr .day{font-size:12px;font-weight:900;color:var(--mute);width:96px;text-align:right}
+.tr .est{font-size:11.5px;color:#9AA5B4;font-weight:700;width:52px;text-align:right}
+.tr .mn{width:26px;height:26px;border:1px solid var(--line);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:13px;color:var(--mute);font-weight:900}
+.menu{position:absolute;right:8px;top:40px;width:250px;background:#fff;border:1px solid var(--line);border-radius:13px;box-shadow:0 14px 34px rgba(20,40,74,.18);padding:7px;z-index:5}
+.menu .k{font-size:9.5px;font-weight:900;letter-spacing:1.2px;color:#9AA5B4;padding:7px 10px 4px}
+.menu a{display:flex;align-items:center;gap:9px;font-size:13.5px;font-weight:800;color:var(--ink);padding:9px 10px;border-radius:9px}
+.menu a.on{background:var(--acc-bg);color:var(--acc-ink)}
+.menu a span{margin-left:auto;font-size:11.5px;color:#9AA5B4;font-weight:700}
+.menu .sep{height:1px;background:var(--line);margin:6px 4px}
+.menu a.del{color:var(--red)}
+.hint{font-size:12.5px;color:#9AA5B4;font-weight:700;margin-top:10px}
+
+.orderbar{display:flex;align-items:center;gap:18px;border:1px solid var(--line);border-radius:13px;padding:13px 16px;margin-bottom:12px;background:var(--soft)}
+.k2{font-size:10px;font-weight:900;letter-spacing:1.3px;color:#9AA5B4;margin-bottom:7px}
+.seg2{display:flex;background:#fff;border:1px solid var(--line);border-radius:10px;padding:3px}
+.seg2 span{font-size:12.5px;font-weight:800;color:var(--mute);padding:8px 13px;border-radius:8px}
+.seg2 span.on{background:var(--navy);color:#fff}
+.note2{font-size:13px;color:var(--mute);line-height:1.4;max-width:420px;text-align:right}
+.note2 b{color:var(--navy);font-weight:900}
+.modechip{display:inline-flex;align-items:center;gap:7px;background:#fff;border:1px solid #F8D7BC;border-radius:20px;padding:6px 13px;font-size:12.5px;font-weight:900;color:var(--mute);margin-left:10px}
+.modechip i{width:8px;height:8px;border-radius:50%;background:var(--acc);display:block}
+</style></head><body>
+<div class="sheet" id="d">
+ <div class="tb"><i style="background:#D9762F"></i><i style="background:var(--navy)"></i></div>
+ <div class="bh"><img src="logo.png" alt=""><b>PM&amp;R <span style="color:var(--acc)">Explained</span></b></div>
+ <h1 class="t">The plan page — final</h1>
+ <div class="dek">No weights. A plan is <b>a list of folders and pages in order</b>, plus how it runs. Content is edited in place; every task can be moved, skipped or removed where it sits.</div>
+
+ <h2 class="s">CONTENT<em>what the plan covers — folders and pages, added inline</em></h2>
+ <div class="fr">
+  <div class="crumb">Study Planner <span>›</span> <b>My plans</b> <span>›</span> <b>Board exam</b></div>
+  <div class="phead">
+   <div class="ring"><em>62%</em></div>
+   <div class="t"><h2>Board exam</h2><div class="s">18 May 2027 · 34 weeks left · 240 tasks<span class="modechip"><i></i>Scheduled · 3 a day, Mon–Thu and Sat</span></div></div>
+   <div class="acts"><span class="pri">▶ Today's tasks · 2</span><span>Adjust the pace</span><span>⋯</span></div>
+  </div>
+  <div class="tabs"><a>Overview</a><a class="on">Content</a><a>Schedule</a><a>Settings</a></div>
+  <div class="pad">
+   <div class="sh"><h4>What this plan covers</h4><span>5 folders · 62 pages · 240 tasks</span><a>＋ Add pages or folders</a></div>
+   <div class="orderbar">
+    <div><div class="k2">ORDER</div><div class="seg2"><span class="on">Interleave topics</span><span>One topic at a time</span><span>The order below</span></div></div>
+    <div style="flex:1"></div>
+    <div class="note2">Tasks are generated in this order. <b>Drag a folder</b> to change where it sits; every page inside keeps its own position.</div>
+   </div>
+
+   <div class="fold"><div class="hd"><span class="dgf">⠿</span><span class="ic"></span><b>Spinal cord injury</b><span>· 12 pages · 32 tasks</span>
+     <span class="mn">⋯</span></div>
+    <div class="pg"><span class="dg">⠿</span><span class="tg">READ</span><b>ASIA classification</b><span>10 min</span><span class="x">✕</span></div>
+    <div class="pg"><span class="dg">⠿</span><span class="tg">READ</span><b>Anterior cord syndrome</b><span>12 min</span><span class="x">✕</span></div>
+    <div class="pg"><span class="dg">⠿</span><span class="tg" style="background:#E3F6F0;color:#2E9B80">CARDS</span><b>Spinal cord syndromes — 24 cards</b><span>7 min</span><span class="x">✕</span></div>
+    <div class="pg" style="color:#9AA5B4;font-weight:800;justify-content:center;font-size:12.5px">9 more in this folder ⌄ &nbsp;·&nbsp; ＋ add a single page</div></div>
+
+   <div class="fold"><div class="hd"><span class="dgf">⠿</span><span class="ic"></span><b>Stroke</b><span>· 14 pages · 28 tasks</span>
+     <span class="mn">⋯</span></div></div>
+
+   <div class="fold"><div class="hd"><span class="dgf">⠿</span><span class="ic"></span><b>MSK — Spine</b><span>· 11 pages · 26 tasks</span>
+     <span class="mn">⋯</span></div></div>
+
+   <div class="addbox">
+    <div class="k">ADD FROM THE LIBRARY</div>
+    <div class="srch">⌕ Search pages, folders and decks…</div>
+    <div class="pick">
+     <div class="pk"><span class="cb on">✓</span><b>Amputees</b><span>9 pages</span></div>
+     <div class="pk"><span class="cb on">✓</span><b>Paediatric rehabilitation</b><span>7 pages</span></div>
+     <div class="pk"><span class="cb"></span><b>Pelvic floor rehabilitation</b><span>5 pages</span></div>
+     <div class="pk"><span class="cb"></span><b>Physical agents</b><span>6 pages</span></div>
+     <div class="pk"><span class="cb"></span><b>ICF</b><span>4 pages</span></div>
+     <div class="pk" style="border-style:dashed;justify-content:center;color:#9AA5B4;font-weight:900;font-size:12.5px">Browse the whole library ›</div>
+    </div>
+    <div class="addfoot"><span class="note">2 folders selected · 16 pages · creates about 34 tasks, added to the end of the plan</span>
+     <span class="gh">Cancel</span><span class="pri">Add to plan</span></div>
+   </div>
+   <div class="hint">Adding content re-spreads only <b style="color:var(--navy)">pending</b> tasks. Nothing you have already done is moved.</div>
+  </div>
+ </div>
+
+ <h2 class="s">SCHEDULE<em>every task movable, editable and removable where it sits</em></h2>
+ <div class="fr">
+  <div class="phead" style="padding:14px 24px">
+   <div class="t"><h2 style="font-size:22px">Board exam</h2><div class="s">Schedule · 92 pending tasks</div></div>
+   <div class="acts"><span>＋ Add a task</span><span>Adjust the pace</span></div>
+  </div>
+  <div class="tabs"><a>Overview</a><a>Content</a><a class="on">Schedule</a><a>Settings</a></div>
+  <div class="pad">
+   <div class="bulk"><b>3 tasks selected</b><span>Move to…</span><span>Change day</span><span>Mark done</span><span style="background:rgba(184,38,43,.4)">Remove</span><span class="x">Clear selection</span></div>
+
+   <div class="wkh"><b>This week</b><span>22–28 September · 8 of 11 done</span><span class="ln"></span><span>Move the whole week ›</span></div>
+   <div class="tr sel"><span class="cb on">✓</span><span class="dg">⠿</span><span class="tg" style="background:#FFF0E4;color:#D9762F">READ</span><b>Anterior cord syndrome</b><span class="day">Fri 27</span><span class="est">12 m</span><span class="mn">⋯</span></div>
+   <div class="tr sel"><span class="cb on">✓</span><span class="dg">⠿</span><span class="tg" style="background:#E3F6F0;color:#2E9B80">CARDS</span><b>Neurology — 20 cards</b><span class="day">Fri 27</span><span class="est">6 m</span><span class="mn">⋯</span></div>
+   <div class="tr"><span class="cb"></span><span class="dg">⠿</span><span class="tg" style="background:#EFEBFC;color:#6F5FCB">QUESTIONS</span><b>Spinal cord injury — 15 questions</b><span class="day">Fri 27</span><span class="est">11 m</span><span class="mn">⋯</span>
+    <div class="menu">
+     <div class="k">MOVE TO</div>
+     <a class="on">Tomorrow<span>Sat 28</span></a>
+     <a>Next study day<span>Mon 30</span></a>
+     <a>Next week<span>Mon 6 Oct</span></a>
+     <a>Pick a date…<span>⌄</span></a>
+     <div class="sep"></div>
+     <a>Edit task</a>
+     <a>Change type or target</a>
+     <a>Duplicate</a>
+     <div class="sep"></div>
+     <a class="del">Remove from plan</a>
+    </div></div>
+   <div class="tr sel"><span class="cb on">✓</span><span class="dg">⠿</span><span class="tg" style="background:#FBE3E1;color:#B8262B">OVERDUE</span><b>Read: ASIA classification</b><span class="day">was Tue 24</span><span class="est">10 m</span><span class="mn">⋯</span></div>
+
+   <div class="wkh"><b>Next week</b><span>29 September – 5 October · 7 planned</span><span class="ln"></span><span>Move the whole week ›</span></div>
+   <div class="tr"><span class="cb"></span><span class="dg">⠿</span><span class="tg" style="background:#FFF0E4;color:#D9762F">READ</span><b>Brown-Séquard syndrome</b><span class="day">Mon 29</span><span class="est">11 m</span><span class="mn">⋯</span></div>
+   <div class="tr"><span class="cb"></span><span class="dg">⠿</span><span class="tg" style="background:#EFEBFC;color:#6F5FCB">QUESTIONS</span><b>Stroke — 20 questions</b><span class="day">Mon 29</span><span class="est">15 m</span><span class="mn">⋯</span></div>
+   <div class="tr"><span class="cb"></span><span class="dg">⠿</span><span class="tg" style="background:#E3F6F0;color:#2E9B80">CARDS</span><b>All topics — cards due</b><span class="day">Tue 30</span><span class="est">8 m</span><span class="mn">⋯</span></div>
+   <div class="tr" style="border-style:dashed;justify-content:center;color:#9AA5B4;font-weight:900;font-size:13px">＋ Add a task to next week</div>
+
+   <div class="hint">Drag a task between days or weeks. Dropping it on a full day asks whether to <b style="color:var(--navy)">exceed the daily cap</b> or push the rest along.</div>
+  </div>
+ </div>
+
+ <div class="notes">
+  <div class="nb"><b>ORDER REPLACES WEIGHT</b><p>No numbers to tune. The plan works through the list — <em>interleaved, one topic at a time, or exactly as listed</em> — and you change the emphasis by dragging.</p></div>
+  <div class="nb"><b>EVERY TASK HAS A MENU</b><p><em>Tomorrow · next study day · next week · pick a date</em>, then edit, change target, duplicate and remove — where the task sits, without leaving the list.</p></div>
+  <div class="nb"><b>BULK AND DRAG</b><p>Select several to move, complete or remove together; drag between days and weeks. A week header can move a whole week at once.</p></div>
+ </div>
+</div>
+</body></html>

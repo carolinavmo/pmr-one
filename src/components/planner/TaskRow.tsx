@@ -52,7 +52,10 @@ export function TaskRow({
   title: string;
   estimateLabel: string;
   estimateMinutes: number;
-  scheduledFor: string;
+  // Null for a flexible/target-mode plan's queued task — it has no
+  // day to edit into, only a position (NewTaskDrawer's edit mode
+  // hides the date field in that case).
+  scheduledFor: string | null;
   planId: string | null;
   plans: StudyPlan[];
   state: "pending" | "done" | "skipped";

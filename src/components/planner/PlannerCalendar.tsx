@@ -114,6 +114,11 @@ export function PlannerCalendar({ tasks, plans, todayIso }: { tasks: StartableTa
   const tasksByDate = useMemo(() => {
     const map = new Map<string, StartableTask[]>();
     for (const task of visibleTasks) {
+      // "Flexible plans have no chips — their tasks are not on the
+      // calendar" (PLANNER-SPEC.md); a queued task has no
+      // scheduledFor to bucket by, so it's excluded here too, defense
+      // in depth alongside whatever server query supplied `tasks`.
+      if (task.scheduledFor === null) continue;
       const list = map.get(task.scheduledFor) ?? [];
       list.push(task);
       map.set(task.scheduledFor, list);

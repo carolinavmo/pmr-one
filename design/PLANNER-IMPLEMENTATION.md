@@ -1,218 +1,248 @@
 # Implementing the Study Planner
 
-Designs: `PLANNER-1-today.png` · `PLANNER-2-calendar.png` · `PLANNER-3-plan.png`
-Spec: `PLANNER-SPEC.md`
+Designs: `PLANNER-1-today.png` · `PLANNER-2-calendar.png` · `PLANNER-3-plan.png` ·
+`PLANNER-4-editing.png` · `PLANNER-5-plan-editing.png` · `PLANNER-6-share-flexible-done.png` ·
+`PLANNER-7-task-bar.png`
+Spec: `PLANNER-SPEC.md` — read it first; it is the contract.
 
 ## Commit first
 ```
 design/
   PLANNER-SPEC.md
-  planner-today.html      ← the landing page
-  planner-calendar.html   ← month view
-  planner-plan.html       ← inside a plan
+  planner-today.html            ← landing page
+  planner-calendar.html         ← month view
+  planner-plan.html             ← plan overview
+  planner-plan-editing.html     ← content + schedule tabs (final, no weights)
+  planner-editing.html          ← new plan, add-task drawer, adjust the pace
+  planner-share-flexible-done.html  ← plan modes and completion
+  planner-task-bar.html         ← the task bar inside other features
   qbank-style.css
-  ref/PLANNER-1-today.png, -2-calendar.png, -3-plan.png
+  ref/PLANNER-*.png
 ```
 
 ---
 
-## The model
+## 1 · The model
 
-**A plan generates tasks. A task points at something in the platform.**
+**A plan is an ordered list of library content plus how it runs. A task points at something in
+the platform.**
 
 ```
-plan            id, user_id, name, kind('exam'|'rotation'|'routine'|'custom'),
-                colour_key, target_date, status('active'|'paused'|'done'),
-                study_days int[]   -- 1=Mon … 7=Sun
-                session_minutes, max_tasks_per_day, created_at
-plan_topic      plan_id, topic_ref (library region or topic id), weight, position
-task            id, user_id, plan_id (nullable), type('read'|'flashcards'|'questions'
-                |'course'|'custom'),
-                target_ref     -- page id, deck id, question set id, course id
-                title, estimate_minutes, scheduled_for date,
-                state('pending'|'done'|'skipped'), completed_at,
-                original_date  -- kept when a task rolls forward
-day_log         user_id, date, minutes_studied, tasks_done   -- for the streak and hours
+plan        id, user_id, name, kind('exam'|'rotation'|'routine'|'custom'),
+            colour_key, target_date null,
+            mode('scheduled'|'flexible'|'target'),
+            order_mode('interleave'|'one_topic'|'as_listed'),
+            study_days int[], session_minutes, max_tasks_per_day,
+            weekly_target int null,        -- target mode only
+            status('active'|'paused'|'done')
+
+plan_item   id, plan_id, kind('folder'|'page'|'deck'|'question_set'),
+            ref_id, position                -- no weight; order carries the emphasis
+
+task        id, user_id, plan_id null, type('read'|'flashcards'|'questions'|'course'|'custom'),
+            target_ref null, title, estimate_minutes,
+            scheduled_for date null,        -- null = lives in the queue
+            queue_position int null,
+            original_date date null,        -- set when a task rolls forward
+            state('pending'|'done'|'skipped'),
+            completed_at, completed_via('auto'|'manual'|'bulk')
+
+day_log     user_id, date, minutes_studied, tasks_done
 ```
 
-Two things to get right at the start:
-- **`original_date`.** A missed task moves to today and stays visible as overdue; the original
-  date is what lets the week strip show "1 missed" on Tuesday rather than losing it.
-- **`target_ref` is required for every type except `custom`.** A task that cannot be started is
-  a note, and belongs in My Handbook.
+Four decisions that are painful to add later:
+- **`target_ref` on every non-custom task.** A task that cannot be started is a note.
+- **`original_date`** — what lets a rolled-forward task still read "was Tue 24".
+- **`scheduled_for` nullable** — the whole flexible mode depends on it.
+- **`state` includes `skipped`** — skipped work must never count as studied.
 
-## Audit before writing code
-1. Do library pages, decks, question sets and courses all have **stable ids** to point at?
-2. Is there an estimated reading time per page? If not, compute from word count (200 wpm).
-3. Does anything already write a "studied today" event, or does the planner have to?
-4. Is the existing planner's task table worth migrating, or is it empty in practice?
+## 2 · Audit before writing code
+1. Do library pages, decks, question sets and lessons have **stable ids**?
+2. Is there a reading-time estimate per page? If not, compute from word count ÷ 200 wpm.
+3. **Does the library already record a page as read?** If it does, the planner subscribes to that
+   event. If not, build it there — not in the planner (see pass 5).
+4. Is the existing planner's task table worth migrating, or empty in practice?
 
 ---
 
-## Pass 1 — model, rail, and today
-> Read `design/PLANNER-SPEC.md` and open `design/planner-today.html`.
+# Reader-facing passes
+
+## Pass 1 — model, rail, Today
+> Read `design/PLANNER-SPEC.md`, open `design/planner-today.html`.
 >
-> Create `plan`, `plan_topic`, `task`, `day_log`. Replace the library tree on `/planner` with
-> the planner rail: Today · This week · Overdue · Done · Calendar, then **My plans** with their
-> percentages.
+> Create the tables. Replace the library tree on `/planner` with the planner rail:
+> Today · This week · Overdue · Done · Calendar, then **My plans** with their percentages.
 >
-> Build the **Today** page: header figures (due today · this week · streak · hours), the navy
-> today panel with count, estimate, **▶ Start today's plan** and the task list, then the week
-> strip, the plan cards and Coming up.
->
-> Every task row shows **type tag · title · estimate · Start**. Start opens the target feature
-> with that content loaded and marks the task done on completion.
+> Build **Today**: header figures (due today · this week · streak · hours), the navy panel with
+> count, estimate, **▶ Start today's plan**, the task list with type tags and Start buttons, the
+> week strip, plan cards, and Coming up. Unscheduled tasks appear in an **Up next** section.
 
 ## Pass 2 — the generator
-> This is the feature. Given a plan, produce tasks.
+> Given a plan, produce tasks.
 >
 > ```
-> weeks            = weeks between today and target_date
-> slots_per_week   = len(study_days) × max_tasks_per_day
-> total_slots      = weeks × slots_per_week
-> per_topic        = total_slots distributed by plan_topic.weight
+> content  = plan_items expanded to pages/decks/sets, in position order
+> order    = interleave  → rotate through folders, one item each pass
+>            one_topic   → finish a folder before the next
+>            as_listed   → exactly the stored order
 > ```
-> Then, for each topic, emit tasks in a repeating cycle — **read → flashcards → questions** —
-> and lay them on study days only, never exceeding `max_tasks_per_day`.
+> Then place them according to **mode**:
+> - `scheduled` — onto study days only, never exceeding `max_tasks_per_day`, between today and
+>   `target_date`.
+> - `flexible` — **no dates**: `scheduled_for = null`, `queue_position` in generated order.
+> - `target` — no dates, but the Today page draws `weekly_target ÷ study_days` per day from the
+>   queue.
 >
-> Rules:
-> - **Interleave topics** rather than finishing one before starting the next; spacing beats
->   blocking for retention.
-> - **Never schedule on a non-study day**, and leave any day already at its cap alone.
-> - Re-running the generator must be **idempotent for completed tasks** — never delete or move
->   what is done.
+> Rules: emit **read → flashcards → questions** per topic; never move or delete a completed task
+> when regenerating; adding content appends and re-spreads **pending only**.
 
 ## Pass 3 — the calendar
-> Month, week and agenda views at `/planner/calendar`. Tasks as chips in the plan's colour,
-> completed struck through at 55% opacity, overdue red, "+n more" past three per cell.
-> Selecting a day fills the **right-hand panel** — never a modal. Drag to move a task; clicking
-> empty space in a day opens the new-task form pre-dated.
+> Month, week and agenda at `/planner/calendar`. Chips in the plan's colour with type and size;
+> completed struck through at 55%; overdue red; "+n more" past three. Selecting a day fills the
+> **right-hand panel** — never a modal. Drag to move; clicking empty space opens the add-task
+> drawer pre-dated. **Flexible plans have no chips** — their tasks are not on the calendar.
 
-## Pass 4 — the plan page
-> `/planner/plan/:id` as in `planner-plan.html`: ring, deadline, **on-track pill with the number
-> of tasks either way**, four metrics, tabs, coverage by topic, the week squares, and the
-> settings preview.
+## Pass 4 — the plan page, editable in place
+> `/planner/plan/:id`, four tabs, as in `planner-plan-editing.html`.
 >
-> - `on_track = tasks_done − tasks_that_should_be_done_by_now`, stated as "2 tasks ahead" or
->   "2 tasks behind".
-> - `projected_finish` uses the **actual pace over the last four weeks**, not the plan's
->   intended pace.
-> - **Adjust the pace** re-spreads only pending tasks. Offer it automatically once overdue > 5.
+> - **Overview** — ring, deadline, **on-track pill with a number**, four metrics including a
+>   **projected finish from the last four weeks' actual pace**, coverage by topic, the week
+>   squares.
+> - **Content** — the ordered list of folders with their pages; drag handles; ✕ to remove a page;
+>   ⋯ on a folder (rename in plan · remove · move up/down); the **Order** control
+>   (interleave · one topic at a time · as listed); and **＋ Add pages or folders**, which opens
+>   an **inline panel** with search and a multi-select grid, footed by the consequence
+>   ("16 pages · about 34 tasks, added to the end of the plan").
+> - **Schedule** — tasks grouped by week, each row with checkbox, drag handle, type, title, day,
+>   estimate and a ⋯ menu: *Move to Tomorrow / Next study day / Next week / Pick a date*, then
+>   Edit, Change type or target, Duplicate, **Remove from plan**. Multi-select shows the navy bulk
+>   bar. Dropping onto a full day asks: exceed the cap, or push the rest along.
+>   In a flexible plan this tab is **Up next**: a single ordered queue with drag-to-reorder.
+> - **Settings** — mode, study days, session length, tasks a day, colour, pause, delete.
 
-## Pass 5 — the edges
-> 1. **Empty state**: no plans → one panel, "Plan your study", with three starting points (exam
->    date · rotation · weekly routine) and a quiet "add a single task". Hide the metrics, the
->    week strip and the calendar until something exists.
-> 2. **Rest days** are labelled, not blank.
-> 3. **Rolling forward** runs once a day: pending tasks with `scheduled_for < today` move to
->    today, keeping `original_date`.
+## Pass 5 — the task bar and completion
+> **Start opens the target directly.** Pass the task id through, and render the **task bar**
+> above whatever loads: `TASK 2 OF 3 · plan · day`, position segments, **Skip**, **Back to
+> planner**, **✓ Mark as read/done**.
+>
+> Completion is event-driven, and **the event belongs to the feature, not the planner**:
+> | Event | Emitted by | Completes |
+> |---|---|---|
+> | `page_read` | the library reader — end of page **and** ≥ 30 s dwell, or a manual "Mark as read" | any open `read` task for that page |
+> | `flashcard_session_finished` | flashcards | the matching `flashcards` task |
+> | `question_set_submitted` | question bank | the matching `questions` task |
+> | `lesson_finished` | courses | the matching `course` task |
+>
+> A page marked read **while browsing**, with no task open, must still complete a matching task
+> — one source of truth. Manual completion also works from any task row, from the left-rail
+> *Reading progress* box, and from the end-of-page block.
+>
+> Every completion shows a toast with **Undo**; un-ticking reopens the task and clears
+> `completed_at`.
+
+## Pass 6 — creating and adjusting
+> - **New plan**: a full page (`planner-editing.html`) — kind, name, date, colour, mode, study
+>   days, session length, tasks a day, content picked from the library, order control, and a
+>   **preview strip** (tasks created · pace · finish date) before Create.
+> - **Add task**: a 460px **drawer**, not a modal — type, target search, when, estimate, plan,
+>   repeat.
+> - **Adjust the pace**: offered automatically once `overdue > 5`. Four options — re-spread ·
+>   add a study day · drop the lowest-priority content · **forgive them** — each showing its
+>   consequence, with an after-state preview.
+
+## Pass 7 — the edges
+> 1. **Empty state**: no plans → one panel with three starting points (exam · rotation · weekly
+>    routine) and a quiet "add a single task". Hide metrics, week strip and calendar.
+> 2. **Roll-forward job**, once a day: pending scheduled tasks with `scheduled_for < today` move
+>    to today, keeping `original_date`. Flexible plans are untouched — nothing is ever late.
+> 3. **Rest days** are labelled, not blank.
 > 4. **Streak** = consecutive days with ≥ 1 task done, user's timezone.
-> 5. Mobile: today page only, week strip scrolls, calendar defaults to agenda.
+> 5. **Pause** hides a plan's pending tasks everywhere and stops generation; resume restores.
+> 6. Mobile: Today only; week strip scrolls; calendar defaults to agenda; the task bar collapses
+>    to position + ✓.
 
 ---
 
 # Seeding
 
-## A · Plan templates (ship these, editable by an admin)
+## A · Plan templates (shipped, editable by an admin)
+No weights — **order is the emphasis**, so the list order below is the teaching order.
 
 ```json
 [
   {
-    "key": "board-exam",
-    "name": "Board exam",
-    "kind": "exam",
-    "colour_key": "peach",
-    "defaults": { "study_days": [1,2,3,4,6], "session_minutes": 45, "max_tasks_per_day": 3 },
-    "topics": [
-      { "ref": "msk.spine",            "weight": 10 },
-      { "ref": "msk.shoulder",         "weight": 7 },
-      { "ref": "msk.knee",             "weight": 7 },
-      { "ref": "msk.foot-ankle",       "weight": 6 },
-      { "ref": "msk.hip",              "weight": 6 },
-      { "ref": "msk.elbow",            "weight": 4 },
-      { "ref": "msk.wrist-hand",       "weight": 5 },
-      { "ref": "neuro.stroke",         "weight": 9 },
-      { "ref": "neuro.sci",            "weight": 9 },
-      { "ref": "neuro.tbi",            "weight": 7 },
-      { "ref": "neuro.mononeuropathies","weight": 6 },
-      { "ref": "neuro.cranial-facial", "weight": 3 },
-      { "ref": "basic.anatomy",        "weight": 5 },
-      { "ref": "basic.biomechanics",   "weight": 4 },
-      { "ref": "basic.physical-exam",  "weight": 5 },
-      { "ref": "basic.physical-agents","weight": 3 },
-      { "ref": "basic.icf",            "weight": 2 },
-      { "ref": "other.amputees",       "weight": 5 },
-      { "ref": "other.paediatric",     "weight": 4 },
-      { "ref": "other.pelvic-floor",   "weight": 3 }
+    "key": "board-exam", "name": "Board exam", "kind": "exam", "colour_key": "peach",
+    "defaults": { "mode": "scheduled", "order_mode": "interleave",
+                  "study_days": [1,2,3,4,6], "session_minutes": 45, "max_tasks_per_day": 3 },
+    "content": [
+      "msk.spine", "neuro.stroke", "neuro.sci", "msk.shoulder", "msk.knee",
+      "neuro.tbi", "msk.hip", "msk.foot-ankle", "neuro.mononeuropathies",
+      "msk.wrist-hand", "basic.physical-exam", "other.amputees", "basic.anatomy",
+      "msk.elbow", "basic.biomechanics", "other.paediatric", "neuro.cranial-facial",
+      "basic.physical-agents", "other.pelvic-floor", "basic.icf"
     ]
   },
   {
-    "key": "rotation",
-    "name": "Rotation",
-    "kind": "rotation",
-    "colour_key": "lilac",
-    "defaults": { "study_days": [1,2,3,4,5], "session_minutes": 30, "max_tasks_per_day": 2 },
-    "prompt": "Which rotation, and how many weeks?",
-    "topics": "chosen at creation from one library region"
+    "key": "rotation", "name": "Rotation", "kind": "rotation", "colour_key": "lilac",
+    "defaults": { "mode": "scheduled", "order_mode": "one_topic",
+                  "study_days": [1,2,3,4,5], "session_minutes": 30, "max_tasks_per_day": 2 },
+    "content": "one library region, chosen at creation"
   },
   {
-    "key": "weekly-routine",
-    "name": "Weekly routine",
-    "kind": "routine",
-    "colour_key": "mint",
-    "defaults": { "study_days": [1,2,3,4,5,6,7], "session_minutes": 15, "max_tasks_per_day": 1 },
+    "key": "weekly-routine", "name": "Weekly routine", "kind": "routine", "colour_key": "mint",
+    "defaults": { "mode": "target", "weekly_target": 10, "session_minutes": 15 },
     "recurring": [
       { "type": "flashcards", "target": "due-today", "days": [1,2,3,4,5,6,7] },
-      { "type": "questions",  "target": "weakest",  "count": 20, "days": [1,4] }
+      { "type": "questions",  "target": "weakest", "count": 20, "days": [1,4] }
     ]
+  },
+  {
+    "key": "flexible-catchup", "name": "No fixed days", "kind": "custom", "colour_key": "sky",
+    "defaults": { "mode": "flexible", "order_mode": "interleave" },
+    "content": "chosen at creation"
   }
 ]
 ```
 
-**Weights are relative, not percentages** — the generator normalises them. The board-exam
-weights above roughly follow the usual exam blueprint emphasis; an editor should be able to
-change them without a deploy.
-
 ## B · Demo data for development
-A seed script should create one user whose planner looks like the reference image:
+One deterministic script (fixed random seed) producing the reference screenshots:
 
-- **3 plans**: Board exam (peach, target +34 weeks, 62% done), Neurology rotation (lilac,
-  6 weeks, week 2, 28%), Weekly routine (mint, recurring).
-- **240 tasks** for the board plan, of which **148 done**, spread backwards over ~12 weeks at
-  3 a day on Mon/Tue/Wed/Thu/Sat, plus forward to the target date.
-- **2 overdue**: one `read` from two days ago, one `questions` from last week, both with
-  `original_date` set.
-- **Today**: 3 pending tasks — one `read`, one `flashcards` (20 cards), one `questions` (15) —
-  plus one already done, so the panel shows a completed row.
-- **day_log** for the last 40 days with realistic gaps, giving a **5-day streak** and about
-  **4.2 hours this week**.
-- One plan deliberately **behind** (the rotation, 2 tasks behind) so the amber on-track state is
-  visible in development.
+- **4 plans**: Board exam (peach, scheduled, +34 weeks, 62%), Neurology rotation (lilac,
+  scheduled, week 2 of 6, 28%, **2 tasks behind** so the amber state is visible), Weekly routine
+  (mint, target mode), and one **flexible** plan with a 40-task queue and no dates.
+- **240 tasks** for the board plan — 148 done, 2 overdue with `original_date` set, 3 pending
+  today (one `read`, one `flashcards` 20 cards, one `questions` 15) and one already done today.
+- **day_log** for 40 days with realistic gaps → **5-day streak**, **4.2 h this week**.
+- One **skipped** task, so the skipped state appears somewhere.
 
 ```
-npm run seed:planner -- --user demo@pmrexplained.com --weeks-back 12 --weeks-forward 34
+npm run seed:planner -- --user demo@pmrexplained.com --weeks-back 12 --weeks-forward 34 --seed 42
 ```
-
-Keep the demo generator **deterministic** (a fixed random seed) so screenshots and tests do not
-change between runs.
 
 ---
 
 ## Guardrails
-- **"Today is the page."** The calendar is a view, never the landing view.
-- **"Every task starts something."**
-- **"Nothing is silently deleted."** Missed tasks roll forward, visible.
-- **"Coverage beats completion"** on a plan page.
-- **"Any plan can be reshaped"** — pace, topics, pause.
+- **"Today is the page."** The calendar is a view.
+- **"Every task starts something."** No target, no task — it is a note.
+- **"The feature owns the event."** Completion is emitted by the library, flashcards, questions
+  or courses; the planner only listens.
+- **"Nothing is silently deleted."** Missed tasks roll forward; skipped tasks are marked skipped.
+- **"Completed work is immutable"** to every editing flow.
+- **"Flexible plans have no overdue."**
+- **"Preview before commit"** on create, add-content and adjust-pace.
 - **"The rail is the planner."**
 
 ## Check it yourself
-- Create a board-exam plan with a date 8 weeks out — are tasks spread across study days only,
-  interleaved by topic, and capped per day?
-- Miss a day — do those tasks appear as overdue today, and still show as missed on that day in
-  the week strip and the calendar?
-- Complete a task from the Today panel — do the header figures, the week strip, the plan
-  percentage and the streak all move without a reload?
-- Re-run the generator — are completed tasks untouched?
-- Pause a plan — do its future tasks disappear from Today and the calendar, and return on resume?
-- A new account — is the empty state one panel with three starting points, and no zeroes?
+- Start a read task — does the page open with the task bar, and does reaching the end complete it?
+- Read the same page later **without a task** — does it still complete an open task for it?
+- Leave a flashcard session halfway — does the task stay open and show partial progress?
+- Skip a task — is it gone from the queue but **not** counted in hours or streak?
+- Miss two days — do those tasks appear as overdue today and still show as missed in the week
+  strip and the calendar?
+- Switch a plan to **flexible** — do its calendar chips disappear and the queue appear, with no
+  overdue anywhere?
+- Add two folders to a plan — are only pending tasks re-spread, and does the footer's estimate
+  match what is created?
+- Drag a task onto a full day — are you asked whether to exceed the cap?
+- Complete anything — do Today's figures, the week strip, the plan percentage and the streak all
+  move without a reload, and does Undo restore them?
