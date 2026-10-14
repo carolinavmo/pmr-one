@@ -215,7 +215,7 @@ export async function POST(req: NextRequest) {
       nextAfter: textOf(rows[end] ?? ({ content_config: null } as unknown as Row)).slice(0, 40),
       rowsInTable: ROWS.length,
     };
-    if (!/Interpret paraspinal muscle imaging cautiously/.test(textOf(anchor))) {
+    if (!/The interscalene triangle/.test(textOf(anchor))) {
       throw new Error(`end-of-section anchor is not the expected block: ${JSON.stringify(plan)}`);
     }
 
@@ -231,7 +231,7 @@ export async function POST(req: NextRequest) {
     const ids: string[] = [];
     const heading = await client.query<{ id: string }>(
       `INSERT INTO editorial_block (disease_id, position, block_type, content_config) VALUES ($1, $2, 'subsection_heading', $3) RETURNING id`,
-      [diseaseId, anchor.position + 1, JSON.stringify({ text: "7.10 Review — the muscles at a glance" })]
+      [diseaseId, anchor.position + 1, JSON.stringify({ text: "7.9 Review — the muscles at a glance" })]
     );
     ids.push(heading.rows[0].id);
     const tbl = await client.query<{ id: string }>(
