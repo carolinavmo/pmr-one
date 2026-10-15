@@ -27,7 +27,8 @@ interface Row {
 const strip = (v: unknown) => String(v ?? "").replace(/<[^>]*>/g, "").replace(/\s+/g, " ").trim();
 const preview = (r: Row) =>
   `${r.position} ${r.block_type}: ${strip(r.content_config?.text ?? r.content_config?.body ?? r.content_config?.label ?? (r.block_type === "comparison_table" ? JSON.stringify(r.content_config?.columns) : "")).slice(0, 55)}`;
-const isHead = (r: Row) => r.block_type === "section_heading" || r.block_type === "subsection_heading" || r.block_type === "subsubsection_heading";
+const LEVEL: Record<string, number> = { section_heading: 1, subsection_heading: 2, subsubsection_heading: 3 };
+const level = (r: Row) => LEVEL[r.block_type] ?? 99;
 
 export async function POST(req: NextRequest) {
   const { dryRun } = (await req.json().catch(() => ({}))) as { dryRun?: boolean };
@@ -50,10 +51,11 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ ok: true, skipped: `already present at position ${already.position}` });
     }
 
-    const hits = rows.map((r, i) => ({ r, i })).filter(({ r }) => r.block_type === "subsubsection_heading" && /^coronal force couple/i.test(strip(r.content_config?.text)));
-    if (hits.length !== 1) throw new Error(`expected one 'Coronal force couple' sub-subsection, found ${hits.length}: ${hits.map((h) => preview(h.r)).join(" | ")}`);
+    const hits = rows.map((r, i) => ({ r, i })).filter(({ r }) => level(r) >= 2 && level(r) <= 3 && /coronal/i.test(strip(r.content_config?.text)));
+    if (hits.length !== 1) throw new Error(`expected one 'Coronal force couple' sub-subsection, found ${hits.length}: ${hits.map((h) => preview(h.r)).join(" | ")}; headings: ${rows.filter((r) => level(r) === 3).map(preview).join(" | ")}`);
     const h = hits[0].i;
-    let next = rows.findIndex((r, i) => i > h && isHead(r));
+    const hl = level(rows[h]);
+    let next = rows.findIndex((r, i) => i > h && level(r) <= hl);
     if (next < 0) next = rows.length;
     const anchor = rows[next - 1];
     const plan = { subsubsection: rows.slice(h, next).map(preview), nextHeading: rows[next] ? preview(rows[next]) : null, insertAfterPosition: anchor.position };
