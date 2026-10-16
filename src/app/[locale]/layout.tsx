@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Roboto } from "next/font/google";
+import localFont from "next/font/local";
 import { notFound } from "next/navigation";
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages } from "next-intl/server";
@@ -19,41 +19,64 @@ import "../globals.css";
 // them by name, so no component needs to change which variable it
 // uses, only what that variable now resolves to.
 //
+// Self-hosted (src/fonts: Roboto latin subset, OFL-1.1, from @fontsource/roboto)
+// instead of next/font/google — the Google Fonts download at build time failed
+// on Railway's builder and blocked every deploy. Same weights per token as before.
+//
 // Roboto doesn't ship a 600 weight (only 100/300/400/500/700/900) —
 // the brief's "Meta 600" role uses 500 here as the nearest available
 // step below 700, not an exact match.
 
-const fontUI = Roboto({
+const fontUI = localFont({
   variable: "--font-ui",
-  subsets: ["latin"],
-  weight: ["400", "500", "700", "900"],
+  display: "swap",
+  src: [
+    { path: "../../fonts/roboto-latin-400-normal.woff2", weight: "400", style: "normal" },
+    { path: "../../fonts/roboto-latin-500-normal.woff2", weight: "500", style: "normal" },
+    { path: "../../fonts/roboto-latin-700-normal.woff2", weight: "700", style: "normal" },
+    { path: "../../fonts/roboto-latin-900-normal.woff2", weight: "900", style: "normal" },
+  ],
 });
 
-const fontReading = Roboto({
+const fontReading = localFont({
   variable: "--font-reading",
-  subsets: ["latin"],
-  weight: ["400", "500", "700"],
+  display: "swap",
+  src: [
+    { path: "../../fonts/roboto-latin-400-normal.woff2", weight: "400", style: "normal" },
+    { path: "../../fonts/roboto-latin-500-normal.woff2", weight: "500", style: "normal" },
+    { path: "../../fonts/roboto-latin-700-normal.woff2", weight: "700", style: "normal" },
+  ],
 });
 
-const fontHeading = Roboto({
+const fontHeading = localFont({
   variable: "--font-heading",
-  subsets: ["latin"],
-  weight: ["400", "700", "900"],
+  display: "swap",
+  src: [
+    { path: "../../fonts/roboto-latin-400-normal.woff2", weight: "400", style: "normal" },
+    { path: "../../fonts/roboto-latin-700-normal.woff2", weight: "700", style: "normal" },
+    { path: "../../fonts/roboto-latin-900-normal.woff2", weight: "900", style: "normal" },
+  ],
 });
 
-const fontSectionHeading = Roboto({
+const fontSectionHeading = localFont({
   variable: "--font-section-heading",
-  subsets: ["latin"],
-  weight: ["400", "700", "900"],
+  display: "swap",
+  src: [
+    { path: "../../fonts/roboto-latin-400-normal.woff2", weight: "400", style: "normal" },
+    { path: "../../fonts/roboto-latin-700-normal.woff2", weight: "700", style: "normal" },
+    { path: "../../fonts/roboto-latin-900-normal.woff2", weight: "900", style: "normal" },
+  ],
 });
 
 // Brand wordmark only ("PM&R Explained" in TopBar.tsx) — 900 per
 // DESIGN-BRIEF.md's explicit logo spec (22px/900, sentence case, navy
 // + teal split).
-const fontBrand = Roboto({
+const fontBrand = localFont({
   variable: "--font-brand",
-  subsets: ["latin"],
-  weight: ["900"],
+  display: "swap",
+  src: [
+    { path: "../../fonts/roboto-latin-900-normal.woff2", weight: "900", style: "normal" },
+  ],
 });
 
 export const metadata: Metadata = {
