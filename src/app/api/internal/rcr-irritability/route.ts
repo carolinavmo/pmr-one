@@ -64,13 +64,18 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ ok: true, skipped: `already present at position ${already.position}` });
     }
 
-    const hits = rows.map((r, i) => ({ r, i })).filter(({ r }) => level(r) >= 2 && level(r) <= 3 && /turning the examination into a plan/i.test(strip(r.content_config?.text)));
-    if (hits.length !== 1) throw new Error(`expected one matching heading, found ${hits.length}: ${hits.map((x) => preview(x.r)).join(" | ")}`);
+    const hits = rows.map((r, i) => ({ r, i })).filter(({ r }) => level(r) >= 2 && level(r) <= 3 && /findings that set the starting dose/i.test(strip(r.content_config?.text)));
+    if (hits.length !== 1) throw new Error(`expected one 'Findings that set the starting dose' heading, found ${hits.length}: ${hits.map((x) => preview(x.r)).join(" | ")}`);
     const h = hits[0].i;
+    // directly under the irritability lead-in paragraph that follows the heading
+    const lead = rows[h + 1];
+    if (!lead || lead.block_type !== "paragraph" || !/^irritability is/i.test(strip(lead.content_config?.body))) {
+      throw new Error(`lead-in paragraph not where expected: ${lead ? preview(lead) : "none"}`);
+    }
+    const anchor = lead;
     const hl = level(rows[h]);
     let next = rows.findIndex((r, i) => i > h && level(r) <= hl);
     if (next < 0) next = rows.length;
-    const anchor = rows[next - 1];
     const plan = { section: rows.slice(h, next).map(preview), nextHeading: rows[next] ? preview(rows[next]) : null, insertAfterPosition: anchor.position };
 
     if (dryRun) {
