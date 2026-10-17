@@ -41,7 +41,7 @@ import { ZoomableImage } from "@/components/ui/ZoomableImage";
 import { cardIcons, type CardIconName } from "@/components/ui/cardIcons";
 import { sanitizeRichText } from "@/lib/rich-text";
 import {
-  CARD_COLOR_CARD_ACCENT,
+  CARD_COLOR_TINT,
   CARD_COLOR_CHIP,
   CARD_COLOR_TEXT,
   CARD_COLOR_BADGE,
@@ -234,7 +234,7 @@ export function HighlightTableBlockView({
       <EditableText
         as="span"
         multiline={false}
-        className={`font-ui text-xs font-semibold ${CARD_COLOR_TEXT[color]}`}
+        className={`font-ui text-[11px] font-black tracking-[1.6px] uppercase ${CARD_COLOR_TEXT[color]}`}
         value={block.label}
         onSave={(value) => updateBlockTextAction(block.id, "label", value)}
       />
@@ -515,9 +515,9 @@ export function HighlightTableBlockView({
 
     return (
       <div
-        className={`relative flex p-4 ${
+        className={`relative flex rounded-[13px] p-4 ${
           isSideBySide ? "flex-row items-start gap-3" : "flex-col gap-2"
-        } ${CARD_COLOR_CARD_ACCENT[color]}`}
+        } ${CARD_COLOR_TINT[color]}`}
       >
         {isSideBySide && imagePosition === "left" && imageBlock}
         {isSideBySide ? (
@@ -859,9 +859,9 @@ export function HighlightTableBlockView({
 
   return (
     <div
-      className={`relative flex p-4 ${
+      className={`relative flex rounded-[13px] p-4 ${
         isSideBySide ? "flex-row items-start gap-3" : "flex-col gap-3"
-      } ${CARD_COLOR_CARD_ACCENT[color]}`}
+      } ${CARD_COLOR_TINT[color]}`}
     >
       <div className="absolute top-2 right-2">
         <button
