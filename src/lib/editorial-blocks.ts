@@ -892,6 +892,11 @@ export interface HighlightTableBlock extends BlockBase {
   title?: string;
   badgeColumnTitle?: string;
   showBadgeColumn?: boolean;
+  // Width of the table inside the card, as a percentage (20–100). Unset
+  // means 100. Reader view only narrows it from the md breakpoint up.
+  tableWidth?: number;
+  // Where a narrower-than-100% table sits inside the card. Unset means left.
+  tableAlign?: "left" | "center" | "right";
   columns: RichTableColumn[];
   rows: RichTableRow[];
   // Optional prose below the table — same free-form continuation

@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState, type ReactNode } from "react";
+import { useRef, useState, type CSSProperties, type ReactNode } from "react";
 import {
   Star,
   Palette,
@@ -11,6 +11,9 @@ import {
   PanelLeft,
   PanelRight,
   Maximize2,
+  AlignLeft,
+  AlignCenter,
+  AlignRight,
   Crosshair,
   Crop,
   Shrink,
@@ -26,6 +29,8 @@ import {
   updateBlockTextAction,
   updateBlockRichTextAction,
   updateHighlightTableAction,
+  setHighlightTableWidthAction,
+  setHighlightTableAlignAction,
   setBlockCardColorAction,
   uploadHighlightCardImageAction,
   removeHighlightCardImageAction,
@@ -58,6 +63,18 @@ type ScaleValue = { label: string; value: number };
 type ImagePosition = NonNullable<HighlightTableBlock["imagePosition"]>;
 type ImageWidth = NonNullable<HighlightTableBlock["imageWidth"]>;
 type ImageFit = NonNullable<HighlightTableBlock["imageFit"]>;
+type TableAlign = NonNullable<HighlightTableBlock["tableAlign"]>;
+
+const TABLE_ALIGN_OPTIONS: { value: TableAlign; label: string; icon: typeof AlignLeft }[] = [
+  { value: "left", label: "Align table left", icon: AlignLeft },
+  { value: "center", label: "Align table center", icon: AlignCenter },
+  { value: "right", label: "Align table right", icon: AlignRight },
+];
+const TABLE_ALIGN_CLASS: Record<TableAlign, string> = {
+  left: "",
+  center: "md:mx-auto",
+  right: "md:ml-auto",
+};
 
 // Same fixed 5-step scale as RichTableBlock's own SCALE_MAX.
 const SCALE_MAX = 5;
@@ -150,6 +167,8 @@ export function HighlightTableBlockView({
   const [columns, setColumns] = useState<Column[]>(block.columns);
   const [rows, setRows] = useState<Row[]>(block.rows);
   const [showBadgeColumn, setShowBadgeColumn] = useState(block.showBadgeColumn ?? true);
+  const [tableWidth, setTableWidth] = useState(block.tableWidth ?? 100);
+  const [tableAlign, setTableAlign] = useState<TableAlign>(block.tableAlign ?? "left");
   const [text, setText] = useState(block.text ?? "");
   const color = block.color ?? "accent";
 
@@ -207,6 +226,17 @@ export function HighlightTableBlockView({
         showBadgeColumn
       )
     );
+  };
+
+  const saveTableWidth = (raw: number) => {
+    const next = Math.min(100, Math.max(20, Math.round(raw) || 100));
+    setTableWidth(next);
+    preserveScrollAcrossSave(() => setHighlightTableWidthAction(block.id, next));
+  };
+
+  const saveTableAlign = (next: TableAlign) => {
+    setTableAlign(next);
+    preserveScrollAcrossSave(() => setHighlightTableAlignAction(block.id, next));
   };
 
   const toggleBadgeColumn = () => {
@@ -460,7 +490,10 @@ export function HighlightTableBlockView({
     const tableBody = (
       <>
         {title && titleField}
-        <div className={`overflow-hidden rounded-lg border bg-surface ${CARD_COLOR_BORDER_STRONG[color]}`}>
+        <div
+          style={{ "--table-w": `${tableWidth}%` } as CSSProperties}
+          className={`w-full overflow-hidden rounded-lg border bg-surface md:w-[var(--table-w)] ${TABLE_ALIGN_CLASS[tableAlign]} ${CARD_COLOR_BORDER_STRONG[color]}`}
+        >
           <table className="w-full border-collapse font-reading text-xs">
             <thead>
               <tr className={CARD_COLOR_BADGE[color]}>
@@ -545,6 +578,42 @@ export function HighlightTableBlockView({
           className="size-3.5 accent-accent"
         />
         Show row numbers
+      </label>
+      <label className="flex w-fit items-center gap-1.5 font-ui text-xs text-secondary">
+        Table width
+        <input
+          type="number"
+          min={20}
+          max={100}
+          step={5}
+          value={tableWidth}
+          onChange={(e) => setTableWidth(Number(e.target.value))}
+          onBlur={(e) => saveTableWidth(Number(e.target.value))}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") e.currentTarget.blur();
+          }}
+          aria-label="Table width in percent"
+          className="w-16 rounded border border-border bg-surface px-1.5 py-0.5 text-right text-primary outline-none focus:border-accent"
+        />
+        %
+        <span className="flex items-center gap-0.5 rounded border border-border p-0.5">
+          {TABLE_ALIGN_OPTIONS.map(({ value, label, icon: Icon }) => (
+            <button
+              key={value}
+              type="button"
+              aria-label={label}
+              title={label}
+              aria-pressed={tableAlign === value}
+              onClick={() => saveTableAlign(value)}
+              className={`flex size-6 items-center justify-center rounded transition-colors duration-base ${
+                tableAlign === value ? "bg-accent/10 text-accent" : "text-secondary hover:bg-border/40 hover:text-primary"
+              }`}
+            >
+              <Icon className="size-3.5" aria-hidden="true" />
+            </button>
+          ))}
+        </span>
+        <span className="text-secondary/70">(applies on screens ≥ md; reader view)</span>
       </label>
       <div className="overflow-x-auto rounded-lg border border-dashed border-border bg-surface p-2">
         <table className="w-full border-collapse font-ui text-sm">

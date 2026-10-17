@@ -653,6 +653,28 @@ export async function updateHighlightTableAction(
   revalidateDiseaseSurfaces();
 }
 
+// Width of the table inside a Highlight Table card, as a whole percentage.
+// Clamped server-side so a stray value can never collapse or overflow it.
+export async function setHighlightTableWidthAction(blockId: string, percent: number) {
+  await requireEditor();
+  const width = Math.min(100, Math.max(20, Math.round(Number(percent) || 100)));
+  await pool.query(
+    `UPDATE editorial_block SET content_config = jsonb_set(content_config, ARRAY['tableWidth'], to_jsonb($2::int)) WHERE id = $1`,
+    [blockId, width]
+  );
+  revalidateDiseaseSurfaces();
+}
+
+export async function setHighlightTableAlignAction(blockId: string, align: "left" | "center" | "right") {
+  await requireEditor();
+  if (align !== "left" && align !== "center" && align !== "right") throw new Error("Invalid alignment");
+  await pool.query(
+    `UPDATE editorial_block SET content_config = jsonb_set(content_config, ARRAY['tableAlign'], to_jsonb($2::text)) WHERE id = $1`,
+    [blockId, align]
+  );
+  revalidateDiseaseSurfaces();
+}
+
 // Only each tier's description is ever sent — level/order are fixed
 // (see EvidenceSummaryBlock's own comment), so there's nothing else
 // for this action to accept.
