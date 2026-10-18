@@ -59,8 +59,10 @@ export async function POST(req: NextRequest) {
     const hl = level(rows[h]);
     let next = rows.findIndex((r, i) => i > h && level(r) <= hl);
     if (next < 0) next = rows.length;
-    const lead = rows[h + 1];
-    const anchor = at === "end" ? rows[next - 1] : lead && lead.block_type === "paragraph" ? lead : rows[h];
+    // right under the paragraph that introduces the topic ("Activity modification — …")
+    const intro = rows.slice(h + 1, next).find((r) => r.block_type === "paragraph" && /^activity modification/i.test(strip(r.content_config?.body)));
+    if (!intro) throw new Error("intro paragraph not found in the section");
+    const anchor = intro;
     const plan = { section: rows.slice(h, next).map(preview), nextHeading: rows[next] ? preview(rows[next]) : null, insertAfterPosition: anchor.position, insertAfter: preview(anchor) };
 
     if (dryRun) {
