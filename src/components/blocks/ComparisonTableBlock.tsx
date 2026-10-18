@@ -76,8 +76,14 @@ export function ComparisonTableBlockView({
   if (!editing) {
     return (
       <div className="flex flex-col gap-2">
-        {block.caption && (
-          <p className={`font-ui text-sm text-secondary ${TEXT_ALIGN_CLASS[captionAlign]}`}>{block.caption}</p>
+        {/* The caption is rich text (the editor saves HTML), so it has to be
+            rendered as HTML — printing it as text showed stray "<br>" — and an
+            emptied caption (just a <br>) counts as no caption. */}
+        {block.caption && richTextToPlainText(block.caption).trim() && (
+          <p
+            className={`font-ui text-sm text-secondary ${TEXT_ALIGN_CLASS[captionAlign]}`}
+            dangerouslySetInnerHTML={{ __html: sanitizeRichText(block.caption) }}
+          />
         )}
         <div className="overflow-hidden rounded-lg border border-navy">
           <table className="w-full border-collapse font-reading text-sm">
