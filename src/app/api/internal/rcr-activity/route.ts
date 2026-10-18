@@ -60,7 +60,7 @@ export async function POST(req: NextRequest) {
     let next = rows.findIndex((r, i) => i > h && level(r) <= hl);
     if (next < 0) next = rows.length;
     // right under the paragraph that introduces the topic ("Activity modification — …")
-    const intro = rows.slice(h + 1, next).find((r) => r.block_type === "paragraph" && /^W*(?:nbspW*)*activity modification/i.test(strip(r.content_config?.body).slice(0, 40)));
+    const intro = rows.slice(h + 1, next).find((r) => r.block_type === "paragraph" && strip(r.content_config?.body).slice(0, 60).toLowerCase().includes("activity modification"));
     if (!intro) throw new Error(`intro paragraph not found: ${rows.slice(h + 1, next).map(preview).join(" | ")}`);
     const anchor = intro;
     const plan = { section: rows.slice(h, next).map(preview), nextHeading: rows[next] ? preview(rows[next]) : null, insertAfterPosition: anchor.position, insertAfter: preview(anchor) };
