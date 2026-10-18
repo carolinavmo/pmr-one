@@ -64,10 +64,11 @@ export async function POST(req: NextRequest) {
     const hl = level(rows[h]);
     let next = rows.findIndex((r, i) => i > h && level(r) <= hl);
     if (next < 0) next = rows.length;
-    // right under the stage's Component / Prescription table: what to do, then what not to do
-    const tables = rows.slice(h + 1, next).filter((r) => r.block_type === "comparison_table");
-    const anchor = tables[0];
-    if (!anchor) throw new Error("no table found in the section to anchor under");
+    // just before the "What not to do:" paragraph: what to do first, then what not to do
+    const sec = rows.slice(h + 1, next);
+    const notIx = sec.findIndex((r) => r.block_type === "paragraph" && strip(r.content_config?.body).toLowerCase().startsWith("what not to do"));
+    if (notIx < 1) throw new Error(`'What not to do' paragraph not found after the section start: ${sec.map(preview).join(" | ")}`);
+    const anchor = sec[notIx - 1];
     const plan = { section: rows.slice(h, next).map(preview), nextHeading: rows[next] ? preview(rows[next]) : null, insertAfterPosition: anchor.position, insertAfter: preview(anchor) };
 
     if (dryRun) {
