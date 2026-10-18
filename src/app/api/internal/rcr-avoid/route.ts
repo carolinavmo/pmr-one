@@ -4,7 +4,7 @@ import { pool } from "@/lib/db";
 
 // TEMPORARY — adds the "Avoid / Why" positions table to the "Stage 1 — …
 // Settle and activate" subsection of the Rotator cuff tendinopathy page,
-// directly after the stage's "Don't / Because" table. Placed by content
+// under the "What not to do" lead-in. Placed by content
 // anchors, one transaction, skipped if already there. POST {dryRun:true}
 // reports the plan without writing. Remove once run.
 
@@ -59,11 +59,12 @@ export async function POST(req: NextRequest) {
     const hl = level(rows[h]);
     let next = rows.findIndex((r, i) => i > h && level(r) <= hl);
     if (next < 0) next = rows.length;
-    // directly after the stage's "Don't / Because" table
+    // under the lead-in paragraph of the stage's "What not to do" sub-subsection
     const sec = rows.slice(h + 1, next);
-    const dont = sec.find((r) => r.block_type === "comparison_table" && strip((r.content_config?.columns as string[] | undefined)?.[0]).toLowerCase().startsWith("don"));
-    if (!dont) throw new Error(`"Don't / Because" table not found in the section: ${sec.map(preview).join(" | ")}`);
-    const anchor = dont;
+    const subs = sec.filter((r) => r.block_type === "subsubsection_heading" && /what not to do/i.test(strip(r.content_config?.text)));
+    if (subs.length !== 1) throw new Error(`expected one 'What not to do' sub-subsection, found ${subs.length}: ${sec.map(preview).join(" | ")}`);
+    const lead = sec[sec.indexOf(subs[0]) + 1];
+    const anchor = lead && lead.block_type === "paragraph" ? lead : subs[0];
     const plan = { section: rows.slice(h, next).map(preview), nextHeading: rows[next] ? preview(rows[next]) : null, insertAfterPosition: anchor.position, insertAfter: preview(anchor) };
 
     if (dryRun) {
