@@ -64,8 +64,7 @@ export async function POST(req: NextRequest) {
     const sec = rows.slice(h + 1, next);
     const subs = sec.filter((r) => r.block_type === "subsubsection_heading" && /how to progress/i.test(strip(r.content_config?.text)));
     if (subs.length !== 1) throw new Error(`expected one 'How to progress' sub-subsection, found ${subs.length}; headings in section: ${sec.filter((r) => level(r) === 3).map(preview).join(" | ")}`);
-    const lead = sec[sec.indexOf(subs[0]) + 1];
-    const anchor = lead && lead.block_type === "paragraph" ? lead : subs[0];
+    const anchor = subs[0]; // directly under the heading
     const plan = { section: rows.slice(h, next).map(preview), nextHeading: rows[next] ? preview(rows[next]) : null, insertAfterPosition: anchor.position, insertAfter: preview(anchor) };
 
     if (dryRun) {
