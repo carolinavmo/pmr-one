@@ -35,7 +35,7 @@ const LEVEL: Record<string, number> = { section_heading: 1, subsection_heading: 
 const level = (r: Row) => LEVEL[r.block_type] ?? 99;
 
 export async function POST(req: NextRequest) {
-  const { dryRun, at } = (await req.json().catch(() => ({}))) as { dryRun?: boolean; at?: "lead" | "end" };
+  const { dryRun, at } = (await req.json().catch(() => ({}))) as { dryRun?: boolean; at?: "heading" | "lead" | "end" };
   const client = await pool.connect();
   try {
     await client.query("BEGIN");
