@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
 import { pool } from "@/lib/db";
 
-// TEMPORARY — adds the "Exercise / Note" table to the "Main goals"
+// TEMPORARY — adds the "Exercise / Note" table and the "Training variable / Progression" table to the "Main goals"
 // sub-subsection of the "Stage 3 — range, position and complexity" subsection
 // of the Rotator cuff tendinopathy page. Placed by content anchors, one
 // transaction, skipped if already there. POST {dryRun:true} reports the plan
@@ -21,6 +21,22 @@ const ROWS = [
   [b("Bench or incline press"), "Horizontal pushing under real load, cuff working as stabiliser"],
   [b("Loaded carries"), `Farmer’s, suitcase, and ${b("overhead carry")} — sustained cuff demand with a vertical load`],
   [b("Scaption / lateral raise"), "Heavier, through full range, controlled descent"],
+];
+
+const MARKER2 = "Isolated → integrated, multiplanar movements";
+const COLUMNS2 = ["Training variable", "Progression"];
+const ROWS2 = [
+  [b("Resistance"), "Moderate → heavier loads"],
+  [b("Repetitions"), "Higher repetitions for endurance; lower repetitions with greater resistance for strength"],
+  [b("Shoulder position"), "Arm at side → elevated → overhead"],
+  [b("Lever arm"), "Shorter → longer, as appropriate"],
+  [b("Movement speed"), "Slow and controlled → faster, task-specific"],
+  [b("Complexity"), MARKER2],
+  [b("Work capacity"), "Increase repetitions, duration, or total workload"],
+];
+const TABLES = [
+  { marker: MARKER, columns: COLUMNS, rows: ROWS },
+  { marker: MARKER2, columns: COLUMNS2, rows: ROWS2 },
 ];
 
 interface Row {
@@ -49,10 +65,10 @@ export async function POST(req: NextRequest) {
       [diseaseId]
     );
 
-    const already = rows.find((r) => r.block_type === "comparison_table" && JSON.stringify(r.content_config).includes(MARKER));
-    if (already) {
+    const todo = TABLES.filter((t) => !rows.some((r) => r.block_type === "comparison_table" && JSON.stringify(r.content_config).includes(t.marker)));
+    if (todo.length === 0) {
       await client.query("ROLLBACK");
-      return NextResponse.json({ ok: true, skipped: `already present at position ${already.position}` });
+      return NextResponse.json({ ok: true, skipped: "both tables already present" });
     }
 
     const hits = rows.map((r, i) => ({ r, i })).filter(({ r }) => level(r) >= 2 && level(r) <= 3 && /stage 3/i.test(strip(r.content_config?.text)));
@@ -78,15 +94,19 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ ok: true, dryRun: true, plan });
     }
 
-    await client.query(`UPDATE editorial_block SET position = -(position + 1) WHERE disease_id = $1 AND position > $2`, [diseaseId, anchor.position]);
+    await client.query(`UPDATE editorial_block SET position = -(position + $3) WHERE disease_id = $1 AND position > $2`, [diseaseId, anchor.position, todo.length]);
     await client.query(`UPDATE editorial_block SET position = -position WHERE disease_id = $1 AND position < 0`, [diseaseId]);
-    const { rows: ins } = await client.query<{ id: string }>(
-      `INSERT INTO editorial_block (disease_id, position, block_type, content_config) VALUES ($1, $2, 'comparison_table', $3) RETURNING id`,
-      [diseaseId, anchor.position + 1, JSON.stringify({ columns: COLUMNS, rows: ROWS })]
-    );
+    const ids: string[] = [];
+    for (let k = 0; k < todo.length; k++) {
+      const { rows: ins } = await client.query<{ id: string }>(
+        `INSERT INTO editorial_block (disease_id, position, block_type, content_config) VALUES ($1, $2, 'comparison_table', $3) RETURNING id`,
+        [diseaseId, anchor.position + 1 + k, JSON.stringify({ columns: todo[k].columns, rows: todo[k].rows })]
+      );
+      ids.push(ins[0].id);
+    }
     await client.query("COMMIT");
     revalidatePath("/[locale]/conditions/[slug]", "page");
-    return NextResponse.json({ ok: true, inserted: ins[0].id, plan });
+    return NextResponse.json({ ok: true, inserted: ids, plan });
   } catch (err) {
     await client.query("ROLLBACK").catch(() => {});
     return NextResponse.json({ ok: false, error: err instanceof Error ? err.message : String(err) }, { status: 400 });
