@@ -5,7 +5,7 @@ import { pool } from "@/lib/db";
 // TEMPORARY — adds two guideline tables to the "Adjuncts and procedures"
 // section of the Rotator cuff tendinopathy page: the overall recommendations
 // table (Intervention / Recommendation / Grade / Rec no.) at the start of the
-// section, the Cochrane reviews table in the "Cochrane" subsection, and the injection recommendations table (Injection / Recommendation
+// section, the "Finding / %" prevalence table in "When to image", the Cochrane reviews table in the "Cochrane" subsection, and the injection recommendations table (Injection / Recommendation
 // / Grade) in the "Corticosteroid injection" subsection. Placed by content
 // anchors, one transaction, each skipped if already there. POST {dryRun:true}
 // reports the plan without writing. Remove once run.
@@ -65,6 +65,26 @@ const JOBS: Job[] = [
       const { h, sec } = findHeading(rows, /adjuncts and procedures/i, 1, 2);
       const firstSub = sec.findIndex((r) => level(r) >= 2 && level(r) <= 3);
       return firstSub < 0 ? (sec.length ? sec[sec.length - 1] : rows[h]) : firstSub === 0 ? rows[h] : sec[firstSub - 1];
+    },
+  },
+  {
+    name: "prevalence of abnormality (When to image)",
+    marker: "595/602",
+    columns: ["Finding", "%"],
+    rows: [
+      [b("Any rotator cuff abnormality"), `${b("98.7%")} (595/602)`],
+      ["Tendinopathy as most severe finding", "25.3%"],
+      ["Partial-thickness tear", "62.4%"],
+      ["Full-thickness tear", "11.1%"],
+      [b("Normal"), b("1.3%")],
+    ],
+    // right after the Study / Population / Finding table in that subsection, else under the claim paragraph, else under the heading
+    locate: (rows) => {
+      const { h, sec } = findHeading(rows, /when to image/i, 2, 2);
+      const studies = sec.find((r) => r.block_type === "comparison_table" && JSON.stringify(r.content_config).includes("Minagawa 2013"));
+      if (studies) return studies;
+      const claim = sec.find((r) => r.block_type === "paragraph" && /tendon abnormality is close to a normal finding/i.test(strip(r.content_config?.body)));
+      return claim ?? rows[h];
     },
   },
   {
