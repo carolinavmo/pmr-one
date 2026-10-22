@@ -5,7 +5,7 @@ import { pool } from "@/lib/db";
 // TEMPORARY — adds two guideline tables to the "Adjuncts and procedures"
 // section of the Rotator cuff tendinopathy page: the overall recommendations
 // table (Intervention / Recommendation / Grade / Rec no.) at the start of the
-// section, and the injection recommendations table (Injection / Recommendation
+// section, the Cochrane reviews table in the "Cochrane" subsection, and the injection recommendations table (Injection / Recommendation
 // / Grade) in the "Corticosteroid injection" subsection. Placed by content
 // anchors, one transaction, each skipped if already there. POST {dryRun:true}
 // reports the plan without writing. Remove once run.
@@ -28,6 +28,7 @@ interface Job {
   marker: string;
   columns: string[];
   rows: string[][];
+  caption?: string;
   // returns the block the new table goes directly after
   locate: (rows: Row[]) => Row;
 }
@@ -64,6 +65,55 @@ const JOBS: Job[] = [
       const { h, sec } = findHeading(rows, /adjuncts and procedures/i, 1, 2);
       const firstSub = sec.findIndex((r) => level(r) >= 2 && level(r) <= 3);
       return firstSub < 0 ? (sec.length ? sec[sec.length - 1] : rows[h]) : firstSub === 0 ? rows[h] : sec[firstSub - 1];
+    },
+  },
+  {
+    name: "Cochrane reviews",
+    marker: "Karjalainen 2019",
+    caption: "Cochrane reviews — current and central",
+    columns: ["Review", "The question", "What it found", "Take-home"],
+    rows: [
+      [
+        `${b("Subacromial decompression")}<br>Karjalainen 2019`,
+        `Does the operation beat a ${b("placebo operation")}?`,
+        `${b("No.")} No clinically important difference in pain, function or quality of life at one year — and this is ${b("high-certainty")} evidence, the strongest in the whole condition`,
+        "The operation does not work. This is the finding that dismantled the impingement model",
+      ],
+      [
+        `${b("Surgery for rotator cuff tears")}<br>Karjalainen 2019`,
+        "Does repairing a tear beat exercise?",
+        `Probably ${b("little or no meaningful benefit")} over exercise with or without injection. ${b("No placebo-surgery trial has ever been done")}`,
+        `Applies to ${b("small degenerative")} tears — not traumatic or large ones. Useful when a patient asks why they aren’t being operated on`,
+      ],
+      [
+        `${b("Shock wave therapy")}<br>Surace 2020`,
+        "Does it help, and does calcium make a difference?",
+        `Benefits are ${b("real but too small to matter clinically")}, and ${b("no better in calcific than non-calcific disease")}. Adverse events were about three times more common than with placebo`,
+        `Weakens the usual “shockwave is for calcific disease” line. In calcific disease, ${b("lavage is the better-supported option")}`,
+      ],
+      [
+        `${b("Manual therapy and exercise")}<br>Page 2016`,
+        "Does the combination beat placebo?",
+        `${b("No clinically important difference")} in any outcome — a small function advantage at best. Mild adverse events were markedly more common`,
+        "Keep it as a short-term symptom tool that makes loading possible. Not a substantial intervention in its own right",
+      ],
+      [
+        `${b("Electrotherapy modalities")}<br>Page 2016`,
+        "Do ultrasound, laser, TENS and similar add anything?",
+        `${b("Added to exercise, they add nothing of clinical importance.")} No benefit for PEMF, microcurrent, iontophoresis or diathermy; TENS evidence too weak to judge`,
+        b("The one sentence that answers nearly every adjunct question"),
+      ],
+      [
+        `${b("Imaging accuracy")}<br>Lenza`,
+        "Which modality detects a tear best?",
+        `For ${b("full-thickness")} tears, ultrasound, MRI and MR arthrography perform ${b("equally well")}. For partial-thickness tears, ${b("none of them perform well")}`,
+        "Choose on cost, access and what else you need to see. Ultrasound first",
+      ],
+    ],
+    // under the subsection's lead-in paragraph (or the heading when it has none)
+    locate: (rows) => {
+      const { h, sec } = findHeading(rows, /cochrane/i, 2, 3);
+      return sec[0] && sec[0].block_type === "paragraph" ? sec[0] : rows[h];
     },
   },
   {
@@ -116,7 +166,7 @@ export async function POST(req: NextRequest) {
       await client.query(`UPDATE editorial_block SET position = -position WHERE disease_id = $1 AND position < 0`, [diseaseId]);
       const { rows: ins } = await client.query<{ id: string }>(
         `INSERT INTO editorial_block (disease_id, position, block_type, content_config) VALUES ($1, $2, 'comparison_table', $3) RETURNING id`,
-        [diseaseId, anchor.position + 1, JSON.stringify({ columns: job.columns, rows: job.rows })]
+        [diseaseId, anchor.position + 1, JSON.stringify({ columns: job.columns, rows: job.rows, ...(job.caption ? { caption: job.caption } : {}) })]
       );
       results.push({ ...plan, inserted: ins[0].id });
     }
