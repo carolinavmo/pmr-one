@@ -11,9 +11,10 @@ import { Button } from "@/components/ui/Button";
 // A drag can carry either a topic (folder) or a disease (condition)
 // — "kind" is threaded alongside the id everywhere so a drop target
 // can tell the two apart and route to the right Server Action. A
-// disease drag is scoped to reordering within its own topic (see
-// moveDiseaseAction's own comment) — it's never a valid "into" target
-// for a topic row's re-parent drop zone.
+// disease drag can reorder within its topic, or move the condition into
+// another topic (dropped on that topic's row, or next to one of its
+// conditions); it is never a topic re-parent, and a separator never
+// accepts one.
 type DragKind = "topic" | "disease";
 
 interface TopicDndValue {

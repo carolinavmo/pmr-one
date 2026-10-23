@@ -56,14 +56,14 @@ export async function createDiseaseAction(
   return { ok: true, slug };
 }
 
-// Reorders a condition within its own topic's disease list — the
+// Places a condition at `newIndex` in `topicId`'s disease list — the
 // Manage Topics drag-and-drop, condition side. Mirrors
 // moveTopicAction's sibling-renumbering shape (topics.ts's own
-// actions file) but never re-parents: a condition is only ever
-// dropped onto another condition row in the same topic, so `topicId`
-// is asserted against the row's actual topic_id rather than written,
-// same "re-check ownership in the SQL itself" discipline
-// study-planner.ts's mutations already follow.
+// actions file). `topicId` may be the condition's current topic (a
+// plain reorder) or a different one (the condition is moved into that
+// topic, e.g. dragged into a sub-topic's folder). Only a real topic can
+// receive a condition: a separator is a plain label and never holds
+// anything, so it is rejected here rather than trusted from the client.
 export async function moveDiseaseAction(
   diseaseId: string,
   topicId: string,
@@ -74,6 +74,16 @@ export async function moveDiseaseAction(
   const client = await pool.connect();
   try {
     await client.query("BEGIN");
+    const { rows: target } = await client.query(`SELECT id FROM topic WHERE id = $1 AND kind = 'topic'`, [topicId]);
+    if (target.length === 0) {
+      await client.query("ROLLBACK");
+      return { ok: false, error: "Drop a page onto a topic, not a divider." };
+    }
+    const { rowCount } = await client.query(`UPDATE disease SET topic_id = $2 WHERE id = $1`, [diseaseId, topicId]);
+    if (!rowCount) {
+      await client.query("ROLLBACK");
+      return { ok: false, error: "That page no longer exists." };
+    }
     const { rows: siblingRows } = await client.query(
       `SELECT id FROM disease WHERE topic_id = $1 AND id != $2 ORDER BY position, canonical_name`,
       [topicId, diseaseId]

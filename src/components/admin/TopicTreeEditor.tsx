@@ -39,7 +39,7 @@ interface TopicTreeEditorProps {
 // see the real saved state, not a rendering convenience.
 export function TopicTreeEditor({ node, depth, parentId, index }: TopicTreeEditorProps) {
   const router = useRouter();
-  const { draggingId, draggingKind, startDrag, endDrag, requestMove } = useTopicDnd();
+  const { draggingId, draggingKind, startDrag, endDrag, requestMove, requestDiseaseMove } = useTopicDnd();
   const [open, setOpen] = useState(depth === 0);
   const [renaming, setRenaming] = useState(false);
   const [name, setName] = useState(node.name);
@@ -116,6 +116,15 @@ export function TopicTreeEditor({ node, depth, parentId, index }: TopicTreeEdito
   }
 
   function handleDragOver(e: DragEvent<HTMLDivElement>) {
+    // A dragged condition can only be dropped onto a topic row to move
+    // it into that topic (the whole row is the target) — never onto a
+    // separator, which holds nothing.
+    if (draggingId && draggingKind === "disease") {
+      if (isSeparator) return;
+      e.preventDefault();
+      setDropZone("into");
+      return;
+    }
     if (!draggingId || draggingKind !== "topic" || draggingId === node.id) return;
     e.preventDefault();
     const rect = rowRef.current?.getBoundingClientRect();
@@ -135,6 +144,12 @@ export function TopicTreeEditor({ node, depth, parentId, index }: TopicTreeEdito
     e.preventDefault();
     const zone = dropZone;
     setDropZone(null);
+    if (draggingId && draggingKind === "disease") {
+      if (isSeparator) return;
+      setOpen(true);
+      await requestDiseaseMove(node.id, node.diseases.length);
+      return;
+    }
     if (!zone || !draggingId || draggingKind !== "topic" || draggingId === node.id) return;
     if (zone === "before") await requestMove(parentId, index);
     else if (zone === "after") await requestMove(parentId, index + 1);
@@ -420,8 +435,11 @@ interface DiseaseRowProps {
 
 // A leaf row for one condition under its topic — draggable like a
 // TopicTreeEditor row, but simpler: no "into" zone (a condition never
-// holds children), no re-parenting (see moveDiseaseAction's comment),
-// just before/after reordering against its sibling conditions.
+// holds children), just before/after placement against another
+// condition. Dropping next to a condition that lives in a different
+// topic moves the dragged one into that topic (moveDiseaseAction
+// re-parents); dropping onto a topic row itself does the same, from
+// TopicTreeEditor's own drop handler.
 function DiseaseRow({ disease, topicId, index, indent }: DiseaseRowProps) {
   const { draggingId, draggingKind, startDrag, endDrag, requestDiseaseMove } = useTopicDnd();
   const [dropZone, setDropZone] = useState<"before" | "after" | null>(null);
