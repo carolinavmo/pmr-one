@@ -169,7 +169,7 @@ export function SidebarFrame({
   return (
     <aside
       style={{ top: topOffset, height: `calc(100vh - ${topOffset}px)` }}
-      className={`sticky hidden w-[312px] shrink-0 flex-col border-r lg:flex ${isIndexRail ? "border-white/10 bg-[#14284A]" : "border-border bg-surface-raised"}`}
+      className={`sticky hidden w-[312px] shrink-0 flex-col border-r lg:flex ${isIndexRail ? "border-white/10 bg-[#1b3054]" : "border-border bg-surface-raised"}`}
     >
       {/* NAVBAR-SPEC.md — the six tool links that used to open this
           header region moved to the navbar's own Row 2

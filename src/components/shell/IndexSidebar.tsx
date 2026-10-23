@@ -247,7 +247,7 @@ const FULL_STRIP_PX = 40;
 // ---- Tree row styling (LIBRARY-FINAL-SPEC.md §1) --------------------
 const GROUP_LABEL_CLASS = "px-2 pt-2.5 pb-1 font-ui text-[9.5px] font-black tracking-[1.4px] text-[#8FA6CB] first:pt-0";
 const TREE_ROW_CLASS =
-  "flex w-full items-start gap-[9px] rounded-lg px-2 py-1.5 text-left font-ui text-[13px] font-normal leading-[1.3] text-[#E8EEF7] transition-colors duration-base hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#7FCBD1] focus-visible:ring-offset-2 focus-visible:ring-offset-[#14284A]";
+  "flex w-full items-start gap-[9px] rounded-lg px-2 py-1.5 text-left font-ui text-[13px] font-normal leading-[1.3] text-[#E8EEF7] transition-colors duration-base hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#7FCBD1] focus-visible:ring-offset-2 focus-visible:ring-offset-[#1b3054]";
 const TREE_TILE_CLASS = "-mt-px flex size-[19px] shrink-0 items-center justify-center rounded-[6px]";
 // Background/icon color kept out of TREE_TILE_CLASS and chosen one-or-
 // the-other below (an admin-picked CardColor via CARD_COLOR_CHIP, or
@@ -263,7 +263,7 @@ const TREE_TILE_FOLDER_DEFAULT_CLASS = "border border-[#F2C46D]/35 bg-[#F2C46D]/
 // state this always-one-open-path tree ever shows.
 const GUIDE_LINE_CLASS = "ml-[17px] border-l-[1.5px] border-white/15 pl-1";
 const PAGE_ROW_CLASS =
-  "flex items-start gap-[9px] rounded-lg px-2 py-1.5 font-ui text-[12.5px] leading-[1.3] transition-colors duration-base hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#7FCBD1] focus-visible:ring-offset-2 focus-visible:ring-offset-[#14284A]";
+  "flex items-start gap-[9px] rounded-lg px-2 py-1.5 font-ui text-[12.5px] leading-[1.3] transition-colors duration-base hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#7FCBD1] focus-visible:ring-offset-2 focus-visible:ring-offset-[#1b3054]";
 // font-weight and text-color kept out of PAGE_ROW_CLASS and chosen
 // one-or-the-other below, never both at once — two same-specificity
 // utilities for the same property present together race on generated

@@ -110,7 +110,7 @@ export function MobileIndexDrawerFrame({
       ) : (
         <aside
           aria-label={label}
-          className={`fixed top-0 left-0 z-50 flex h-full w-80 max-w-[85vw] flex-col gap-3 border-r border-white/10 bg-[#14284A] p-4 shadow-xl transition-transform duration-base ${
+          className={`fixed top-0 left-0 z-50 flex h-full w-80 max-w-[85vw] flex-col gap-3 border-r border-white/10 bg-[#1b3054] p-4 shadow-xl transition-transform duration-base ${
             open ? "translate-x-0" : "-translate-x-full"
           }`}
         >
