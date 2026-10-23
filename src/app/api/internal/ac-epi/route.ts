@@ -4,8 +4,7 @@ import { pool } from "@/lib/db";
 
 // TEMPORARY — adds the epidemiological features table (Epidemiological
 // feature / Key findings) to the "Epidemiology and risk factors" section of the
-// Adhesive Capsulitis page, at the start of the section (before its first
-// subsection, after any intro text). Placed by content anchors, one
+// Adhesive Capsulitis page, at the end of its "Epidemiology" subsection (before "Risk Factors"). Placed by content anchors, one
 // transaction, skipped if already there. POST {dryRun:true} reports the plan
 // without writing. Remove once run.
 
@@ -62,10 +61,10 @@ export async function POST(req: NextRequest) {
     const hl = level(rows[h]);
     let next = rows.findIndex((r, i) => i > h && level(r) <= hl);
     if (next < 0) next = rows.length;
-    // start of the section: right before its first subsection (after any intro text)
-    const sec = rows.slice(h + 1, next);
-    const firstSub = sec.findIndex((r) => level(r) >= 2 && level(r) <= 3);
-    const anchor = firstSub < 0 ? (sec.length ? sec[sec.length - 1] : rows[h]) : firstSub === 0 ? rows[h] : sec[firstSub - 1];
+    // end of the "Epidemiology" subsection: right before the "Risk Factors" subsection
+    const rf = rows.findIndex((r, i) => i > h && i < next && level(r) === 2 && /^risk factors$/i.test(strip(r.content_config?.text)));
+    if (rf < 1) throw new Error("no Risk Factors subsection found in the section");
+    const anchor = rows[rf - 1];
     const plan = { section: rows.slice(h, next).map(preview), nextHeading: rows[next] ? preview(rows[next]) : null, insertAfterPosition: anchor.position, insertAfter: preview(anchor) };
 
     if (dryRun) {
