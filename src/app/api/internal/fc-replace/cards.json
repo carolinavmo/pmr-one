@@ -1,0 +1,457 @@
+[
+ {
+  "section": "1 — Definition and Terminology",
+  "q": "Define rotator cuff tendinopathy, and explain why the definition is phrased around load rather than damage.",
+  "a": "<p>A painful, load-related disorder of the rotator cuff tendons and surrounding tissues, in which <strong>demand has exceeded the tendon's capacity to tolerate it</strong>.</p><p>The phrasing matters clinically. A damage-based definition implies something broken that must be repaired, and leads to rest, imaging and surgical thinking. A capacity-based definition identifies two modifiable variables — reduce demand temporarily, raise capacity permanently — and both of those are things you can prescribe. It also explains why structural findings on imaging correlate so poorly with symptoms: the problem is a mismatch, not a lesion.</p>"
+ },
+ {
+  "section": "1 — Definition and Terminology",
+  "q": "Why is \"subacromial impingement syndrome\" abandoned, and what replaced it?",
+  "a": "<p>It embeds a <strong>causal mechanism</strong> — mechanical compression under the acromion — that placebo-controlled surgery disproved. If compression were the cause, removing bone should help more than a sham operation. It does not.</p><p>The preferred term is <strong>rotator cuff-related shoulder pain (RCRSP)</strong>, which names the region without claiming to know the tissue. <em>Subacromial pain syndrome (SAPS)</em> is an acceptable alternative. The term you use also shapes the patient: \"impingement\" tells them something is being crushed and invites a request for decompression.</p>"
+ },
+ {
+  "section": "2 — Epidemiology and Risk",
+  "q": "What change in the weeks before onset should you look for, and why do patients fail to report it?",
+  "a": "<p>A <strong>spike in load</strong> — a new job or task, a return to sport, a DIY project, a holiday with a heavy bag, covering a colleague's shift — typically <strong>three to six weeks upstream</strong> of the first symptom.</p><p>Patients report the moment pain appeared, not the accumulation that produced it, and by the time symptoms arrive they have stopped connecting the two. Ask \"what were you doing in the month before it started?\" rather than \"what happened?\" — the latter reliably produces \"nothing\", and you will wrongly conclude it arose spontaneously.</p>"
+ },
+ {
+  "section": "2 — Epidemiology and Risk",
+  "q": "Why does returning to a previous activity level so often trigger symptoms, and which systemic factors worsen the course?",
+  "a": "<p>Because it combines <strong>both halves of the mismatch</strong>: the load returns to its old level while capacity has fallen during the break. The patient genuinely did nothing new, which is why they report nothing new.</p><p>Systemic factors that lower capacity or impair adaptation — and which form the \"hostile background\" to treat as part of the plan — are diabetes and poor glycaemic control, smoking, sleep disturbance, thyroid disease, weight and mood.</p>"
+ },
+ {
+  "section": "3 — Anatomy",
+  "q": "What is the rotator cable and crescent, and what is the clinical consequence of this arrangement?",
+  "a": "<p>The <strong>cable</strong> is a thickened band running perpendicular to the supraspinatus and infraspinatus tendons, from the biceps anchor anteriorly to the inferior infraspinatus posteriorly. The <strong>crescent</strong> is the thinner tissue it spans.</p><p>The arrangement works like a suspension bridge: if the cable is intact, load is transmitted <em>around</em> a crescent defect rather than through it. This is why some tears remain functionally compensated and why tear size alone predicts function poorly — a crescent tear with an intact cable behaves very differently from one that has disrupted the cable.</p>"
+ },
+ {
+  "section": "3 — Anatomy",
+  "q": "Why is the enthesis a common site of degeneration and tear initiation, and why does repair not restore it?",
+  "a": "<p>The enthesis is a <strong>graded transition between materials of vastly different stiffness</strong> — tendon to bone. That gradient exists to spread stress across the junction, which inevitably makes it a <strong>stress concentrator</strong>.</p><p>Surgical repair does not recreate the gradient: it heals with fibrovascular scar, which is weaker. This is the biological explanation for re-tear rates and for the roughly <strong>three-month delay before strengthening</strong> after repair. It is worth knowing when a patient asks why post-operative rehabilitation is so slow.</p>"
+ },
+ {
+  "section": "3 — Anatomy",
+  "q": "What does the rotator interval contain, and what does a medially subluxed biceps tendon tell you?",
+  "a": "<p>The interval is the triangular gap between the anterior border of supraspinatus and the superior border of subscapularis. It contains the <strong>coracohumeral ligament, the superior glenohumeral ligament, and the long head of biceps</strong>. Together these form the <strong>biceps pulley</strong>, the sling holding the long head in its groove.</p><p>A medially subluxed long head on ultrasound therefore indicates a <strong>subscapularis lesion</strong> — the pulley has failed — not an isolated biceps problem. Look for the cause rather than treating the displacement.</p>"
+ },
+ {
+  "section": "3 — Anatomy",
+  "q": "How should the long head of biceps be regarded in cuff disease, and how do you test it?",
+  "a": "<p>As a <strong>companion diagnosis, not a competing one</strong>. It is richly innervated, frequently inflamed alongside cuff disease, and a common reason anterior shoulder pain persists after the cuff itself has settled.</p><p>Test with <strong>Speed's test</strong> and <strong>palpation in the groove with the arm in 10° internal rotation</strong>, which brings the groove anteriorly under your finger. If anterior pain outlasts the cuff programme, reconsider the biceps rather than assuming the programme failed.</p>"
+ },
+ {
+  "section": "3 — Anatomy",
+  "q": "What is the normal acromiohumeral interval, and what does narrowing indicate?",
+  "a": "<p>Normally <strong>7–14 mm</strong>. Below 7 mm indicates <strong>superior migration of the humeral head</strong>.</p><p>This is a marker of a <strong>large or massive tear</strong> with loss of the coronal force couple — not of simple tendinopathy. It is a cheap, immediately available piece of information on a true AP radiograph, and it changes the conversation before any soft-tissue imaging is ordered.</p>"
+ },
+ {
+  "section": "3 — Anatomy",
+  "q": "What is the real function of the subacromial bursa, why does a subacromial injection go there, and what does fluid in both joint and bursa mean?",
+  "a": "<p>The bursa's job is to let the cuff <strong>glide under the coracoacromial arch with minimal friction</strong>. It is the largest bursa in the body, synovial, densely innervated, and capable of thickening and producing effusion — which makes it a major pain source and the reason the needle goes <strong>into the bursa and never into the tendon</strong>.</p><p>The bursa does not normally communicate with the glenohumeral joint. <strong>Fluid in both therefore suggests a full-thickness tear</strong> has created a connection between them.</p>"
+ },
+ {
+  "section": "4 — Biomechanics",
+  "q": "What mechanical problem must the shoulder solve, and what pays the bill?",
+  "a": "<p>The glenohumeral joint has the <strong>largest range of motion in the body and almost no passive stability</strong> — a large humeral head on a shallow glenoid, with a capsule that must stay lax through mid-range or you could not reach.</p><p>There is no bony cup and nothing holding the joint by shape. So the price of that range is that something must pay for stability <strong>actively, every second the arm is in use</strong>. That something is the rotator cuff, which is why dynamic muscular stabilisation is not optional here as it is at the hip.</p>"
+ },
+ {
+  "section": "4 — Biomechanics",
+  "q": "Define concavity-compression and state the key concept it establishes.",
+  "a": "<p>The cuff compresses the convex humeral head into the concave glenoid. Press a ball into a socket and the socket resists the ball sliding out: the <strong>deeper the socket and the harder you press, the more shear force it takes to translate the head</strong>. The labrum contributes by deepening the socket; capsule and ligaments add passive restraint.</p><p>The key concept: <strong>the cuff is a compressor before it is a mover.</strong> It does not simply rotate the humerus — it generates the compressive force that keeps the joint stable throughout movement.</p>"
+ },
+ {
+  "section": "4 — Biomechanics",
+  "q": "Explain why deltoid cannot elevate the arm without the cuff, and how much translation is normal.",
+  "a": "<p>In the early arc deltoid's line of pull is largely <strong>vertical</strong>. If the head were free to slide, deltoid would simply drag it upward against the acromion. The cuff prevents this by compressing the head into the socket and pulling inferiorly, so deltoid's force is converted into <strong>rotation about a fixed point rather than translation</strong>.</p><p>That fixed point is the <strong>fulcrum</strong>. In a normal shoulder it barely moves — superior translation during elevation is on the order of <strong>1–2 mm</strong>. The cuff and deltoid are not competing; the cuff creates the condition under which deltoid can work at all.</p>"
+ },
+ {
+  "section": "4 — Biomechanics",
+  "q": "Why should you stop teaching that supraspinatus initiates the first 15° of abduction?",
+  "a": "<p>Because it is wrong on three counts: supraspinatus is <strong>active across the whole arc</strong>, its <strong>dominant function is compression</strong> rather than elevation, and many patients with <strong>isolated supraspinatus tears abduct fully</strong>.</p><p>The teaching matters because it frames cuff dysfunction as the loss of one movement. It is not. Cuff dysfunction is <strong>loss of a fulcrum</strong> — producing painful, inefficient, substituted movement with a shrugging pattern, rather than frank paralysis.</p>"
+ },
+ {
+  "section": "4 — Biomechanics",
+  "q": "Describe the coronal and transverse force couples and the consequence of each failing.",
+  "a": "<p><strong>Coronal:</strong> deltoid's superior pull balanced by the inferior cuff — lower subscapularis, infraspinatus, teres minor. Failure gives unopposed deltoid, superior migration, loss of the fulcrum, and pseudoparalysis in the extreme.</p><p><strong>Transverse:</strong> subscapularis anteriorly balanced by infraspinatus and teres minor posteriorly. Imbalance produces anteroposterior instability of the head during rotation. <strong>This is the couple that must stay balanced for a tear to remain functional</strong> — which is why an anterior-posterior balanced tear can be well tolerated and an unbalanced one cannot.</p>"
+ },
+ {
+  "section": "4 — Biomechanics",
+  "q": "What are the scapula's four mechanical contributions, and what is the single fact that justifies scapular training?",
+  "a": "<p><strong>Upward rotation</strong> keeps the glenoid under the head as the arm elevates. <strong>Posterior tilt</strong> lifts the acromion away from the cuff. <strong>External rotation</strong> maintains the glenohumeral relationship. And it provides a <strong>stable base for the cuff's origin</strong>.</p><p>That last point is the argument: <strong>the cuff originates on the scapula, and a muscle cannot produce stable compression if its origin is unstable.</strong> This is a mechanical rationale for serratus anterior and lower trapezius work — not a general enthusiasm for \"posture\". Its limit: train the scapula because the symptom-modification test was positive, not because it looked unusual.</p>"
+ },
+ {
+  "section": "4 — Biomechanics",
+  "q": "State the scapulohumeral rhythm, the scapular plane, and the caveat to both.",
+  "a": "<p>Elevation to 180° is roughly <strong>120° glenohumeral and 60° scapular upward rotation</strong> — the conventional 2:1 ratio. At rest the scapula sits <strong>30–45° anterior to the coronal plane</strong>, defining the <strong>scapular plane</strong> in which we test and load, because there the capsule is relatively untwisted, the cuff has favourable lines of pull, and there is less soft-tissue compression than in pure coronal abduction.</p><p>The caveat: 2:1 is a <strong>teaching approximation, not a constant</strong>. Contributions vary with phase, plane, load, speed and individual, and the <strong>first 30° is predominantly glenohumeral</strong>, with the scapular share increasing through the arc.</p>"
+ },
+ {
+  "section": "4 — Biomechanics",
+  "q": "Explain the shoulder's mechanical disadvantage and the four factors that multiply cuff demand.",
+  "a": "<p>The arm is a <strong>60–70 cm lever</strong> while the muscles acting on it have moment arms of only <strong>2–3 cm</strong> — roughly a <strong>20:1 disadvantage</strong>. Holding 1 kg in the hand therefore requires something like <strong>20–30 kg of muscle force</strong>. The arm alone is 4–5% of body weight (3–4 kg), and held horizontally the joint reaction force approaches body weight; instrumented prostheses record peaks from 50% to over 170% of body weight during elevation.</p><p>Four factors multiply demand, and patients change them without noticing: <strong>elevation angle</strong> (rises steeply toward 90°), <strong>lever length</strong> (straightening the elbow roughly doubles torque), <strong>external load</strong> (multiplied by the 20:1 disadvantage), and <strong>time</strong> (sustained positions fatigue the cuff, degrading compression exactly when it is most needed). This is why a long shift is often more provocative than a heavy lift.</p>"
+ },
+ {
+  "section": "4 — Biomechanics",
+  "q": "How can you progress or regress an exercise without touching the weight?",
+  "a": "<p>By changing <strong>position and lever</strong>. The ladder: supine → supported upright → scaption below 90° → full range → overhead → overhead with time under load.</p><p>Two consequences follow. <strong>Unloaded range-of-motion work is not a null stimulus</strong> — a 4 kg arm at 90° is a real demand for a deconditioned tendon, which is why supine is often the right place to start in an irritable shoulder. And <strong>the elbow is your fastest dial</strong>: bending it halves the torque, regressing the exercise without the patient feeling they have gone backwards.</p>"
+ },
+ {
+  "section": "5 — Pathophysiology",
+  "q": "Name the three stages of the continuum model and what characterises each.",
+  "a": "<p><strong>Reactive</strong> — the tissue is over-responding, cells in an exaggerated state of activity, swelling without matrix breakdown. <strong>Dysrepair</strong> — the tendon has attempted repair and it is going wrong: more cells, more proteoglycan, collagen separating and losing alignment, early new vessels with nerve fibres alongside. <strong>Degenerative</strong> — established breakdown, with areas of cell death, disorganised matrix and extensive neovascularity.</p><p>The stages are not simply severity grades; they call for <strong>different doses</strong>, which is the entire point of the model.</p>"
+ },
+ {
+  "section": "5 — Pathophysiology",
+  "q": "How should each stage of the continuum be loaded, and why?",
+  "a": "<p><strong>Reactive:</strong> the tissue is already over-responding, so heavy load drives that response further — more proteoglycan, more swelling, more pain. Reduce the load, use isometrics as a tolerable way of keeping it loaded without moving through provocative range, allow one to three weeks, then build.</p><p><strong>Dysrepair:</strong> the most to gain. The tissue is actively remodelling and the process is salvageable — start graded loading now and progress it.</p><p><strong>Degenerative:</strong> you cannot fix the hole, but you do not need to. The main error here is <strong>underdosing</strong>, usually because a scan report frightened someone.</p>"
+ },
+ {
+  "section": "5 — Pathophysiology",
+  "q": "Explain the doughnut and the hole.",
+  "a": "<p>In a degenerative tendon the degenerate area is <strong>the hole</strong> — it will not be restored, and nothing you prescribe will restore it. But most of the tendon's cross-section is <strong>doughnut</strong>: normal tissue surrounding the lesion, which adapts to load perfectly well.</p><p>So you are not repairing the hole, you are <strong>strengthening the ring</strong>. This is the single most useful image for explaining to a frightened patient — and to a frightened clinician — why a degenerative tendon on imaging should still be loaded properly.</p>"
+ },
+ {
+  "section": "5 — Pathophysiology",
+  "q": "How do you actually stage a patient on the continuum?",
+  "a": "<p>You do not, precisely. You cannot biopsy them, and <strong>imaging cannot reliably stage them either</strong>.</p><p>What you do instead is assess <strong>irritability</strong> — how little it takes to provoke, how long it takes to settle, whether there is rest and night pain. That maps onto the continuum closely enough to be useful, and it has the advantage of being free, repeatable, and current at every visit rather than frozen at the date of a scan.</p>"
+ },
+ {
+  "section": "5 — Pathophysiology",
+  "q": "What is \"reactive-on-degenerative\", why is it the commonest PM&amp;R presentation, and what is the trap?",
+  "a": "<p>An <strong>older tendon with established degenerative change that has been acutely overloaded</strong>. Clinically: a long background of niggling discomfort punctuated by a recent sharp deterioration after an identifiable event.</p><p>It matters because the imaging and history say <em>degenerative — load it heavily</em>, while the shoulder in front of you is acutely reactive. <strong>Treat the reactive component first</strong> — relative rest and isometrics for one to three weeks — then build capacity in the degenerative substrate. Going straight to heavy loading here is <strong>the single commonest reason a well-intentioned programme flares and the patient disengages.</strong></p>"
+ },
+ {
+  "section": "5 — Pathophysiology",
+  "q": "Why is \"tendinitis\" the wrong word? Give the histological findings.",
+  "a": "<p>Because tendinopathic tissue shows <strong>degenerative, not inflammatory, change</strong>:</p><ul><li>Collagen disorganisation, fibre thinning and loss of crimp</li><li>Increased ground substance and proteoglycan content, with water uptake (hence the swelling)</li><li>Neovascularisation with accompanying <strong>neural ingrowth</strong></li></ul><p>That last finding explains why pain often begins in the dysrepair stage: <strong>the tissue is acquiring a nerve supply it does not normally have.</strong> The term \"tendinitis\" also misdirects treatment toward anti-inflammatories rather than load.</p>"
+ },
+ {
+  "section": "5 — Pathophysiology",
+  "q": "Which structure is probably the single biggest contributor to pain, and why?",
+  "a": "<p>The <strong>subacromial–subdeltoid bursa</strong>. It is synovial tissue, densely innervated, sitting directly on top of the tendon and directly under the arch. In cuff disease it thickens, becomes irritated, and is compressed every time the arm elevates.</p><p>This is worth knowing because it explains why a subacromial corticosteroid injection can produce rapid relief in a condition whose underlying problem is tendon capacity — you have treated the bursa, not the tendon, and the capacity problem is unchanged when the injection wears off.</p>"
+ },
+ {
+  "section": "5 — Pathophysiology",
+  "q": "State the conceptual point about pain that underlies the whole chapter.",
+  "a": "<p><strong>Pain is an output, not a tissue readout.</strong> It is produced by the nervous system weighing nociceptive input together with context — expectation, threat value, sleep, mood, and what the patient has been told about their scan.</p><p>This is why two people with identical imaging can have completely different experiences, and why <strong>the consultation itself changes outcomes</strong>. It is not a soft or secondary point: it is the reason the explanation you give is part of the treatment rather than a preamble to it.</p>"
+ },
+ {
+  "section": "5 — Pathophysiology",
+  "q": "Describe the load–pain relationship and what it means when it breaks down.",
+  "a": "<p>In a typical tendon problem, a given activity produces a <strong>reasonably reproducible amount of pain, often with a characteristic 24-hour latency</strong> — worse the next morning rather than during the activity itself. This is your most useful diagnostic signal, and it is free.</p><p>When pain is <strong>unpredictable, unrelated to load, widespread, or accompanied by marked distress and sleep disturbance</strong>, you are no longer managing a pure capacity problem. The programme must still be loaded, but it needs pacing, education about sensitisation, sleep management and often psychological input — and progress will be measured in a different currency.</p>"
+ },
+ {
+  "section": "5 — Pathophysiology",
+  "q": "Why do tears propagate rather than heal, and why do larger tears enlarge more readily?",
+  "a": "<p>Before the tear, load was spread across the full width of tendon. Once fibres are lost, <strong>their share is redistributed to the fibres at the edge of the defect</strong> — so the same external load now produces <strong>higher local strain at the tear margin</strong>. The edge is the weakest point and is being asked to carry more than before.</p><p>A larger defect concentrates more strain at its edge, which is why bigger tears enlarge more readily than small ones. This also explains the management split: a degenerative tear in an older patient usually gets a loading programme, while a traumatic tear in a younger patient with marked weakness warrants early referral.</p>"
+ },
+ {
+  "section": "6 — Clinical Presentation",
+  "q": "Describe the characteristic pain pattern, and what the features of weakness and stiffness should be.",
+  "a": "<p><strong>Lateral deltoid pain</strong>, often poorly localised, sometimes radiating to the deltoid insertion but <strong>rarely below the elbow</strong>. A <strong>painful arc classically 60–120°</strong>. <strong>Night pain</strong>, especially lying on the affected side — often the most disabling single feature.</p><p><strong>Weakness, if present, is usually pain-inhibited rather than structural. Stiffness is mild and end-range</strong> — global stiffness points elsewhere, particularly to adhesive capsulitis. Onset is usually gradual, with an identifiable change in load.</p>"
+ },
+ {
+  "section": "6 — Clinical Presentation",
+  "q": "Which functional losses do patients report, and what do they map onto?",
+  "a": "<p>Patients do not say \"I've lost external rotation.\" They say they cannot <strong>reach a back pocket, fasten a bra or tuck in a shirt</strong> (internal rotation and extension); <strong>reach for a seatbelt or turn the wheel</strong> (external rotation); <strong>wash or dry their hair</strong> (abduction with external rotation); or <strong>reach a high shelf or hang washing</strong> (elevation).</p><p>Translating these back into movements is faster than a range-of-motion chart and gives you the functional targets for discharge at the same time.</p>"
+ },
+ {
+  "section": "6 — Clinical Presentation",
+  "q": "Define irritability and explain why it is the single most practically useful assessment.",
+  "a": "<p>Irritability has three components: <strong>how little it takes to provoke, how severe it gets, and how long it takes to settle.</strong></p><p>It is the most useful assessment because <strong>irritability sets the dose while diagnosis sets the direction</strong>. Every patient in this chapter has the same diagnosis; what differs is how much load the shoulder will currently accept. It is also a <em>state, not a trait</em> — it changes week to week, so it must be reassessed rather than assumed from the last visit.</p>"
+ },
+ {
+  "section": "6 — Clinical Presentation",
+  "q": "Describe high and moderate irritability and the starting approach for each.",
+  "a": "<p><strong>High:</strong> pain at rest; night pain every night; provoked by minimal activity such as dressing or light reaching; takes hours to settle; active range limited by pain well before passive end-range. → <strong>Settle first.</strong> Isometrics, pain-free range, sleep positioning, activity modification; consider a short NSAID course or an injection as a window. Avoid provocative loading for 1–3 weeks.</p><p><strong>Moderate:</strong> pain with moderate activity; some night pain; settles within an hour; active range near passive. → <strong>Load cautiously but genuinely.</strong> Light-to-moderate isotonic loading through tolerable range, 2–3 sets, progressing every 1–2 weeks.</p>"
+ },
+ {
+  "section": "6 — Clinical Presentation",
+  "q": "Describe low irritability and its starting approach, and name the main risk at this end.",
+  "a": "<p><strong>Low:</strong> pain only with heavy or sustained load; no night pain; settles quickly; full range. → <strong>Load properly.</strong> Heavy slow resistance, higher loads, add range, add speed.</p><p>The main risk at this end is no longer flare-up — it is <strong>underdosing</strong>. These are the patients who are given a band and three sets of fifteen, improve marginally, and are recorded as having failed conservative management when they were never adequately treated.</p>"
+ },
+ {
+  "section": "7 — Physical Examination",
+  "q": "What is the relationship between active and passive range in cuff disease, and why is it the key discriminator?",
+  "a": "<p>In rotator cuff disease <strong>passive range is preserved</strong> — the patient may not lift the arm, but you can lift it for them, because the restriction is pain and weakness rather than a mechanical block.</p><p>In adhesive capsulitis <strong>you cannot lift it either</strong>, and external rotation with the elbow at the side is lost first and worst. This single comparison separates the two conditions more reliably than any special test, and it should be made before anything else in the examination.</p>"
+ },
+ {
+  "section": "7 — Physical Examination",
+  "q": "What should be used to measure range and strength, and what should not?",
+  "a": "<p>An <strong>inclinometer, goniometer or smartphone application</strong> for range, and a <strong>hand-held dynamometer</strong> for isometric strength. Both carry <strong>grade A</strong> in the 2025 guideline.</p><p>What should not be used: <strong>visual estimation</strong> of range, <strong>manual muscle testing</strong> (which cannot detect the side-to-side deficits or incremental gains that tell you whether capacity is rising), and <strong>dynamic scapular range measures</strong>, which the guideline states are unreliable and should not be used.</p>"
+ },
+ {
+  "section": "7 — Physical Examination",
+  "q": "What does a lag sign mean mechanically, and what are its test properties?",
+  "a": "<p>You passively place the arm in a position, removing the demand to <em>move</em>, and the patient cannot <strong>hold</strong> it. That indicates <strong>loss of force transmission</strong> — a structural tear — because pain inhibition rarely prevents holding a position that has already been achieved.</p><p>Lag signs are <strong>specific but not sensitive</strong>. A positive is highly informative and should change the pathway; a negative does not exclude a tear, particularly a small one. This is why they outperform the pain-provocation tests, which indicate sensitisation rather than structural failure.</p>"
+ },
+ {
+  "section": "7 — Physical Examination",
+  "q": "What is the real diagnostic value of the provocation tests?",
+  "a": "<p><strong>Modest.</strong> Combinations improve accuracy only <strong>marginally</strong> over single tests, and the accuracy studies used surgical findings in secondary-care populations as the reference standard — not tendinopathy as it is defined clinically.</p><p>The best of them: <strong>painful arc to confirm</strong>, <strong>Hawkins-Kennedy to rule out</strong> (grade B) — but both likelihood ratios are small. Clinicians should not rely solely on clinical test results to diagnose, and should combine them with the history and the rest of the examination.</p>"
+ },
+ {
+  "section": "7 — Physical Examination",
+  "q": "Why can rotator cuff special tests not be interpreted in a stiff shoulder?",
+  "a": "<p>Because <strong>they are all positive when the capsule is tight</strong>. Hawkins-Kennedy, Neer, the empty and full can all provoke pain at end range in any shoulder that cannot reach end range comfortably.</p><p>This is a common source of a wrongly added second diagnosis: a patient with adhesive capsulitis is labelled as having concurrent impingement because every test hurt. Establish passive range first; if it is restricted, the special tests tell you nothing.</p>"
+ },
+ {
+  "section": "7 — Physical Examination",
+  "q": "Why is the full can preferred over the empty can?",
+  "a": "<p>The <strong>full can (thumb up)</strong> produces supraspinatus activation comparable to the empty can while <strong>narrowing the subacromial space less and provoking less pain</strong>. As a loaded exercise there is therefore no reason to use the empty can.</p><p>The distinction to keep: the empty can retains a role as a <strong>test</strong> (Jobe's). It is as an <em>exercise</em> that it is indefensible — you are choosing the more provocative of two options for no additional benefit.</p>"
+ },
+ {
+  "section": "7 — Physical Examination",
+  "q": "What should you watch during scapular assessment, and what earns scapular work a place in the programme?",
+  "a": "<p>Watch the <strong>lowering phase, not just the lift</strong> — eccentric control fails first. Useful additions: the <strong>scapular assistance</strong> and <strong>scapular retraction</strong> tests, a wall press or push-up plus for serratus integrity, pectoralis minor length, and available thoracic extension in sitting.</p><p>What earns scapular work a place is a <strong>test that changes this patient's symptoms now</strong> — not an unusual appearance. Dyskinesis is found in roughly 55–61% of overhead athletes and 33% of non-overhead athletes, and in general populations the rates in symptomatic and asymptomatic people are not meaningfully different.</p>"
+ },
+ {
+  "section": "7 — Physical Examination",
+  "q": "What four questions should the examination answer, and what is its single most useful product?",
+  "a": "<p>Is it the cuff at all? Is there structural failure? How irritable is it? What is the target load? Those answers give you the diagnosis, the referral decision, the starting dose and the endpoint respectively.</p><p>The most useful product is <strong>the specific position and load that was comfortable in clinic</strong> — which becomes exercise one, written in those exact words. It is individualised by a demonstrated test rather than a template, and the patient leaves having already succeeded at it once in front of you, which does more for adherence than any explanation.</p>"
+ },
+ {
+  "section": "8 — Differential Diagnosis",
+  "q": "What does painless weakness suggest, and what does severe pain preceding patchy weakness suggest?",
+  "a": "<p><strong>Painless weakness is neurological</strong> — suprascapular neuropathy, C5 radiculopathy, neuralgic amyotrophy or motor neuron disease. Tendinopathy weakness hurts; weakness disproportionate to pain, or with wasting, belongs to a different workup.</p><p><strong>Severe pain preceding patchy weakness</strong> is the pattern of <strong>neuralgic amyotrophy</strong>: days of intense pain, then profound weakness as the pain settles.</p>"
+ },
+ {
+  "section": "8 — Differential Diagnosis",
+  "q": "Why must the cervical spine be screened in every shoulder presentation?",
+  "a": "<p>Because <strong>C5 radiculopathy often has no neck pain at all</strong>. Waiting for the patient to volunteer neck symptoms before examining the neck is precisely how radiculopathy gets managed as cuff disease for months.</p><p>The screen is quick — active cervical movement, Spurling's, a dermatomal and myotomal check — and the cost of omitting it is measured in months of the wrong treatment.</p>"
+ },
+ {
+  "section": "8 — Differential Diagnosis",
+  "q": "What does global loss of passive range with external rotation lost first suggest, and what else should be on the list?",
+  "a": "<p><strong>Adhesive capsulitis.</strong> Passive range is the discriminator, and the capsular pattern with external rotation worst is its signature.</p><p>Also consider: <strong>glenohumeral osteoarthritis</strong> (older, crepitus, radiographic changes), <strong>locked posterior dislocation</strong> (seizure, electrocution or trauma — requires an axillary view), <strong>acute calcific tendinopathy</strong> (abrupt, severe, out-of-keeping pain with a deposit on radiograph), and <strong>polymyalgia rheumatica</strong> (over 50, bilateral girdle, raised inflammatory markers).</p>"
+ },
+ {
+  "section": "9 — Investigations",
+  "q": "When is \"not yet\" the right answer to imaging, and what is the threshold?",
+  "a": "<p>Almost always at first presentation. The guideline recommends <strong>against</strong> ordering imaging to confirm rotator cuff tendinopathy in initial management, and suggests considering it if symptoms have not resolved or improved within <strong>a maximum of 12 weeks of appropriate non-surgical management</strong>.</p><p>\"Appropriate\" is doing real work in that sentence. Scanning a patient who has done four weeks of light band work is imaging an <strong>untreated</strong> patient, not a treatment failure.</p>"
+ },
+ {
+  "section": "9 — Investigations",
+  "q": "What did the largest population-based MRI study find, and why does it matter?",
+  "a": "<p>In <strong>602 adults aged 41–76</strong> from a nationally representative sample, <strong>98.7% had a rotator cuff abnormality</strong> — tendinopathy 25%, partial-thickness tear 62%, full-thickness tear 11%. Only <strong>1.3% were normal</strong>, and just <strong>18% reported current symptoms</strong>.</p><p>It matters because it establishes that an abnormal cuff is close to a normal finding in adults. The question is never <em>is there an abnormality</em> — it is <em>does this abnormality explain this patient's pain</em>, and imaging cannot answer that.</p>"
+ },
+ {
+  "section": "9 — Investigations",
+  "q": "In that study, how did symptomatic and asymptomatic shoulders compare, and what happened to the tear–symptom association?",
+  "a": "<p>Abnormalities were present in <strong>96% of asymptomatic and 98% of symptomatic shoulders</strong> — a difference of 1.8% (95% CI −2.9 to 4.7). <strong>78% of all full-thickness tears (75 of 96) were in shoulders that did not hurt.</strong></p><p>Crucially, the apparent association between full-thickness tear and symptoms <strong>disappeared after adjusting for clinical examination findings</strong> — meaning the examination is a better guide to current symptoms than the scan.</p>"
+ },
+ {
+  "section": "9 — Investigations",
+  "q": "Below what age were no full-thickness tears found, and what does that change?",
+  "a": "<p><strong>45.</strong> Prevalence rose from 4% at ages 45–49 to <strong>28% at 70 and over</strong>.</p><p>So a full-thickness tear in a patient under 45 is <strong>not an age-related incidental finding</strong> — it is traumatic until proven otherwise, and that changes the pathway toward early surgical referral rather than a three-month loading trial.</p>"
+ },
+ {
+  "section": "9 — Investigations",
+  "q": "Which imaging modality should be prioritised, and how do the modalities compare?",
+  "a": "<p><strong>Ultrasound first</strong> — lower cost with diagnostic properties similar to MRI for confirming a cuff disorder, plus it is dynamic, allows immediate bilateral comparison, and can guide an injection in the same sitting.</p><p>For <strong>full-thickness tears</strong> the three are essentially equivalent: MRI 94%/93%, MR arthrography 94%/92%, ultrasound 92%/93% — no significant difference (p = 0.7). For <strong>partial-thickness tears none performs well</strong>. Choose on cost, access and what else you need to see.</p>"
+ },
+ {
+  "section": "9 — Investigations",
+  "q": "What is the magic angle artefact, and how do you test for it?",
+  "a": "<p>Where supraspinatus curves over the humeral head, its fibres sit near <strong>55° to the main magnetic field</strong>, and ordered collagen at that angle produces <strong>artificially increased signal on short-TE sequences</strong> — T1, proton density, gradient echo.</p><p>It is the commonest false-positive \"tendinosis\" on a shoulder MRI. <strong>The test: real pathology persists on long-TE T2; magic angle signal disappears.</strong> If a report describes tendinosis seen only on PD, ask whether it was confirmed on T2.</p>"
+ },
+ {
+  "section": "9 — Investigations",
+  "q": "Which element of the imaging report carries the most prognostic weight, and what are its grades?",
+  "a": "<p>The <strong>Goutallier grade</strong> of fatty infiltration. Grades: <strong>0</strong> normal muscle; <strong>1</strong> some fatty streaks; <strong>2</strong> fatty atrophy under 50%; <strong>3</strong> around 50%; <strong>4</strong> over 50%.</p><p><strong>Grades 3–4 predict markedly poorer functional recovery after repair</strong>, and unlike tear size, fatty infiltration is <strong>largely irreversible</strong> — repairing the tendon does not restore the muscle. A 2 cm tear with Goutallier 4 is a worse shoulder than a 4 cm tear with Goutallier 1. Read the muscle before the tendon.</p>"
+ },
+ {
+  "section": "9 — Investigations",
+  "q": "State the Cofield tear-size categories and the Ellman partial-thickness grades.",
+  "a": "<p><strong>Cofield (full-thickness, by size):</strong> small &lt;1 cm; medium 1–3 cm; large 3–5 cm; <strong>massive &gt;5 cm</strong> (also commonly defined as involving two or more tendons).</p><p><strong>Ellman (partial-thickness, by depth):</strong> grade 1 &lt;3 mm (~&lt;25%); grade 2 3–6 mm (~25–50%); grade 3 &gt;6 mm (&gt;50%). Located as articular-sided, bursal-sided or intrasubstance — <strong>intrasubstance being the most common</strong> in cadaveric work and the hardest to detect.</p>"
+ },
+ {
+  "section": "10 — Core Principles of Treatment",
+  "q": "What are the four targets of treatment, and what is the governing principle?",
+  "a": "<p>Settle the symptoms, <strong>build capacity</strong>, restore the task, and change what the patient believes about their shoulder.</p><p>The governing principle: <strong>load is the treatment; everything else buys a window.</strong> No adjunct raises capacity, so judge each one by a single question — does this let the patient load sooner, heavier or more consistently? If not, it is costing time.</p>"
+ },
+ {
+  "section": "10 — Core Principles of Treatment",
+  "q": "Name the five education messages and say which one blocks the others if it fails.",
+  "a": "<p><strong>Capacity not damage · loading is the treatment · pain is allowed within the rule · months not weeks · the scan finding is normal for your age.</strong></p><p>The scan message blocks everything behind it. A patient who believes they have a tear will not accept that the problem is capacity, will not load the shoulder, and will not wait months for a programme when an operation appears to be available. Clear the imaging belief first — and ideally before they read the report alone at home.</p>"
+ },
+ {
+  "section": "10 — Core Principles of Treatment",
+  "q": "How should the condition be explained, and what should you avoid drawing?",
+  "a": "<p>As a <strong>mismatch, not damage</strong> — the tendon has been asked for more than it can currently give. Name their own spike, so the onset stops feeling random. Then say the part that matters most: <strong>both sides of the mismatch can be changed.</strong></p><p><strong>Avoid drawing the acromion with the tendon running underneath.</strong> That picture teaches impingement, which is the belief you are trying to remove. If you draw anything, draw two lines — demand and capacity — and show them crossing.</p>"
+ },
+ {
+  "section": "10 — Core Principles of Treatment",
+  "q": "State the pain rule, its origin, and the caveat.",
+  "a": "<p><strong>Up to about 5/10 during the exercise · settled by the next morning · not rising week to week.</strong> All three parts matter: the threshold, the 24-hour response, and the weekly trend — the last of which catches a programme going wrong when the first two look fine.</p><p>It derives from <strong>Silbernagel's pain-monitoring model in Achilles tendinopathy</strong>, where patients who continued loading within these limits did no worse than those who rested for six weeks — and the resting group gained nothing. <strong>No equivalent rotator cuff trial validates the thresholds</strong>; they are pragmatic clinical guides, not biological cut-offs.</p>"
+ },
+ {
+  "section": "11 — Rehabilitation Programme",
+  "q": "What does the 2025 guideline grade A, and what does it deliberately omit?",
+  "a": "<p>Prescribing an <strong>active rehabilitation exercise programme as initial treatment</strong>, which may include motor control and/or resistance training with various loads — <strong>notably without specifying the dose</strong>, because the trial evidence does not support specifying it.</p><p>That omission is the honest position, not an oversight. You are not choosing between protocols with different efficacy; you are applying the principles of tissue adaptation to an individual.</p>"
+ },
+ {
+  "section": "11 — Rehabilitation Programme",
+  "q": "Which exercise type is superior, and what actually is the active ingredient?",
+  "a": "<p><strong>None.</strong> Systematic reviews consistently find no clear superiority among eccentric, concentric, isometric and heavy slow resistance for rotator cuff related shoulder pain.</p><p>The active ingredient is <strong>progression and resistance</strong>. Progressive <em>resisted</em> exercise reduces pain (MD −1.07/10 against basic advice, placebo or no treatment), while <strong>non-progressive and non-resisted exercise do not beat a sham</strong> (MD −0.33/10, 95% CI −0.81 to 0.15). That single contrast is the strongest argument for the dosing rules that follow.</p>"
+ },
+ {
+  "section": "11 — Rehabilitation Programme",
+  "q": "What is \"failed physiotherapy\" usually, and what three questions should you ask before accepting it?",
+  "a": "<p>A <strong>failed dose, not a failed treatment.</strong></p><p>Ask: <strong>What load were they actually lifting? How often? And did it ever increase?</strong> Four sessions of pendulums and a yellow band over six weeks is not a trial of rehabilitation — it is a reason to start one. This matters because \"failed conservative management\" is the phrase that unlocks imaging, injection and surgical referral, and it is frequently untrue.</p>"
+ },
+ {
+  "section": "11 — Rehabilitation Programme",
+  "q": "Name the four phases with their objectives and approximate timeframes, and state the critical caveat.",
+  "a": "<p><strong>1) Initial loading</strong> — control symptoms, establish tolerable loading; isometrics, light resistance, comfortable range; weeks 0–2. <strong>2) Progressive strengthening</strong> — improve cuff and scapular strength; isotonic resistance, controlled elevation; weeks 2–6. <strong>3) Advanced strengthening</strong> — load tolerance, endurance, overhead capacity; heavier resistance, longer levers, overhead loading; weeks 6–12. <strong>4) Return to activity</strong> — occupational or sporting demands; task-specific loading, endurance, power; week 12 onward.</p><p><strong>The caveat: these are illustrative, not validated milestones. The stages are states, not weeks.</strong> Patients enter on criteria, phases overlap, low-irritability patients may start at stage 2 immediately, and a patient can move backwards after a flare.</p>"
+ },
+ {
+  "section": "11 — Rehabilitation Programme",
+  "q": "Who needs stage 1, who does not, and what is the goal?",
+  "a": "<p>It is for a <strong>genuinely irritable shoulder</strong> — pain at rest or at night, provoked by light or brief activity, taking hours to settle, or recently flared including reactive-on-degenerative.</p><p><strong>Most patients do not need it.</strong> Starting everyone here by reflex delays treatment by three weeks and teaches the patient their shoulder is fragile; low-irritability patients may begin isotonic strengthening immediately, and <strong>isometrics are an option, not a mandatory first stage.</strong> The goal is <strong>not to eliminate pain before starting exercise</strong> but to establish a level of loading the patient can perform consistently without sustained exacerbation.</p>"
+ },
+ {
+  "section": "11 — Rehabilitation Programme",
+  "q": "What is the evidence for isometrics as an analgesic, and what is the honest reason to use them?",
+  "a": "<p>Weak. The original effect — a 4.3-point immediate pain drop — came from <strong>six athletes</strong> with patellar tendinopathy. Follow-ups found progressively smaller effects (1.8, then 0.9 points), and one group found <strong>−0.3 points in the opposite direction</strong>. A meta-analysis of <strong>10 trials and 294 participants</strong> concluded isometrics are <strong>not superior</strong> to isotonic exercise.</p><p>Use them because they are a <strong>tolerable way to keep an irritable tendon loaded</strong> without moving through provocative range — not because they switch pain off. And do not keep a patient in stage 1 waiting for analgesia that may not arrive.</p>"
+ },
+ {
+  "section": "11 — Rehabilitation Programme",
+  "q": "Give a typical stage 1 dose and the progression within the stage.",
+  "a": "<p><strong>5 holds × 30–45 seconds at about 70% effort, 30–60 seconds rest, once or twice daily</strong>, in one or two positions chosen from what was comfortable in clinic.</p><p>Three dials can be turned before leaving: <strong>duration</strong> (15–20 s → 45 s), <strong>effort</strong> (40–50% → 70%), and most usefully <strong>angle</strong> — moving the hold from the most comfortable position <em>toward</em> the provocative one, which prepares the shoulder for the range stage 2 will demand and gives you a clean reason to progress.</p>"
+ },
+ {
+  "section": "11 — Rehabilitation Programme",
+  "q": "What arrives in stage 2 that was absent in stage 1, and what should you warn the patient about?",
+  "a": "<p>Three things at once: <strong>movement through range</strong>, the <strong>eccentric (lowering) phase</strong> where tendon strain is highest, and exposure to the <strong>whole available arc</strong> including the provocative part.</p><p>The eccentric is the real step up — an isometric asks the cuff to hold, an isotonic asks it to control a load on the way down, which is what most daily tasks actually demand. <strong>Expect more symptom response in the first fortnight of stage 2 than anywhere else in the programme</strong>, and warn the patient so they read it correctly rather than as deterioration.</p>"
+ },
+ {
+  "section": "11 — Rehabilitation Programme",
+  "q": "Give the stage 2 dose, and explain why slow tempo matters.",
+  "a": "<p><strong>3–4 sets × 10–15 reps, about 3 s out and 3 s back, 60–90 s rest, three times weekly</strong>, at a load where the last 2–3 reps are genuinely hard.</p><p>Slow tempo does four things that compound: it <strong>removes momentum</strong> so the muscle rather than the swing does the work; it makes the <strong>eccentric deliberate</strong> rather than a drop; it <strong>increases time under tension</strong>; and it is <strong>self-limiting</strong> — a weight that cannot be lowered over three seconds is too heavy, which gives the patient a rule for choosing loads without you in the room.</p>"
+ },
+ {
+  "section": "11 — Rehabilitation Programme",
+  "q": "How do you set the starting load, and what changes when 3 × 15 becomes comfortable?",
+  "a": "<p>Find a weight they can complete <strong>15 controlled reps</strong> with, where the last two or three are hard. If 15 is easy it is too light; if they cannot reach 10 with control it is too heavy.</p><p>When 3 × 15 is comfortable, <strong>the load goes up — not the repetitions.</strong> Drifting to three sets of twenty-five converts strength work into endurance work and the programme quietly stops building anything. Change one variable at a time, in order: load, then range, then position.</p>"
+ },
+ {
+  "section": "11 — Rehabilitation Programme",
+  "q": "Name the core stage 2 exercises and the rationale for each.",
+  "a": "<p><strong>ER at 0°</strong> (towel under the elbow) — the posterior cuff is where the measurable deficit usually is, and it is the force-couple partner balancing deltoid's superior pull. <strong>Scaption / full can</strong> — the elevation task itself, in the plane the shoulder is built to work in. <strong>Row</strong> — posterior chain and scapular control under genuine load, carrying far more weight than band work. <strong>Press: landmine → incline → overhead</strong> — reaching the overhead task <strong>by angle rather than avoidance</strong>.</p><p>Add serratus anterior and lower trapezius work <strong>only if the scapular tests were positive</strong>.</p>"
+ },
+ {
+  "section": "11 — Rehabilitation Programme",
+  "q": "Which progression is most often forgotten, and why does it matter?",
+  "a": "<p>Moving <strong>external rotation from 0° out to 45°, then 90° of abduction</strong>.</p><p>ER strength at the side does not transfer to ER strength overhead, and overhead is where the demand lies. Abduction with external rotation is also the position patients most avoid, so re-entering it deliberately under load is <strong>strength work and graded exposure at once</strong>. A shoulder trained only at the side is not prepared for the position its work or sport actually requires.</p>"
+ },
+ {
+  "section": "11 — Rehabilitation Programme",
+  "q": "What is the commonest failure of a cuff programme, and what question exposes it?",
+  "a": "<p><strong>The load never changes.</strong> A patient doing three sets of fifteen with a yellow band in week two should not still be doing that in week eight — if they are, the programme is maintenance, not treatment.</p><p>At every review ask: <strong>what are you lifting now, and what were you lifting last time?</strong> If the answer is the same, fix that before considering anything else. Asking the patient to record date, exercise, weight and reps on their phone makes progression visible before pain improves and settles the question at review.</p>"
+ },
+ {
+  "section": "11 — Rehabilitation Programme",
+  "q": "State the entry criteria and the four goals of stage 3.",
+  "a": "<p><strong>Entry:</strong> 3 × 15 comfortable at a meaningful load; full available range trained including the formerly provocative arc; <strong>ER loaded in abduction</strong>, not only at the side; no next-morning flare; and irritability low — <strong>the limiting factor is now strength, not pain.</strong></p><p><strong>Goals:</strong> 1) close the strength deficit against the uninvolved side; 2) build tolerance to heavy load <strong>near end range</strong>, because the demands that break shoulders combine high load with disadvantageous position; 3) build <strong>endurance and repetitive load tolerance</strong> — a patient may lift a weight once but fail after repeated overhead movements; 4) introduce <strong>faster and more complex movements</strong>, as task-specific additions rather than mandatory components.</p>"
+ },
+ {
+  "section": "11 — Rehabilitation Programme",
+  "q": "Which exercises characterise stage 3, and what must be kept in?",
+  "a": "<p>Overhead press (ribs down, no lumbar arch to fake range), <strong>ER at 90° abduction loaded</strong>, row with full scapular travel, pull-down → pull-up progression with eccentric emphasis, bench or incline press, <strong>loaded carries</strong> including overhead carry, and heavier scaption or lateral raise with controlled descent.</p><p><strong>Keep the ER work in.</strong> It is the specific deficit, and <strong>no compound lift trains it</strong> — which is exactly why it disappears from programmes at this stage.</p>"
+ },
+ {
+  "section": "11 — Rehabilitation Programme",
+  "q": "Who needs stage 4, and who does not?",
+  "a": "<p><strong>Needed</strong> by those whose work or sport demands <strong>speed, elasticity or repeated overhead power</strong> — throwers, swimmers, racquet and volleyball players, climbers, gymnasts, and manual workers who apply force quickly (hammering, scaffolding, catching, lifting awkward loads).</p><p><strong>Not needed</strong> by a 70-year-old whose goal is a kitchen shelf, or a desk worker who can press, row and carry at full load. <strong>For them, stage 3 is the finish line</strong>, and adding stage 4 wastes their time.</p>"
+ },
+ {
+  "section": "11 — Rehabilitation Programme",
+  "q": "When should a programme be regressed, and how should a flare be handled?",
+  "a": "<p><strong>Regress when:</strong> symptoms do not settle within 24 hours; morning pain or stiffness is worse week on week; or the patient compensates — shrugging, trunk lean, breath-holding — to complete repetitions.</p><p><strong>For a flare: reduce load by 20–30% and rebuild, rather than stopping.</strong> A flare means the dose exceeded current capacity, so the correct response is a <strong>smaller dose, not no dose</strong>. Stopping teaches the patient that loading is dangerous, costs the capacity already gained, and usually means restarting two weeks later from a lower baseline. <strong>Tell them this at the first appointment</strong>, so the inevitable bad week does not end the treatment.</p>"
+ },
+ {
+  "section": "11 — Rehabilitation Programme",
+  "q": "Give the troubleshooting sequence for a programme not working at 6–8 weeks.",
+  "a": "<p>Work through it <strong>in order</strong> before concluding rehabilitation has failed:</p><ol><li><strong>Is the diagnosis right?</strong> Missed cervical, neurological, inflammatory, calcific, adhesive capsulitis, instability.</li><li><strong>Has the load actually increased?</strong> — the commonest finding.</li><li><strong>Is it being done?</strong> Simplify to three exercises; agree a minimum dose.</li><li><strong>What is happening outside the programme?</strong> The unmodified provocative load — the job, the baby, the gym class; exercises cannot out-compete it.</li><li><strong>Is the tendon reactive?</strong> Step back to stage 1 for 1–2 weeks.</li><li><strong>Is the background hostile?</strong> HbA1c, smoking, sleep, thyroid, weight, mood.</li><li><strong>Is sensitisation dominant?</strong></li><li><strong>Only now</strong> consider imaging and procedures.</li></ol>"
+ },
+ {
+  "section": "12 — Adjuncts and Procedures",
+  "q": "How should every adjunct be judged, and what is the one-line summary of the modalities evidence?",
+  "a": "<p>By whether it <strong>lets the patient load sooner, heavier or more consistently</strong>. None of them raise capacity, so the ceiling on any adjunct's value is how much loading it unlocks. <strong>Load treats the cause; adjuncts treat the week.</strong></p><p>The one-line summary: <strong>shockwave and laser are for the calcium, not the tendon.</strong> And the finding that answers most adjunct questions — ultrasound, laser and PEMF added to exercise produce <strong>no clinically important additional benefit</strong> (Cochrane, 47 trials, 2,388 participants).</p>"
+ },
+ {
+  "section": "12 — Adjuncts and Procedures",
+  "q": "State the guideline positions on ultrasound, shockwave and laser.",
+  "a": "<p><strong>Therapeutic ultrasound: should not be used</strong> — grade C in calcific disease, grade <strong>B</strong> in non-calcific, alone or added to rehabilitation. The stronger evidence is against its use in ordinary tendinopathy.</p><p><strong>Shockwave:</strong> may be used in <strong>calcific</strong> disease (C); <strong>recommended against</strong> for non-calcific (C). <strong>Laser: calcific only</strong> (C). The caveat worth carrying: Cochrane's 32-trial review found shockwave effects <strong>below clinical importance</strong> and <strong>no calcific-versus-non-calcific subgroup difference</strong>, so the split is less secure than the grades suggest.</p>"
+ },
+ {
+  "section": "12 — Adjuncts and Procedures",
+  "q": "What are the grades and proper use of manual therapy, taping and acupuncture?",
+  "a": "<p><strong>Manual therapy grade B</strong> — spinal and/or upper limb, alone or with exercise, for <strong>short-term</strong> pain reduction. Use it in the same session as the loading, as the thing that makes the next exercise tolerable; delivered as its own appointment it inverts the treatment, and the patient will draw the same conclusion.</p><p><strong>Taping grade D</strong> — short-term pain reduction, conflicting evidence; its real value is as a <strong>symptom-modification tool</strong> with an end date. <strong>Acupuncture grade C</strong>, added to an active rehabilitation programme.</p>"
+ },
+ {
+  "section": "12 — Adjuncts and Procedures",
+  "q": "What is the role, timing and limitation of corticosteroid injection?",
+  "a": "<p><strong>May be used (grade B)</strong> for pain and short-term disability, but <strong>not first-line (grade C)</strong>, and with <strong>ultrasound guidance where available (grade B)</strong>.</p><p>The limitation is the time course: benefit is <strong>short term only, up to about 8 weeks</strong>, with no difference at medium or long term — and <strong>exercise beats injection in the medium term</strong>. So the injection's legitimate role is to <strong>buy a window in which loading becomes possible</strong>, with the programme starting during the window rather than after it. Rare but real adverse effects: tendon rupture and infection.</p>"
+ },
+ {
+  "section": "12 — Adjuncts and Procedures",
+  "q": "What is the best-supported procedure for calcific disease, and how does it compare with shockwave?",
+  "a": "<p><strong>Ultrasound-guided lavage (barbotage) — grade B</strong>, for calcific tendinopathy <strong>refractory to initial treatment</strong>.</p><p>It <strong>outperformed shockwave</strong> for both pain and calcification size in the long term. The sequence that follows: confirm the deposit on radiograph → standard loading programme and education → subacromial corticosteroid if pain prevents loading → <strong>lavage if refractory</strong> → shockwave as the alternative where lavage is unavailable. Note that lavage's efficacy as a <em>first</em> treatment or in acute cases has not been demonstrated.</p>"
+ },
+ {
+  "section": "12 — Adjuncts and Procedures",
+  "q": "What did the placebo-controlled surgical trials and Cochrane find about subacromial decompression?",
+  "a": "<p><strong>CSAW:</strong> decompression was no better than <strong>placebo arthroscopy</strong> at 6 months (Oxford Shoulder Score −1.3, 95% CI −3.9 to 1.3). Both surgical arms beat no treatment, but below the 4.5-point target difference. <strong>FIMPACT</strong> reached the same conclusion at <strong>5 years</strong>, and found no benefit over exercise either.</p><p><strong>Cochrane rates this high-certainty evidence of no clinically important benefit</strong> over placebo for pain, function or quality of life at one year. Note the pattern across this literature: <strong>the negative findings are the high-certainty ones</strong>; the positive findings sit at low to very low certainty.</p>"
+ },
+ {
+  "section": "12 — Adjuncts and Procedures",
+  "q": "What does the evidence show for surgery for rotator cuff tears, and what are its limits?",
+  "a": "<p>Cochrane found <strong>probably little or no meaningful benefit</strong> of repair over exercise with or without injection at 12 months — pain 0.87/10 better, Constant score 5.98/100 better.</p><p>Two limits matter enormously. <strong>No placebo-surgery trial has ever been done</strong> for cuff repair. And most participants had <strong>small degenerative supraspinatus tears</strong>, so the finding does <strong>not</strong> transfer to traumatic tears, large tears or younger patients. Repair for the right tear still has a role.</p>"
+ },
+ {
+  "section": "13 — Outcome Measures and Benchmarks",
+  "q": "Which patient-reported measures are recommended, what are their MCIDs, and how should those be used?",
+  "a": "<p><strong>SPADI, DASH/QuickDASH and ASES</strong> are named as suitable; using valid, reliable and responsive questionnaires is <strong>grade A</strong>.</p><p>Approximate MCIDs: <strong>SPADI ≈8–13 points · QuickDASH ≈8–15 · ASES ≈12–17 in cuff disease · Oxford Shoulder Score ≈4–6 · WORC ≈11–13% · Constant–Murley ≈10.</strong> Treat these as thresholds for \"the patient would notice this\", <strong>not precise cut-offs</strong> — they vary between studies and populations. Choose one measure and use it consistently.</p>"
+ },
+ {
+  "section": "13 — Outcome Measures and Benchmarks",
+  "q": "Give the physical benchmarks for return to heavy or overhead demand.",
+  "a": "<p><strong>Range</strong> symmetrical with the other side, measured by inclinometer rather than visual estimate. <strong>Isometric ER, IR and scaption strength</strong> on handheld dynamometry in a standardised position, with a <strong>limb symmetry index above 90%</strong>. <strong>ER:IR ratio roughly 0.65–0.75. Endurance</strong> matched to occupational demand. And <strong>the actual provocative task completed without next-day flare</strong>.</p><p>That last one is not a proxy — it is the full shift or the complete training session, not a gym exercise that resembles it.</p>"
+ },
+ {
+  "section": "13 — Outcome Measures and Benchmarks",
+  "q": "When should measures be recorded, and what question do three data points answer?",
+  "a": "<p><strong>Baseline, 6 weeks and 12 weeks, the same way each time.</strong></p><p>Three points answer the only question that matters at review: <strong>is capacity rising?</strong> If pain has not changed but ER strength has risen 30%, the programme is working and needs time. If neither has changed in eight weeks, work the troubleshooting sequence. \"Better\" is not an outcome — it will not survive a clinic letter, a return-to-work discussion or an insurance query.</p>"
+ },
+ {
+  "section": "14 — Prognosis and Communication",
+  "q": "On what timeline does tendon adapt, when do patients feel better, and why does the gap matter?",
+  "a": "<p>Tendon adapts on roughly a <strong>12-week timeline</strong>; patients feel better at about <strong>six weeks</strong>.</p><p><strong>That gap is where relapse happens.</strong> The patient feels recovered at the point their capacity is still well short of their demands, stops, returns to full activity and flares — then concludes the treatment failed. Say it <strong>in advance</strong>, at the first appointment: said then it builds credibility and persistence; said afterwards it sounds like an excuse.</p>"
+ },
+ {
+  "section": "14 — Prognosis and Communication",
+  "q": "How do you answer \"shouldn't I get a scan?\"",
+  "a": "<p>\"We can, and sometimes we should. But at your age the scan will almost certainly show some wear, which is also true of people with no pain at all. <strong>It would change what you believe more than what we do.</strong> If you're not improving in about twelve weeks, that's the point at which the scan starts to earn its place.\"</p><p>The structure matters: it is not a refusal, it is a reframe <strong>with a timeline attached</strong>, which converts a dismissal into a plan the patient can hold you to.</p>"
+ },
+ {
+  "section": "14 — Prognosis and Communication",
+  "q": "Which factors predict persistent pain, and which commonly assumed ones do not?",
+  "a": "<p><strong>Predictive:</strong> age over 55 (OR ~3.8), <strong>perceived high job demand (OR ~4.1)</strong>, delayed care after injury, prolonged symptom duration, greater restriction at presentation, and a compensation or litigation context. Note that the strongest of these concern <strong>timing and work</strong>, not tissue.</p><p><strong>Not predictive:</strong> dominant versus non-dominant side, education level, comorbidities, pressure pain thresholds, perceived job control, and jobs requiring higher shoulder forces. Psychological factors predict outcome in <strong>surgically</strong> managed patients but not reliably in conservatively managed ones.</p>"
+ },
+ {
+  "section": "14 — Prognosis and Communication",
+  "q": "What must accompany discharge, and why?",
+  "a": "<p>A <strong>maintenance prescription: 1–2 strength sessions weekly, indefinitely</strong>, for anyone with ongoing overhead demands — two or three exercises <strong>including external rotation</strong>, since nothing in ordinary work or training loads it.</p><p>Capacity decays. A patient discharged with no ongoing loading drifts back toward the state in which they broke down, usually within months, and will describe the relapse as the treatment having failed. Frame it explicitly: this is not rehabilitation continuing, it is <strong>what preserves the margin you spent six months building</strong>.</p>"
+ },
+ {
+  "section": "15 — Red Flags and Referral",
+  "q": "Which presentations warrant early referral rather than a trial of rehabilitation?",
+  "a": "<p><strong>Acute traumatic tear with marked weakness or a positive lag sign, particularly in a younger patient</strong> — refer early rather than rehabilitating for three months first, because repair for the right tear still has a role and delay costs reparability.</p><p>Also: severe persistent pain or disability despite a maximum of 12 weeks of appropriate non-surgical care; red flags for infection, malignancy or fracture; and significant neurological deficit.</p>"
+ },
+ {
+  "section": "15 — Red Flags and Referral",
+  "q": "What follows a diagnosis of massive irreparable tear?",
+  "a": "<p><strong>Not the end of rehabilitation.</strong> The <strong>anterior deltoid programme</strong> restores useful function in many patients, by training the deltoid to substitute for lost cuff function and re-establish elevation without a fulcrum provided by an intact cuff.</p><p>This matters because \"irreparable\" is routinely heard by patients — and sometimes by clinicians — as \"untreatable\", and the result is a patient discharged with nothing when a structured programme would have restored meaningful overhead function.</p>"
+ }
+]
