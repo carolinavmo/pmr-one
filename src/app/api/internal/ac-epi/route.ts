@@ -41,7 +41,7 @@ export async function POST(req: NextRequest) {
   try {
     await client.query("BEGIN");
     const { rows: d } = await client.query<{ id: string }>(
-      `SELECT d.id FROM disease d JOIN topic t ON t.id = d.topic_id WHERE t.name = 'Shoulder' AND lower(d.canonical_name) = 'adhesive capsulitis'`
+      `SELECT d.id FROM disease d JOIN topic t ON t.id = d.topic_id WHERE d.canonical_name ILIKE '%adhesive capsulitis%'`
     );
     if (d.length !== 1) throw new Error(`expected one page, found ${d.length}`);
     const diseaseId = d[0].id;
