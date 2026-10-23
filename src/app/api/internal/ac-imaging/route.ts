@@ -4,8 +4,7 @@ import { pool } from "@/lib/db";
 
 // TEMPORARY — adds the imaging findings table (Imaging finding / Anatomical
 // significance) to the "Anatomical findings on imaging" subsection of the
-// Adhesive Capsulitis page, under its heading and any intro text (before a
-// deeper sub-heading, if there is one). Placed by content anchors, one
+// Adhesive Capsulitis page, right after its lead-in paragraph. Placed by content anchors, one
 // transaction, skipped if already there. POST {dryRun:true} reports the plan
 // without writing. Remove once run.
 
@@ -58,10 +57,11 @@ export async function POST(req: NextRequest) {
     const hl = level(rows[h]);
     let next = rows.findIndex((r, i) => i > h && level(r) <= hl);
     if (next < 0) next = rows.length;
-    // under the heading, after any intro text and before the first deeper sub-heading
+    // after the lead-in paragraph, before the follow-up text and any deeper sub-heading
     const sec = rows.slice(h + 1, next);
-    const firstSub = sec.findIndex((r) => level(r) > hl && level(r) <= 3);
-    const anchor = firstSub < 0 ? (sec.length ? sec[sec.length - 1] : rows[h]) : firstSub === 0 ? rows[h] : sec[firstSub - 1];
+    const lead = sec.findIndex((r) => r.block_type === "paragraph");
+    if (lead < 0) throw new Error("no lead-in paragraph under the heading");
+    const anchor = sec[lead];
     const plan = {
       section: rows.slice(h, next).map(preview),
       nextHeading: rows[next] ? preview(rows[next]) : null,
