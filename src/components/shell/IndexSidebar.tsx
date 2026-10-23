@@ -177,7 +177,7 @@ function highlightMatch(text: string, query: string): ReactNode {
   return (
     <>
       {text.slice(0, index)}
-      <mark className="rounded-[3px] bg-[#FFF2C4] px-px text-inherit">{text.slice(index, index + normalized.length)}</mark>
+      <mark className="rounded-[3px] bg-[#F2C46D]/30 px-px text-inherit">{text.slice(index, index + normalized.length)}</mark>
       {text.slice(index + normalized.length)}
     </>
   );
@@ -245,25 +245,25 @@ const HALF_RATIO = 0.55;
 const FULL_STRIP_PX = 40;
 
 // ---- Tree row styling (LIBRARY-FINAL-SPEC.md §1) --------------------
-const GROUP_LABEL_CLASS = "px-2 pt-2.5 pb-1 font-ui text-[9.5px] font-black tracking-[1.4px] text-[#9AA5B4] first:pt-0";
+const GROUP_LABEL_CLASS = "px-2 pt-2.5 pb-1 font-ui text-[9.5px] font-black tracking-[1.4px] text-[#8FA6CB] first:pt-0";
 const TREE_ROW_CLASS =
-  "flex w-full items-start gap-[9px] rounded-lg px-2 py-1.5 text-left font-ui text-[13px] font-normal leading-[1.3] text-primary transition-colors duration-base hover:bg-[#EAEEF3] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-navy focus-visible:ring-offset-2 focus-visible:ring-offset-white";
+  "flex w-full items-start gap-[9px] rounded-lg px-2 py-1.5 text-left font-ui text-[13px] font-normal leading-[1.3] text-[#E8EEF7] transition-colors duration-base hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#7FCBD1] focus-visible:ring-offset-2 focus-visible:ring-offset-[#14284A]";
 const TREE_TILE_CLASS = "-mt-px flex size-[19px] shrink-0 items-center justify-center rounded-[6px]";
 // Background/icon color kept out of TREE_TILE_CLASS and chosen one-or-
 // the-other below (an admin-picked CardColor via CARD_COLOR_CHIP, or
 // one of these defaults) — same reasoning as PAGE_ROW_CLASS: two
 // same-property utilities present together race on generated CSS
 // order, not JSX order.
-const TREE_TILE_REGION_DEFAULT_CLASS = "bg-[#E7EBF4] text-[#6B7A99]";
-const TREE_TILE_FOLDER_DEFAULT_CLASS = "border border-[#E6D2A8] bg-insight-bg text-[#A8760F]";
+const TREE_TILE_REGION_DEFAULT_CLASS = "bg-white/10 text-[#B4C2D9]";
+const TREE_TILE_FOLDER_DEFAULT_CLASS = "border border-[#F2C46D]/35 bg-[#F2C46D]/15 text-[#F2C46D]";
 // Straight guide line, 1.5px, 21px indent step (17px margin + 4px
 // padding) — only ever rendered for an open (on-your-path) branch, so
 // it's always the accent colour; the spec's "#D0D7E1 elsewhere" describes
 // the token's other use (the reading-progress line), not a second
 // state this always-one-open-path tree ever shows.
-const GUIDE_LINE_CLASS = "ml-[17px] border-l-[1.5px] border-border pl-1";
+const GUIDE_LINE_CLASS = "ml-[17px] border-l-[1.5px] border-white/15 pl-1";
 const PAGE_ROW_CLASS =
-  "flex items-start gap-[9px] rounded-lg px-2 py-1.5 font-ui text-[12.5px] leading-[1.3] transition-colors duration-base hover:bg-[#EAEEF3] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-navy focus-visible:ring-offset-2 focus-visible:ring-offset-white";
+  "flex items-start gap-[9px] rounded-lg px-2 py-1.5 font-ui text-[12.5px] leading-[1.3] transition-colors duration-base hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#7FCBD1] focus-visible:ring-offset-2 focus-visible:ring-offset-[#14284A]";
 // font-weight and text-color kept out of PAGE_ROW_CLASS and chosen
 // one-or-the-other below, never both at once — two same-specificity
 // utilities for the same property present together race on generated
@@ -275,8 +275,8 @@ const PAGE_ROW_CLASS =
 // chrome, which still needs a teal accent since navy-on-navy there
 // would be invisible — that's why only the tree switched, not the
 // whole --acc system).
-const PAGE_ROW_CURRENT_CLASS = "bg-navy/[0.08] font-medium text-navy hover:bg-navy/[0.08]";
-const PAGE_ROW_DEFAULT_CLASS = "font-normal text-secondary";
+const PAGE_ROW_CURRENT_CLASS = "bg-white/[0.12] font-medium text-white hover:bg-white/[0.12]";
+const PAGE_ROW_DEFAULT_CLASS = "font-normal text-[#B4C2D9]";
 
 export function IndexSidebar({ tree, isSignedIn, onNavigate, headerAction }: IndexSidebarProps) {
   const t = useTranslations("nav");
@@ -797,7 +797,7 @@ export function IndexSidebar({ tree, isSignedIn, onNavigate, headerAction }: Ind
       <div className="flex shrink-0 items-center gap-1.5 px-1">
         <div className="relative min-w-0 flex-1">
           <Search
-            className="pointer-events-none absolute top-1/2 left-3.5 size-3.5 -translate-y-1/2 text-secondary"
+            className="pointer-events-none absolute top-1/2 left-3.5 size-3.5 -translate-y-1/2 text-[#8FA6CB]"
             aria-hidden="true"
           />
           <input
@@ -806,8 +806,8 @@ export function IndexSidebar({ tree, isSignedIn, onNavigate, headerAction }: Ind
             placeholder={t("findATopic")}
             className={`w-full rounded-[9px] border py-1.5 pr-2 pl-8 font-ui text-xs outline-none transition-colors duration-base ${
               searching
-                ? "border-accent bg-surface text-navy shadow-[0_0_0_3px_rgba(11,122,131,0.10)]"
-                : "border-border bg-surface-sunken text-primary placeholder:text-[#A6B0BC] focus:border-accent focus:bg-surface"
+                ? "border-[#7FCBD1] bg-white/[0.12] text-white shadow-[0_0_0_3px_rgba(127,203,209,0.18)]"
+                : "border-white/15 bg-white/[0.07] text-[#E8EEF7] placeholder:text-[#8FA6CB] focus:border-[#7FCBD1] focus:bg-white/[0.12]"
             }`}
           />
         </div>
@@ -901,7 +901,7 @@ function SearchResults({
 }) {
   return (
     <div className="flex flex-col">
-      <div className="px-3 pt-1.5 pb-1 font-ui text-[9.5px] font-black tracking-[1.3px] text-[#9AA5B4] uppercase">
+      <div className="px-3 pt-1.5 pb-1 font-ui text-[9.5px] font-black tracking-[1.3px] text-[#8FA6CB] uppercase">
         {results.length} results
       </div>
       {results.map((hit) => {
@@ -911,12 +911,12 @@ function SearchResults({
             key={hit.page.slug}
             href={`/conditions/${hit.page.slug}`}
             onClick={() => onSelect(hit)}
-            className={`mx-1 rounded-[9px] px-2.5 py-2 transition-colors duration-base ${isLast ? "bg-acc-bg" : "hover:bg-border/40"}`}
+            className={`mx-1 rounded-[9px] px-2.5 py-2 transition-colors duration-base ${isLast ? "bg-white/[0.12]" : "hover:bg-white/10"}`}
           >
-            <div className={`font-ui text-[12.5px] leading-tight font-extrabold ${isLast ? "text-acc-ink" : "text-navy"}`}>
+            <div className={`font-ui text-[12.5px] leading-tight font-extrabold ${isLast ? "text-[#7FCBD1]" : "text-white"}`}>
               {highlightMatch(hit.page.canonicalName, query)}
             </div>
-            <div className="mt-0.5 font-ui text-[10.5px] font-semibold text-[#A6B0BC]">{hit.pathLabel}</div>
+            <div className="mt-0.5 font-ui text-[10.5px] font-semibold text-[#8FA6CB]">{hit.pathLabel}</div>
           </Link>
         );
       })}
@@ -1009,8 +1009,8 @@ function RegionNode({
         >
           {RegionIcon && <RegionIcon className="size-3" />}
         </span>
-        <span className={`min-w-0 flex-1 ${isOpen ? "text-navy" : ""}`}>{region.name}</span>
-        <span className={`ml-auto shrink-0 pl-1.5 font-ui text-[11px] font-black ${isOpen ? "text-navy" : "text-[#AAB4C1]"}`} aria-hidden="true">
+        <span className={`min-w-0 flex-1 ${isOpen ? "text-white" : ""}`}>{region.name}</span>
+        <span className={`ml-auto shrink-0 pl-1.5 font-ui text-[11px] font-black ${isOpen ? "text-white" : "text-[#8FA6CB]"}`} aria-hidden="true">
           {isOpen ? "⌄" : "›"}
         </span>
       </button>
@@ -1078,9 +1078,9 @@ function FolderNode({
         >
           {FolderIcon && <FolderIcon className="size-3" />}
         </span>
-        <span className={`min-w-0 flex-1 ${isOpen ? "text-navy" : ""}`}>{folder.name}</span>
+        <span className={`min-w-0 flex-1 ${isOpen ? "text-white" : ""}`}>{folder.name}</span>
         {hasPages && (
-          <span className={`ml-auto shrink-0 pl-1.5 font-ui text-[11px] font-black ${isOpen ? "text-navy" : "text-[#AAB4C1]"}`} aria-hidden="true">
+          <span className={`ml-auto shrink-0 pl-1.5 font-ui text-[11px] font-black ${isOpen ? "text-white" : "text-[#8FA6CB]"}`} aria-hidden="true">
             {isOpen ? "⌄" : "›"}
           </span>
         )}
@@ -1126,9 +1126,9 @@ function PageRow({
       }}
       className={`${PAGE_ROW_CLASS} ${isCurrent ? PAGE_ROW_CURRENT_CLASS : PAGE_ROW_DEFAULT_CLASS}`}
     >
-      <span className={`mt-1.5 mr-[5px] ml-1.5 size-[5px] shrink-0 rounded-full ${isCurrent ? "bg-navy" : "bg-[#B8C1CD]"}`} aria-hidden="true" />
+      <span className={`mt-1.5 mr-[5px] ml-1.5 size-[5px] shrink-0 rounded-full ${isCurrent ? "bg-[#7FCBD1]" : "bg-[#5C7399]"}`} aria-hidden="true" />
       <span className="min-w-0 flex-1">{page.canonicalName}</span>
-      {percent != null && <span className="shrink-0 pl-1.5 font-ui text-[10px] font-extrabold text-navy">{percent}%</span>}
+      {percent != null && <span className="shrink-0 pl-1.5 font-ui text-[10px] font-extrabold text-[#7FCBD1]">{percent}%</span>}
     </Link>
   );
 }
@@ -1142,13 +1142,13 @@ function FullStrip({ pathLabel, onTap }: { pathLabel: string; onTap: () => void 
     <button
       type="button"
       onClick={onTap}
-      className="flex w-full shrink-0 items-center gap-2 border-b border-border bg-surface px-2.5 py-2 text-left font-ui text-[11.5px] font-extrabold text-navy transition-colors duration-base hover:bg-[#EAEEF3]"
+      className="flex w-full shrink-0 items-center gap-2 border-b border-white/15 bg-white/[0.06] px-2.5 py-2 text-left font-ui text-[11.5px] font-extrabold text-white transition-colors duration-base hover:bg-white/10"
     >
-      <span className="flex size-[22px] shrink-0 items-center justify-center rounded-[6px] bg-navy/[0.08] font-ui text-[11px]" aria-hidden="true">
+      <span className="flex size-[22px] shrink-0 items-center justify-center rounded-[6px] bg-white/10 font-ui text-[11px]" aria-hidden="true">
         ▴
       </span>
       Show the library
-      <span className="ml-auto shrink-0 truncate font-ui text-[10px] font-bold text-[#9AA5B4]">{pathLabel}</span>
+      <span className="ml-auto shrink-0 truncate font-ui text-[10px] font-bold text-[#8FA6CB]">{pathLabel}</span>
     </button>
   );
 }
@@ -1176,7 +1176,7 @@ function PeekBar({
   return (
     <div
       onClick={onExpand}
-      className="flex shrink-0 cursor-pointer flex-col overflow-hidden rounded-t-[14px] bg-navy px-2.5 pt-1.5 pb-2.5 shadow-[0_-8px_20px_rgba(20,40,74,0.18)]"
+      className="flex shrink-0 cursor-pointer flex-col overflow-hidden rounded-t-[14px] border-t border-white/15 bg-white/[0.09] px-2.5 pt-1.5 pb-2.5 shadow-[0_-8px_20px_rgba(20,40,74,0.18)]"
     >
       <div
         onPointerDown={onGripPointerDown}
@@ -1193,7 +1193,7 @@ function PeekBar({
           style={{ background: `conic-gradient(var(--color-acc) ${percent}%, rgba(255,255,255,.16) 0)` }}
           aria-hidden="true"
         >
-          <span className="size-[22px] rounded-full bg-navy" />
+          <span className="size-[22px] rounded-full bg-[#293B5A]" />
         </span>
         <div className="min-w-0 flex-1">
           <div className="font-ui text-[8.5px] font-black tracking-[1.2px] text-acc-dk">STILL READING</div>
@@ -1276,7 +1276,7 @@ function Dock({
 
   return (
     <div
-      className="relative flex flex-none flex-col overflow-hidden rounded-t-[14px] border-t border-border bg-surface shadow-[0_-10px_24px_rgba(20,40,74,0.12)]"
+      className="relative flex flex-none flex-col overflow-hidden rounded-t-[14px] border-t border-white/15 bg-[#14284A] shadow-[0_-10px_24px_rgba(20,40,74,0.12)]"
       style={{ height: heightPx, ...transitionStyle }}
     >
       <div
@@ -1289,10 +1289,10 @@ function Dock({
         tabIndex={0}
         className="flex h-4 shrink-0 cursor-grab touch-none items-center justify-center active:cursor-grabbing"
       >
-        <span className="h-1 w-9 rounded-[3px] bg-[#C7CFDA]" aria-hidden="true" />
+        <span className="h-1 w-9 rounded-[3px] bg-white/30" aria-hidden="true" />
       </div>
 
-      <div className="mx-2 shrink-0 rounded-[10px] bg-navy px-[11px] pt-2.5 pb-2.5">
+      <div className="mx-2 shrink-0 rounded-[10px] bg-white/[0.09] px-[11px] pt-2.5 pb-2.5">
         <div className="flex items-center gap-2">
           <div className="min-w-0 flex-1">
             <div className="font-ui text-[9px] font-black tracking-[1.2px] text-acc-dk">
@@ -1334,11 +1334,11 @@ function Dock({
       </div>
 
       <div ref={scrollRef} className="min-h-0 flex-1 overflow-y-auto overflow-x-hidden">
-        <div className="px-3 pt-2.5 pb-1 font-ui text-[9.5px] font-black tracking-[1.3px] text-[#9AA5B4]">ON THIS PAGE</div>
+        <div className="px-3 pt-2.5 pb-1 font-ui text-[9.5px] font-black tracking-[1.3px] text-[#8FA6CB]">ON THIS PAGE</div>
         <div
           className="mr-1.5 ml-4 flex flex-col pl-1.5"
           style={{
-            backgroundImage: `linear-gradient(to bottom, var(--color-acc) 0, var(--color-acc) ${linePercent}%, #D0D7E1 ${linePercent}%, #D0D7E1 100%)`,
+            backgroundImage: `linear-gradient(to bottom, var(--color-acc) 0, var(--color-acc) ${linePercent}%, rgba(255,255,255,0.18) ${linePercent}%, rgba(255,255,255,0.18) 100%)`,
             backgroundPosition: "left top",
             backgroundSize: "1.5px 100%",
             backgroundRepeat: "no-repeat",
@@ -1357,8 +1357,8 @@ function Dock({
                     onSectionClick(section.id);
                     onNavigate?.();
                   }}
-                  className={`flex items-center gap-[9px] rounded-lg px-[9px] py-[5px] font-ui text-[12.5px] font-bold transition-colors duration-base hover:bg-[#EAEEF3] ${
-                    current ? "bg-acc-bg text-acc-ink" : read ? "text-[#A6B0BC]" : "text-primary"
+                  className={`flex items-center gap-[9px] rounded-lg px-[9px] py-[5px] font-ui text-[12.5px] font-bold transition-colors duration-base hover:bg-white/10 ${
+                    current ? "bg-white/[0.12] text-[#7FCBD1]" : read ? "text-[#8FA6CB]" : "text-[#E8EEF7]"
                   }`}
                 >
                   <span
@@ -1366,8 +1366,8 @@ function Dock({
                       current
                         ? "border-acc bg-acc text-white"
                         : read
-                          ? "border-acc-bd bg-acc-bg text-acc-ink"
-                          : "border-border bg-surface text-[#9AA5B4]"
+                          ? "border-[#7FCBD1]/40 bg-[#7FCBD1]/15 text-[#7FCBD1]"
+                          : "border-white/20 bg-white/[0.06] text-[#8FA6CB]"
                     }`}
                   >
                     {index + 1}
@@ -1388,8 +1388,8 @@ function Dock({
                             onSectionClick(section.id);
                             onNavigate?.();
                           }}
-                          className={`py-[3px] pr-[9px] pl-9 font-ui text-[11.5px] transition-colors duration-base hover:text-primary ${
-                            subCurrent ? "font-extrabold text-acc-ink" : subRead ? "text-[#B4BDC8]" : "text-secondary"
+                          className={`py-[3px] pr-[9px] pl-9 font-ui text-[11.5px] transition-colors duration-base hover:text-white ${
+                            subCurrent ? "font-extrabold text-[#7FCBD1]" : subRead ? "text-[#6F86AB]" : "text-[#B4C2D9]"
                           }`}
                         >
                           {sub.heading}
@@ -1420,13 +1420,13 @@ function Dock({
             <Link
               href={`/conditions/${folderAdjacent.next.slug}`}
               className={`mx-[10px] mt-3 mb-3 block rounded-[10px] border px-[11px] py-[9px] transition-colors duration-base ${
-                progressComplete ? "border-navy bg-navy text-right hover:bg-navy/90" : "border-border bg-surface hover:border-acc"
+                progressComplete ? "border-white/20 bg-white/[0.12] text-right hover:bg-white/[0.18]" : "border-white/15 bg-white/[0.06] hover:border-[#7FCBD1]"
               }`}
             >
-              <div className={`font-ui text-[9px] font-black tracking-[1.2px] uppercase ${progressComplete ? "text-acc-dk" : "text-secondary"}`}>
+              <div className={`font-ui text-[9px] font-black tracking-[1.2px] uppercase ${progressComplete ? "text-acc-dk" : "text-[#8FA6CB]"}`}>
                 Next in {folderLabel}
               </div>
-              <div className={`mt-0.5 font-ui text-[12.5px] leading-tight font-black ${progressComplete ? "text-white" : "text-navy"}`}>
+              <div className={`mt-0.5 font-ui text-[12.5px] leading-tight font-black ${"text-white"}`}>
                 {folderAdjacent.next.canonicalName}
                 {progressComplete ? " →" : ""}
               </div>

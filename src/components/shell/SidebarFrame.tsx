@@ -103,6 +103,9 @@ export function SidebarFrame({
   const isQuestionBankSession = pathname.startsWith("/question-bank/session/");
   const isQuestionBank = pathname.startsWith("/question-bank") && !isQuestionBankSession;
   const isStudyPlanner = pathname.startsWith("/study-planner");
+  // The Explore library's own rail (the topic tree) — the default branch below;
+  // it alone is drawn on the dark navy ground, the tool rails keep the light one.
+  const isIndexRail = !isClinicalTools && !isFlashcards && !isQuestionBank && !isStudyPlanner;
 
   // The sidebar now sits in a row below TopBar (the brand wordmark
   // moved there) rather than spanning the full viewport height itself,
@@ -166,7 +169,7 @@ export function SidebarFrame({
   return (
     <aside
       style={{ top: topOffset, height: `calc(100vh - ${topOffset}px)` }}
-      className="sticky hidden w-[312px] shrink-0 flex-col border-r border-border bg-surface-raised lg:flex"
+      className={`sticky hidden w-[312px] shrink-0 flex-col border-r lg:flex ${isIndexRail ? "border-white/10 bg-[#14284A]" : "border-border bg-surface-raised"}`}
     >
       {/* NAVBAR-SPEC.md — the six tool links that used to open this
           header region moved to the navbar's own Row 2
@@ -188,7 +191,7 @@ export function SidebarFrame({
               onClick={() => setCollapsed(true)}
               aria-label={t("collapseSidebar")}
               title={t("collapseSidebar")}
-              className="flex size-7 shrink-0 items-center justify-center rounded-[9px] border border-border text-secondary transition-colors duration-base hover:bg-border/40 hover:text-primary"
+              className={`flex size-7 shrink-0 items-center justify-center rounded-[9px] border transition-colors duration-base ${isIndexRail ? "border-white/20 text-[#B4C2D9] hover:bg-white/10 hover:text-white" : "border-border text-secondary hover:bg-border/40 hover:text-primary"}`}
             >
               <PanelLeftClose className="size-3.5" aria-hidden="true" />
             </button>
