@@ -1176,7 +1176,7 @@ function PeekBar({
   return (
     <div
       onClick={onExpand}
-      className="flex shrink-0 cursor-pointer flex-col overflow-hidden rounded-t-[14px] border-t border-white/15 bg-white/[0.09] px-2.5 pt-1.5 pb-2.5 shadow-[0_-8px_20px_rgba(20,40,74,0.18)]"
+      className="flex shrink-0 cursor-pointer flex-col overflow-hidden rounded-t-[14px] border-t border-white/15 bg-navy px-2.5 pt-1.5 pb-2.5 shadow-[0_-8px_20px_rgba(20,40,74,0.18)]"
     >
       <div
         onPointerDown={onGripPointerDown}
@@ -1193,7 +1193,7 @@ function PeekBar({
           style={{ background: `conic-gradient(var(--color-acc) ${percent}%, rgba(255,255,255,.16) 0)` }}
           aria-hidden="true"
         >
-          <span className="size-[22px] rounded-full bg-[#293B5A]" />
+          <span className="size-[22px] rounded-full bg-navy" />
         </span>
         <div className="min-w-0 flex-1">
           <div className="font-ui text-[8.5px] font-black tracking-[1.2px] text-acc-dk">STILL READING</div>
@@ -1276,7 +1276,7 @@ function Dock({
 
   return (
     <div
-      className="relative flex flex-none flex-col overflow-hidden rounded-t-[14px] border-t border-white/15 bg-[#14284A] shadow-[0_-10px_24px_rgba(20,40,74,0.12)]"
+      className="relative flex flex-none flex-col overflow-hidden rounded-t-[14px] border-t border-border bg-surface shadow-[0_-10px_24px_rgba(20,40,74,0.12)]"
       style={{ height: heightPx, ...transitionStyle }}
     >
       <div
@@ -1289,10 +1289,10 @@ function Dock({
         tabIndex={0}
         className="flex h-4 shrink-0 cursor-grab touch-none items-center justify-center active:cursor-grabbing"
       >
-        <span className="h-1 w-9 rounded-[3px] bg-white/30" aria-hidden="true" />
+        <span className="h-1 w-9 rounded-[3px] bg-[#C7CFDA]" aria-hidden="true" />
       </div>
 
-      <div className="mx-2 shrink-0 rounded-[10px] bg-white/[0.09] px-[11px] pt-2.5 pb-2.5">
+      <div className="mx-2 shrink-0 rounded-[10px] bg-navy px-[11px] pt-2.5 pb-2.5">
         <div className="flex items-center gap-2">
           <div className="min-w-0 flex-1">
             <div className="font-ui text-[9px] font-black tracking-[1.2px] text-acc-dk">
@@ -1334,11 +1334,11 @@ function Dock({
       </div>
 
       <div ref={scrollRef} className="min-h-0 flex-1 overflow-y-auto overflow-x-hidden">
-        <div className="px-3 pt-2.5 pb-1 font-ui text-[9.5px] font-black tracking-[1.3px] text-[#8FA6CB]">ON THIS PAGE</div>
+        <div className="px-3 pt-2.5 pb-1 font-ui text-[9.5px] font-black tracking-[1.3px] text-[#9AA5B4]">ON THIS PAGE</div>
         <div
           className="mr-1.5 ml-4 flex flex-col pl-1.5"
           style={{
-            backgroundImage: `linear-gradient(to bottom, var(--color-acc) 0, var(--color-acc) ${linePercent}%, rgba(255,255,255,0.18) ${linePercent}%, rgba(255,255,255,0.18) 100%)`,
+            backgroundImage: `linear-gradient(to bottom, var(--color-acc) 0, var(--color-acc) ${linePercent}%, #D0D7E1 ${linePercent}%, #D0D7E1 100%)`,
             backgroundPosition: "left top",
             backgroundSize: "1.5px 100%",
             backgroundRepeat: "no-repeat",
@@ -1357,8 +1357,8 @@ function Dock({
                     onSectionClick(section.id);
                     onNavigate?.();
                   }}
-                  className={`flex items-center gap-[9px] rounded-lg px-[9px] py-[5px] font-ui text-[12.5px] font-bold transition-colors duration-base hover:bg-white/10 ${
-                    current ? "bg-white/[0.12] text-[#7FCBD1]" : read ? "text-[#8FA6CB]" : "text-[#E8EEF7]"
+                  className={`flex items-center gap-[9px] rounded-lg px-[9px] py-[5px] font-ui text-[12.5px] font-bold transition-colors duration-base hover:bg-[#EAEEF3] ${
+                    current ? "bg-acc-bg text-acc-ink" : read ? "text-[#A6B0BC]" : "text-primary"
                   }`}
                 >
                   <span
@@ -1366,8 +1366,8 @@ function Dock({
                       current
                         ? "border-acc bg-acc text-white"
                         : read
-                          ? "border-[#7FCBD1]/40 bg-[#7FCBD1]/15 text-[#7FCBD1]"
-                          : "border-white/20 bg-white/[0.06] text-[#8FA6CB]"
+                          ? "border-acc-bd bg-acc-bg text-acc-ink"
+                          : "border-border bg-surface text-[#9AA5B4]"
                     }`}
                   >
                     {index + 1}
@@ -1388,8 +1388,8 @@ function Dock({
                             onSectionClick(section.id);
                             onNavigate?.();
                           }}
-                          className={`py-[3px] pr-[9px] pl-9 font-ui text-[11.5px] transition-colors duration-base hover:text-white ${
-                            subCurrent ? "font-extrabold text-[#7FCBD1]" : subRead ? "text-[#6F86AB]" : "text-[#B4C2D9]"
+                          className={`py-[3px] pr-[9px] pl-9 font-ui text-[11.5px] transition-colors duration-base hover:text-primary ${
+                            subCurrent ? "font-extrabold text-acc-ink" : subRead ? "text-[#B4BDC8]" : "text-secondary"
                           }`}
                         >
                           {sub.heading}
@@ -1420,13 +1420,13 @@ function Dock({
             <Link
               href={`/conditions/${folderAdjacent.next.slug}`}
               className={`mx-[10px] mt-3 mb-3 block rounded-[10px] border px-[11px] py-[9px] transition-colors duration-base ${
-                progressComplete ? "border-white/20 bg-white/[0.12] text-right hover:bg-white/[0.18]" : "border-white/15 bg-white/[0.06] hover:border-[#7FCBD1]"
+                progressComplete ? "border-navy bg-navy text-right hover:bg-navy/90" : "border-border bg-surface hover:border-acc"
               }`}
             >
-              <div className={`font-ui text-[9px] font-black tracking-[1.2px] uppercase ${progressComplete ? "text-acc-dk" : "text-[#8FA6CB]"}`}>
+              <div className={`font-ui text-[9px] font-black tracking-[1.2px] uppercase ${progressComplete ? "text-acc-dk" : "text-secondary"}`}>
                 Next in {folderLabel}
               </div>
-              <div className={`mt-0.5 font-ui text-[12.5px] leading-tight font-black ${"text-white"}`}>
+              <div className={`mt-0.5 font-ui text-[12.5px] leading-tight font-black ${progressComplete ? "text-white" : "text-navy"}`}>
                 {folderAdjacent.next.canonicalName}
                 {progressComplete ? " →" : ""}
               </div>
