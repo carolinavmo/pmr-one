@@ -33,6 +33,21 @@ const SUPPORTS_TEXT_VERTICAL_ALIGN = new Set<EditorialBlock["type"]>([
   "overview",
 ]);
 
+// Only the paragraph block reads layout.lineHeight (ParagraphBlock.tsx);
+// offering it elsewhere would be a dead control.
+const SUPPORTS_LINE_HEIGHT = new Set<EditorialBlock["type"]>(["paragraph"]);
+
+const LINE_HEIGHT_OPTIONS: { value: NonNullable<import("@/lib/editorial-blocks").BlockLayout["lineHeight"]>; label: string }[] = [
+  { value: "normal", label: "Normal" },
+  { value: "snug", label: "Snug" },
+  { value: "tight", label: "Tight" },
+];
+
+const SPACE_BEFORE_OPTIONS: { value: NonNullable<import("@/lib/editorial-blocks").BlockLayout["spaceBefore"]>; label: string }[] = [
+  { value: "normal", label: "Normal" },
+  { value: "none", label: "None" },
+];
+
 const WIDTH_OPTIONS: { value: NonNullable<import("@/lib/editorial-blocks").BlockLayout["width"]>; label: string }[] = [
   { value: "1/4", label: "25%" },
   { value: "1/3", label: "33%" },
@@ -85,6 +100,8 @@ export function AlignmentPicker({ block }: AlignmentPickerProps) {
   const width = layout?.width ?? "full";
   const align: HorizontalAlign = layout?.align ?? "left";
   const rowAlign: VerticalAlign = layout?.rowAlign ?? "top";
+  const lineHeight = layout?.lineHeight ?? "normal";
+  const spaceBefore = layout?.spaceBefore ?? "normal";
 
   const set = (fields: Parameters<typeof updateBlockAlignmentAction>[1]) =>
     preserveScrollAcrossSave(() => updateBlockAlignmentAction(block.id, fields));
@@ -154,6 +171,52 @@ export function AlignmentPicker({ block }: AlignmentPickerProps) {
                     }`}
                   >
                     <Icon className="size-4" aria-hidden="true" />
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {SUPPORTS_LINE_HEIGHT.has(block.type) && (
+            <div className="flex flex-col gap-1.5">
+              <span className="font-ui text-xs font-medium text-secondary">Line height</span>
+              <div className="flex gap-1">
+                {LINE_HEIGHT_OPTIONS.map((opt) => (
+                  <button
+                    key={opt.value}
+                    type="button"
+                    aria-pressed={lineHeight === opt.value}
+                    onClick={() => set({ lineHeight: opt.value })}
+                    className={`flex-1 rounded border px-2 py-1 font-ui text-xs ${
+                      lineHeight === opt.value
+                        ? "border-accent bg-accent/10 text-accent"
+                        : "border-border text-secondary hover:text-primary"
+                    }`}
+                  >
+                    {opt.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {!inRow && (
+            <div className="flex flex-col gap-1.5">
+              <span className="font-ui text-xs font-medium text-secondary">Space above</span>
+              <div className="flex gap-1">
+                {SPACE_BEFORE_OPTIONS.map((opt) => (
+                  <button
+                    key={opt.value}
+                    type="button"
+                    aria-pressed={spaceBefore === opt.value}
+                    onClick={() => set({ spaceBefore: opt.value })}
+                    className={`flex-1 rounded border px-2 py-1 font-ui text-xs ${
+                      spaceBefore === opt.value
+                        ? "border-accent bg-accent/10 text-accent"
+                        : "border-border text-secondary hover:text-primary"
+                    }`}
+                  >
+                    {opt.label}
                   </button>
                 ))}
               </div>

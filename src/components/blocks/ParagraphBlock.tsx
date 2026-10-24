@@ -16,7 +16,7 @@ import {
 } from "@/lib/actions/authoring";
 import { cardIcons, type CardIconName } from "@/components/ui/cardIcons";
 import { CARD_COLOR_TINT, CARD_COLOR_BADGE, CARD_COLOR_SWATCH } from "@/lib/card-colors";
-import { TEXT_ALIGN_CLASS, ROW_ITEMS_CLASS } from "@/lib/block-alignment";
+import { TEXT_ALIGN_CLASS, ROW_ITEMS_CLASS, LINE_HEIGHT_CLASS } from "@/lib/block-alignment";
 import { preserveScrollAcrossSave } from "@/lib/preserve-scroll";
 
 function isCardIconName(value: string): value is CardIconName {
@@ -60,11 +60,12 @@ export function ParagraphBlockView({
 
   const textAlign = block.layout?.textAlign ?? "left";
   const textVerticalAlign = block.layout?.textVerticalAlign ?? "top";
+  const lineHeight = block.layout?.lineHeight ?? "normal";
 
   const body = (
     <RichEditableText
       as="p"
-      className={`font-reading text-base text-primary ${TEXT_ALIGN_CLASS[textAlign]} ${
+      className={`font-reading text-base text-primary ${TEXT_ALIGN_CLASS[textAlign]} ${LINE_HEIGHT_CLASS[lineHeight]} ${
         collapsible ? "line-clamp-3" : ""
       }`}
       value={block.body}

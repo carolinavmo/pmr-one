@@ -202,15 +202,31 @@ function renderGroups({
         // edge. Most blocks never set this, so this stays a no-op
         // (`full` renders with no wrapper at all) for the common case.
         const width = block.layout?.width;
-        if (!width || width === "full") return controls;
+        const sized =
+          !width || width === "full" ? (
+            controls
+          ) : (
+            <div
+              className={`${STANDALONE_WIDTH_CLASS[width]} ${
+                STANDALONE_ALIGN_CLASS[block.layout?.align ?? "left"]
+              }`}
+            >
+              {controls}
+            </div>
+          );
+        // Always wrapped so toggling "space above" only changes a
+        // class, never the element tree (which would remount the
+        // block). `contents` leaves the layout exactly as it was; "none"
+        // cancels the section's own gap (--block-gap, set where that
+        // gap is) so the block sits tight under the one above it.
         return (
           <div
             key={block.id}
-            className={`${STANDALONE_WIDTH_CLASS[width]} ${
-              STANDALONE_ALIGN_CLASS[block.layout?.align ?? "left"]
-            }`}
+            className={
+              block.layout?.spaceBefore === "none" ? "mt-[calc(var(--block-gap,0px)*-1)]" : "contents"
+            }
           >
-            {controls}
+            {sized}
           </div>
         );
       })

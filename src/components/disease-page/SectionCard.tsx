@@ -118,7 +118,7 @@ function SectionCardBody({
         className={
           editing
             ? undefined
-            : `flex flex-col gap-4 border-t border-border/50 px-4 pt-4 pb-5 ${collapsed ? "hidden" : ""}`
+            : `flex flex-col gap-4 [--block-gap:1rem] border-t border-border/50 px-4 pt-4 pb-5 ${collapsed ? "hidden" : ""}`
         }
       >
         {children}

@@ -2884,7 +2884,7 @@ export async function resizeRowAction(
 // has other keys" (preserves them) and "no layout yet" (starts from {}).
 export async function updateBlockAlignmentAction(
   blockId: string,
-  fields: Partial<Pick<BlockLayout, "textAlign" | "textVerticalAlign" | "width" | "align" | "rowAlign">>
+  fields: Partial<Pick<BlockLayout, "textAlign" | "textVerticalAlign" | "width" | "align" | "rowAlign" | "lineHeight" | "spaceBefore">>
 ) {
   await requireEditor();
   await pool.query(

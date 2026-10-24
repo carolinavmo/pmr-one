@@ -55,6 +55,14 @@ export interface BlockLayout {
   // taller row sibling). Not every block type has a container this can
   // apply to (see ALIGNABLE_BLOCK_CAPABILITIES in AlignmentPicker.tsx).
   textVerticalAlign?: VerticalAlign;
+  // Tighter line spacing for a text block (references, footnotes).
+  // Unset / "normal" keeps the block's own default.
+  lineHeight?: "normal" | "snug" | "tight";
+  // "none" pulls a standalone block up against the one above it by
+  // cancelling the section's gap between blocks — for a reference line
+  // that belongs to the table or paragraph right before it. Unset /
+  // "normal" keeps the usual gap. Ignored inside a row.
+  spaceBefore?: "normal" | "none";
 }
 
 interface BlockBase {

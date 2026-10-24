@@ -26,6 +26,14 @@ export const COLUMN_JUSTIFY_CLASS: Record<VerticalAlign, string> = {
   bottom: "justify-end",
 };
 
+// Line spacing a text block can opt into — "normal" is simply absent,
+// so the block keeps whatever leading its own typography sets.
+export const LINE_HEIGHT_CLASS: Record<"normal" | "snug" | "tight", string> = {
+  normal: "",
+  snug: "leading-snug",
+  tight: "leading-tight",
+};
+
 // Standalone block width (no `row`) — real percentage widths, not the
 // 12-column grid span classes BlockSequence's row path uses, since a
 // standalone block isn't inside a grid.
