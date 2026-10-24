@@ -2,21 +2,38 @@ import { NextRequest, NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
 import { pool } from "@/lib/db";
 
-// TEMPORARY — adds the irritability grading table (blank / High / Moderate /
-// Low) to the "Match exercise intensity to shoulder irritability" heading of
-// the Adhesive Capsulitis page. POST {dryRun:true} lists that heading's blocks
-// and the default spot (after its last block); POST {afterPosition:N} inserts
-// after that block, which must be inside the section. One transaction, skipped
-// if already there. Remove once run.
+// TEMPORARY — adds two tables to the "Match exercise intensity to shoulder
+// irritability" heading of the Adhesive Capsulitis page, in this order: the
+// irritability grading table (blank / High / Moderate / Low) and the
+// programme-by-irritability table. POST {dryRun:true} lists that heading's
+// blocks and the default spot (after its last block); POST {afterPosition:N}
+// inserts after that block, which must be inside the section. One
+// transaction; a table already on the page (matched by a row label) is
+// skipped. Remove once run.
 
-const MARKER = "Night/rest pain";
 const b = (t: string) => `<strong>${t}</strong>`;
-const COLUMNS = ["", "High", "Moderate", "Low"];
-const ROWS = [
-  [b("Pain"), "≥7/10", "4–6/10", "≤3/10"],
-  [b(MARKER), "Consistent", "Intermittent", "None"],
-  [b("Where pain occurs"), `${b("Before")} end range`, `${b("At")} end range`, "Only at end range with overpressure"],
-  [b("Active vs passive range"), "Active &lt; passive (pain-limited)", "Similar", "Equal"],
+const TABLES: { marker: string; columns: string[]; rows: string[][] }[] = [
+  {
+    marker: "Night/rest pain",
+    columns: ["", "High", "Moderate", "Low"],
+    rows: [
+      [b("Pain"), "≥7/10", "4–6/10", "≤3/10"],
+      [b("Night/rest pain"), "Consistent", "Intermittent", "None"],
+      [b("Where pain occurs"), `${b("Before")} end range`, `${b("At")} end range`, "Only at end range with overpressure"],
+      [b("Active vs passive range"), "Active &lt; passive (pain-limited)", "Similar", "Equal"],
+    ],
+  },
+  {
+    marker: "Main objective",
+    columns: ["", "High irritability", "Moderate irritability", "Low irritability"],
+    rows: [
+      [b("Clinical presentation"), "Rest/night pain, pain before end-range", "Pain mainly with movement", "Minimal resting pain, stiffness predominates"],
+      [b("Main objective"), "Reduce pain and maintain comfortable movement", "Progressively recover mobility", "Maximize ROM and functional capacity"],
+      [b("Mobility exercises"), "Gentle, short-duration, symptom-limited", "Progressive active-assisted ROM and stretching", "Longer-duration, progressively stronger end-range stretching"],
+      [b("Strengthening"), "Light, tolerable activation", "Progressive resistance within available ROM", "Progressive strengthening and functional loading"],
+      [b("Manual therapy"), "Gentle, symptom-modulating techniques if useful", "Mobilization as tolerated", "End-range mobilization may be considered"],
+    ],
+  },
 ];
 
 interface Row {
@@ -45,10 +62,12 @@ export async function POST(req: NextRequest) {
       [diseaseId]
     );
 
-    const already = rows.find((r) => r.block_type === "comparison_table" && JSON.stringify(r.content_config?.rows).includes(MARKER));
-    if (already) {
+    const present = (marker: string) =>
+      rows.find((r) => r.block_type === "comparison_table" && JSON.stringify(r.content_config?.rows).includes(marker));
+    const todo = TABLES.filter((t) => !present(t.marker));
+    if (todo.length === 0) {
       await client.query("ROLLBACK");
-      return NextResponse.json({ ok: true, skipped: `already present at position ${already.position}` });
+      return NextResponse.json({ ok: true, skipped: "both tables are already on the page" });
     }
 
     const hits = rows.map((r, i) => ({ r, i })).filter(({ r }) => level(r) <= 3 && /match exercise intensity to shoulder irritability/i.test(strip(r.content_config?.text)));
@@ -61,6 +80,7 @@ export async function POST(req: NextRequest) {
     const anchor = afterPosition == null ? sec[sec.length - 1] : sec.find((r) => r.position === afterPosition);
     if (!anchor) throw new Error(`position ${afterPosition} is not inside the section`);
     const plan = {
+      willAdd: todo.map((t) => t.marker),
       section: sec.map(preview),
       nextHeading: rows[next] ? preview(rows[next]) : null,
       insertAfterPosition: anchor.position,
@@ -72,15 +92,20 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ ok: true, dryRun: true, plan });
     }
 
-    await client.query(`UPDATE editorial_block SET position = -(position + 1) WHERE disease_id = $1 AND position > $2`, [diseaseId, anchor.position]);
+    const n = todo.length;
+    await client.query(`UPDATE editorial_block SET position = -(position + $3) WHERE disease_id = $1 AND position > $2`, [diseaseId, anchor.position, n]);
     await client.query(`UPDATE editorial_block SET position = -position WHERE disease_id = $1 AND position < 0`, [diseaseId]);
-    const { rows: ins } = await client.query<{ id: string }>(
-      `INSERT INTO editorial_block (disease_id, position, block_type, content_config) VALUES ($1, $2, 'comparison_table', $3) RETURNING id`,
-      [diseaseId, anchor.position + 1, JSON.stringify({ columns: COLUMNS, rows: ROWS })]
-    );
+    const inserted: string[] = [];
+    for (const [idx, t] of todo.entries()) {
+      const { rows: ins } = await client.query<{ id: string }>(
+        `INSERT INTO editorial_block (disease_id, position, block_type, content_config) VALUES ($1, $2, 'comparison_table', $3) RETURNING id`,
+        [diseaseId, anchor.position + 1 + idx, JSON.stringify({ columns: t.columns, rows: t.rows })]
+      );
+      inserted.push(ins[0].id);
+    }
     await client.query("COMMIT");
     revalidatePath("/[locale]/conditions/[slug]", "page");
-    return NextResponse.json({ ok: true, inserted: ins[0].id, plan });
+    return NextResponse.json({ ok: true, inserted, plan });
   } catch (err) {
     await client.query("ROLLBACK").catch(() => {});
     return NextResponse.json({ ok: false, error: err instanceof Error ? err.message : String(err) }, { status: 400 });
