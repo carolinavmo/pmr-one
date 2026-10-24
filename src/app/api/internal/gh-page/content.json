@@ -1,0 +1,2024 @@
+[
+ {
+  "type": "section_heading",
+  "content": {
+   "text": "Introduction, definition and terminology"
+  }
+ },
+ {
+  "type": "subsection_heading",
+  "content": {
+   "text": "What it is"
+  }
+ },
+ {
+  "type": "paragraph",
+  "content": {
+   "body": "<p>Glenohumeral osteoarthritis (GHOA) is <strong>degenerative disease of the shoulder's ball-and-socket joint</strong> — progressive loss of articular cartilage, subchondral bone change, osteophyte formation and capsular contracture, producing pain, stiffness and loss of function.</p><p>It is the <strong>second most common diagnosis</strong> in patients presenting with atraumatic shoulder pain, after rotator cuff disease. Radiographic prevalence in middle-aged and older adults runs at <strong>16–20%</strong>.</p>"
+  }
+ },
+ {
+  "type": "subsection_heading",
+  "content": {
+   "text": "First, two terminology problems"
+  }
+ },
+ {
+  "type": "subsubsection_heading",
+  "content": {
+   "text": "\"Shoulder arthritis\" is not a diagnosis"
+  }
+ },
+ {
+  "type": "paragraph",
+  "content": {
+   "body": "<p>The shoulder has three joints that can degenerate, and they behave completely differently:</p>"
+  }
+ },
+ {
+  "type": "comparison_table",
+  "content": {
+   "columns": [
+    "Joint",
+    "Presentation"
+   ],
+   "rows": [
+    [
+     "<strong>Glenohumeral</strong>",
+     "Deep, diffuse pain · global stiffness · crepitus · loss of rotation"
+    ],
+    [
+     "<strong>Acromioclavicular</strong>",
+     "Point tenderness over the AC joint · pain on cross-body adduction · often asymptomatic on imaging"
+    ],
+    [
+     "<strong>Scapulothoracic</strong>",
+     "Crepitus and snapping, rarely a primary degenerative problem"
+    ]
+   ]
+  }
+ },
+ {
+  "type": "paragraph",
+  "content": {
+   "body": "<p><strong>AC joint OA is far more common than glenohumeral OA and very often incidental.</strong> Writing \"shoulder OA\" in a letter without specifying the joint tells the next clinician nothing — and risks a patient being told they have arthritis in a joint that is not the one hurting.</p>"
+  }
+ },
+ {
+  "type": "subsubsection_heading",
+  "content": {
+   "text": "Osteoarthritis, not osteoarthrosis"
+  }
+ },
+ {
+  "type": "paragraph",
+  "content": {
+   "body": "<p>You will see both. <strong>\"Osteoarthrosis\"</strong> was used deliberately to emphasise that this was degeneration <em>without</em> inflammation — the \"-osis\" ending chosen for the same reason the tendon literature moved from <em>tendinitis</em> to <em>tendinosis</em>.</p><p>That reasoning no longer holds. GHOA involves <strong>genuine synovial inflammation</strong>: synovitis with elevated IL-1 and reduced IL-1 receptor antagonist, protease-driven chondral breakdown, and signalling between inflammatory cells, chondrocytes and subchondral bone.</p>"
+  }
+ },
+ {
+  "type": "highlight_card",
+  "content": {
+   "label": "Key Takeaway",
+   "color": "insight",
+   "text": "<strong>Use \"osteoarthritis.\"</strong> The inflammatory component is real, and it is part of why corticosteroid injection does anything at all."
+  }
+ },
+ {
+  "type": "highlight_card",
+  "content": {
+   "label": "PM&R clinical pearl",
+   "color": "insight",
+   "text": "Worth noticing that this is the <strong>opposite</strong> correction to the one made in tendinopathy. There, we removed \"-itis\" because the inflammation wasn't there. Here, we keep it because it is. The lesson is the same either way: <strong>name the condition after the mechanism you can actually demonstrate.</strong>"
+  }
+ },
+ {
+  "type": "subsection_heading",
+  "content": {
+   "text": "Why the shoulder is not just a small hip"
+  }
+ },
+ {
+  "type": "paragraph",
+  "content": {
+   "body": "<p>This is the organising idea of the whole chapter. GHOA is far less common than hip or knee OA, and it does not behave the same way.</p><p><strong>1. It is not weight-bearing.</strong> The shoulder does not fail under axial load the way a hip does. Obesity, a dominant mechanical risk factor at the knee, is <strong>not associated with increased early postoperative complications</strong> in shoulder arthroplasty — and the AAOS rates that as strong evidence.</p><p><strong>2. The wear is eccentric, not concentric.</strong> Hips and knees tend to wear symmetrically. The shoulder characteristically wears <strong>posteriorly</strong>, with the humeral head subluxing backwards and eroding the posterior glenoid. That asymmetry is why the Walch classification exists and why glenoid version dominates surgical planning.</p><p><strong>3. The rotator cuff has no equivalent at the hip or knee.</strong> A soft-tissue envelope actively centres this joint. When it fails, the mechanics change completely — and you get a different disease, not a worse one.</p><p><strong>4. Scapular and acromial morphology contribute</strong>, including premorbid retroversion and acromial dysplasia — anatomical factors with no real parallel in the lower limb.</p>"
+  }
+ },
+ {
+  "type": "highlight_card",
+  "content": {
+   "label": "Evidence note",
+   "color": "blue",
+   "text": "A limitation worth knowing: <strong>most of what we believe about GHOA pathobiology is extrapolated from knee osteoarthritis.</strong> The 2025 review from the Arthritis Foundation/AOSSM Think Tank states explicitly that the post-traumatic and post-surgical pathways identified in the knee <em>\"require future validation in studies of GHOA.\"</em> We are reasoning by analogy more than we usually admit."
+  }
+ },
+ {
+  "type": "subsection_heading",
+  "content": {
+   "text": "Primary and secondary"
+  }
+ },
+ {
+  "type": "comparison_table",
+  "content": {
+   "columns": [
+    "",
+    "Proportion",
+    "Definition"
+   ],
+   "rows": [
+    [
+     "<strong>Primary (idiopathic)</strong>",
+     "<strong>~73%</strong>",
+     "No identifiable cause"
+    ],
+    [
+     "<strong>Secondary</strong>",
+     "<strong>~27%</strong>",
+     "Follows a recognised insult"
+    ]
+   ]
+  }
+ },
+ {
+  "type": "paragraph",
+  "content": {
+   "body": "<p><em>(From 209 consecutive GHOA patients in a community musculoskeletal practice.)</em></p>"
+  }
+ },
+ {
+  "type": "subsubsection_heading",
+  "content": {
+   "text": "Causes of secondary GHOA"
+  }
+ },
+ {
+  "type": "comparison_table",
+  "content": {
+   "columns": [
+    "Cause",
+    "Mechanism"
+   ],
+   "rows": [
+    [
+     "<strong>Chronic instability</strong>",
+     "Recurrent dislocation damages cartilage and labrum — <em>dislocation arthropathy</em>"
+    ],
+    [
+     "<strong>Instability surgery</strong>",
+     "Over-tightened anterior repair drives the head posteriorly — <strong><em>capsulorrhaphy arthropathy</em></strong>"
+    ],
+    [
+     "<strong>Trauma</strong>",
+     "Intra-articular proximal humeral fracture, chondral injury"
+    ],
+    [
+     "<strong>Untreated massive cuff tear</strong>",
+     "→ <strong>cuff tear arthropathy</strong> (see below)"
+    ],
+    [
+     "<strong>Avascular necrosis</strong>",
+     "Steroids, alcohol, sickle cell, post-traumatic"
+    ],
+    [
+     "<strong>Inflammatory arthritis</strong>",
+     "Rheumatoid and the seronegative arthritides"
+    ],
+    [
+     "<strong>Repetitive occupational or athletic load</strong>",
+     "Throwing athletes, overhead work — association, not established cause"
+    ]
+   ]
+  }
+ },
+ {
+  "type": "subsection_heading",
+  "content": {
+   "text": "The finding that undermines the \"wear and tear\" story"
+  }
+ },
+ {
+  "type": "paragraph",
+  "content": {
+   "body": "<p>Primary GHOA affects the <strong>dominant and non-dominant arm at nearly the same rate</strong>:</p>"
+  }
+ },
+ {
+  "type": "comparison_table",
+  "content": {
+   "columns": [
+    "Side",
+    "Proportion"
+   ],
+   "rows": [
+    [
+     "Dominant arm",
+     "38.7%"
+    ],
+    [
+     "Non-dominant arm",
+     "33.8%"
+    ],
+    [
+     "<strong>Bilateral</strong>",
+     "<strong>27.5%</strong>"
+    ]
+   ]
+  }
+ },
+ {
+  "type": "paragraph",
+  "content": {
+   "body": "<p>If this were a disease of cumulative use, the dominant arm should dominate. It does not.</p><p>The study authors' conclusion is that <strong>anatomical and systemic factors matter more than overuse</strong> — and the risk factor profile supports it. Patients with primary GHOA in that series had a mean BMI of <strong>31.0</strong>, with <strong>57.2% hypertensive</strong> and <strong>48.7% hyperlipidaemic</strong>; the 2025 review adds <strong>smoking</strong> to the list.</p>"
+  }
+ },
+ {
+  "type": "highlight_card",
+  "content": {
+   "label": "PM&R clinical pearl",
+   "color": "insight",
+   "text": "<strong>This is a systemic and anatomical disease more than a mechanical one.</strong> That changes what you say to patients. The person who asks <em>\"is this because of my job?\"</em> usually expects to be told yes, and the honest answer is that in primary GHOA the evidence points more toward age, anatomy and metabolic factors than toward how they used the arm."
+  }
+ },
+ {
+  "type": "paragraph",
+  "content": {
+   "body": "<p>It also means <strong>the other shoulder deserves attention</strong> — bilateral involvement is over a quarter of cases.</p>"
+  }
+ },
+ {
+  "type": "subsection_heading",
+  "content": {
+   "text": "Cuff tear arthropathy — a different disease, not a worse one"
+  }
+ },
+ {
+  "type": "comparison_table",
+  "content": {
+   "columns": [
+    "",
+    "<strong>Glenohumeral OA</strong>",
+    "<strong>Cuff tear arthropathy</strong>"
+   ],
+   "rows": [
+    [
+     "<strong>Primary problem</strong>",
+     "The joint surface",
+     "<strong>The rotator cuff</strong>"
+    ],
+    [
+     "Cuff",
+     "Usually intact",
+     "Massive, irreparable tear"
+    ],
+    [
+     "Mechanism",
+     "Cartilage degeneration",
+     "Loss of the fulcrum → superior migration → the head articulates with the <strong>acromion</strong>"
+    ],
+    [
+     "Acromiohumeral interval",
+     "Normal (7–14 mm)",
+     "<strong>Narrowed (&lt;7 mm)</strong>"
+    ],
+    [
+     "Strength",
+     "Preserved",
+     "Weak, sometimes <strong>pseudoparalysis</strong>"
+    ],
+    [
+     "Hallmark sign",
+     "Crepitus",
+     "<strong>Anterosuperior escape</strong>"
+    ],
+    [
+     "<strong>Operation</strong>",
+     "<strong>Anatomic</strong> replacement",
+     "<strong>Reverse</strong> replacement"
+    ]
+   ]
+  }
+ },
+ {
+  "type": "paragraph",
+  "content": {
+   "body": "<p>In CTA the joint surface fails <strong>because</strong> the cuff did. The humeral head rides up, the undersurface of the acromion becomes a false socket — <em>acetabularisation</em> — and the joint is destroyed from above rather than from within.</p>"
+  }
+ },
+ {
+  "type": "highlight_card",
+  "content": {
+   "label": "PM&R clinical pearl",
+   "color": "insight",
+   "text": "<strong>Separate these two before planning anything.</strong> They look alike in clinic: an older patient with a painful, stiff, crepitant shoulder. But cuff status determines the examination you emphasise, the imaging you order, the operation offered, the rehabilitation protocol, and what you can honestly promise about rotation afterwards."
+  }
+ },
+ {
+  "type": "paragraph",
+  "content": {
+   "body": "<p><strong>The lag signs and the acromiohumeral interval are what separate them</strong> — one from your hands, one from a plain film. Neither costs anything.</p>"
+  }
+ },
+ {
+  "type": "subsection_heading",
+  "content": {
+   "text": "What this condition actually costs patients"
+  }
+ },
+ {
+  "type": "paragraph",
+  "content": {
+   "body": "<ul><li><strong>16% of adults</strong> experience disabling shoulder pain on a daily basis</li><li>Among those with atraumatic shoulder pain, GHOA is <strong>second only to rotator cuff disease</strong></li><li>In one community practice series, <strong>24.3% of patients diagnosed with GHOA had surgery within two years</strong></li></ul><p>That last figure is worth holding on to. A quarter progressed to arthroplasty within 24 months of diagnosis — so while this is a slowly progressive condition, a meaningful proportion of the people you diagnose are on a surgical pathway already.</p>"
+  }
+ },
+ {
+  "type": "subsection_heading",
+  "content": {
+   "text": "What is still unknown"
+  }
+ },
+ {
+  "type": "paragraph",
+  "content": {
+   "body": "<p>The 2025 Think Tank review named five gaps, and two sit directly in PM&amp;R's territory:</p><ol><li>The role of novel pharmacological agents</li><li>The natural history of traumatic instability and its relationship to GHOA</li><li>Which cuff tears predictably progress to secondary GHOA</li><li><strong>The efficacy of physical therapy for GHOA</strong></li><li>Why reverse and anatomic arthroplasty differ in perioperative morbidity and outcome</li></ol><p>Also unresolved: whether the muscle imbalances seen in GHOA <strong>cause</strong> glenoid wear or <strong>result from</strong> it.</p>"
+  }
+ },
+ {
+  "type": "highlight_card",
+  "content": {
+   "label": "Evidence note",
+   "color": "blue",
+   "text": "Number 4 deserves emphasis, because it shapes the treatment chapter. <strong>The efficacy of physical therapy in glenohumeral OA is listed as an open question by the field's own consensus review</strong> — and the physiotherapy clinical practice guideline could only issue expert-opinion statements for non-operative care. That is not a reason to withhold rehabilitation. It is a reason not to claim more for it than we can support."
+  }
+ },
+ {
+  "type": "section_heading",
+  "content": {
+   "text": "Epidemiology and risk factors"
+  }
+ },
+ {
+  "type": "subsection_heading",
+  "content": {
+   "text": "Prevalence rises steeply with age"
+  }
+ },
+ {
+  "type": "paragraph",
+  "content": {
+   "body": "<p>In a UK primary care population aged 45+ referred for shoulder radiographs, <strong>21.2% had radiographic glenohumeral OA</strong>.</p>"
+  }
+ },
+ {
+  "type": "comparison_table",
+  "content": {
+   "columns": [
+    "Age",
+    "Prevalence"
+   ],
+   "rows": [
+    [
+     "45–49",
+     "<strong>5.4%</strong>"
+    ],
+    [
+     "50–59",
+     "9.1%"
+    ],
+    [
+     "60–69",
+     "17.7%"
+    ],
+    [
+     "70–79",
+     "27.9%"
+    ],
+    [
+     "<strong>80–89</strong>",
+     "<strong>37.4%</strong>"
+    ],
+    [
+     "90+",
+     "27.2%"
+    ]
+   ]
+  }
+ },
+ {
+  "type": "paragraph",
+  "content": {
+   "body": "<p><strong>No meaningful sex difference</strong> overall (21.4% female, 21.0% male).</p>"
+  }
+ },
+ {
+  "type": "highlight_card",
+  "content": {
+   "label": "Evidence note",
+   "color": "blue",
+   "text": "Two caveats on that figure. These were patients referred <em>because</em> they had shoulder pain, so this is not general-population prevalence. And radiographic change is not the same as symptomatic disease — the authors themselves caution that the changes may not be the cause of the pain. As with every joint, <strong>the X-ray and the patient are two different things.</strong>"
+  }
+ },
+ {
+  "type": "subsection_heading",
+  "content": {
+   "text": "How GHOA patients differ from cuff disease patients"
+  }
+ },
+ {
+  "type": "paragraph",
+  "content": {
+   "body": "<p>In a community musculoskeletal practice over nine months, 984 patients were diagnosed with rotator cuff disorders and 209 with GHOA.</p>"
+  }
+ },
+ {
+  "type": "comparison_table",
+  "content": {
+   "columns": [
+    "",
+    "GHOA",
+    "Rotator cuff disease"
+   ],
+   "rows": [
+    [
+     "<strong>Mean age</strong>",
+     "<strong>69.8 ± 12.2</strong>",
+     "57.1 ± 15.1"
+    ]
+   ]
+  }
+ },
+ {
+  "type": "paragraph",
+  "content": {
+   "body": "<p>That twelve-year age gap is clinically useful: <strong>GHOA is a disease of a meaningfully older population than cuff disease.</strong> Women made up 54% of primary GHOA cases and were older than the men (72.9 vs 66.1 years).</p>"
+  }
+ },
+ {
+  "type": "subsection_heading",
+  "content": {
+   "text": "Risk factors"
+  }
+ },
+ {
+  "type": "comparison_table",
+  "content": {
+   "columns": [
+    "Category",
+    "Detail"
+   ],
+   "rows": [
+    [
+     "<strong>Age</strong>",
+     "The dominant factor. Prevalence roughly sevenfold higher at 80 than at 45"
+    ],
+    [
+     "<strong>Metabolic profile</strong>",
+     "Mean BMI 31.0 · 57.2% hypertensive · 48.7% hyperlipidaemic · smoking"
+    ],
+    [
+     "<strong>Previous instability</strong>",
+     "Recurrent dislocation, and over-tightened stabilisation surgery"
+    ],
+    [
+     "<strong>Trauma</strong>",
+     "Proximal humeral fracture, especially intra-articular; chondral injury"
+    ],
+    [
+     "<strong>Rotator cuff disease</strong>",
+     "Massive tears → cuff tear arthropathy"
+    ],
+    [
+     "<strong>Avascular necrosis</strong>",
+     "Steroids, alcohol, sickle cell, post-traumatic"
+    ],
+    [
+     "<strong>Inflammatory arthritis</strong>",
+     "Rheumatoid, seronegative arthritides"
+    ],
+    [
+     "<strong>Anatomical</strong>",
+     "Premorbid glenoid retroversion, acromial dysplasia, low critical shoulder angle"
+    ],
+    [
+     "<strong>Occupational / athletic load</strong>",
+     "Overhead work, throwing, weightlifting — <strong>associations, not established causes</strong>"
+    ]
+   ]
+  }
+ },
+ {
+  "type": "highlight_card",
+  "content": {
+   "label": "PM&R clinical pearl",
+   "color": "insight",
+   "text": "Note what sits high on that list: <strong>hypertension, hyperlipidaemia, raised BMI and smoking.</strong> Combined with the arm-dominance finding from section 1, the picture is of a condition with a <strong>metabolic and anatomical profile</strong>, not a straightforward overuse injury. Screening and addressing cardiovascular risk in these patients is defensible on general grounds — and smoking is one of only two modifiable predictors of a worse surgical outcome."
+  }
+ },
+ {
+  "type": "section_heading",
+  "content": {
+   "text": "Relevant anatomy"
+  }
+ },
+ {
+  "type": "paragraph",
+  "content": {
+   "body": "<p>Three things matter for understanding OA here.</p>"
+  }
+ },
+ {
+  "type": "subsection_heading",
+  "content": {
+   "text": "The socket is shallow, and its orientation matters"
+  }
+ },
+ {
+  "type": "paragraph",
+  "content": {
+   "body": "<p>The glenoid is small and shallow — normally retroverted a few degrees and slightly inclined superiorly. In OA, that geometry <strong>changes</strong>, and how it changes determines the operation.</p><p><strong>Posterior erosion</strong> is the characteristic pattern. The humeral head drifts posteriorly, grinds away the back of the glenoid, and creates a <strong>biconcave</strong> socket — the Walch B2 glenoid. Restoring version is the central technical challenge of shoulder arthroplasty.</p>"
+  }
+ },
+ {
+  "type": "subsection_heading",
+  "content": {
+   "text": "The rotator cuff is the joint's stabiliser"
+  }
+ },
+ {
+  "type": "paragraph",
+  "content": {
+   "body": "<p>The cuff compresses the head into the glenoid and keeps the centre of rotation fixed. When it fails, the deltoid drags the head superiorly, and the acromiohumeral interval narrows.</p><p><strong>This is why cuff integrity decides the operation.</strong> An intact cuff allows an anatomic replacement. A deficient cuff requires a <strong>reverse</strong> replacement, which moves the centre of rotation and lets the deltoid elevate the arm without a cuff.</p>"
+  }
+ },
+ {
+  "type": "subsection_heading",
+  "content": {
+   "text": "The critical shoulder angle"
+  }
+ },
+ {
+  "type": "paragraph",
+  "content": {
+   "body": "<p>The angle between the glenoid plane and a line to the inferolateral acromion. A <strong>low CSA</strong> is associated with glenohumeral OA; a high CSA with cuff disease.</p><p>It is one of the few radiographic measurements the physiotherapy guideline identifies as <strong>predictive</strong> — alongside age — for differentiating GHOA.</p>"
+  }
+ },
+ {
+  "type": "section_heading",
+  "content": {
+   "text": "Pathophysiology"
+  }
+ },
+ {
+  "type": "paragraph",
+  "content": {
+   "body": "<p>The sequence is familiar from other joints, with shoulder-specific features.</p><p><strong>1. Cartilage degradation.</strong> Matrix metalloproteinase activity exceeds repair. Proteoglycan is lost, collagen architecture degrades, and the surface fibrillates and thins.</p><p><strong>2. Synovial inflammation.</strong> Synovitis with <strong>elevated IL-1 and reduced IL-1 receptor antagonist</strong>. Wnt and TGF-β signalling are implicated in cartilage health. This is the component that justifies the \"-itis\" and explains why corticosteroid helps.</p><p><strong>3. Subchondral bone response.</strong> Sclerosis, cyst formation, and <strong>osteophytes</strong> — classically an inferior humeral head osteophyte, the \"goat's beard,\" which is often the earliest radiographic sign.</p><p><strong>4. Asymmetric wear.</strong> Unlike the hip, the shoulder tends to wear <strong>posteriorly</strong>. The head subluxes posteriorly, the posterior glenoid erodes, retroversion increases, and the socket becomes biconcave. This is progressive — one series found <strong>79% of B1 glenoids progressed to B2</strong> over about six years.</p><p><strong>5. Capsular contracture.</strong> The anterior capsule and subscapularis shorten. <strong>This is why GHOA patients are stiff, not just sore</strong> — and why loss of external rotation is such a characteristic finding.</p><p><strong>6. Synovitis and loose bodies.</strong> Secondary inflammation contributes pain; cartilage and osteophyte fragments can produce mechanical symptoms.</p>"
+  }
+ },
+ {
+  "type": "highlight_card",
+  "content": {
+   "label": "Memory aid",
+   "color": "purple",
+   "text": "<strong>GHOA wears backwards and tightens forwards.</strong> Posterior erosion, anterior contracture. That combination explains the examination findings and the surgical difficulty in one phrase."
+  }
+ },
+ {
+  "type": "highlight_card",
+  "content": {
+   "label": "Evidence note",
+   "color": "blue",
+   "text": "Glenoid wear is described as <strong>multifactorial</strong> — muscle imbalance, premorbid retroversion and acromial dysplasia all contribute. Whether muscle imbalance <strong>causes</strong> glenoid wear or <strong>results from</strong> it remains unresolved, which matters because the first would make it a rehabilitation target and the second would not."
+  }
+ },
+ {
+  "type": "paragraph",
+  "content": {
+   "body": "<p>Also worth knowing: markers such as CTX-II remain elevated for weeks after surgery, so <strong>surgery itself acts as a secondary inflammatory insult</strong> to an already inflamed joint.</p>"
+  }
+ },
+ {
+  "type": "section_heading",
+  "content": {
+   "text": "Classification"
+  }
+ },
+ {
+  "type": "paragraph",
+  "content": {
+   "body": "<p>Three systems matter. Each answers a different question.</p>"
+  }
+ },
+ {
+  "type": "subsection_heading",
+  "content": {
+   "text": "Samilson-Prieto — how bad is it?"
+  }
+ },
+ {
+  "type": "paragraph",
+  "content": {
+   "body": "<p>The simplest radiographic grading, based on inferior osteophyte size:</p>"
+  }
+ },
+ {
+  "type": "comparison_table",
+  "content": {
+   "columns": [
+    "Grade",
+    "Osteophyte",
+    "Other features"
+   ],
+   "rows": [
+    [
+     "<strong>Mild</strong>",
+     "&lt;3 mm",
+     "—"
+    ],
+    [
+     "<strong>Moderate</strong>",
+     "3–7 mm",
+     "Slight glenohumeral irregularity"
+    ],
+    [
+     "<strong>Severe</strong>",
+     "&gt;7 mm",
+     "Joint narrowing and sclerosis"
+    ]
+   ]
+  }
+ },
+ {
+  "type": "highlight_card",
+  "content": {
+   "label": "Pitfall",
+   "color": "red",
+   "text": "Radiographic severity does <strong>not</strong> predict who needs further treatment. In a prospective injection study, Samilson-Prieto grade did not predict the need for secondary intervention. Grade the X-ray, but <strong>treat the patient.</strong>"
+  }
+ },
+ {
+  "type": "subsection_heading",
+  "content": {
+   "text": "Walch — what shape is the glenoid, and what operation does it need?"
+  }
+ },
+ {
+  "type": "paragraph",
+  "content": {
+   "body": "<p>The classification that drives surgical planning. Based originally on 2D axial CT, revised in 2016 using 3D CT.</p>"
+  }
+ },
+ {
+  "type": "comparison_table",
+  "content": {
+   "columns": [
+    "Type",
+    "Description"
+   ],
+   "rows": [
+    [
+     "<strong>A1</strong>",
+     "Head centred, <strong>minor</strong> erosion"
+    ],
+    [
+     "<strong>A2</strong>",
+     "Head centred, <strong>major</strong> erosion (a tangent line to the native glenoid cuts through the humeral head)"
+    ],
+    [
+     "<strong>B1</strong>",
+     "Posterior subluxation, posterior joint narrowing, sclerosis and osteophytes — <strong>no significant erosion</strong>"
+    ],
+    [
+     "<strong>B2</strong>",
+     "Posterior subluxation with a <strong>biconcave</strong> glenoid from posterior erosion"
+    ],
+    [
+     "<strong>B3</strong>",
+     "<strong>Uniconcave</strong> glenoid from posterior erosion, with ≥15° retroversion and/or ≥70% posterior subluxation"
+    ],
+    [
+     "<strong>C</strong>",
+     "Retroversion <strong>&gt;25° not caused by erosion</strong> — dysplastic"
+    ],
+    [
+     "<strong>D</strong>",
+     "<strong>Anteverted</strong> glenoid, or anterior subluxation ≤40%"
+    ]
+   ]
+  }
+ },
+ {
+  "type": "paragraph",
+  "content": {
+   "body": "<p><strong>The 2016 modification matters.</strong> The original classification had poor reliability (interobserver κ 0.391). Adding B3 and D, redefining A2 and C, and moving to 3D CT raised agreement to <strong>κ 0.703</strong>, and intraobserver agreement to 0.882.</p>"
+  }
+ },
+ {
+  "type": "highlight_card",
+  "content": {
+   "label": "PM&R clinical pearl",
+   "color": "insight",
+   "text": "<strong>The B2 glenoid is the one to know.</strong> Biconcave, posteriorly eroded, posteriorly subluxed — and the central technical problem in shoulder arthroplasty. Place a standard glenoid component on a retroverted biconcave socket and it loosens. B2 glenoids are also older and more retroverted than B1 (23.4° vs 14.9°), and B-type glenoids medialise over time. Under the original definitions, many B2 glenoids were <strong>mislabelled as C</strong> — and MRI is less accurate than CT at telling them apart."
+  }
+ },
+ {
+  "type": "subsection_heading",
+  "content": {
+   "text": "Hamada — is this cuff tear arthropathy?"
+  }
+ },
+ {
+  "type": "paragraph",
+  "content": {
+   "body": "<p>Based on the acromiohumeral interval (AHI):</p>"
+  }
+ },
+ {
+  "type": "comparison_table",
+  "content": {
+   "columns": [
+    "Grade",
+    "Finding"
+   ],
+   "rows": [
+    [
+     "<strong>1</strong>",
+     "AHI <strong>&gt;6 mm</strong>"
+    ],
+    [
+     "<strong>2</strong>",
+     "AHI <strong>≤5 mm</strong>"
+    ],
+    [
+     "<strong>3</strong>",
+     "Grade 2 + <strong>acetabularisation</strong> of the acromion"
+    ],
+    [
+     "<strong>4</strong>",
+     "Grade 3 + glenohumeral joint narrowing"
+    ],
+    [
+     "<strong>5</strong>",
+     "<strong>Humeral head collapse</strong>"
+    ]
+   ]
+  }
+ },
+ {
+  "type": "paragraph",
+  "content": {
+   "body": "<p>A narrowed AHI on a plain film tells you the cuff has failed — before any soft tissue imaging is ordered.</p>"
+  }
+ },
+ {
+  "type": "section_heading",
+  "content": {
+   "text": "Clinical presentation"
+  }
+ },
+ {
+  "type": "subsection_heading",
+  "content": {
+   "text": "The typical story"
+  }
+ },
+ {
+  "type": "paragraph",
+  "content": {
+   "body": "<ul><li><strong>Gradual onset</strong> over months to years</li><li><strong>Deep, aching shoulder pain</strong>, often poorly localised, sometimes referred to the deltoid insertion</li><li><strong>Worse with activity</strong>, better with rest — initially</li><li><strong>Night pain</strong> as disease advances</li><li><strong>Progressive stiffness</strong>, which the patient may notice before the pain</li><li><strong>Crepitus</strong> — grinding, clunking, catching</li><li>Pain on <strong>reaching, lifting, overhead use and rotation</strong></li></ul>"
+  }
+ },
+ {
+  "type": "subsection_heading",
+  "content": {
+   "text": "What patients actually complain about"
+  }
+ },
+ {
+  "type": "paragraph",
+  "content": {
+   "body": "<p>They do not say \"I've lost external rotation.\" They say they cannot:</p><ul><li>Reach a seatbelt or turn the steering wheel <em>(external rotation)</em></li><li>Fasten a bra, reach a back pocket, manage toileting <em>(internal rotation and extension)</em></li><li>Wash or dry their hair <em>(abduction with external rotation)</em></li><li>Sleep on that side <em>(the symptom that most often brings them in)</em></li></ul>"
+  }
+ },
+ {
+  "type": "subsection_heading",
+  "content": {
+   "text": "Features suggesting cuff tear arthropathy instead"
+  }
+ },
+ {
+  "type": "paragraph",
+  "content": {
+   "body": "<ul><li><strong>Weakness disproportionate to pain</strong></li><li><strong>Pseudoparalysis</strong> — unable to elevate actively, but passive range preserved</li><li><strong>Anterosuperior escape</strong> of the humeral head on attempted elevation</li><li>A long history of known cuff disease</li></ul>"
+  }
+ },
+ {
+  "type": "section_heading",
+  "content": {
+   "text": "Physical examination"
+  }
+ },
+ {
+  "type": "subsection_heading",
+  "content": {
+   "text": "Inspection"
+  }
+ },
+ {
+  "type": "paragraph",
+  "content": {
+   "body": "<p>Wasting of deltoid and the cuff from disuse. Asymmetry. Previous surgical scars — which change the differential entirely.</p>"
+  }
+ },
+ {
+  "type": "subsection_heading",
+  "content": {
+   "text": "Range of motion — the core of the examination"
+  }
+ },
+ {
+  "type": "paragraph",
+  "content": {
+   "body": "<p><strong>Both active and passive range are restricted</strong>, because the block is mechanical. Measure with an <strong>inclinometer or goniometer</strong>, not by eye, and always compare sides.</p>"
+  }
+ },
+ {
+  "type": "comparison_table",
+  "content": {
+   "columns": [
+    "Movement",
+    "Typical finding"
+   ],
+   "rows": [
+    [
+     "<strong>External rotation at 0°</strong>",
+     "<strong>Characteristically lost first and worst</strong> — anterior capsular contracture"
+    ],
+    [
+     "Elevation / abduction",
+     "Progressively restricted"
+    ],
+    [
+     "Internal rotation",
+     "Reduced, measured by hand-behind-back spinal level"
+    ]
+   ]
+  }
+ },
+ {
+  "type": "paragraph",
+  "content": {
+   "body": "<p><strong>Crepitus through range</strong> is a useful positive finding — palpable and often audible grinding, which you rarely feel in frozen shoulder.</p>"
+  }
+ },
+ {
+  "type": "subsection_heading",
+  "content": {
+   "text": "Distinguishing from frozen shoulder"
+  }
+ },
+ {
+  "type": "paragraph",
+  "content": {
+   "body": "<p>This is the commonest diagnostic confusion, and the examination alone will not always resolve it.</p>"
+  }
+ },
+ {
+  "type": "comparison_table",
+  "content": {
+   "columns": [
+    "",
+    "<strong>Glenohumeral OA</strong>",
+    "<strong>Frozen shoulder</strong>"
+   ],
+   "rows": [
+    [
+     "Passive ROM",
+     "Restricted",
+     "Restricted"
+    ],
+    [
+     "Active ROM",
+     "Restricted",
+     "Restricted"
+    ],
+    [
+     "<strong>Crepitus</strong>",
+     "<strong>Common</strong>",
+     "Uncommon"
+    ],
+    [
+     "Onset",
+     "Years",
+     "Weeks to months"
+    ],
+    [
+     "<strong>Radiograph</strong>",
+     "<strong>Abnormal</strong> — joint space loss, osteophytes",
+     "<strong>Normal</strong>"
+    ],
+    [
+     "Age",
+     "Typically older",
+     "Typically 40–60"
+    ]
+   ]
+  }
+ },
+ {
+  "type": "highlight_card",
+  "content": {
+   "label": "PM&R clinical pearl",
+   "color": "insight",
+   "text": "<strong>The radiograph is what separates them.</strong> This is one of the few situations in shoulder medicine where imaging genuinely makes the diagnosis rather than confusing it — and it is precisely why a plain film is mandatory in a stiff shoulder before you label it frozen."
+  }
+ },
+ {
+  "type": "subsection_heading",
+  "content": {
+   "text": "Strength and cuff testing"
+  }
+ },
+ {
+  "type": "paragraph",
+  "content": {
+   "body": "<p>Test the cuff specifically, because its integrity decides the operation:</p><ul><li><strong>Belly-press / lift-off</strong> — subscapularis</li><li><strong>External rotation lag sign</strong> — infraspinatus</li><li><strong>Hornblower's sign</strong> — teres minor</li><li><strong>Drop arm</strong> — supraspinatus</li></ul><p><strong>A positive lag sign in a patient with OA changes the surgical plan from anatomic to reverse arthroplasty.</strong> That single finding is the highest-value thing in this examination.</p>"
+  }
+ },
+ {
+  "type": "subsection_heading",
+  "content": {
+   "text": "Complete the examination"
+  }
+ },
+ {
+  "type": "paragraph",
+  "content": {
+   "body": "<ul><li><strong>Cervical spine screen</strong> — referred pain, and C5 radiculopathy often has no neck pain</li><li><strong>Acromioclavicular joint</strong> — frequently co-exists and is often the real pain source</li><li><strong>Neurovascular examination</strong></li><li><strong>Functional assessment</strong> — what can they actually not do?</li></ul>"
+  }
+ },
+ {
+  "type": "section_heading",
+  "content": {
+   "text": "Differential diagnosis"
+  }
+ },
+ {
+  "type": "comparison_table",
+  "content": {
+   "columns": [
+    "Diagnosis",
+    "Discriminating feature"
+   ],
+   "rows": [
+    [
+     "<strong>Frozen shoulder</strong>",
+     "Normal radiograph, younger, no crepitus"
+    ],
+    [
+     "<strong>Rotator cuff disease</strong>",
+     "<strong>Passive range preserved</strong>"
+    ],
+    [
+     "<strong>Cuff tear arthropathy</strong>",
+     "Narrowed AHI, weakness, pseudoparalysis"
+    ],
+    [
+     "<strong>Inflammatory arthritis</strong>",
+     "Polyarticular, morning stiffness &gt;1h, raised inflammatory markers"
+    ],
+    [
+     "<strong>Avascular necrosis</strong>",
+     "Risk factors (steroids, alcohol, sickle cell); early MRI change with preserved joint space"
+    ],
+    [
+     "<strong>Septic arthritis</strong>",
+     "Acute, systemically unwell, effusion — <strong>aspirate</strong>"
+    ],
+    [
+     "<strong>AC joint OA</strong>",
+     "Point tenderness over the AC joint, positive cross-body adduction"
+    ],
+    [
+     "<strong>Cervical radiculopathy</strong>",
+     "Dermatomal pain, neurological signs, positive Spurling's"
+    ],
+    [
+     "<strong>Malignancy</strong>",
+     "Night pain out of keeping, weight loss, lytic lesion on film"
+    ]
+   ]
+  }
+ },
+ {
+  "type": "section_heading",
+  "content": {
+   "text": "Investigations and imaging"
+  }
+ },
+ {
+  "type": "subsection_heading",
+  "content": {
+   "text": "Radiographs — first and often sufficient"
+  }
+ },
+ {
+  "type": "paragraph",
+  "content": {
+   "body": "<p><strong>Two views are essential:</strong></p><ol><li><strong>True AP (Grashey)</strong> — beam angled to the glenoid plane, showing the true joint space</li><li><strong>Axillary lateral</strong> — shows posterior subluxation, glenoid wear and posterior erosion</li></ol>"
+  }
+ },
+ {
+  "type": "highlight_card",
+  "content": {
+   "label": "Pitfall",
+   "color": "red",
+   "text": "<strong>The axillary view is the one that gets omitted, and it is the one that carries the information.</strong> A standard AP will miss posterior subluxation entirely. It is also the view that detects a <strong>locked posterior dislocation</strong> — the classic missed diagnosis in a stiff shoulder."
+  }
+ },
+ {
+  "type": "paragraph",
+  "content": {
+   "body": "<p><strong>What to look for:</strong> joint space narrowing · inferior humeral osteophyte (the \"goat's beard\") · subchondral sclerosis and cysts · posterior glenoid erosion · <strong>acromiohumeral interval</strong> (normal 7–14 mm; &lt;7 mm suggests cuff failure) · loose bodies.</p>"
+  }
+ },
+ {
+  "type": "subsection_heading",
+  "content": {
+   "text": "Advanced imaging"
+  }
+ },
+ {
+  "type": "comparison_table",
+  "content": {
+   "columns": [
+    "Modality",
+    "When"
+   ],
+   "rows": [
+    [
+     "<strong>CT (with 3D reconstruction)</strong>",
+     "<strong>Pre-operative planning.</strong> The reference standard for glenoid version, bone stock and Walch typing"
+    ],
+    [
+     "<strong>MRI</strong>",
+     "When <strong>cuff integrity</strong> is in question, or for suspected AVN, or when the diagnosis is unclear"
+    ],
+    [
+     "<strong>Ultrasound</strong>",
+     "Dynamic cuff assessment; guided injection"
+    ]
+   ]
+  }
+ },
+ {
+  "type": "highlight_card",
+  "content": {
+   "label": "Evidence note",
+   "color": "blue",
+   "text": "The AAOS guideline recommends <strong>axillary and true AP views</strong> for patients undergoing arthroplasty, with advanced imaging at clinician discretion (consensus). The physiotherapy guideline rates <strong>MRI as strong evidence for confirming GHOA — but notes it is less useful for ruling it out.</strong> Both agree the diagnosis is made from history, examination and plain films."
+  }
+ },
+ {
+  "type": "subsection_heading",
+  "content": {
+   "text": "Bloods"
+  }
+ },
+ {
+  "type": "paragraph",
+  "content": {
+   "body": "<p>Not routine. Order inflammatory markers only if inflammatory or septic arthritis is in the differential.</p>"
+  }
+ },
+ {
+  "type": "section_heading",
+  "content": {
+   "text": "Principles of treatment"
+  }
+ },
+ {
+  "type": "paragraph",
+  "content": {
+   "body": "<p>Four principles, and the first is the one most often skipped.</p><p><strong>1. Establish cuff status.</strong> Everything downstream depends on it. Intact cuff → anatomic pathway. Deficient cuff → reverse pathway.</p><p><strong>2. Treat symptoms and function, not the radiograph.</strong> Radiographic severity does not predict who needs surgery, and it does not predict who responds to injection.</p><p><strong>3. Non-surgical management first — but be honest about the evidence.</strong> It is worth trying. It does not reverse the disease, and the evidence base behind it is thin.</p><p><strong>4. Arthroplasty is genuinely effective.</strong> Unlike many of the procedures in shoulder medicine, shoulder replacement for end-stage OA reliably relieves pain. The question is timing and implant choice, not whether it works.</p>"
+  }
+ },
+ {
+  "type": "section_heading",
+  "content": {
+   "text": "Non-surgical management"
+  }
+ },
+ {
+  "type": "subsection_heading",
+  "content": {
+   "text": "What the guidelines actually say"
+  }
+ },
+ {
+  "type": "highlight_card",
+  "content": {
+   "label": "Evidence note",
+   "color": "blue",
+   "text": "This is the uncomfortable part of the chapter. The physiotherapy clinical practice guideline could issue only <strong>best practice statements</strong> — not graded recommendations — for non-operative management, because the evidence quality was rated <strong>insufficient</strong>. Specifically:"
+  }
+ },
+ {
+  "type": "highlight_card",
+  "content": {
+   "label": "Guideline statement",
+   "color": "slate",
+   "text": "<em>\"Physical therapy may benefit patients who have not had TSA\"</em> — expert opinion<br><em>\"No single physical therapist intervention is clearly superior to another\"</em> — expert opinion"
+  }
+ },
+ {
+  "type": "paragraph",
+  "content": {
+   "body": "<p>That is an honest statement of where we are. Treat non-surgical management as <strong>reasonable, low-risk and worth offering</strong> — not as an evidence-based programme with a known effect size.</p>"
+  }
+ },
+ {
+  "type": "subsection_heading",
+  "content": {
+   "text": "What to prescribe anyway"
+  }
+ },
+ {
+  "type": "comparison_table",
+  "content": {
+   "columns": [
+    "Component",
+    "Rationale"
+   ],
+   "rows": [
+    [
+     "<strong>Activity modification</strong>",
+     "Reduce provocative overhead and loaded positions. Not rest — modification"
+    ],
+    [
+     "<strong>Range of motion work</strong>",
+     "Capsular contracture is a major contributor to disability, and it is modifiable"
+    ],
+    [
+     "<strong>Rotator cuff and scapular strengthening</strong>",
+     "Maintains the dynamic stabilisers and delays decompensation"
+    ],
+    [
+     "<strong>Posterior capsule stretching</strong>",
+     "Targets the characteristic contracture"
+    ],
+    [
+     "<strong>Patient education</strong>",
+     "Expectations, pacing, and what surgery can and cannot offer"
+    ]
+   ]
+  }
+ },
+ {
+  "type": "paragraph",
+  "content": {
+   "body": "<p><strong>Dose it by irritability</strong>, as in any painful shoulder: gentle and pain-free when highly irritable; progressively loaded as symptoms settle.</p>"
+  }
+ },
+ {
+  "type": "subsection_heading",
+  "content": {
+   "text": "Pharmacological"
+  }
+ },
+ {
+  "type": "comparison_table",
+  "content": {
+   "columns": [
+    "Agent",
+    "Position"
+   ],
+   "rows": [
+    [
+     "<strong>Paracetamol / NSAIDs</strong>",
+     "First line. Topical NSAIDs are reasonable and lower-risk in older patients"
+    ],
+    [
+     "<strong>Opioids</strong>",
+     "<strong>AAOS: should not be used as routine long-term pain management</strong>"
+    ],
+    [
+     "<strong>Glucosamine / chondroitin</strong>",
+     "<strong>No recommendation for or against</strong> — insufficient evidence"
+    ]
+   ]
+  }
+ },
+ {
+  "type": "paragraph",
+  "content": {
+   "body": "<p>The AAOS guideline makes no specific recommendation on NSAIDs or corticosteroid injection, which reflects the absence of trial data rather than a judgement against them.</p>"
+  }
+ },
+ {
+  "type": "section_heading",
+  "content": {
+   "text": "Injections"
+  }
+ },
+ {
+  "type": "subsection_heading",
+  "content": {
+   "text": "Corticosteroid — the workhorse, with modest expectations"
+  }
+ },
+ {
+  "type": "paragraph",
+  "content": {
+   "body": "<p>A prospective study of 30 shoulders with symptomatic GHOA, followed for 12 months after a <strong>single image-guided injection</strong>:</p>"
+  }
+ },
+ {
+  "type": "comparison_table",
+  "content": {
+   "columns": [
+    "Outcome",
+    "Result"
+   ],
+   "rows": [
+    [
+     "Function (Oxford Shoulder Score)",
+     "Clinically significant improvement at <strong>months 1–4</strong>"
+    ],
+    [
+     "Pain (VAS)",
+     "Improvement persisted through <strong>months 1–4, 6, 9 and 12</strong>"
+    ],
+    [
+     "<strong>Who responded best</strong>",
+     "Patients with <strong>worse baseline function</strong> gained significantly more"
+    ],
+    [
+     "Radiographic severity",
+     "Did <strong>not</strong> predict need for further intervention"
+    ]
+   ]
+  }
+ },
+ {
+  "type": "highlight_card",
+  "content": {
+   "label": "PM&R clinical pearl",
+   "color": "insight",
+   "text": "Two useful messages. <strong>Expect roughly 3–4 months of meaningful functional benefit</strong> — tell the patient that number, because \"it didn't last\" is otherwise heard as failure. And <strong>do not withhold injection because the X-ray looks bad</strong>: severe radiographic disease responded as well as mild, and worse function predicted <em>greater</em> relief."
+  }
+ },
+ {
+  "type": "paragraph",
+  "content": {
+   "body": "<p><strong>Technique:</strong> use <strong>image guidance</strong>. The glenohumeral joint is deep and blind injection accuracy is poor.</p><p><strong>Diabetes:</strong> as with any steroid injection, counsel glucose monitoring for <strong>72 hours</strong> — peak rise is typically 24–72 hours, not 24.</p>"
+  }
+ },
+ {
+  "type": "subsection_heading",
+  "content": {
+   "text": "Hyaluronic acid — do not use"
+  }
+ },
+ {
+  "type": "highlight_card",
+  "content": {
+   "label": "AAOS recommendation",
+   "color": "blue",
+   "text": "<strong>AAOS: STRONG evidence against. Hyaluronic acid shows no benefit for glenohumeral osteoarthritis.</strong>"
+  }
+ },
+ {
+  "type": "paragraph",
+  "content": {
+   "body": "<p>This is one of the few strong <em>negative</em> recommendations in the guideline. It is also frequently offered. Know it.</p>"
+  }
+ },
+ {
+  "type": "subsection_heading",
+  "content": {
+   "text": "PRP and stem cells — cannot be recommended"
+  }
+ },
+ {
+  "type": "highlight_card",
+  "content": {
+   "label": "AAOS recommendation",
+   "color": "blue",
+   "text": "<strong>AAOS: consensus — injectable biologics cannot be recommended.</strong>"
+  }
+ },
+ {
+  "type": "paragraph",
+  "content": {
+   "body": "<p>Not \"harmful,\" but unsupported. Patients will ask about these; the honest answer is that the evidence does not exist yet.</p>"
+  }
+ },
+ {
+  "type": "subsection_heading",
+  "content": {
+   "text": "Everything else"
+  }
+ },
+ {
+  "type": "paragraph",
+  "content": {
+   "body": "<p>Acupuncture, dry needling, cannabis, CBD, cupping, TENS, capsaicin, glucosamine/chondroitin: <strong>no recommendation for or against</strong> — the evidence is insufficient either way.</p>"
+  }
+ },
+ {
+  "type": "section_heading",
+  "content": {
+   "text": "Surgical options"
+  }
+ },
+ {
+  "type": "subsection_heading",
+  "content": {
+   "text": "Who is a candidate"
+  }
+ },
+ {
+  "type": "paragraph",
+  "content": {
+   "body": "<p>Persistent pain and functional limitation despite reasonable non-surgical management, in a patient whose imaging matches their symptoms. There is <strong>no radiographic threshold</strong> that mandates surgery.</p>"
+  }
+ },
+ {
+  "type": "subsection_heading",
+  "content": {
+   "text": "The options"
+  }
+ },
+ {
+  "type": "comparison_table",
+  "content": {
+   "columns": [
+    "Procedure",
+    "Indication",
+    "Evidence"
+   ],
+   "rows": [
+    [
+     "<strong>Arthroscopic debridement / CAM procedure</strong>",
+     "Younger patients, focal disease, wanting to delay replacement",
+     "AAOS: non-prosthetic options <strong>may or may not</strong> provide short-term benefit (consensus)"
+    ],
+    [
+     "<strong>Hemiarthroplasty</strong>",
+     "Largely superseded",
+     "<strong>AAOS: STRONG — anatomic TSA gives better function and pain relief than hemiarthroplasty</strong>"
+    ],
+    [
+     "<strong>Anatomic total shoulder arthroplasty (aTSA)</strong>",
+     "GHOA with an <strong>intact, functioning rotator cuff</strong>",
+     "The standard operation"
+    ],
+    [
+     "<strong>Reverse total shoulder arthroplasty (rTSA)</strong>",
+     "<strong>Cuff-deficient</strong> shoulders, cuff tear arthropathy, severe glenoid bone loss, revision",
+     "Increasingly used beyond its original indications"
+    ]
+   ]
+  }
+ },
+ {
+  "type": "subsection_heading",
+  "content": {
+   "text": "Anatomic vs reverse in a cuff-intact shoulder"
+  }
+ },
+ {
+  "type": "paragraph",
+  "content": {
+   "body": "<p>This is the live debate, and a 2026 systematic review addressed it directly.</p>"
+  }
+ },
+ {
+  "type": "comparison_table",
+  "content": {
+   "columns": [
+    "Outcome",
+    "Finding"
+   ],
+   "rows": [
+    [
+     "<strong>Internal and external rotation</strong>",
+     "<strong>aTSA better</strong> — all ten studies reporting rotation favoured it"
+    ],
+    [
+     "Forward elevation",
+     "aTSA better in three studies — <strong>except</strong> in stiff shoulders (pre-op elevation ≤105°), where <strong>rTSA was better</strong>"
+    ],
+    [
+     "<strong>ASES scores</strong>",
+     "<strong>No significant difference</strong> in any of nine studies"
+    ],
+    [
+     "Pain",
+     "No difference in nine of ten studies"
+    ],
+    [
+     "<strong>Overall complication rate</strong>",
+     "<strong>No difference</strong> — but different profiles"
+    ],
+    [
+     "aTSA complications",
+     "Rotator cuff dysfunction, glenoid loosening"
+    ],
+    [
+     "rTSA complications",
+     "Infection, glenoid loosening, periprosthetic fracture, <strong>dislocation</strong>"
+    ],
+    [
+     "Revision",
+     "No difference in seven of nine studies"
+    ]
+   ]
+  }
+ },
+ {
+  "type": "paragraph",
+  "content": {
+   "body": "<p><strong>Authors' conclusions:</strong> comparable outcomes overall; <strong>aTSA preferable for mobile shoulders seeking better rotation</strong>; <strong>rTSA may be better for stiff osteoarthritic shoulders with an intact cuff</strong>; and <strong>age alone is not an indication for reverse.</strong></p>"
+  }
+ },
+ {
+  "type": "highlight_card",
+  "content": {
+   "label": "PM&R clinical pearl",
+   "color": "insight",
+   "text": "The practical translation for rehabilitation: <strong>an anatomic replacement should give better rotation; a reverse replacement will not.</strong> A patient who has had a reverse and cannot reach behind their back has not failed rehabilitation — that is the expected result of the implant, and it should have been said before surgery."
+  }
+ },
+ {
+  "type": "subsection_heading",
+  "content": {
+   "text": "Implant details worth knowing"
+  }
+ },
+ {
+  "type": "paragraph",
+  "content": {
+   "body": "<ul><li><strong>Do not use metal-backed cementless glenoid components</strong> (moderate evidence)</li><li>Pegged or keeled glenoids are both acceptable with a functioning cuff (strong)</li><li>Stemmed, stemless and resurfacing humeral components are all options (limited)</li><li>Subscapularis peel, lesser tuberosity osteotomy or tenotomy are all acceptable (moderate)</li></ul>"
+  }
+ },
+ {
+  "type": "subsection_heading",
+  "content": {
+   "text": "Prognostic factors for surgery"
+  }
+ },
+ {
+  "type": "comparison_table",
+  "content": {
+   "columns": [
+    "Factor",
+    "Effect",
+    "Strength"
+   ],
+   "rows": [
+    [
+     "<strong>Obesity</strong>",
+     "<strong>Not</strong> associated with increased early complications",
+     "Strong"
+    ],
+    [
+     "<strong>Sex</strong>",
+     "<strong>Not</strong> associated with outcome",
+     "Strong"
+    ],
+    [
+     "<strong>More comorbidities</strong>",
+     "Higher early complication rates",
+     "Strong"
+    ],
+    [
+     "Older age",
+     "<strong>Lower</strong> revision rates",
+     "Moderate"
+    ],
+    [
+     "<strong>Smoking</strong>",
+     "Inferior outcomes",
+     "Moderate"
+    ],
+    [
+     "<strong>Depression</strong>",
+     "Inferior outcomes",
+     "Moderate"
+    ],
+    [
+     "High pre-op function",
+     "<strong>Less</strong> functional gain",
+     "Moderate"
+    ]
+   ]
+  }
+ },
+ {
+  "type": "highlight_card",
+  "content": {
+   "label": "PM&R clinical pearl",
+   "color": "insight",
+   "text": "<strong>Smoking and depression are the two modifiable predictors of a worse result.</strong> Both are within your scope before surgery, and neither is usually addressed. That is a genuine opportunity in pre-operative PM&amp;R assessment."
+  }
+ },
+ {
+  "type": "section_heading",
+  "content": {
+   "text": "Rehabilitation after arthroplasty"
+  }
+ },
+ {
+  "type": "paragraph",
+  "content": {
+   "body": "<p>This is where PM&amp;R does most of its work in this condition.</p>"
+  }
+ },
+ {
+  "type": "subsection_heading",
+  "content": {
+   "text": "What the evidence supports"
+  }
+ },
+ {
+  "type": "comparison_table",
+  "content": {
+   "columns": [
+    "Recommendation",
+    "Grade"
+   ],
+   "rows": [
+    [
+     "<strong>Sling + progressive ROM and strengthening after TSA</strong> improves outcomes and range",
+     "<strong>Strong</strong>"
+    ],
+    [
+     "<strong>Sling in neutral rotation</strong> for pain management",
+     "Moderate"
+    ],
+    [
+     "<strong>Starting ROM may be delayed up to 4 weeks without harming outcomes</strong>",
+     "Moderate"
+    ],
+    [
+     "Pre-operative physical therapy may help",
+     "Best practice (expert opinion)"
+    ],
+    [
+     "Post-operative physical therapy may benefit patient-rated function",
+     "Best practice"
+    ]
+   ]
+  }
+ },
+ {
+  "type": "highlight_card",
+  "content": {
+   "label": "Evidence note",
+   "color": "blue",
+   "text": "That third row is important and counter-intuitive. <strong>Delaying range of motion by up to four weeks does not appear to harm patient-reported outcomes.</strong> Protocols vary enormously between surgeons, and the evidence does not strongly favour the aggressive end. When the operative note says wait — wait."
+  }
+ },
+ {
+  "type": "subsection_heading",
+  "content": {
+   "text": "Anatomic TSA — the subscapularis governs everything"
+  }
+ },
+ {
+  "type": "paragraph",
+  "content": {
+   "body": "<p>The subscapularis is taken down to access the joint and repaired at closure. <strong>Protecting that repair is the organising principle of the first six weeks.</strong></p>"
+  }
+ },
+ {
+  "type": "comparison_table",
+  "content": {
+   "columns": [
+    "Phase",
+    "Timeline",
+    "Content"
+   ],
+   "rows": [
+    [
+     "<strong>I — Protection</strong>",
+     "Weeks 0–4",
+     "Sling continuously. <strong>Pendulums and gradual passive ROM only</strong>, per operative note. Active elbow, wrist and hand. <strong>No active shoulder ROM</strong>"
+    ],
+    [
+     "<strong>II — Early motion</strong>",
+     "Weeks 4–8",
+     "Discontinue sling. Active-assisted → active ROM as permitted. Cane-assisted ER introduced within op-note limits"
+    ],
+    [
+     "<strong>III — Strengthening</strong>",
+     "Weeks 8–12",
+     "Full active and passive ROM maintained. Begin band and light-weight strengthening. <strong>≤5 lb lifting</strong>"
+    ],
+    [
+     "<strong>IV — Advanced</strong>",
+     "12 weeks+",
+     "Progressive strengthening, endurance, functional use"
+    ],
+    [
+     "<strong>V — Return to activity</strong>",
+     "18 weeks+",
+     "Graded return to work, recreation, sport"
+    ]
+   ]
+  }
+ },
+ {
+  "type": "paragraph",
+  "content": {
+   "body": "<p><strong>Key precautions:</strong></p><ul><li><strong>Limit external rotation</strong> per the operative note — this stresses the subscapularis repair</li><li><strong>No reaching behind the back</strong> early — combined extension and internal rotation loads the repair</li><li><strong>No active internal rotation</strong> until strengthening phase</li><li><strong>Towel roll behind the elbow when supine for 4 weeks</strong> — prevents shoulder hyperextension stretching the subscapularis. <em>The patient should be able to see their elbow.</em></li><li>No weight-bearing through the arm, no pushing up from a chair</li><li>No driving for 4 weeks or until out of the sling</li></ul>"
+  }
+ },
+ {
+  "type": "subsection_heading",
+  "content": {
+   "text": "Reverse TSA — the deltoid does the work, and dislocation is the risk"
+  }
+ },
+ {
+  "type": "paragraph",
+  "content": {
+   "body": "<p>Different implant, different biomechanics, different precautions.</p>"
+  }
+ },
+ {
+  "type": "comparison_table",
+  "content": {
+   "columns": [
+    "Phase",
+    "Timeline",
+    "Content"
+   ],
+   "rows": [
+    [
+     "<strong>Immobilisation</strong>",
+     "Weeks 0–4",
+     "Sling. Active elbow/wrist/hand from day 1. Pendulums from week 2. Tabletop activities only"
+    ],
+    [
+     "<strong>Early motion</strong>",
+     "Weeks 5–6",
+     "Active-assisted → active. Ceiling punch, seated ER to neutral. <strong>No overhead reaching.</strong> Nothing heavier than a coffee cup"
+    ],
+    [
+     "<strong>Strengthening</strong>",
+     "Weeks 7–12",
+     "<strong>Deltoid isometrics and strengthening</strong> — anterior and middle deltoid. Lifting limit ~1 lb"
+    ],
+    [
+     "<strong>Progressive</strong>",
+     "Months 3–5",
+     "Progress load gradually (≈2 lb). Functional activity per surgeon"
+    ]
+   ]
+  }
+ },
+ {
+  "type": "paragraph",
+  "content": {
+   "body": "<p><strong>Key precautions:</strong></p>"
+  }
+ },
+ {
+  "type": "comparison_table",
+  "content": {
+   "columns": [
+    "Precaution",
+    "Duration"
+   ],
+   "rows": [
+    [
+     "<strong>Avoid extension with axial load</strong> (pushing up from a chair)",
+     "<strong>Lifetime</strong>"
+    ],
+    [
+     "<strong>Avoid end-range internal rotation + adduction + extension</strong> (tucking in a shirt, toileting)",
+     "<strong>12 weeks minimum</strong>, caution thereafter"
+    ],
+    [
+     "External rotation limits if subscapularis repaired",
+     "0° for 4 weeks → 20° to 8 weeks"
+    ],
+    [
+     "No resisted internal rotation",
+     "12 weeks"
+    ],
+    [
+     "Lifting limit",
+     "~25 lb lifetime"
+    ],
+    [
+     "Contact and jarring sports",
+     "Not recommended, lifetime"
+    ]
+   ]
+  }
+ },
+ {
+  "type": "highlight_card",
+  "content": {
+   "label": "Pitfall",
+   "color": "red",
+   "text": "<strong>The combined position of internal rotation, adduction and extension is the dislocation position after reverse arthroplasty.</strong> It is exactly the movement used for toileting and tucking in a shirt. Teach it explicitly as a movement to avoid, with a practical workaround — because a patient told \"avoid IR, adduction and extension\" will not recognise it when they do it."
+  }
+ },
+ {
+  "type": "paragraph",
+  "content": {
+   "body": "<p><strong>Rehabilitation emphasis differs fundamentally:</strong> in anatomic TSA you are protecting and then restoring the cuff. In reverse TSA <strong>the cuff is deficient and will not be restored — you train the deltoid.</strong> Avoid overtaxing it, particularly in osteopenic patients, where acromial and scapular spine stress fractures are a recognised complication.</p>"
+  }
+ },
+ {
+  "type": "subsection_heading",
+  "content": {
+   "text": "Early versus delayed mobilisation after reverse TSA"
+  }
+ },
+ {
+  "type": "paragraph",
+  "content": {
+   "body": "<p>Randomised trials comparing early and delayed mobilisation found <strong>significant improvement in both groups and no significant long-term difference</strong>. A retrospective comparison of <strong>0, 3 and 6 weeks of immobilisation</strong> found no differences in pain, outcomes, range of motion or satisfaction at one year.</p><p>The counterpoint: early mobilisation has been linked to <strong>acromion and scapular spine fractures</strong>, though the mechanism is debated.</p><p><strong>Practical position:</strong> follow the surgeon's protocol. The evidence does not support overriding it in either direction, and the main argument for earlier motion is avoiding functional loss and deconditioning in frail older patients.</p>"
+  }
+ },
+ {
+  "type": "section_heading",
+  "content": {
+   "text": "Return to work and sport"
+  }
+ },
+ {
+  "type": "paragraph",
+  "content": {
+   "body": "<p>Patients ask this at the first post-operative visit. Give them numbers.</p>"
+  }
+ },
+ {
+  "type": "subsection_heading",
+  "content": {
+   "text": "Return to work"
+  }
+ },
+ {
+  "type": "comparison_table",
+  "content": {
+   "columns": [
+    "",
+    "Rate",
+    "Mean time"
+   ],
+   "rows": [
+    [
+     "<strong>Reverse TSA</strong>",
+     "<strong>61.5%</strong> (range 56–65%)",
+     "<strong>2.3 months</strong> (0.3–24)"
+    ],
+    [
+     "<strong>Anatomic TSA</strong>",
+     "<strong>71–93%</strong>",
+     "~1.9 months"
+    ]
+   ]
+  }
+ },
+ {
+  "type": "paragraph",
+  "content": {
+   "body": "<p><strong>Work intensity is the strongest predictor.</strong> Suggested timelines:</p>"
+  }
+ },
+ {
+  "type": "comparison_table",
+  "content": {
+   "columns": [
+    "Work type",
+    "Return"
+   ],
+   "rows": [
+    [
+     "Sedentary",
+     "1–2 months"
+    ],
+    [
+     "Light",
+     "2–3 months"
+    ],
+    [
+     "Moderate",
+     "3–6 months"
+    ],
+    [
+     "<strong>Heavy</strong>",
+     "<strong>6+ months</strong>"
+    ]
+   ]
+  }
+ },
+ {
+  "type": "subsection_heading",
+  "content": {
+   "text": "Return to sport"
+  }
+ },
+ {
+  "type": "comparison_table",
+  "content": {
+   "columns": [
+    "",
+    "Rate",
+    "Mean time"
+   ],
+   "rows": [
+    [
+     "<strong>Reverse TSA</strong>",
+     "<strong>~79%</strong> (range 60–93%)",
+     "<strong>~6–7 months</strong>"
+    ],
+    [
+     "<strong>Anatomic TSA</strong>",
+     "<strong>~90%</strong>",
+     "—"
+    ]
+   ]
+  }
+ },
+ {
+  "type": "paragraph",
+  "content": {
+   "body": "<p>By activity load after rTSA: <strong>67% returned to low-load</strong>, 50% to high-load, 24% to medium-load activities. Highest return rates: <strong>swimming (84%)</strong>, general fitness and <strong>golf (77% each)</strong>.</p><p><strong>Why people don't return:</strong> restricted motion (22%), fear of re-injury (21%), weakness (18%).</p><p>Suggested timelines: low-impact (swimming, cycling) <strong>4–6 months</strong>; high-impact cautiously <strong>6–8 months</strong>; <strong>contact sports not recommended</strong>, since high-impact activity may accelerate component wear.</p>"
+  }
+ },
+ {
+  "type": "highlight_card",
+  "content": {
+   "label": "PM&R clinical pearl",
+   "color": "insight",
+   "text": "<strong>Fear of re-injury accounts for roughly as many non-returns as physical restriction.</strong> That is a rehabilitation problem, not a surgical one — and it is addressed by graded exposure and explicit permission, not by more strengthening."
+  }
+ },
+ {
+  "type": "section_heading",
+  "content": {
+   "text": "Prognosis"
+  }
+ },
+ {
+  "type": "paragraph",
+  "content": {
+   "body": "<p><strong>Non-surgically:</strong> GHOA is progressive. Non-surgical management controls symptoms; it does not alter the disease. Corticosteroid injection gives roughly 3–4 months of functional benefit and may give longer pain relief. In one community series, <strong>24.3% proceeded to surgery within two years</strong> of diagnosis.</p><p><strong>Surgically:</strong> shoulder arthroplasty is one of the more reliable operations in orthopaedics for pain relief. Reported reverse TSA survivorship reaches <strong>91% at ten years</strong>.</p><p><strong>What limits the result:</strong> smoking, depression, more comorbidities, and higher pre-operative function (less room to improve). Not obesity, and not sex.</p>"
+  }
+ },
+ {
+  "type": "section_heading",
+  "content": {
+   "text": "Patient education"
+  }
+ },
+ {
+  "type": "paragraph",
+  "content": {
+   "body": "<p><strong>Six things worth saying.</strong></p><p><strong>1. Name it plainly.</strong></p>"
+  }
+ },
+ {
+  "type": "highlight_card",
+  "content": {
+   "label": "Say it this way",
+   "color": "navy",
+   "text": "\"The cartilage in your shoulder joint has worn, and the joint has stiffened up around it. It's the same process as arthritis in a hip or knee, just less common in the shoulder.\""
+  }
+ },
+ {
+  "type": "paragraph",
+  "content": {
+   "body": "<p><strong>2. The X-ray is not the patient.</strong></p>"
+  }
+ },
+ {
+  "type": "highlight_card",
+  "content": {
+   "label": "Say it this way",
+   "color": "navy",
+   "text": "\"The X-ray tells us what the joint looks like. It doesn't tell us how much it should hurt — plenty of people have changes like this with very little pain, and the reverse is also true.\""
+  }
+ },
+ {
+  "type": "paragraph",
+  "content": {
+   "body": "<p><strong>3. It probably isn't your job.</strong></p>"
+  }
+ },
+ {
+  "type": "highlight_card",
+  "content": {
+   "label": "Say it this way",
+   "color": "navy",
+   "text": "\"People usually assume this comes from wear and tear at work. For the common type, it affects the dominant and non-dominant arm at about the same rate — so it has more to do with age, your anatomy and general health than with how you've used the arm.\""
+  }
+ },
+ {
+  "type": "paragraph",
+  "content": {
+   "body": "<p><strong>4. Exercise is worth doing, and here's the honest reason.</strong></p>"
+  }
+ },
+ {
+  "type": "highlight_card",
+  "content": {
+   "label": "Say it this way",
+   "color": "navy",
+   "text": "\"It won't rebuild the cartilage. What it does is keep the shoulder moving, keep the surrounding muscles strong, and delay the point where this limits you. That's a real benefit, but I don't want to oversell it.\""
+  }
+ },
+ {
+  "type": "paragraph",
+  "content": {
+   "body": "<p><strong>5. Injection buys months, not years.</strong></p>"
+  }
+ },
+ {
+  "type": "highlight_card",
+  "content": {
+   "label": "Say it this way",
+   "color": "navy",
+   "text": "\"Expect about three to four months of meaningful benefit. If it works and then wears off, that's not a failure — that's what it does.\""
+  }
+ },
+ {
+  "type": "paragraph",
+  "content": {
+   "body": "<p><strong>6. Hyaluronic acid and PRP — say it clearly.</strong></p>"
+  }
+ },
+ {
+  "type": "highlight_card",
+  "content": {
+   "label": "Say it this way",
+   "color": "navy",
+   "text": "\"There's good evidence that hyaluronic acid doesn't help in the shoulder, and not enough evidence to recommend PRP or stem cells. I'd rather tell you that than take your money.\""
+  }
+ },
+ {
+  "type": "paragraph",
+  "content": {
+   "body": "<p><strong>7. Surgery works, and the type matters.</strong></p>"
+  }
+ },
+ {
+  "type": "highlight_card",
+  "content": {
+   "label": "Say it this way",
+   "color": "navy",
+   "text": "\"Shoulder replacement is genuinely effective for pain. Which type depends on your rotator cuff. If it's intact you get an anatomic replacement, which gives better rotation. If it's not, you get a reverse, which lets the shoulder lift again but won't give you full rotation back.\""
+  }
+ },
+ {
+  "type": "highlight_card",
+  "content": {
+   "label": "PM&R clinical pearl",
+   "color": "insight",
+   "text": "<strong>Say the rotation limitation before the reverse replacement, not after.</strong> A patient who cannot reach behind their back at four months, and was never warned, will believe something went wrong. The same patient told in advance will accept it as the trade they agreed to."
+  }
+ },
+ {
+  "type": "section_heading",
+  "content": {
+   "text": "Key points"
+  }
+ },
+ {
+  "type": "paragraph",
+  "content": {
+   "body": "<ol><li><strong>Specify the joint.</strong> \"Shoulder arthritis\" is not a diagnosis — AC joint OA is commoner and often incidental.</li><li><strong>Use \"osteoarthritis,\" not \"osteoarthrosis.\"</strong> The synovial inflammation is real, and it is why steroid works.</li><li><strong>GHOA is not a small hip.</strong> Not weight-bearing, wears eccentrically and posteriorly, and uniquely depends on the rotator cuff.</li><li><strong>~73% is primary.</strong> It affects dominant and non-dominant arms almost equally — <strong>this is not simply a wear-and-tear disease.</strong></li><li><strong>Radiographic prevalence reaches 37% by age 80–89</strong> in people with shoulder pain — but the X-ray and the symptoms are separate questions.</li><li><strong>Establish cuff status first.</strong> It separates GHOA from cuff tear arthropathy and determines every subsequent decision.</li><li><strong>Two radiographs matter: true AP and axillary.</strong> The axillary view is the one that gets missed and the one that shows posterior subluxation.</li><li><strong>Learn the Walch B2 glenoid</strong> — biconcave, posteriorly eroded, and the central problem in arthroplasty planning.</li><li><strong>GHOA wears backwards and tightens forwards</strong> — posterior erosion, anterior contracture, loss of external rotation.</li><li><strong>Non-surgical management is reasonable but weakly evidenced.</strong> The efficacy of physical therapy is listed as an open question by the field's own consensus review.</li><li><strong>Corticosteroid injection gives ~3–4 months</strong> of functional benefit; worse baseline function predicts <em>greater</em> relief; radiographic severity predicts nothing.</li><li><strong>Hyaluronic acid: strong evidence of no benefit. PRP and stem cells: cannot be recommended.</strong></li><li><strong>Anatomic TSA beats hemiarthroplasty (strong evidence).</strong> Anatomic vs reverse in a cuff-intact shoulder gives comparable outcomes, with aTSA better for rotation and rTSA possibly better for stiff shoulders.</li><li><strong>After anatomic TSA, protect the subscapularis.</strong> After reverse TSA, protect against <strong>extension with axial load</strong> and the <strong>internal rotation + adduction + extension</strong> dislocation position.</li><li><strong>Smoking and depression are the modifiable predictors of a worse surgical outcome</strong> — and both sit squarely in PM&amp;R's scope before surgery.</li></ol>"
+  }
+ },
+ {
+  "type": "section_heading",
+  "content": {
+   "text": "Sources"
+  }
+ },
+ {
+  "type": "paragraph",
+  "content": {
+   "body": "<ul><li>American Academy of Orthopaedic Surgeons. <em>Management of Glenohumeral Joint Osteoarthritis: Evidence-Based Clinical Practice Guideline</em>. Adopted March 23, 2020. <a href=\"https://www.aaos.org/globalassets/quality-and-practice-resources/glenohumeral/glenohumeral-joint-osteoarthritis-3-18-20.pdf\" target=\"_blank\" rel=\"noopener noreferrer\">https://www.aaos.org/globalassets/quality-and-practice-resources/glenohumeral/glenohumeral-joint-osteoarthritis-3-18-20.pdf</a></li><li>Michener LA, Heitzman J, Abbruzzese LD, et al. Physical Therapist Management of Glenohumeral Joint Osteoarthritis: A Clinical Practice Guideline from the American Physical Therapy Association. <em>Phys Ther</em>. 2023;103(6):pzad041. doi:10.1093/ptj/pzad041</li><li>Davies MR, Musahl V, Forsythe B, Calcei JG, Ma CB. Glenohumeral Osteoarthritis: Disease Burden, Current Understanding, and Gaps in Knowledge and Treatment. <em>Orthop J Sports Med</em>. 2025;13(5). doi:10.1177/23259671251339428</li><li>Schoenfeldt TL, Trenhaile S, Olson R. Glenohumeral osteoarthritis: frequency of underlying diagnoses and the role of arm dominance. <em>Rheumatol Int</em>. 2018;38(6):1023–1029. doi:10.1007/s00296-018-3989-1</li><li>Tran G, Fascia D, Askew J, et al. The prevalence of glenohumeral joint osteoarthritis in a primary care shoulder pain population referred for radiographs. <em>Rheumatology (Oxford)</em>. 2022;61(3):1290–1292. doi:10.1093/rheumatology/keab867</li><li>Zimmer ZR, Carducci MP, Mahendraraj KA, Jawa A. Evolution of the Walch Classification and Its Importance on the B2 Glenoid. <em>J Shoulder Elbow Arthroplasty</em>. 2020;4. doi:10.1177/2471549220903815</li><li>Metzger CM, Farooq H, Merrell GA, et al. Efficacy of a Single Image-Guided Corticosteroid Injection for Glenohumeral Arthritis. <em>J Shoulder Elbow Surg</em>. 2020. doi:10.1016/j.jse.2020.08.008</li><li>Shah PP, Jayawardena R, Wong R, et al. Anatomical versus reverse total shoulder arthroplasty for primary glenohumeral osteoarthritis with an intact rotator cuff: a systematic review. <em>Bone Jt Open</em>. 2026;7(8):1056–1063. doi:10.1302/2633-1462.78.BJO-2025-0297.R2</li><li>Lamb CJ, Ahmad A, Biedermann BM, et al. Rehabilitation and Long Term Outcomes Including Return to Work or Sport Following Reverse Total Shoulder Arthroplasty. <em>Curr Rev Musculoskelet Med</em>. 2025;18(4):173–181. doi:10.1007/s12178-025-09948-9</li><li>Samilson RL, Prieto V. Dislocation arthropathy of the shoulder. <em>J Bone Joint Surg Am</em>. 1983;65(4):456–460. <em>(grading criteria as summarised at shoulderdoc.co.uk/article/1452)</em></li><li>Hamada K, et al. Roentgenographic findings in massive rotator cuff tears. <em>(classification as summarised at shoulderdoc.co.uk/article/1452)</em></li><li>Representative post-operative protocols: Boston Shoulder Institute / MGH total shoulder replacement protocol; Summit Orthopedics reverse total shoulder replacement protocol.</li></ul>"
+  }
+ },
+ {
+  "type": "subsection_heading",
+  "content": {
+   "text": "A note on the evidence"
+  }
+ },
+ {
+  "type": "paragraph",
+  "content": {
+   "body": "<p>Three things to carry out of this chapter about <strong>how good the evidence is</strong>:</p><p><strong>The surgical evidence is far stronger than the non-surgical evidence.</strong> The AAOS guideline contains strong recommendations about implants and no recommendations at all about NSAIDs or corticosteroid injection — not because those don't work, but because nobody has run the trials. The physiotherapy guideline could issue only expert-opinion statements for non-operative care.</p><p><strong>Almost all the comparative arthroplasty evidence is retrospective.</strong> The anatomic-versus-reverse systematic review found every included study was Oxford Level 3. Treat \"aTSA gives better rotation\" as a consistent observational finding, not a trial result.</p><p><strong>Much of the pathophysiology is borrowed from the knee.</strong> The field's own 2025 consensus review says the post-traumatic and post-surgical pathways identified in knee OA still require validation in the shoulder. Hold the general mechanism confidently; hold the detail loosely.</p>"
+  }
+ }
+]
