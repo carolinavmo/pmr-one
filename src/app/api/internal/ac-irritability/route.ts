@@ -9,9 +9,9 @@ import { pool } from "@/lib/db";
 // be inside the section. One transaction, skipped if already there. Remove
 // once run.
 
-const MARKER = "What it means";
+const MARKER = "Irritability";
 const b = (t: string) => `<strong>${t}</strong>`;
-const COLUMNS = ["Irritability", "Features", MARKER];
+const COLUMNS = [MARKER, "Features", "What it means"];
 const ROWS = [
   [
     b("High"),
@@ -48,7 +48,7 @@ export async function POST(req: NextRequest) {
       [diseaseId]
     );
 
-    const already = rows.find((r) => r.block_type === "comparison_table" && JSON.stringify(r.content_config).includes(MARKER));
+    const already = rows.find((r) => r.block_type === "comparison_table" && JSON.stringify(r.content_config?.columns).includes(`"${MARKER}"`));
     if (already) {
       await client.query("ROLLBACK");
       return NextResponse.json({ ok: true, skipped: `already present at position ${already.position}` });
