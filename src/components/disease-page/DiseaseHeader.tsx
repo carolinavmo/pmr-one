@@ -18,6 +18,7 @@ import {
 } from "@/lib/actions/authoring";
 import { toggleDiseaseFavoriteAction } from "@/lib/actions/workspace";
 import { preserveScrollAcrossSave } from "@/lib/preserve-scroll";
+import { DownloadPdfButton } from "@/components/disease-page/DownloadPdfButton";
 import {
   DISEASE_PAGE_TYPE_ORDER,
   DISEASE_PAGE_TYPE_LABEL,
@@ -133,6 +134,7 @@ export function DiseaseHeader({
         </PageHeading>
         {status !== "published" && <ClinicalBadge>Draft — not yet reviewed</ClinicalBadge>}
         {canEdit && <SectionEditToggle />}
+        {isAdmin && <DownloadPdfButton title={diseaseName} />}
         {editing && isAdmin && (
           <DeleteDiseaseButton
             diseaseId={diseaseId}
@@ -180,7 +182,7 @@ function FavoriteToggle({
         type="submit"
         aria-pressed={isFavorited}
         aria-label={isFavorited ? "Remove from Favourites" : "Add to Favourites"}
-        className={`flex items-center gap-1 ${
+        className={`flex items-center gap-1 print:hidden ${
           isFavorited ? "text-accent" : "text-secondary hover:text-primary"
         }`}
       >

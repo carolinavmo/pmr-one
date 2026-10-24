@@ -106,7 +106,7 @@ export function OnThisPage({ sections, diseaseId, canEdit }: OnThisPageProps) {
   if (sections.length === 0) return null;
 
   return (
-    <div className="mt-5 rounded-[14px] border border-border bg-surface px-5 py-[18px]">
+    <div className="mt-5 rounded-[14px] border border-border bg-surface px-5 py-[18px] print:hidden">
       <span className="mb-3.5 block font-ui text-[11px] font-black tracking-[1.6px] text-[#8C97A6] uppercase">
         {t("onThisPage")}
       </span>

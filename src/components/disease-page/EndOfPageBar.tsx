@@ -56,7 +56,7 @@ export function EndOfPageBar({
   if (!previous && !next) return null;
 
   return (
-    <div className="overflow-hidden rounded-[14px] border border-border">
+    <div className="overflow-hidden rounded-[14px] border border-border print:hidden">
       <div className="border-b border-border bg-surface-sunken px-[18px] py-2.5 font-ui text-[11px] font-black tracking-[1.4px] text-secondary uppercase">
         {pathLabel}
       </div>

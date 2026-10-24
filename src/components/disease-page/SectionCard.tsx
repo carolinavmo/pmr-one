@@ -86,7 +86,7 @@ function SectionCardBody({
           onClick={() => setCollapsed((current) => !current)}
           aria-expanded={!collapsed}
           aria-label={collapsed ? "Expand section" : "Collapse section"}
-          className="flex size-7 shrink-0 items-center justify-center rounded-full text-white/80 transition-colors duration-base hover:bg-white/15 hover:text-white"
+          className="flex size-7 shrink-0 items-center justify-center rounded-full text-white/80 transition-colors duration-base hover:bg-white/15 hover:text-white print:hidden"
         >
           <ChevronDown
             className={`size-4 transition-transform duration-base ${collapsed ? "-rotate-90" : ""}`}
@@ -118,7 +118,7 @@ function SectionCardBody({
         className={
           editing
             ? undefined
-            : `flex flex-col gap-4 [--block-gap:1rem] border-t border-border/50 px-4 pt-4 pb-5 ${collapsed ? "hidden" : ""}`
+            : `flex flex-col gap-4 [--block-gap:1rem] border-t border-border/50 px-4 pt-4 pb-5 ${collapsed ? "hidden print:flex" : ""}`
         }
       >
         {children}

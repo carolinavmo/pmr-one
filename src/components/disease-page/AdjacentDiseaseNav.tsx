@@ -19,7 +19,7 @@ export async function AdjacentDiseaseNav({ adjacent }: AdjacentDiseaseNavProps) 
   const t = await getTranslations("disease");
 
   return (
-    <div className="mt-4 flex items-stretch gap-3">
+    <div className="mt-4 flex items-stretch gap-3 print:hidden">
       {adjacent.previous ? (
         <Link
           href={`/conditions/${adjacent.previous.slug}`}

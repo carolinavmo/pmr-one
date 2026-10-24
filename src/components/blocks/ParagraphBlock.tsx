@@ -66,7 +66,7 @@ export function ParagraphBlockView({
     <RichEditableText
       as="p"
       className={`font-reading text-base text-primary ${TEXT_ALIGN_CLASS[textAlign]} ${LINE_HEIGHT_CLASS[lineHeight]} ${
-        collapsible ? "line-clamp-3" : ""
+        collapsible ? "line-clamp-3 print:line-clamp-none" : ""
       }`}
       value={block.body}
       onSave={(value) => updateBlockRichTextAction(block.id, "body", value)}

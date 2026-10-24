@@ -939,3 +939,47 @@ body {
     opacity: 1;
   }
 }
+
+/* Print / Save as PDF (the admin "Download PDF" button on a disease page).
+   Strips the site chrome, keeps the page content with its own colours, and
+   lets the page flow across sheets instead of being one viewport tall. The
+   page-level widgets that only make sense on screen (breadcrumbs, "On this
+   page", prev/next, back-to-top, edit toggles) carry their own print:hidden. */
+@media print {
+  @page {
+    margin: 14mm 12mm;
+  }
+  html,
+  body {
+    height: auto !important;
+    min-height: 0 !important;
+    background: #fff !important;
+  }
+  * {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  header.sticky,
+  aside.sticky,
+  aside.fixed,
+  footer,
+  #goog-gt-tt,
+  .skiptranslate {
+    display: none !important;
+  }
+  main {
+    padding: 0 !important;
+  }
+  h1,
+  h2,
+  h3,
+  h4 {
+    break-after: avoid;
+  }
+  tr,
+  img,
+  figure,
+  blockquote {
+    break-inside: avoid;
+  }
+}

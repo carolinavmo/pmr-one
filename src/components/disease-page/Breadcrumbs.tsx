@@ -25,7 +25,7 @@ export async function Breadcrumbs({ path }: BreadcrumbsProps) {
   return (
     <nav
       aria-label={tDisease("breadcrumbLabel")}
-      className="flex flex-wrap items-center gap-1.5 font-ui text-[13px] font-semibold"
+      className="flex flex-wrap items-center gap-1.5 font-ui text-[13px] font-semibold print:hidden"
     >
       <Link href="/" className="text-[#9AA5B4] transition-colors duration-base hover:text-accent">
         {t("explore")}

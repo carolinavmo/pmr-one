@@ -134,7 +134,7 @@ export function SectionEditToggle() {
       type="button"
       onClick={onClick}
       aria-pressed={editing}
-      className={`inline-flex shrink-0 items-center gap-1 rounded-full border px-2.5 py-1 font-ui text-xs font-medium transition-colors duration-base ${
+      className={`inline-flex shrink-0 items-center gap-1 rounded-full border px-2.5 py-1 font-ui text-xs font-medium transition-colors duration-base print:hidden ${
         editing
           ? "border-accent bg-accent/10 text-accent"
           : "border-border text-secondary hover:border-accent hover:text-accent"
