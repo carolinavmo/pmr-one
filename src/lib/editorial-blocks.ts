@@ -413,6 +413,9 @@ export interface ComparisonTableBlock extends BlockBase {
   type: "comparison_table";
   id: string;
   caption?: string;
+  // true drops the navy header row in the reader view, for a plain
+  // label/value table that has no column titles. Unset shows it.
+  hideHeader?: boolean;
   columns: string[];
   rows: string[][];
 }
