@@ -16,6 +16,7 @@ import { Search } from "lucide-react";
 import type { TopicIconName, TopicNode } from "@/lib/topics";
 import type { SectionIndex, SectionIndexEntry } from "@/lib/disease-loader";
 import { onSectionIndexChanged } from "@/lib/section-events";
+import { scrollToHeading } from "@/lib/scroll-to-heading";
 import { topicIcons } from "@/components/ui/topicIcons";
 import { CARD_COLOR_CHIP } from "@/lib/card-colors";
 import type { CardColor } from "@/lib/editorial-blocks";
@@ -1356,6 +1357,7 @@ function Dock({
                   onClick={() => {
                     onSectionClick(section.id);
                     onNavigate?.();
+                    scrollToHeading(section.id);
                   }}
                   className={`flex items-center gap-[9px] rounded-lg px-[9px] py-[5px] font-ui text-[12.5px] font-bold transition-colors duration-base hover:bg-[#EAEEF3] ${
                     current ? "bg-acc-bg text-acc-ink" : read ? "text-[#A6B0BC]" : "text-primary"
@@ -1387,6 +1389,7 @@ function Dock({
                           onClick={() => {
                             onSectionClick(section.id);
                             onNavigate?.();
+                            scrollToHeading(sub.id);
                           }}
                           className={`py-[3px] pr-[9px] pl-9 font-ui text-[11.5px] transition-colors duration-base hover:text-primary ${
                             subCurrent ? "font-extrabold text-acc-ink" : subRead ? "text-[#B4BDC8]" : "text-secondary"

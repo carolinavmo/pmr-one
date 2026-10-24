@@ -6,6 +6,7 @@ import { ChevronRight, GripVertical } from "lucide-react";
 import type { SectionSummary } from "@/lib/sections";
 import { reorderSectionAction } from "@/lib/actions/authoring";
 import { notifySectionIndexChanged } from "@/lib/section-events";
+import { scrollToHeading } from "@/lib/scroll-to-heading";
 import { onAnySectionEditingChanged } from "@/lib/any-section-editing";
 import { preserveScrollAcrossSave } from "@/lib/preserve-scroll";
 
@@ -20,7 +21,7 @@ interface OnThisPageProps {
 }
 
 function scrollToSection(id: string) {
-  document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
+  scrollToHeading(id);
 }
 
 // Which section is "active" — DESIGN-BRIEF.md's redesign highlights
