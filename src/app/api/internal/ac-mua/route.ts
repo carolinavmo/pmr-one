@@ -44,7 +44,7 @@ export async function POST(req: NextRequest) {
       [diseaseId]
     );
 
-    const already = rows.find((r) => r.block_type === "comparison_table" && JSON.stringify(r.content_config?.rows).includes(MARKER));
+    const already = rows.find((r) => r.block_type === "comparison_table" && JSON.stringify(r.content_config?.columns).includes(COLUMNS[1]));
     if (already) {
       await client.query("ROLLBACK");
       return NextResponse.json({ ok: true, skipped: `already present at position ${already.position}` });
