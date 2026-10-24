@@ -40,7 +40,7 @@ export async function POST(req: NextRequest) {
       [diseaseId]
     );
 
-    const already = rows.find((r) => r.block_type === "comparison_table" && JSON.stringify(r.content_config?.columns).includes(`"${MARKER}"`) && JSON.stringify(r.content_config?.columns).includes("\"Result\""));
+    const already = rows.find((r) => r.block_type === "comparison_table" && JSON.stringify(r.content_config?.rows).includes("40 mg vs 20 mg"));
     if (already) {
       await client.query("ROLLBACK");
       return NextResponse.json({ ok: true, skipped: `already present at position ${already.position}` });
