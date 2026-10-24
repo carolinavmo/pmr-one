@@ -63,6 +63,7 @@ export const CARD_COLOR_ORDER: CardColor[] = [
   "emerald",
   "amber",
   "coral",
+  "gray",
 ];
 
 export const CARD_COLOR_LABEL: Record<CardColor, string> = {
@@ -93,6 +94,7 @@ export const CARD_COLOR_LABEL: Record<CardColor, string> = {
   emerald: "Emerald",
   amber: "Amber",
   coral: "Coral",
+  gray: "Light gray",
 };
 
 // The picker's own swatch dot — a solid fill so the 20 options are
@@ -125,6 +127,7 @@ export const CARD_COLOR_SWATCH: Record<CardColor, string> = {
   emerald: "bg-card-emerald",
   amber: "bg-card-amber",
   coral: "bg-card-coral",
+  gray: "bg-card-gray",
 };
 
 // A card's own background — a quiet tint plus a matching border, not
@@ -158,6 +161,7 @@ export const CARD_COLOR_CARD: Record<CardColor, string> = {
   emerald: "border-card-emerald/30 bg-card-emerald/5",
   amber: "border-card-amber/30 bg-card-amber/5",
   coral: "border-card-coral/30 bg-card-coral/5",
+  gray: "border-card-gray/30 bg-card-gray/5",
 };
 
 // An alternate card treatment (EXPERIMENTAL, local-only — not yet
@@ -195,6 +199,7 @@ export const CARD_COLOR_CARD_ACCENT: Record<CardColor, string> = {
   emerald: "border-l-4 border-l-card-emerald/60 bg-card-emerald/5",
   amber: "border-l-4 border-l-card-amber/60 bg-card-amber/5",
   coral: "border-l-4 border-l-card-coral/60 bg-card-coral/5",
+  gray: "border-l-4 border-l-card-gray/60 bg-card-gray/5",
 };
 
 // A badge's pill treatment — a solid, fixed-dark fill with light text
@@ -230,6 +235,7 @@ export const CARD_COLOR_BADGE: Record<CardColor, string> = {
   emerald: "bg-badge-emerald text-white",
   amber: "bg-badge-amber text-white",
   coral: "bg-badge-coral text-white",
+  gray: "bg-badge-gray text-white",
 };
 
 // A table's own rule lines (card border + row dividers) tinted to
@@ -265,6 +271,7 @@ export const CARD_COLOR_BORDER: Record<CardColor, string> = {
   emerald: "border-badge-emerald/25",
   amber: "border-badge-amber/25",
   coral: "border-badge-coral/25",
+  gray: "border-badge-gray/25",
 };
 
 // The table card's own outer frame — full-strength (not the /25 tint
@@ -299,6 +306,7 @@ export const CARD_COLOR_BORDER_STRONG: Record<CardColor, string> = {
   emerald: "border-badge-emerald",
   amber: "border-badge-amber",
   coral: "border-badge-coral",
+  gray: "border-badge-gray",
 };
 
 // A deeper tint than CARD_COLOR_TINT (/10) but still soft — the
@@ -334,6 +342,7 @@ export const CARD_COLOR_MID: Record<CardColor, string> = {
   emerald: "bg-card-emerald/20",
   amber: "bg-card-amber/20",
   coral: "bg-card-coral/20",
+  gray: "bg-card-gray/20",
 };
 
 // A small colored icon-chip treatment (Explore sidebar topic icons,
@@ -371,6 +380,7 @@ export const CARD_COLOR_CHIP: Record<CardColor, string> = {
   emerald: "bg-card-emerald/15 text-card-emerald",
   amber: "bg-card-amber/15 text-card-amber",
   coral: "bg-card-coral/15 text-card-coral",
+  gray: "bg-card-gray/15 text-card-gray",
 };
 
 // A low-opacity full-row background wash (the Explore sidebar's
@@ -404,6 +414,7 @@ export const CARD_COLOR_TINT: Record<CardColor, string> = {
   emerald: "bg-card-emerald/10",
   amber: "bg-card-amber/10",
   coral: "bg-card-coral/10",
+  gray: "bg-card-gray/10",
 };
 
 // Text color only, no background — the Explore sidebar's active-
@@ -439,4 +450,5 @@ export const CARD_COLOR_TEXT: Record<CardColor, string> = {
   emerald: "text-card-emerald",
   amber: "text-card-amber",
   coral: "text-card-coral",
+  gray: "text-card-gray",
 };

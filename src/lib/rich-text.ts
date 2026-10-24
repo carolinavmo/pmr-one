@@ -22,15 +22,17 @@ import { CARD_COLOR_ORDER, CARD_COLOR_LABEL, CARD_COLOR_SWATCH, CARD_COLOR_TINT,
 // `expression()`, no way to smuggle a color value through even if
 // something bypassed the allowlist.
 
-export type FontSize = "sm" | "lg" | "2xl";
+export type FontSize = "xs" | "sm" | "lg" | "2xl";
 
-export const FONT_SIZE_ORDER: FontSize[] = ["sm", "lg", "2xl"];
+export const FONT_SIZE_ORDER: FontSize[] = ["xs", "sm", "lg", "2xl"];
 export const FONT_SIZE_LABEL: Record<FontSize, string> = {
+  xs: "Very small",
   sm: "Small",
   lg: "Large",
   "2xl": "X-Large",
 };
 export const FONT_SIZE_CLASS: Record<FontSize, string> = {
+  xs: "text-xs",
   sm: "text-sm",
   lg: "text-lg",
   "2xl": "text-2xl",
@@ -68,6 +70,7 @@ export const TEXT_COLOR_CLASS: Record<CardColor, string> = {
   emerald: "text-card-emerald",
   amber: "text-card-amber",
   coral: "text-card-coral",
+  gray: "text-card-gray",
 };
 
 // Highlight/background — a visible tint (not the ~5% a card's own
@@ -101,6 +104,7 @@ export const TEXT_BG_CLASS: Record<CardColor, string> = {
   emerald: "bg-card-emerald/25",
   amber: "bg-card-amber/25",
   coral: "bg-card-coral/25",
+  gray: "bg-card-gray/25",
 };
 
 export { CARD_COLOR_ORDER as TEXT_COLOR_ORDER, CARD_COLOR_LABEL as TEXT_COLOR_LABEL, CARD_COLOR_SWATCH as TEXT_COLOR_SWATCH };

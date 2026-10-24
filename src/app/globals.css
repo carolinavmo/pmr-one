@@ -112,6 +112,7 @@
   --color-card-emerald: #10b981;
   --color-card-amber: #f59e0b;
   --color-card-coral: #ff6f61;
+  --color-card-gray: #9aa3b2;
 
   /* ---------- Color: Clinical Tools category tokens ----------
      TOOLS-DASHBOARD-SPEC.md — "Add four CSS custom properties per
@@ -394,6 +395,7 @@
   --color-badge-emerald: #059669;
   --color-badge-amber: #d97706;
   --color-badge-coral: #e14a3b;
+  --color-badge-gray: #6b7686;
 
   /* ---------- Color: footer (fixed, not theme-swapped) ----------
      Same "declared once, doesn't flip with light/dark" reasoning as
@@ -523,6 +525,7 @@
     --color-card-emerald: #6ee7b7;
     --color-card-amber: #fcd34d;
     --color-card-coral: #ffa398;
+    --color-card-gray: #b4bcc9;
   }
   /* Clinical Tools category tokens — same lighten-tint-darken,
      lighten-text transform as the card colors above, applied to the
@@ -636,6 +639,7 @@
   --color-card-emerald: #6ee7b7;
   --color-card-amber: #fcd34d;
   --color-card-coral: #ffa398;
+  --color-card-gray: #b4bcc9;
 }
 :root[data-theme="dark"] [data-category="independence"] {
   --c: #5ee1ee;
@@ -760,6 +764,7 @@
   --color-card-emerald: var(--color-card-emerald);
   --color-card-amber: var(--color-card-amber);
   --color-card-coral: var(--color-card-coral);
+  --color-card-gray: var(--color-card-gray);
 
   --color-badge-neutral: var(--color-badge-neutral);
   --color-badge-accent: var(--color-badge-accent);
@@ -788,6 +793,7 @@
   --color-badge-emerald: var(--color-badge-emerald);
   --color-badge-amber: var(--color-badge-amber);
   --color-badge-coral: var(--color-badge-coral);
+  --color-badge-gray: var(--color-badge-gray);
 
   --color-footer-bg: var(--color-footer-bg);
   --color-footer-border: var(--color-footer-border);

@@ -56,6 +56,7 @@ const ICON_BG_CLASS: Record<CardColor, string> = {
   emerald: "bg-card-emerald/10",
   amber: "bg-card-amber/10",
   coral: "bg-card-coral/10",
+  gray: "bg-card-gray/10",
 };
 
 function isCardIconName(value: string | null): value is CardIconName {
