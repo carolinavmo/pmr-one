@@ -188,6 +188,27 @@ function prefersReducedMotion(): boolean {
   return typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 }
 
+// A heading counts as "reached" once it is at (or above) the spot a jump lands
+// it — its own scroll-margin, i.e. below the navbar — give or take a few px.
+// Reading the margin from the element keeps this in step with the landing
+// offset (--scroll-offset) instead of a second hard-coded number. Document
+// order, so the last heading reached is the current one. At the very bottom of
+// the page the last short sections can never scroll up to the landing spot, so
+// any heading on screen counts there.
+const LANDING_TOLERANCE_PX = 12;
+function currentHeadingFromScroll(flat: { id: string; sectionId: string }[]): { id: string; sectionId: string } | null {
+  const atBottom = window.scrollY + window.innerHeight >= document.documentElement.scrollHeight - 2;
+  let found: { id: string; sectionId: string } | null = null;
+  for (const entry of flat) {
+    const el = document.getElementById(entry.id);
+    if (!el) continue;
+    const margin = parseFloat(getComputedStyle(el).scrollMarginTop) || 0;
+    const limit = atBottom ? window.innerHeight - 80 : margin + LANDING_TOLERANCE_PX;
+    if (el.getBoundingClientRect().top <= limit) found = entry;
+  }
+  return found;
+}
+
 const READING_PROGRESS_STORAGE_PREFIX = "pmr-atlas:reading-progress:";
 const WORDS_PER_MINUTE = 200;
 
@@ -374,27 +395,45 @@ export function IndexSidebar({ tree, isSignedIn, onNavigate, headerAction }: Ind
   // it ever being seen.
   const visitedSectionIdsRef = useRef<Set<string>>(new Set());
 
-  function beginProgrammaticScroll() {
+  const programmaticTokenRef = useRef(0);
+
+  // A rail click owns the highlight until the page has stopped moving — the
+  // smooth scroll passes over every section on the way, and the highlight
+  // shouldn't flicker through them. "Stopped" is: no scroll event for a moment
+  // (capped, in case something keeps nudging the page). The clicked heading
+  // wins if it is on screen — the last short sections can't scroll up to the
+  // landing spot, and reading the position would then name the section before
+  // them — otherwise the highlight follows the position.
+  function beginProgrammaticScroll(sectionId: string, targetId: string) {
     isProgrammaticScrollRef.current = true;
-    let done = false;
-    const finish = () => {
-      if (done) return;
-      done = true;
+    const token = ++programmaticTokenRef.current;
+    const startedAt = performance.now();
+    let lastScrollAt = startedAt;
+    const onScroll = () => {
+      lastScrollAt = performance.now();
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    const poll = setInterval(() => {
+      const now = performance.now();
+      const superseded = programmaticTokenRef.current !== token;
+      const rested = now - lastScrollAt >= 220 && now - startedAt >= 400;
+      if (!superseded && !rested && now - startedAt < 5000) return;
+      clearInterval(poll);
+      window.removeEventListener("scroll", onScroll);
+      if (superseded) return;
       isProgrammaticScrollRef.current = false;
-      window.removeEventListener("scrollend", finish);
-      const threshold = 100;
-      let found: { id: string; sectionId: string } | null = null;
-      for (const entry of flatSectionsRef.current) {
-        const el = document.getElementById(entry.id);
-        if (el && el.getBoundingClientRect().top <= threshold) found = entry;
+      const top = document.getElementById(targetId)?.getBoundingClientRect().top;
+      if (top !== undefined && top >= 0 && top < window.innerHeight * 0.8) {
+        setCurrentSectionId(sectionId);
+        setCurrentSubsectionId(targetId !== sectionId ? targetId : null);
+        return;
       }
+      const found = currentHeadingFromScroll(flatSectionsRef.current);
       if (found) {
         setCurrentSectionId(found.sectionId);
         setCurrentSubsectionId(found.id !== found.sectionId ? found.id : null);
       }
-    };
-    window.addEventListener("scrollend", finish, { once: true });
-    setTimeout(finish, 700);
+    }, 100);
   }
 
   function markSectionsRead(ids: string[]) {
@@ -505,31 +544,29 @@ export function IndexSidebar({ tree, isSignedIn, onNavigate, headerAction }: Ind
       { id: section.id, sectionId: section.id },
       ...section.subsections.map((sub) => ({ id: sub.id, sectionId: section.id })),
     ]);
-    const order = flat.map((entry) => entry.id);
-    const intersecting = new Set<string>();
     flatSectionsRef.current = flat;
 
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (isProgrammaticScrollRef.current) return;
-        for (const entry of entries) {
-          if (entry.isIntersecting) intersecting.add(entry.target.id);
-          else intersecting.delete(entry.target.id);
-        }
-        const topmostId = order.find((id) => intersecting.has(id));
-        if (!topmostId) return; // nothing intersects — keep the last known section, never clear to "none"
-        const topmost = flat.find((entry) => entry.id === topmostId)!;
-        setCurrentSectionId(topmost.sectionId);
-        setCurrentSubsectionId(topmost.id !== topmost.sectionId ? topmost.id : null);
-        visitedSectionIdsRef.current.add(topmost.sectionId);
-      },
-      { rootMargin: "-96px 0px -60% 0px", threshold: 0 }
-    );
-    for (const entry of flat) {
-      const el = document.getElementById(entry.id);
-      if (el) observer.observe(el);
-    }
-    return () => observer.disconnect();
+    let frame = 0;
+    const update = () => {
+      frame = 0;
+      if (isProgrammaticScrollRef.current) return;
+      const found = currentHeadingFromScroll(flat);
+      if (!found) return; // above the first heading — keep the last known section, never clear to "none"
+      setCurrentSectionId(found.sectionId);
+      setCurrentSubsectionId(found.id !== found.sectionId ? found.id : null);
+      visitedSectionIdsRef.current.add(found.sectionId);
+    };
+    const schedule = () => {
+      if (!frame) frame = requestAnimationFrame(update);
+    };
+    window.addEventListener("scroll", schedule, { passive: true });
+    window.addEventListener("resize", schedule);
+    schedule();
+    return () => {
+      window.removeEventListener("scroll", schedule);
+      window.removeEventListener("resize", schedule);
+      if (frame) cancelAnimationFrame(frame);
+    };
   }, [sectionIndex, activePath]);
 
   useEffect(() => {
@@ -875,10 +912,10 @@ export function IndexSidebar({ tree, isSignedIn, onNavigate, headerAction }: Ind
               readSectionIds={readSectionIds}
               scrollRatio={scrollRatio}
               folderAdjacent={folderAdjacent}
-              onSectionClick={(sectionId) => {
-                beginProgrammaticScroll();
+              onSectionClick={(sectionId, targetId) => {
+                beginProgrammaticScroll(sectionId, targetId);
                 setCurrentSectionId(sectionId);
-                setCurrentSubsectionId(null);
+                setCurrentSubsectionId(targetId !== sectionId ? targetId : null);
               }}
               onNavigate={onNavigate}
             />
@@ -1267,7 +1304,7 @@ function Dock({
   readSectionIds: Set<string>;
   scrollRatio: number;
   folderAdjacent: FolderAdjacent | null;
-  onSectionClick: (sectionId: string) => void;
+  onSectionClick: (sectionId: string, targetId: string) => void;
   onNavigate?: () => void;
 }) {
   const sections: SectionIndexEntry[] = sectionIndex?.diseaseSlug === path.page.slug ? sectionIndex.sections : [];
@@ -1355,7 +1392,7 @@ function Dock({
                   href={`/conditions/${path.page.slug}#${section.id}`}
                   aria-current={current ? "location" : undefined}
                   onClick={() => {
-                    onSectionClick(section.id);
+                    onSectionClick(section.id, section.id);
                     onNavigate?.();
                     scrollToHeading(section.id);
                   }}
@@ -1387,7 +1424,7 @@ function Dock({
                           key={sub.id}
                           href={`/conditions/${path.page.slug}#${sub.id}`}
                           onClick={() => {
-                            onSectionClick(section.id);
+                            onSectionClick(section.id, sub.id);
                             onNavigate?.();
                             scrollToHeading(sub.id);
                           }}
