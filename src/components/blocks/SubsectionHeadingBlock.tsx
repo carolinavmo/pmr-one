@@ -44,7 +44,7 @@ export function SubsectionHeadingBlockView({
             as="h3"
             id={slugify(block.text)}
             multiline={false}
-            className={`scroll-mt-36 font-section-heading ${SUBSECTION_HEADING_TITLE_CLASS} lg:scroll-mt-24 ${TEXT_ALIGN_CLASS[textAlign]}`}
+            className={`scroll-mt-[calc(var(--scroll-offset,100px)-30px)] font-section-heading ${SUBSECTION_HEADING_TITLE_CLASS} ${TEXT_ALIGN_CLASS[textAlign]}`}
             value={stripLeadingNumber(block.text)}
             onSave={async (value) => {
               await updateBlockTextAction(block.id, "text", value);

@@ -60,13 +60,13 @@ export function SectionHeadingBlockView({
       // SectionHeading card SectionCard wraps this in when read-only.
       className={
         editing
-          ? `mt-8 scroll-mt-36 font-section-heading text-[38px] leading-[46px] tracking-[-0.2px] font-black text-primary first:mt-0 lg:scroll-mt-24 ${TEXT_ALIGN_CLASS[textAlign]}`
+          ? `mt-8 scroll-mt-[calc(var(--scroll-offset,100px)-30px)] font-section-heading text-[38px] leading-[46px] tracking-[-0.2px] font-black text-primary first:mt-0 ${TEXT_ALIGN_CLASS[textAlign]}`
           : // scroll-mt-[100px] — SIDEBAR-BAND-SPEC.md's own value,
             // clearing the sticky TopBar on a rail/deep-link jump. The
             // read-only path had no scroll-margin at all before this
             // (only the editing branch above did), a real pre-existing
             // gap this also happens to fix.
-            `scroll-mt-[100px] font-section-heading ${SECTION_HEADING_TITLE_CLASS} ${TEXT_ALIGN_CLASS[textAlign]}`
+            `scroll-mt-[var(--scroll-offset,100px)] font-section-heading ${SECTION_HEADING_TITLE_CLASS} ${TEXT_ALIGN_CLASS[textAlign]}`
       }
       value={stripLeadingNumber(block.text)}
       onSave={async (value) => {
