@@ -20,6 +20,18 @@ const TABLES: { marker: string; columns: string[]; rows: string[][] }[] = [
       ["Cost", "Sustainable", "Fatiguing, often painful, builds neck symptoms"],
     ],
   },
+  {
+    marker: "Teaches the patient to feel the difference between rotating and shrugging",
+    columns: ["Exercise", "Target", "Why"],
+    rows: [
+      ["Thoracic extension — over a chair back, foam roller, or supine on a towel roll", "Thoracic mobility", `${b("Prerequisite for scapular upward rotation and posterior tilt.")} A kyphotic spine caps both`],
+      ["Pectoralis minor stretch — supine corner stretch, or doorway with the arm below 90°", "Pec minor length", "Releases the anterior tilt that opposes what you’re training"],
+      ["Wall slide with protraction", b("Serratus anterior"), "Upward rotation and posterior tilt in a loaded, low-provocation position"],
+      ["Prone or seated lower trapezius (Y position, below shoulder height if needed)", b("Lower trapezius"), "Upward rotation and posterior tilt"],
+      ["Row with full scapular travel", "Retraction, posterior chain", "Loaded scapular control through range"],
+      ["Scapular clock / controlled retraction–protraction", "Motor control", "Teaches the patient to feel the difference between rotating and shrugging"],
+    ],
+  },
 ];
 
 interface Row {
@@ -34,7 +46,7 @@ const preview = (r: Row) =>
   `${r.position} L${level(r)} ${r.block_type}: ${strip(r.content_config?.text ?? r.content_config?.body ?? r.content_config?.label ?? (r.block_type === "comparison_table" ? JSON.stringify(r.content_config?.columns) : "")).slice(0, 80)}`;
 
 export async function POST(req: NextRequest) {
-  const { dryRun, afterPosition } = (await req.json().catch(() => ({}))) as { dryRun?: boolean; afterPosition?: number };
+  const { dryRun, afterPosition, only } = (await req.json().catch(() => ({}))) as { dryRun?: boolean; afterPosition?: number; only?: number };
   const client = await pool.connect();
   try {
     await client.query("BEGIN");
@@ -50,7 +62,7 @@ export async function POST(req: NextRequest) {
 
     const present = (marker: string) =>
       rows.find((r) => r.block_type === "comparison_table" && JSON.stringify(r.content_config?.rows).includes(marker));
-    const todo = TABLES.filter((t) => !present(t.marker));
+    const todo = TABLES.filter((t, i) => (only == null || only === i) && !present(t.marker));
     if (todo.length === 0) {
       await client.query("ROLLBACK");
       return NextResponse.json({ ok: true, skipped: "the table is already on the page" });
