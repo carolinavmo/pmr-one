@@ -58,7 +58,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ ok: true, skipped: "the table is already on the page" });
     }
 
-    const hits = rows.map((r, i) => ({ r, i })).filter(({ r }) => level(r) <= 3 && /^a)s*mobility/i.test(strip(r.content_config?.text)));
+    const hits = rows.map((r, i) => ({ r, i })).filter(({ r }) => level(r) <= 3 && /^a\)\s*mobility/i.test(strip(r.content_config?.text)));
     if (hits.length !== 1) throw new Error(`expected one matching heading, found ${hits.length}: ${hits.map((x) => preview(x.r)).join(" | ")}`);
     const h = hits[0].i;
     const hl = level(rows[h]);
