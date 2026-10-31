@@ -125,8 +125,13 @@ export interface RichEditableTextHandle {
 // `content:` pseudo-element technique the placeholder below already
 // established (`empty:before:content-[attr(data-placeholder)]`) —
 // ☐/☑ swapped via the attribute's own value, no JS-rendered icon.
+// Exported for places that render saved rich HTML without a RichEditableText
+// (a table's reading view) — without it their lists lose the markers.
+export const LIST_CONTENT_CLASS =
+  "[&_ul]:list-disc [&_ul]:pl-5 [&_ul_ul]:list-[circle] [&_ul_ul_ul]:list-[square] [&_ol]:list-decimal [&_ol]:pl-5 [&_li]:my-0.5";
 const PROSE_CONTENT_CLASS =
-  "[&_ul]:list-disc [&_ul]:pl-5 [&_ul_ul]:list-[circle] [&_ul_ul_ul]:list-[square] [&_ol]:list-decimal [&_ol]:pl-5 [&_li]:my-0.5 [&_blockquote]:border-l-2 [&_blockquote]:border-border [&_blockquote]:pl-3 [&_blockquote]:italic [&_blockquote]:text-secondary" +
+  LIST_CONTENT_CLASS +
+  " [&_blockquote]:border-l-2 [&_blockquote]:border-border [&_blockquote]:pl-3 [&_blockquote]:italic [&_blockquote]:text-secondary" +
   " [&_h1]:font-heading [&_h1]:text-2xl [&_h1]:font-black [&_h1]:text-navy [&_h1]:mt-5 [&_h1]:mb-2" +
   " [&_h2]:font-heading [&_h2]:text-xl [&_h2]:font-black [&_h2]:text-navy [&_h2]:mt-4 [&_h2]:mb-2" +
   " [&_h3]:font-heading [&_h3]:text-lg [&_h3]:font-black [&_h3]:text-navy [&_h3]:mt-3 [&_h3]:mb-1.5" +

@@ -5,7 +5,7 @@ import { Plus, X } from "lucide-react";
 import type { ComparisonTableBlock } from "@/lib/editorial-blocks";
 import { useEditMode } from "@/components/disease-page/EditMode";
 import { updateComparisonTableAction, setComparisonTableHeaderHiddenAction } from "@/lib/actions/authoring";
-import { RichEditableText } from "@/components/ui/RichEditableText";
+import { RichEditableText, LIST_CONTENT_CLASS } from "@/components/ui/RichEditableText";
 import { sanitizeRichText, richTextToPlainText } from "@/lib/rich-text";
 import { TEXT_ALIGN_CLASS } from "@/lib/block-alignment";
 import { preserveScrollAcrossSave } from "@/lib/preserve-scroll";
@@ -87,7 +87,7 @@ export function ComparisonTableBlockView({
             emptied caption (just a <br>) counts as no caption. */}
         {block.caption && richTextToPlainText(block.caption).trim() && (
           <p
-            className={`font-ui text-sm text-secondary ${TEXT_ALIGN_CLASS[captionAlign]}`}
+            className={`font-ui text-sm text-secondary ${TEXT_ALIGN_CLASS[captionAlign]} ${LIST_CONTENT_CLASS}`}
             dangerouslySetInnerHTML={{ __html: sanitizeRichText(block.caption) }}
           />
         )}
@@ -99,7 +99,7 @@ export function ComparisonTableBlockView({
                   {block.columns.map((column, i) => (
                     <th
                       key={i}
-                      className="px-3 py-2 text-left font-ui text-xs font-bold tracking-wider text-white uppercase"
+                      className={`px-3 py-2 text-left font-ui text-xs font-bold tracking-wider text-white uppercase ${LIST_CONTENT_CLASS}`}
                       dangerouslySetInnerHTML={{ __html: sanitizeRichText(column) }}
                     />
                   ))}
@@ -112,7 +112,7 @@ export function ComparisonTableBlockView({
                   <tr key={rowIndex} className="border-b border-navy/25 bg-navy/10 last:border-0">
                     <td
                       colSpan={block.columns.length}
-                      className="px-3 py-1.5 font-ui text-xs font-bold tracking-wider text-navy uppercase"
+                      className={`px-3 py-1.5 font-ui text-xs font-bold tracking-wider text-navy uppercase ${LIST_CONTENT_CLASS}`}
                       dangerouslySetInnerHTML={{ __html: sanitizeRichText(row[0]) }}
                     />
                   </tr>
@@ -121,7 +121,7 @@ export function ComparisonTableBlockView({
                     {row.map((cell, cellIndex) => (
                       <td
                         key={cellIndex}
-                        className="px-3 py-2 text-primary"
+                        className={`px-3 py-2 text-primary ${LIST_CONTENT_CLASS}`}
                         dangerouslySetInnerHTML={{ __html: sanitizeRichText(cell) }}
                       />
                     ))}
