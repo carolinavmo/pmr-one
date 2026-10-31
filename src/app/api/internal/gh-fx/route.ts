@@ -3,7 +3,7 @@ import { revalidatePath } from "next/cache";
 import { pool } from "@/lib/db";
 
 // TEMPORARY — adds the anatomic vs reverse TSA range-of-motion outcomes table to the
-// "Functional expectations differ" heading inside 15.5 of the Glenohumeral
+// "How much ROM to expect after TSA?" heading inside 15.5 of the Glenohumeral
 // Osteoarthritis page. POST {dryRun:true} lists that heading's blocks and the
 // default spot (after its last block); POST {afterPosition:N} inserts after
 // that block, which must be inside the section. One transaction; a table
@@ -63,7 +63,7 @@ export async function POST(req: NextRequest) {
     const s12End = sections[15] ? sections[15].i : rows.length;
     const hits = rows
       .map((r, i) => ({ r, i }))
-      .filter(({ r, i }) => i > s12 && i < s12End && level(r) <= 3 && /^functional expectations differ/i.test(strip(r.content_config?.text)));
+      .filter(({ r, i }) => i > s12 && i < s12End && level(r) <= 3 && /^how much rom to expect after tsa/i.test(strip(r.content_config?.text)));
     if (hits.length !== 1) throw new Error(`expected one matching heading, found ${hits.length}: ${hits.map((x) => preview(x.r)).join(" | ")}; headings in section 15: ${rows.filter((r, i) => i > s12 && i < s12End && level(r) <= 3).map(preview).join(" | ")}`);
     const h = hits[0].i;
     const hl = level(rows[h]);
