@@ -64,7 +64,7 @@ export async function POST(req: NextRequest) {
     const hits = rows
       .map((r, i) => ({ r, i }))
       .filter(({ r, i }) => i > s12 && i < s12End && level(r) <= 3 && /^functional expectations differ/i.test(strip(r.content_config?.text)));
-    if (hits.length !== 1) throw new Error(`expected one matching heading, found ${hits.length}: ${hits.map((x) => preview(x.r)).join(" | ")}`);
+    if (hits.length !== 1) throw new Error(`expected one matching heading, found ${hits.length}: ${hits.map((x) => preview(x.r)).join(" | ")}; headings in section 15: ${rows.filter((r, i) => i > s12 && i < s12End && level(r) <= 3).map(preview).join(" | ")}`);
     const h = hits[0].i;
     const hl = level(rows[h]);
     let next = rows.findIndex((r, i) => i > h && level(r) <= hl);
