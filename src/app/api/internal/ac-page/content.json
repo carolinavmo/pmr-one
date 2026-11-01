@@ -1,0 +1,1533 @@
+[
+ {
+  "type": "highlight_card",
+  "content": {
+   "label": "How to read this chapter",
+   "color": "navy",
+   "text": "Most chapters on a degenerative joint teach you to recognise the disease. This one is different, and it is worth saying why at the outset.<br><br><strong>Acromioclavicular joint degeneration is close to universal with age.</strong> By the sixth decade most people have it on imaging, and most of them have no shoulder pain at all. So finding AC joint osteoarthritis on a scan tells you almost nothing about why your patient's shoulder hurts.<br><br>The skill this chapter teaches is therefore not <em>recognition</em> but <strong>attribution</strong>: deciding whether a degenerate joint that nearly everyone has is the joint actually generating this patient's pain. Get that wrong and you treat the wrong structure — or worse, send someone for an ablative operation that removes a piece of their skeleton for no benefit.<br><br>Everything below is organised around that single question."
+  }
+ },
+ {
+  "type": "highlight_card",
+  "content": {
+   "label": "Referencing",
+   "color": "neutral",
+   "text": "Each section ends with a short source line listing the references behind its figures. Full citations are in section 18. Where a figure reaches us through a review rather than the original paper, the originating author is named in the text and the review is credited in the source line."
+  }
+ },
+ {
+  "type": "section_heading",
+  "content": {
+   "text": "Introduction, definition and terminology"
+  }
+ },
+ {
+  "type": "subsection_heading",
+  "content": {
+   "text": "What it is"
+  }
+ },
+ {
+  "type": "paragraph",
+  "content": {
+   "body": "<p><strong>Acromioclavicular (AC) joint osteoarthritis</strong> is degenerative change of the small synovial joint between the lateral end of the clavicle and the medial border of the acromion — cartilage loss, subchondral change, marginal osteophyte formation and capsular thickening, in the same pattern as osteoarthritis anywhere else.</p><p>What distinguishes it clinically is not the pathology but the <strong>mismatch between how often it is present and how often it matters.</strong></p>"
+  }
+ },
+ {
+  "type": "subsection_heading",
+  "content": {
+   "text": "Primary versus secondary"
+  }
+ },
+ {
+  "type": "comparison_table",
+  "content": {
+   "columns": [
+    "",
+    "<strong>Primary</strong>",
+    "<strong>Secondary</strong>"
+   ],
+   "rows": [
+    [
+     "<strong>Cause</strong>",
+     "Age-related degeneration with cumulative load",
+     "Follows an identifiable insult"
+    ],
+    [
+     "<strong>Typical patient</strong>",
+     "Over 50, insidious onset",
+     "Any age, often younger"
+    ],
+    [
+     "<strong>Causes</strong>",
+     "—",
+     "Previous AC injury or dislocation · distal clavicle fracture · repetitive heavy loading (distal clavicle osteolysis) · inflammatory arthropathy · septic arthritis · crystal arthropathy"
+    ]
+   ]
+  }
+ },
+ {
+  "type": "paragraph",
+  "content": {
+   "body": "<p>In one surgical series of 56 patients, symptoms began at around <strong>53–55 years</strong> and <strong>fewer than 50% reported any trauma</strong>.</p>"
+  }
+ },
+ {
+  "type": "highlight_card",
+  "content": {
+   "label": "PM&R clinical pearl",
+   "color": "insight",
+   "text": "<strong>A symptomatic AC joint in someone under 40 is secondary until proven otherwise.</strong> Ask specifically about previous separation, a fall onto the point of the shoulder, and — above all — about <strong>bench press, dips and chest flies</strong>, because distal clavicle osteolysis in a lifter is a distinct condition with distinct management (section 5)."
+  }
+ },
+ {
+  "type": "subsection_heading",
+  "content": {
+   "text": "Terminology worth getting right"
+  }
+ },
+ {
+  "type": "paragraph",
+  "content": {
+   "body": "<ul><li><strong>AC joint osteoarthritis</strong> — degenerative change involving <em>both</em> articular surfaces, with joint space narrowing and marginal osteophytes.</li><li><strong>Distal clavicle osteolysis</strong> — inflammatory bone resorption of the <em>clavicular side only</em>, without osteophytes. A different disease, different population, different treatment.</li><li><strong>AC joint separation</strong> — a traumatic ligamentous injury graded by the Rockwood classification. Can <em>lead</em> to secondary AC OA, but is a separate acute entity.</li></ul>"
+  }
+ },
+ {
+  "type": "highlight_card",
+  "content": {
+   "label": "Pitfall",
+   "color": "red",
+   "text": "<strong>\"AC joint arthrosis\" on a radiology report is a description of anatomy, not a diagnosis.</strong> It becomes a diagnosis only when you have clinically localised the pain to that joint and, usually, confirmed it with an injection."
+  }
+ },
+ {
+  "type": "highlight_card",
+  "content": {
+   "label": "Sources",
+   "color": "neutral",
+   "text": "Surgical treatment review (PMC2684214); Radsource, distal clavicular osteolysis. Full citations in §18."
+  }
+ },
+ {
+  "type": "section_heading",
+  "content": {
+   "text": "Epidemiology — and the attribution problem"
+  }
+ },
+ {
+  "type": "paragraph",
+  "content": {
+   "body": "<p>This is the most important section in the chapter.</p>"
+  }
+ },
+ {
+  "type": "subsection_heading",
+  "content": {
+   "text": "How common is it?"
+  }
+ },
+ {
+  "type": "paragraph",
+  "content": {
+   "body": "<p>A systematic review of <strong>10 studies and 1,831 shoulders in people <em>not seeking care</em></strong> found:</p>"
+  }
+ },
+ {
+  "type": "comparison_table",
+  "content": {
+   "columns": [
+    "Population",
+    "Prevalence of AC joint OA"
+   ],
+   "rows": [
+    [
+     "Cadaveric and skeletal specimens",
+     "<strong>48%</strong> (457/953)"
+    ],
+    [
+     "MRI of <strong>asymptomatic</strong> shoulders",
+     "<strong>70%</strong> (of 210 shoulders)"
+    ],
+    [
+     "Overall",
+     "<strong>50%</strong> (912/1,831)"
+    ]
+   ]
+  }
+ },
+ {
+  "type": "subsection_heading",
+  "content": {
+   "text": "And it rises steeply with age"
+  }
+ },
+ {
+  "type": "paragraph",
+  "content": {
+   "body": "<p>Pooled cadaveric data by decade:</p>"
+  }
+ },
+ {
+  "type": "comparison_table",
+  "content": {
+   "columns": [
+    "Age",
+    "Prevalence"
+   ],
+   "rows": [
+    [
+     "21–40",
+     "<strong>25%</strong>"
+    ],
+    [
+     "41–60",
+     "<strong>53%</strong>"
+    ],
+    [
+     "Over 61",
+     "<strong>66%</strong>"
+    ]
+   ]
+  }
+ },
+ {
+  "type": "paragraph",
+  "content": {
+   "body": "<p>Individual imaging studies in <strong>asymptomatic</strong> people are starker still — all reported within the same review:</p>"
+  }
+ },
+ {
+  "type": "comparison_table",
+  "content": {
+   "columns": [
+    "Study",
+    "Modality",
+    "Findings"
+   ],
+   "rows": [
+    [
+     "<strong>Nicholson</strong>",
+     "Direct inspection",
+     "0% at 21–30 → 22% at 41–50 → 66% at 51–60 → <strong>75% at 61–70</strong>"
+    ],
+    [
+     "<strong>Liou</strong>",
+     "MRI",
+     "19% at 21–30 → 47% at 31–40 → <strong>80% at 41–50</strong>"
+    ],
+    [
+     "<strong>Needell</strong>",
+     "MRI",
+     "<strong>89% at ages 40–60</strong>; <strong>90% at 61–88</strong>"
+    ],
+    [
+     "<strong>Petersson</strong>",
+     "Cadaver",
+     "<strong>89%</strong> (149/168)"
+    ],
+    [
+     "<strong>Eriks-Hoogland</strong>",
+     "MRI",
+     "<strong>94%</strong> (163/173)"
+    ],
+    [
+     "<strong>Gumina</strong>",
+     "Radiograph, skeletal",
+     "<strong>62%</strong> (316/509)"
+    ]
+   ]
+  }
+ },
+ {
+  "type": "paragraph",
+  "content": {
+   "body": "<p>Four studies treating age as a continuous variable all found a significant association (pooled n = 765): Bonsell <strong>OR 1.080 per year</strong> (p &lt; 0.001); Eriks-Hoogland <strong>adjusted OR 1.10 per year</strong> (p &lt; 0.0001); Pennington Spearman's <strong>0.65</strong> (p &lt; 0.01).</p>"
+  }
+ },
+ {
+  "type": "subsection_heading",
+  "content": {
+   "text": "The number that should change your practice"
+  }
+ },
+ {
+  "type": "paragraph",
+  "content": {
+   "body": "<p>A second systematic review of <strong>31 studies</strong> compared imaging abnormalities in asymptomatic and symptomatic shoulders directly:</p>"
+  }
+ },
+ {
+  "type": "highlight_card",
+  "content": {
+   "label": "Key finding",
+   "color": "insight",
+   "text": "<strong>AC joint OA was present in 13–95% of asymptomatic shoulders and 20–100% of symptomatic shoulders</strong> — ranges the authors described as <em>\"often comparable.\"</em>"
+  }
+ },
+ {
+  "type": "paragraph",
+  "content": {
+   "body": "<p>Across 21 non-population studies (1,794 shoulders, mean age 41), <strong>27%</strong> had AC OA findings, with ranges of <strong>6–47% on radiograph</strong>, <strong>1–65% on ultrasound</strong> and <strong>0–82% on MRI</strong>.</p>"
+  }
+ },
+ {
+  "type": "highlight_card",
+  "content": {
+   "label": "Evidence note",
+   "color": "blue",
+   "text": "<strong>Read that again.</strong> The prevalence of AC degeneration in people <em>without</em> shoulder pain substantially overlaps the prevalence in people <em>with</em> it. An abnormal AC joint on imaging therefore carries very little diagnostic weight on its own. Certainty was rated <strong>very low</strong> — all 31 studies carried a high risk of bias — but the direction is consistent across every study and every modality."
+  }
+ },
+ {
+  "type": "subsection_heading",
+  "content": {
+   "text": "What follows from this"
+  }
+ },
+ {
+  "type": "paragraph",
+  "content": {
+   "body": "<p>The authors of the prevalence review put it bluntly: AC joint OA is <strong>a common incidental finding and an uncommon cause of shoulder symptoms</strong>, so a radiographic finding has <strong>low pre-test odds of explaining the patient's pain</strong>. They recommend symptomatic AC OA be <strong>diagnosed sparingly</strong>, citing the twin risks of <strong>misattribution</strong> and <strong>harmful ablative surgery</strong>.</p>"
+  }
+ },
+ {
+  "type": "highlight_card",
+  "content": {
+   "label": "PM&R clinical pearl",
+   "color": "insight",
+   "text": "<strong>The base rate is the whole problem.</strong> If 80% of 45-year-olds have AC degeneration on MRI, then finding it in your 45-year-old with shoulder pain is about as informative as finding that they have grey hair. The diagnosis has to be made on <em>where the pain is and what reproduces it</em> — and confirmed by response to injection — not on the scan."
+  }
+ },
+ {
+  "type": "subsubsection_heading",
+  "content": {
+   "text": "Risk factors"
+  }
+ },
+ {
+  "type": "comparison_table",
+  "content": {
+   "columns": [
+    "Factor",
+    "Comment"
+   ],
+   "rows": [
+    [
+     "<strong>Age</strong>",
+     "The dominant factor — OR ~1.08–1.10 per year"
+    ],
+    [
+     "<strong>Previous AC injury</strong>",
+     "Separation or distal clavicle fracture → secondary OA"
+    ],
+    [
+     "<strong>Repetitive heavy upper-limb loading</strong>",
+     "Weightlifting, manual labour, overhead work"
+    ],
+    [
+     "<strong>Shoulder dominance</strong>",
+     "Modest association in some series"
+    ],
+    [
+     "<strong>Inflammatory and crystal arthropathy</strong>",
+     "Less common, but changes management entirely"
+    ]
+   ]
+  }
+ },
+ {
+  "type": "highlight_card",
+  "content": {
+   "label": "Sources",
+   "color": "neutral",
+   "text": "Prevalence review, people not seeking care (J Orthop), which also reports the Nicholson, Liou, Needell, Petersson, Eriks-Hoogland, Gumina, Bonsell and Pennington data; Imaging abnormalities in asymptomatic shoulders (J Orthop Surg Res 2024). Full citations in §18."
+  }
+ },
+ {
+  "type": "section_heading",
+  "content": {
+   "text": "Relevant anatomy"
+  }
+ },
+ {
+  "type": "paragraph",
+  "content": {
+   "body": "<p>Four facts, each explaining a clinical phenomenon.</p>"
+  }
+ },
+ {
+  "type": "subsection_heading",
+  "content": {
+   "text": "It is small, flat and poorly congruent"
+  }
+ },
+ {
+  "type": "paragraph",
+  "content": {
+   "body": "<p>A <strong>plane synovial joint</strong> with a small contact area between the lateral clavicle and the medial acromion. The surfaces are relatively flat and incongruent, concentrating contact stress over a small area.</p><p><strong>Why this matters:</strong> a joint with small contact area and high stress degenerates early and reliably. That is the anatomical reason the base-rate problem exists at all.</p>"
+  }
+ },
+ {
+  "type": "subsection_heading",
+  "content": {
+   "text": "It contains a fibrocartilaginous disc that degenerates early"
+  }
+ },
+ {
+  "type": "paragraph",
+  "content": {
+   "body": "<p>An intra-articular disc sits within the joint and is frequently incomplete or substantially degenerate from early adulthood, well before symptoms appear in anyone.</p><p><strong>Why this matters:</strong> \"disc degeneration\" on the MRI of a 30-year-old is a normal finding, not a lesion.</p>"
+  }
+ },
+ {
+  "type": "subsection_heading",
+  "content": {
+   "text": "Two ligament systems, controlling two different directions"
+  }
+ },
+ {
+  "type": "comparison_table",
+  "content": {
+   "columns": [
+    "Structure",
+    "Controls"
+   ],
+   "rows": [
+    [
+     "<strong>Acromioclavicular ligaments</strong> (superior, inferior, anterior, posterior) — the <strong>superior</strong> is strongest",
+     "<strong>Horizontal</strong> (anteroposterior) stability"
+    ],
+    [
+     "<strong>Coracoclavicular ligaments</strong> (conoid and trapezoid)",
+     "<strong>Vertical</strong> stability"
+    ]
+   ]
+  }
+ },
+ {
+  "type": "paragraph",
+  "content": {
+   "body": "<p><strong>Why this matters enormously:</strong> the surgical treatment is <strong>resection of the distal clavicle</strong>. Resect too much, or damage the superior AC ligament, and you convert a painful stable joint into a painless unstable one — often <em>more</em> symptomatic. One series measured an average <strong>5.5 mm increase in anteroposterior clavicular translation</strong> after resection (Blazar et al.). This single anatomical fact explains the commonest cause of a failed excision (section 15).</p>"
+  }
+ },
+ {
+  "type": "subsection_heading",
+  "content": {
+   "text": "It transmits load and moves very little"
+  }
+ },
+ {
+  "type": "paragraph",
+  "content": {
+   "body": "<p>The joint transmits force from the upper limb to the axial skeleton via the clavicle. Its own motion is small — a few degrees of rotation and translation — with most apparent clavicular rotation during elevation occurring synchronously with scapular rotation.</p><p><strong>Why this matters:</strong> the joint is loaded in <strong>compression during cross-body movement</strong> and in <strong>shear during overhead and behind-the-back movement</strong>. Those are precisely the positions that reproduce symptoms, and precisely the positions you modify in treatment.</p>"
+  }
+ },
+ {
+  "type": "highlight_card",
+  "content": {
+   "label": "Key Takeaway",
+   "color": "insight",
+   "text": "A small, incongruent, heavily loaded joint, stabilised horizontally by ligaments a surgeon must not damage. Degeneration is near-universal; instability after over-resection is iatrogenic and avoidable."
+  }
+ },
+ {
+  "type": "highlight_card",
+  "content": {
+   "label": "Sources",
+   "color": "neutral",
+   "text": "Standard reference anatomy, not drawn from a specific retrieved study. The Blazar translation figure and the provocative-position data are from the Surgical treatment review (PMC2684214)."
+  }
+ },
+ {
+  "type": "section_heading",
+  "content": {
+   "text": "Pathophysiology"
+  }
+ },
+ {
+  "type": "subsection_heading",
+  "content": {
+   "text": "The degenerative sequence"
+  }
+ },
+ {
+  "type": "paragraph",
+  "content": {
+   "body": "<ol><li><strong>Disc degeneration and fragmentation</strong> — early, largely asymptomatic</li><li><strong>Cartilage thinning and loss</strong> across both surfaces</li><li><strong>Subchondral sclerosis and cyst formation</strong></li><li><strong>Marginal osteophyte formation</strong>, including inferior osteophytes projecting toward the subacromial space</li><li><strong>Capsular thickening and synovitis</strong> — the likely pain source in the symptomatic minority</li></ol>"
+  }
+ },
+ {
+  "type": "subsection_heading",
+  "content": {
+   "text": "Why most of it is painless"
+  }
+ },
+ {
+  "type": "paragraph",
+  "content": {
+   "body": "<p>Nothing in steps 1–4 is intrinsically painful. Cartilage is aneural. The structures capable of generating pain are the <strong>capsule, synovium and subchondral bone</strong>, which is why symptoms correlate so poorly with radiographic severity, and why a joint can look destroyed and feel normal.</p>"
+  }
+ },
+ {
+  "type": "highlight_card",
+  "content": {
+   "label": "PM&R clinical pearl",
+   "color": "insight",
+   "text": "The same lesson as glenohumeral OA, but more extreme: <strong>the imaging describes the structure; the examination and the injection describe the pain.</strong>"
+  }
+ },
+ {
+  "type": "subsection_heading",
+  "content": {
+   "text": "The inferior osteophyte and the impingement question"
+  }
+ },
+ {
+  "type": "paragraph",
+  "content": {
+   "body": "<p>Inferior AC osteophytes are often invoked as a cause of subacromial impingement. <strong>The evidence is weaker than the teaching suggests.</strong></p><p>A retrospective MRI study (<strong>680 patients</strong>; 393 with confirmed subacromial impingement, 287 without) found <strong>no significant association between AC joint degeneration and impingement (p = 0.286)</strong>, and none for acromion type III (p = 0.480). What <em>was</em> strongly associated was <strong>supraspinatus pathology</strong> — normal tendons in only <strong>7.4%</strong> of impingement patients versus <strong>32.4%</strong> of those without (p &lt; 0.001) — together with a reduced acromiohumeral distance.</p>"
+  }
+ },
+ {
+  "type": "highlight_card",
+  "content": {
+   "label": "Evidence note",
+   "color": "blue",
+   "text": "Single-centre and retrospective, and it reports patient numbers inconsistently (608 in Methods, 680 in Results) — so it does not settle the question. But it argues against assuming an inferior osteophyte explains a patient's cuff-related pain, and against resecting the AC joint on that reasoning alone."
+  }
+ },
+ {
+  "type": "subsection_heading",
+  "content": {
+   "text": "Coexistence — the real clinical problem"
+  }
+ },
+ {
+  "type": "paragraph",
+  "content": {
+   "body": "<p>Because AC degeneration is near-universal after middle age, it <strong>coexists with rotator cuff disease in most older patients with shoulder pain</strong>. The two are not alternatives on a differential; they are usually both present.</p><p>The clinical question is therefore not <em>\"is it the cuff or the AC joint?\"</em> but <strong>\"how much of this patient's pain comes from each?\"</strong> — a question the examination cannot answer reliably, as the next section shows.</p>"
+  }
+ },
+ {
+  "type": "highlight_card",
+  "content": {
+   "label": "Sources",
+   "color": "neutral",
+   "text": "Ahmad 2025 (Orthop Rev) for the impingement association data; Radsource, distal clavicular osteolysis, for the degenerative imaging pattern; Prevalence review (J Orthop) for the coexistence argument. Full citations in §18."
+  }
+ },
+ {
+  "type": "section_heading",
+  "content": {
+   "text": "Distal clavicle osteolysis — a different mechanism"
+  }
+ },
+ {
+  "type": "subsection_heading",
+  "content": {
+   "text": "What it is"
+  }
+ },
+ {
+  "type": "paragraph",
+  "content": {
+   "body": "<p><strong>Painful inflammatory resorption of bone at the distal end of the clavicle</strong>, driven by repetitive microtrauma — or, less often, appearing weeks after acute trauma such as an AC dislocation. One proposed mechanism is chronic resorption during healing of a distal clavicle stress fracture, though this is debated.</p>"
+  }
+ },
+ {
+  "type": "subsection_heading",
+  "content": {
+   "text": "Who gets it"
+  }
+ },
+ {
+  "type": "paragraph",
+  "content": {
+   "body": "<p><strong>Young adults, men more than women.</strong> Weightlifters above all — bench press, dips and chest flies — and also American footballers, gymnasts, rowers and workers doing repetitive pressing. <strong>Bilateral cases occur</strong>, itself a useful clue.</p>"
+  }
+ },
+ {
+  "type": "subsection_heading",
+  "content": {
+   "text": "How to tell it apart from AC osteoarthritis"
+  }
+ },
+ {
+  "type": "comparison_table",
+  "content": {
+   "columns": [
+    "",
+    "<strong>AC osteoarthritis</strong>",
+    "<strong>Distal clavicle osteolysis</strong>"
+   ],
+   "rows": [
+    [
+     "<strong>Age</strong>",
+     "Usually over 50",
+     "Usually under 40"
+    ],
+    [
+     "<strong>Side involved</strong>",
+     "<strong>Both</strong> acromial and clavicular",
+     "<strong>Clavicular side predominantly</strong>"
+    ],
+    [
+     "<strong>Osteophytes</strong>",
+     "<strong>Present</strong> — marginal",
+     "<strong>Absent</strong> — isolated DCO does not produce them"
+    ],
+    [
+     "<strong>Joint space</strong>",
+     "Narrowed",
+     "Preserved or widened"
+    ],
+    [
+     "<strong>Soft tissue</strong>",
+     "Less inflammation",
+     "<strong>Marked oedema</strong>"
+    ],
+    [
+     "<strong>MRI hallmark</strong>",
+     "Degenerative change both sides",
+     "<strong>Distal clavicular marrow oedema</strong> on fluid-sensitive sequences"
+    ]
+   ]
+  }
+ },
+ {
+  "type": "paragraph",
+  "content": {
+   "body": "<p><strong>Radiographs may be normal early.</strong> In the resorptive phase the distal clavicle appears thinned, with an indistinct or broken subchondral plate and erosions. <strong>MRI is the diagnostic modality</strong> and detects changes well before radiographs.</p>"
+  }
+ },
+ {
+  "type": "subsection_heading",
+  "content": {
+   "text": "Management — and why it differs"
+  }
+ },
+ {
+  "type": "paragraph",
+  "content": {
+   "body": "<p><strong>Load is the cause, so load is the treatment.</strong> Stop or substantially restrict the provoking exercise; NSAIDs; corticosteroid injection if rest and medication fail; physiotherapy once the inflammatory phase settles.</p>"
+  }
+ },
+ {
+  "type": "highlight_card",
+  "content": {
+   "label": "PM&R clinical pearl",
+   "color": "insight",
+   "text": "<strong>DCO is one of the few shoulder conditions where the history makes the diagnosis and the treatment is a conversation about training.</strong> A lifter with bilateral AC-region pain worst on bench press and dips has DCO until MRI says otherwise — and the intervention is to change the programme, not to inject the joint."
+  }
+ },
+ {
+  "type": "paragraph",
+  "content": {
+   "body": "<p><strong>Natural history is favourable</strong> with load reduction, though radiographic recovery lags symptoms; in one reported case the joint appearance normalised about <strong>four years</strong> after symptoms resolved. <strong>Arthroscopic distal clavicle excision</strong> is effective for high-level athletes with persistent symptoms, with return to activity typically around <strong>six weeks</strong>.</p>"
+  }
+ },
+ {
+  "type": "highlight_card",
+  "content": {
+   "label": "Source",
+   "color": "neutral",
+   "text": "Radsource, distal clavicular osteolysis. Full citation in §18."
+  }
+ },
+ {
+  "type": "section_heading",
+  "content": {
+   "text": "Clinical presentation"
+  }
+ },
+ {
+  "type": "subsection_heading",
+  "content": {
+   "text": "The typical story"
+  }
+ },
+ {
+  "type": "paragraph",
+  "content": {
+   "body": "<ul><li><strong>Pain localised to the top of the shoulder</strong>, over the AC joint</li><li>Often pointed to with <strong>one finger</strong> — the most useful single historical feature</li><li><strong>Worse on cross-body movement</strong>, on <strong>reaching behind the back</strong>, and on <strong>end-range overhead</strong> movement</li><li><strong>Worse lying on that side</strong></li><li>Worse on <strong>bench press, press-ups and dips</strong> in those who train</li></ul>"
+  }
+ },
+ {
+  "type": "subsection_heading",
+  "content": {
+   "text": "What argues against it"
+  }
+ },
+ {
+  "type": "paragraph",
+  "content": {
+   "body": "<ul><li>Pain referred to the <strong>deltoid insertion or down the arm</strong></li><li><strong>Night pain unrelated to position</strong></li><li><strong>Global restriction of passive movement</strong> — think adhesive capsulitis or glenohumeral OA</li><li>Pain in the <strong>mid-arc</strong> of elevation rather than the final degrees</li></ul>"
+  }
+ },
+ {
+  "type": "highlight_card",
+  "content": {
+   "label": "PM&R clinical pearl",
+   "color": "insight",
+   "text": "<strong>The one-finger sign is worth more than most of the special tests.</strong> A patient who places a single fingertip precisely on the AC joint has meaningfully raised the probability; one who grasps the whole lateral deltoid has lowered it. The examination data below explain why that history matters so much."
+  }
+ },
+ {
+  "type": "highlight_card",
+  "content": {
+   "label": "Sources",
+   "color": "neutral",
+   "text": "Surgical treatment review (PMC2684214) for the provocative activities; Radsource for the lifting pattern. Full citations in §18."
+  }
+ },
+ {
+  "type": "section_heading",
+  "content": {
+   "text": "Physical examination — and why the tests disappoint"
+  }
+ },
+ {
+  "type": "subsection_heading",
+  "content": {
+   "text": "The evidence base is thin"
+  }
+ },
+ {
+  "type": "paragraph",
+  "content": {
+   "body": "<p>A systematic review found only <strong>two Level I studies</strong> of AC joint examination — <strong>Walton 2004 (n = 38)</strong> and <strong>Cadogan 2013 (n = 153)</strong> — and described a \"paucity of high-level evidence.\" All figures below are from that review.</p>"
+  }
+ },
+ {
+  "type": "subsection_heading",
+  "content": {
+   "text": "Individual test performance"
+  }
+ },
+ {
+  "type": "comparison_table",
+  "content": {
+   "columns": [
+    "Test",
+    "Sensitivity",
+    "Specificity",
+    "<strong>LR+</strong>",
+    "LR−"
+   ],
+   "rows": [
+    [
+     "<strong>Paxinos sign</strong>",
+     "0.79",
+     "0.50",
+     "1.58",
+     "<strong>0.42</strong>"
+    ],
+    [
+     "AC joint tenderness",
+     "0.48",
+     "0.60",
+     "1.31",
+     "0.78"
+    ],
+    [
+     "<strong>O'Brien's (active compression)</strong>",
+     "0.14",
+     "<strong>0.92</strong>",
+     "1.70",
+     "0.94"
+    ],
+    [
+     "<strong>Cross-body adduction</strong>",
+     "0.64",
+     "0.26",
+     "<strong>0.86</strong>",
+     "1.39"
+    ],
+    [
+     "Hawkins–Kennedy",
+     "0.70",
+     "0.36",
+     "1.09",
+     "0.84"
+    ]
+   ]
+  }
+ },
+ {
+  "type": "highlight_card",
+  "content": {
+   "label": "Pitfall",
+   "color": "red",
+   "text": "<strong>Look at cross-body adduction.</strong> Its positive likelihood ratio is <strong>0.86 — below 1.</strong> A positive test very slightly <em>reduces</em> the probability of AC pathology. The most widely taught AC joint test performs no better than a coin toss, and as a rule-in test it is worse than useless."
+  }
+ },
+ {
+  "type": "paragraph",
+  "content": {
+   "body": "<p><strong>No single test has both acceptable sensitivity and specificity.</strong> O'Brien's is specific but misses 86% of cases; Paxinos is most sensitive but barely moves the probability.</p>"
+  }
+ },
+ {
+  "type": "subsection_heading",
+  "content": {
+   "text": "Do combinations help? Marginally"
+  }
+ },
+ {
+  "type": "paragraph",
+  "content": {
+   "body": "<p><strong>To rule in</strong> (both positive):</p><ul><li><strong>Paxinos + O'Brien's</strong> — specificity <strong>0.96</strong>, sensitivity 0.11, <strong>LR+ 2.71</strong></li><li>O'Brien's + AC tenderness — specificity 0.97, sensitivity 0.07, LR+ 2.08</li></ul><p><strong>To rule out</strong> (both negative):</p><ul><li><strong>Paxinos + Hawkins–Kennedy</strong> — sensitivity <strong>0.94</strong>, <strong>LR− 0.35</strong></li></ul><p>Worked through: at a <strong>40%</strong> pre-test probability, <strong>Paxinos + O'Brien's both positive raises it only to 64%</strong>; at 20% it reaches 40%, at 60% it reaches 80%. Both negative on Paxinos + Hawkins–Kennedy lowers a 40% probability to about <strong>30%</strong>.</p>"
+  }
+ },
+ {
+  "type": "highlight_card",
+  "content": {
+   "label": "Evidence note",
+   "color": "blue",
+   "text": "The review's own conclusion: <strong>\"Physical examination testing is not beneficial for diagnosis of AC joint pathology when pre-test probability is unequivocal\"</strong> — in which case, proceed to procedural testing. The authors suggest ultrasound-guided AC injection may be an appropriate standard for both diagnosis and treatment."
+  }
+ },
+ {
+  "type": "subsection_heading",
+  "content": {
+   "text": "So what should you actually do?"
+  }
+ },
+ {
+  "type": "paragraph",
+  "content": {
+   "body": "<p><strong>Use the examination to screen out, not to confirm.</strong></p><ol><li><strong>Localise by palpation and by asking the patient to point.</strong></li><li><strong>Use Paxinos + Hawkins–Kennedy as a screen</strong> — both negative makes AC pain unlikely (LR− 0.35).</li><li><strong>Reproduce the functional positions</strong> as a measure of <em>impact</em>, not as a diagnostic test.</li><li><strong>Examine the cuff and glenohumeral joint properly</strong> — coexistence is the rule.</li><li><strong>When it matters, inject.</strong></li></ol>"
+  }
+ },
+ {
+  "type": "highlight_card",
+  "content": {
+   "label": "PM&R clinical pearl",
+   "color": "insight",
+   "text": "<strong>The examination narrows the field; the injection makes the diagnosis.</strong> An unusual thing to say about a musculoskeletal condition, and the direct consequence of a base rate near 100% and likelihood ratios near 1."
+  }
+ },
+ {
+  "type": "highlight_card",
+  "content": {
+   "label": "Sources",
+   "color": "neutral",
+   "text": "Krill et al. 2018, systematic review of AC joint physical examination (Phys Sportsmed), for all accuracy data; the two primary studies it analysed are Walton 2004 (JBJS Am) and Cadogan 2013 (BMC Musculoskelet Disord). Full citations in §18."
+  }
+ },
+ {
+  "type": "section_heading",
+  "content": {
+   "text": "Differential diagnosis"
+  }
+ },
+ {
+  "type": "comparison_table",
+  "content": {
+   "columns": [
+    "Condition",
+    "Discriminating features"
+   ],
+   "rows": [
+    [
+     "<strong>Rotator cuff tendinopathy / tear</strong>",
+     "Lateral deltoid pain, mid-range painful arc, weakness on resisted testing, worse overhead than cross-body"
+    ],
+    [
+     "<strong>Subacromial pain</strong>",
+     "Overlaps heavily; subacromial injection separates them"
+    ],
+    [
+     "<strong>Glenohumeral OA</strong>",
+     "Loss of <strong>passive</strong> external rotation, crepitus, deeper posterior pain"
+    ],
+    [
+     "<strong>Adhesive capsulitis</strong>",
+     "Global loss of <strong>passive</strong> movement, especially external rotation"
+    ],
+    [
+     "<strong>Distal clavicle osteolysis</strong>",
+     "Younger, lifter, bilateral, marrow oedema without osteophytes"
+    ],
+    [
+     "<strong>AC instability / previous separation</strong>",
+     "Trauma history, visible step, horizontal translation"
+    ],
+    [
+     "<strong>Septic arthritis of the AC joint</strong>",
+     "Redness, swelling, fever, rapidly progressive pain — <strong>urgent</strong>"
+    ],
+    [
+     "<strong>Inflammatory or crystal arthropathy</strong>",
+     "Bilateral, other joints, inflammatory history, effusion"
+    ],
+    [
+     "<strong>Cervical referred pain (C4–C5)</strong>",
+     "Extends to trapezius and neck, worse with neck movement, normal local AC examination"
+    ]
+   ]
+  }
+ },
+ {
+  "type": "highlight_card",
+  "content": {
+   "label": "Pitfall",
+   "color": "red",
+   "text": "<strong>Do not forget septic arthritis of the AC joint.</strong> Uncommon, easily dismissed as degenerative pain in an older patient, and a red, swollen, exquisitely tender joint with systemic features needs urgent aspiration, not an injection."
+  }
+ },
+ {
+  "type": "highlight_card",
+  "content": {
+   "label": "Sources",
+   "color": "neutral",
+   "text": "Surgical treatment review (PMC2684214) for the subacromial injection discrimination; Radsource for the osteolysis features. Remaining entries are clinical convention. Full citations in §18."
+  }
+ },
+ {
+  "type": "section_heading",
+  "content": {
+   "text": "Investigations and imaging"
+  }
+ },
+ {
+  "type": "subsection_heading",
+  "content": {
+   "text": "Radiographs"
+  }
+ },
+ {
+  "type": "paragraph",
+  "content": {
+   "body": "<p><strong>The Zanca view</strong> — AP of the AC joint with 10–15° cephalic tilt and reduced exposure. A standard shoulder AP overpenetrates the joint.</p><p><strong>What you see:</strong> joint space narrowing, subchondral sclerosis and cysts, marginal and inferior osteophytes.</p><p><strong>What it means:</strong> remarkably little on its own — prevalence on radiograph in asymptomatic people ranges <strong>6–47%</strong>.</p>"
+  }
+ },
+ {
+  "type": "subsection_heading",
+  "content": {
+   "text": "MRI"
+  }
+ },
+ {
+  "type": "paragraph",
+  "content": {
+   "body": "<p><strong>More sensitive, therefore less specific.</strong> Up to <strong>80–90% of asymptomatic people over 40</strong> have AC degenerative change on MRI; across studies the asymptomatic range is <strong>0–82%</strong>. Its value here is in:</p><ul><li>Detecting <strong>distal clavicle osteolysis</strong> (marrow oedema) — where MRI genuinely changes the diagnosis</li><li>Assessing the <strong>rotator cuff</strong> and coexisting pathology</li><li>Excluding alternatives</li></ul>"
+  }
+ },
+ {
+  "type": "highlight_card",
+  "content": {
+   "label": "Pitfall",
+   "color": "red",
+   "text": "<strong>AC bone marrow oedema on MRI is reported as suggestive of a symptomatic joint, but its predictive value is modest.</strong> Do not treat it as confirmation."
+  }
+ },
+ {
+  "type": "subsection_heading",
+  "content": {
+   "text": "Ultrasound"
+  }
+ },
+ {
+  "type": "paragraph",
+  "content": {
+   "body": "<p>Visualises capsular distension, osteophytes and effusion; asymptomatic prevalence on ultrasound ranges <strong>1–65%</strong>. Its real value is in <strong>guiding injection</strong>.</p>"
+  }
+ },
+ {
+  "type": "subsection_heading",
+  "content": {
+   "text": "What imaging is actually for"
+  }
+ },
+ {
+  "type": "highlight_card",
+  "content": {
+   "label": "PM&R clinical pearl",
+   "color": "insight",
+   "text": "<strong>Image to exclude and to plan, not to confirm.</strong> Radiographs rule out other bony pathology and establish severity if surgery is considered. MRI identifies osteolysis and defines the cuff. Neither can tell you this joint is the pain generator — only the injection approaches that."
+  }
+ },
+ {
+  "type": "highlight_card",
+  "content": {
+   "label": "Sources",
+   "color": "neutral",
+   "text": "Prevalence review (J Orthop) and Imaging abnormalities in asymptomatic shoulders (J Orthop Surg Res 2024) for the prevalence ranges; Radsource for the osteolysis and degenerative imaging findings; StatPearls for ultrasound guidance. Full citations in §18."
+  }
+ },
+ {
+  "type": "section_heading",
+  "content": {
+   "text": "Making the diagnosis — the diagnostic injection"
+  }
+ },
+ {
+  "type": "subsection_heading",
+  "content": {
+   "text": "How it works"
+  }
+ },
+ {
+  "type": "paragraph",
+  "content": {
+   "body": "<p>Inject <strong>0.5–2 mL of 1–2% lidocaine</strong> (or 0.5 mL of 0.25–0.5% bupivacaine) into the AC joint. The joint <strong>accommodates no more than about 2 mL</strong> — exceeding that guarantees extravasation into the subacromial space and destroys the test's specificity.</p>"
+  }
+ },
+ {
+  "type": "comparison_table",
+  "content": {
+   "columns": [
+    "Result",
+    "Interpretation"
+   ],
+   "rows": [
+    [
+     "<strong>Pain substantially relieved</strong>",
+     "AC joint is a meaningful pain generator"
+    ],
+    [
+     "<strong>Pain unchanged</strong>",
+     "Look elsewhere — most often the rotator cuff"
+    ],
+    [
+     "<strong>Partial relief</strong>",
+     "Mixed contribution — common, and important to recognise before surgery"
+    ]
+   ]
+  }
+ },
+ {
+  "type": "subsection_heading",
+  "content": {
+   "text": "The sequential injection"
+  }
+ },
+ {
+  "type": "paragraph",
+  "content": {
+   "body": "<p>Where the picture is mixed, <strong>5 mL of 1% lidocaine into the subacromial space</strong> on a separate occasion helps apportion the pain; persisting AC pain afterwards means the AC contribution is real.</p>"
+  }
+ },
+ {
+  "type": "subsection_heading",
+  "content": {
+   "text": "Guided or landmark?"
+  }
+ },
+ {
+  "type": "paragraph",
+  "content": {
+   "body": "<p><strong>Landmark injections frequently miss</strong>, because the joint is small, obliquely oriented and variably angled. <strong>Ultrasound significantly improves accuracy and reduces complications and discomfort</strong>, and is increasingly preferred over fluoroscopy as non-invasive, cheaper and real-time.</p>"
+  }
+ },
+ {
+  "type": "highlight_card",
+  "content": {
+   "label": "PM&R clinical pearl",
+   "color": "insight",
+   "text": "<strong>For a diagnostic injection, use ultrasound.</strong> A landmark injection that misses produces a false negative and may send a patient down an entirely wrong pathway. When the whole point of the procedure is the inference you draw from it, accuracy is not a refinement — it is the test."
+  }
+ },
+ {
+  "type": "highlight_card",
+  "content": {
+   "label": "Pitfall",
+   "color": "red",
+   "text": "<strong>A positive anaesthetic response is strong but not infallible.</strong> Volume spread, placebo response and partial contributions all limit it. Treat substantial relief as raising the probability, not as proof — particularly before recommending an irreversible operation."
+  }
+ },
+ {
+  "type": "highlight_card",
+  "content": {
+   "label": "Sources",
+   "color": "neutral",
+   "text": "Surgical treatment review (PMC2684214) for injectate volumes and the sequential injection; StatPearls, AC joint injection, for joint capacity and guidance accuracy. Full citations in §18."
+  }
+ },
+ {
+  "type": "section_heading",
+  "content": {
+   "text": "Principles of treatment"
+  }
+ },
+ {
+  "type": "paragraph",
+  "content": {
+   "body": "<p><strong>1. Confirm attribution before treating.</strong> With a near-universal base rate, the first therapeutic error is treating a joint that was never the problem.</p><p><strong>2. Treat the load, not just the joint.</strong> Symptoms are reproduced by cross-body, behind-back and end-range overhead positions.</p><p><strong>3. Treat the coexisting cuff.</strong> Most patients over 50 have cuff pathology as well.</p><p><strong>4. Keep surgery genuinely last. At least six months of conservative management</strong> is the standard before considering distal clavicle excision; operative studies averaged <strong>6 months</strong> of conservative care first.</p>"
+  }
+ },
+ {
+  "type": "highlight_card",
+  "content": {
+   "label": "Evidence note",
+   "color": "blue",
+   "text": "A 2024 systematic review of <strong>48 studies and 1,902 shoulders</strong> (mean age <strong>51</strong>, <strong>58% male</strong>, mean follow-up <strong>28.5 months</strong>) found the literature <em>\"did not establish that both non-operative and operative treatments are effective.\"</em> Of those 48 studies, <strong>only one</strong> examined physiotherapy. Treat every recommendation below as reasonable practice with thin evidential support — and say so to your patients."
+  }
+ },
+ {
+  "type": "highlight_card",
+  "content": {
+   "label": "Sources",
+   "color": "neutral",
+   "text": "Treatment review 2024, 48 studies (PMID 38655415); Surgical treatment review (PMC2684214); Prevalence review (J Orthop). Full citations in §18."
+  }
+ },
+ {
+  "type": "section_heading",
+  "content": {
+   "text": "Non-surgical management"
+  }
+ },
+ {
+  "type": "subsection_heading",
+  "content": {
+   "text": "Activity and load modification — the main intervention"
+  }
+ },
+ {
+  "type": "comparison_table",
+  "content": {
+   "columns": [
+    "Provoking activity",
+    "Modification"
+   ],
+   "rows": [
+    [
+     "Bench press, dips, chest flies",
+     "Reduce range (stop at chest level), reduce load, neutral-grip or machine variants"
+    ],
+    [
+     "Cross-body reaching",
+     "Re-sequence tasks; reach with the other arm"
+    ],
+    [
+     "Hand-behind-back dressing",
+     "Change dressing technique and sequence"
+    ],
+    [
+     "Sleeping on the side",
+     "Positioning, pillow support"
+    ],
+    [
+     "Overhead work",
+     "Lower the work height; use steps or platforms"
+    ]
+   ]
+  }
+ },
+ {
+  "type": "highlight_card",
+  "content": {
+   "label": "PM&R clinical pearl",
+   "color": "insight",
+   "text": "<strong>Most of the benefit lives here, and it takes a careful history to do well.</strong> \"Avoid overhead activity\" is not a prescription. \"Stop your bench press at chest level and switch to a neutral-grip dumbbell press for six weeks\" is."
+  }
+ },
+ {
+  "type": "subsection_heading",
+  "content": {
+   "text": "Analgesia"
+  }
+ },
+ {
+  "type": "paragraph",
+  "content": {
+   "body": "<p>Simple analgesia and NSAIDs, topical or oral, as a bridge enabling load modification and rehabilitation rather than as treatment in themselves.</p>"
+  }
+ },
+ {
+  "type": "subsection_heading",
+  "content": {
+   "text": "Physiotherapy"
+  }
+ },
+ {
+  "type": "paragraph",
+  "content": {
+   "body": "<p><strong>The evidence is close to absent</strong> — one study among 48. What is reasonable on mechanistic grounds:</p><ul><li><strong>Scapular control and posture</strong>, reducing time spent in provocative positions</li><li><strong>Rotator cuff strengthening</strong>, addressing the usual coexisting pathology</li><li><strong>Graded reintroduction</strong> of the provoking movement rather than permanent avoidance</li><li><strong>Technique correction</strong> in lifters and manual workers</li></ul><p>Avoid aggressive cross-body stretching into pain — it loads the joint in exactly the compressive direction that provokes symptoms.</p>"
+  }
+ },
+ {
+  "type": "highlight_card",
+  "content": {
+   "label": "Sources",
+   "color": "neutral",
+   "text": "Treatment review 2024 (PMID 38655415) for the physiotherapy evidence base; Surgical treatment review (PMC2684214) and Radsource for the provocative activities. The specific modifications are clinical reasoning, not trial evidence. Full citations in §18."
+  }
+ },
+ {
+  "type": "section_heading",
+  "content": {
+   "text": "Rehabilitation programme"
+  }
+ },
+ {
+  "type": "paragraph",
+  "content": {
+   "body": "<p>Progress on response, not on dates.</p>"
+  }
+ },
+ {
+  "type": "subsection_heading",
+  "content": {
+   "text": "Phase 1 — Settle (weeks 0–3)"
+  }
+ },
+ {
+  "type": "paragraph",
+  "content": {
+   "body": "<ul><li>Identify and remove the provoking loads</li><li>Analgesia as required</li><li>Maintain full passive and active range — this joint does not stiffen if left alone</li><li>Scapular setting, postural work, cervical and thoracic mobility</li><li>Pain-free isometric cuff work in neutral</li></ul>"
+  }
+ },
+ {
+  "type": "subsection_heading",
+  "content": {
+   "text": "Phase 2 — Build (weeks 3–8)"
+  }
+ },
+ {
+  "type": "paragraph",
+  "content": {
+   "body": "<ul><li>Progressive cuff strengthening, avoiding end-range cross-body and behind-back positions</li><li>Scapular strengthening — serratus and lower trapezius</li><li>Begin loaded pressing in reduced range if relevant</li></ul>"
+  }
+ },
+ {
+  "type": "subsection_heading",
+  "content": {
+   "text": "Phase 3 — Reload (weeks 8+)"
+  }
+ },
+ {
+  "type": "paragraph",
+  "content": {
+   "body": "<ul><li>Reintroduce cross-body and overhead loading gradually, monitoring the 24-hour response</li><li>For lifters: restore range before restoring load, and correct technique</li><li>Address fear of reinjury explicitly in those who have stopped training</li></ul><p><strong>Dosing rule:</strong> pain ≤4/10 during, settling within 24 hours, no increase next morning.</p>"
+  }
+ },
+ {
+  "type": "highlight_card",
+  "content": {
+   "label": "Source",
+   "color": "neutral",
+   "text": "No published protocol exists for conservative AC joint rehabilitation. This programme is constructed from the mechanical principles in sections 3 and 12 and should be presented as reasoned practice, not evidence-based prescription."
+  }
+ },
+ {
+  "type": "section_heading",
+  "content": {
+   "text": "Injections"
+  }
+ },
+ {
+  "type": "subsection_heading",
+  "content": {
+   "text": "What to expect — and the findings disagree"
+  }
+ },
+ {
+  "type": "comparison_table",
+  "content": {
+   "columns": [
+    "Source",
+    "Finding"
+   ],
+   "rows": [
+    [
+     "2024 systematic review, 48 studies",
+     "<strong>Mean 50% improvement in pain</strong> at mean follow-up <strong>7.5 months</strong>"
+    ],
+    [
+     "Hossain et al.",
+     "Significant relief lasting <strong>at least 12 months</strong> after a single injection"
+    ],
+    [
+     "van Riet et al.",
+     "Only <strong>28%</strong> significantly improved at <strong>1 month</strong>"
+    ]
+   ]
+  }
+ },
+ {
+  "type": "highlight_card",
+  "content": {
+   "label": "Evidence note",
+   "color": "blue",
+   "text": "<strong>Those findings do not agree, and you should not pretend otherwise when consenting a patient.</strong> Short-term studies up to three weeks are generally positive; mid- and long-term data are scarce and inconsistent. Repeated injections appear less effective, particularly in advanced degeneration."
+  }
+ },
+ {
+  "type": "subsection_heading",
+  "content": {
+   "text": "Practical points"
+  }
+ },
+ {
+  "type": "paragraph",
+  "content": {
+   "body": "<ul><li><strong>Volume: no more than 2 mL</strong></li><li><strong>Use ultrasound guidance</strong></li><li><strong>25–27G needle</strong></li><li><strong>Combine with load modification</strong> — use the pain-free window to change the loading</li></ul>"
+  }
+ },
+ {
+  "type": "subsection_heading",
+  "content": {
+   "text": "What not to offer"
+  }
+ },
+ {
+  "type": "paragraph",
+  "content": {
+   "body": "<p><strong>Hyaluronic acid and PRP lack high-quality supporting evidence</strong> for this joint. Do not present them as established options.</p>"
+  }
+ },
+ {
+  "type": "subsection_heading",
+  "content": {
+   "text": "Complications"
+  }
+ },
+ {
+  "type": "paragraph",
+  "content": {
+   "body": "<p>Infection, bleeding, post-injection pain flare, skin and subcutaneous <strong>atrophy and hypopigmentation</strong>, tendon weakening, transient hyperglycaemia and systemic steroid effects.</p>"
+  }
+ },
+ {
+  "type": "highlight_card",
+  "content": {
+   "label": "PM&R clinical pearl",
+   "color": "insight",
+   "text": "<strong>Warn specifically about fat atrophy and skin depigmentation.</strong> Subcutaneous tissue is thin at the top of the shoulder, the change is permanent and visible, and patients who were not warned are reasonably upset by it."
+  }
+ },
+ {
+  "type": "highlight_card",
+  "content": {
+   "label": "Sources",
+   "color": "neutral",
+   "text": "Treatment review 2024 (PMID 38655415) for the pooled injection outcome; StatPearls, AC joint injection, for technique, complications, and the Hossain and van Riet figures it reports. Full citations in §18."
+  }
+ },
+ {
+  "type": "section_heading",
+  "content": {
+   "text": "Surgical options"
+  }
+ },
+ {
+  "type": "subsection_heading",
+  "content": {
+   "text": "The operation"
+  }
+ },
+ {
+  "type": "comparison_table",
+  "content": {
+   "columns": [
+    "Approach",
+    "Technique",
+    "Typical resection"
+   ],
+   "rows": [
+    [
+     "<strong>Open</strong>",
+     "3–5 cm incision, oscillating saw",
+     "<strong>1–2 cm</strong>"
+    ],
+    [
+     "<strong>Arthroscopic, indirect (bursal)</strong>",
+     "Via subacromial space; requires bursectomy; preserves superior AC ligaments; combinable with acromioplasty or cuff repair",
+     "~<strong>14.8 mm</strong> (Snyder)"
+    ],
+    [
+     "<strong>Arthroscopic, direct (superior)</strong>",
+     "Bursa-sparing, for isolated AC pathology",
+     "<strong>4–7 mm</strong> may suffice (Zawadsky)"
+    ]
+   ]
+  }
+ },
+ {
+  "type": "subsection_heading",
+  "content": {
+   "text": "Outcomes"
+  }
+ },
+ {
+  "type": "comparison_table",
+  "content": {
+   "columns": [
+    "",
+    "Result"
+   ],
+   "rows": [
+    [
+     "<strong>Open resection</strong>",
+     "<strong>50–100%</strong> good results across series, <strong>averaging 76.3%</strong>; one series 72% good/satisfactory of 73 patients"
+    ],
+    [
+     "<strong>Arthroscopic, indirect</strong> (50 patients)",
+     "<strong>94%</strong> good to excellent, 6% fair, <strong>98% satisfied</strong>"
+    ],
+    [
+     "<strong>Arthroscopic, direct</strong> (41 patients)",
+     "54% excellent, 39% good, <strong>7% poor</strong> — from continued distal clavicle instability"
+    ],
+    [
+     "<strong>2024 systematic review</strong>",
+     "Mean functional outcome <strong>87.8%</strong>; <strong>no significant difference</strong> open vs arthroscopic; <strong>0.5–2 cm</strong> resection gave good outcomes"
+    ]
+   ]
+  }
+ },
+ {
+  "type": "subsection_heading",
+  "content": {
+   "text": "Why these operations fail — both causes preventable"
+  }
+ },
+ {
+  "type": "paragraph",
+  "content": {
+   "body": "<p><strong>1. Diagnostic error.</strong> The AC joint was not the pain generator, or only partly responsible. This is the attribution problem arriving at its most expensive point.</p><p><strong>2. Inadequate or excessive resection.</strong> Under-resection — especially of the <strong>posterior</strong> distal clavicle — leaves bony contact and persistent pain. Over-resection or superior AC ligament damage produces <strong>instability</strong>, with an average <strong>5.5 mm increase in anteroposterior translation</strong> measured after resection (Blazar). Weakness is reported inconsistently; one series of 29 shoulders found none after indirect resection (Martin).</p>"
+  }
+ },
+ {
+  "type": "highlight_card",
+  "content": {
+   "label": "Pitfall",
+   "color": "red",
+   "text": "<strong>A patient worse after distal clavicle excision usually has one of two problems: the wrong diagnosis, or an unstable clavicle.</strong> Both present as persistent pain, but the unstable one often has a palpable clunk on cross-body movement. Examine for horizontal translation before assuming the operation simply \"failed\"."
+  }
+ },
+ {
+  "type": "subsection_heading",
+  "content": {
+   "text": "Post-operative rehabilitation"
+  }
+ },
+ {
+  "type": "paragraph",
+  "content": {
+   "body": "<ul><li><strong>Sling for a few days only</strong>, for comfort</li><li><strong>Assisted physiotherapy from 2–5 days</strong></li><li>Range of motion as comfort allows — no repair to protect unless the cuff was addressed</li><li><strong>Return to activity typically 2–3 months</strong>; around <strong>6 weeks</strong> for arthroscopic excision in athletes with osteolysis</li></ul>"
+  }
+ },
+ {
+  "type": "highlight_card",
+  "content": {
+   "label": "PM&R clinical pearl",
+   "color": "insight",
+   "text": "<strong>Always read the operative note.</strong> If a cuff repair was done at the same time, that repair — not the clavicle — dictates the protocol."
+  }
+ },
+ {
+  "type": "highlight_card",
+  "content": {
+   "label": "Sources",
+   "color": "neutral",
+   "text": "Surgical treatment review (PMC2684214) for resection dimensions, outcome rates, complications and the post-operative protocol, including the Snyder, Zawadsky, Basmania, Blazar and Martin figures it reports; Treatment review 2024 (PMID 38655415) for the pooled comparison; Radsource for return to activity after excision in osteolysis. Full citations in §18."
+  }
+ },
+ {
+  "type": "section_heading",
+  "content": {
+   "text": "Prognosis"
+  }
+ },
+ {
+  "type": "paragraph",
+  "content": {
+   "body": "<ul><li><strong>Most AC degeneration never becomes symptomatic</strong> — around 50% of people not seeking care have it</li><li><strong>Injection gives meaningful but variable relief</strong> — mean 50% pain improvement at 7.5 months, with wide spread</li><li><strong>Surgery in correctly selected patients has good outcomes</strong> — ~76% after open, &gt;90% in arthroscopic series, mean functional outcome 87.8% — but correct selection is the whole difficulty</li><li><strong>Distal clavicle osteolysis has a good prognosis</strong> with load reduction, though radiographic recovery lags symptoms by years</li></ul>"
+  }
+ },
+ {
+  "type": "highlight_card",
+  "content": {
+   "label": "Sources",
+   "color": "neutral",
+   "text": "Prevalence review (J Orthop); Treatment review 2024 (PMID 38655415); Surgical treatment review (PMC2684214); Radsource. Full citations in §18."
+  }
+ },
+ {
+  "type": "section_heading",
+  "content": {
+   "text": "Key points"
+  }
+ },
+ {
+  "type": "paragraph",
+  "content": {
+   "body": "<p><strong>1. The base rate is the diagnosis's biggest obstacle.</strong> Present in ~50% of people not seeking care, 70% of asymptomatic MRIs, and ~90% of asymptomatic people over 40. Asymptomatic prevalence (13–95%) overlaps symptomatic prevalence (20–100%).</p><p><strong>2. Imaging cannot make this diagnosis.</strong> It excludes alternatives, identifies osteolysis and plans surgery.</p><p><strong>3. The special tests are weak, and one is misleading.</strong> Cross-body adduction LR+ = <strong>0.86</strong>. Use Paxinos + Hawkins–Kennedy to screen out (LR− 0.35).</p><p><strong>4. Localisation plus a guided anaesthetic injection is the practical reference standard.</strong> Volume ≤2 mL, ultrasound-guided.</p><p><strong>5. Coexistence with cuff disease is the rule after 50.</strong> Ask how much each contributes, not which one it is.</p><p><strong>6. Under 40, think secondary</strong> — and ask about bench press. DCO is clavicular-side only, marrow oedema, no osteophytes.</p><p><strong>7. Load modification is the main non-surgical treatment</strong>, and must be specific to the provoking movement.</p><p><strong>8. Keep surgery last.</strong> Six months conservative first. The two causes of failure — wrong diagnosis and over-resection causing instability — are both avoidable.</p>"
+  }
+ },
+ {
+  "type": "highlight_card",
+  "content": {
+   "label": "Sources",
+   "color": "neutral",
+   "text": "as cited in the corresponding sections above. Full citations in §18."
+  }
+ },
+ {
+  "type": "section_heading",
+  "content": {
+   "text": "Full references"
+  }
+ },
+ {
+  "type": "paragraph",
+  "content": {
+   "body": "<ol><li><strong>Prevalence of acromioclavicular joint osteoarthritis in people not seeking care: a systematic review.</strong> <em>Journal of Orthopaedics.</em> 10 studies, 1,831 shoulders. <a href=\"https://jortho.org/prevalence-of-acromioclavicular-joint-osteoarthritis-in-people-not-seeking-care-a-systematic-review/\" target=\"_blank\" rel=\"noopener noreferrer\">Full text</a></li><li><strong>Imaging abnormalities of the acromioclavicular joint and subacromial space are common in asymptomatic shoulders: a systematic review.</strong> <em>J Orthop Surg Res.</em> 2024. <a href=\"https://link.springer.com/article/10.1186/s13018-024-05378-4\" target=\"_blank\" rel=\"noopener noreferrer\">doi:10.1186/s13018-024-05378-4</a></li><li><strong>Krill MK, et al. A concise evidence-based physical examination for diagnosis of acromioclavicular joint pathology: a systematic review.</strong> <em>Phys Sportsmed.</em> 2018. <a href=\"https://manhattansportsdoc.com/wp-content/uploads/2020/02/A-concise-evidence-based-physical-examination-for-diagnosis-of-acromioclavicular-joint-pathology-a-systematic-review.pdf\" target=\"_blank\" rel=\"noopener noreferrer\">PDF</a></li><li><strong>Cadogan A, et al. Shoulder pain in primary care: diagnostic accuracy of clinical examination tests for non-traumatic acromioclavicular joint pain.</strong> <em>BMC Musculoskelet Disord.</em> 2013;14:156. <a href=\"https://bmcmusculoskeletdisord.biomedcentral.com/articles/10.1186/1471-2474-14-156\" target=\"_blank\" rel=\"noopener noreferrer\">doi:10.1186/1471-2474-14-156</a></li><li><strong>Walton J, et al. Diagnostic values of tests for acromioclavicular joint pain.</strong> <em>J Bone Joint Surg Am.</em> 2004. <a href=\"https://pubmed.ncbi.nlm.nih.gov/15069148\" target=\"_blank\" rel=\"noopener noreferrer\">PMID 15069148</a></li><li><strong>A systematic review of the treatment of primary acromioclavicular joint osteoarthritis.</strong> 2024. 48 studies, 1,902 shoulders. <a href=\"https://www.orthobullets.com/evidence/38655415\" target=\"_blank\" rel=\"noopener noreferrer\">PMID 38655415</a></li><li><strong>Current evidence for nonpharmacological interventions and criteria for surgical management of persistent acromioclavicular joint osteoarthritis: a systematic review.</strong> 2020. <a href=\"https://pubmed.ncbi.nlm.nih.gov/32269599/\" target=\"_blank\" rel=\"noopener noreferrer\">PMID 32269599</a></li><li><strong>Surgical treatment for acromioclavicular joint osteoarthritis: patient selection, surgical options, complications, and outcome.</strong> <a href=\"https://pmc.ncbi.nlm.nih.gov/articles/PMC2684214/\" target=\"_blank\" rel=\"noopener noreferrer\">PMC2684214</a></li><li><strong>Acromioclavicular joint injection.</strong> <em>StatPearls.</em> <a href=\"https://www.ncbi.nlm.nih.gov/sites/books/NBK547727/\" target=\"_blank\" rel=\"noopener noreferrer\">Full text</a></li><li><strong>Distal clavicular osteolysis.</strong> <em>Radsource MRI Web Clinic.</em> <a href=\"https://radsource.us/distal-clavicular-osteolysis/\" target=\"_blank\" rel=\"noopener noreferrer\">Full text</a></li><li><strong>Ahmad R. Acromion shape and degenerative changes of the acromioclavicular joint as risk factors for subacromial impingement syndrome.</strong> <em>Orthop Rev.</em> 2025;17. <a href=\"https://orthopedicreviews.openmedicalpublishing.org/article/141407\" target=\"_blank\" rel=\"noopener noreferrer\">Full text</a></li></ol>"
+  }
+ },
+ {
+  "type": "subsubsection_heading",
+  "content": {
+   "text": "Secondary attribution"
+  }
+ },
+ {
+  "type": "paragraph",
+  "content": {
+   "body": "<p>Several widely quoted figures reach this chapter through reviews rather than the original papers. The originating author is named in the text; the review that reported the figure is the citable source.</p>"
+  }
+ },
+ {
+  "type": "comparison_table",
+  "content": {
+   "columns": [
+    "Figure",
+    "Named author",
+    "Reported in"
+   ],
+   "rows": [
+    [
+     "Asymptomatic prevalence by decade",
+     "Nicholson, Liou, Needell, Petersson, Eriks-Hoogland, Gumina, Bonsell, Pennington",
+     "Reference 1"
+    ],
+    [
+     "Resection dimensions and outcomes",
+     "Snyder, Zawadsky, Basmania, Blazar, Martin",
+     "Reference 8"
+    ],
+    [
+     "Injection duration of relief",
+     "Hossain, van Riet",
+     "Reference 9"
+    ]
+   ]
+  }
+ },
+ {
+  "type": "subsubsection_heading",
+  "content": {
+   "text": "Identified but not retrieved — worth pulling if you have institutional access"
+  }
+ },
+ {
+  "type": "paragraph",
+  "content": {
+   "body": "<ul><li><strong>Stein BE, et al. MRI features of the acromioclavicular joint that predict pain relief from intra-articular injection.</strong> <em>AJR.</em> 2003;181(3). <a href=\"https://ajronline.org/doi/10.2214/ajr.181.3.1810755\" target=\"_blank\" rel=\"noopener noreferrer\">doi:10.2214/ajr.181.3.1810755</a></li><li><strong>Diagnostic utility of acromioclavicular joint clinical examination tests: a systematic review.</strong> <em>Phys Ther Rev.</em> 2025;30(2) — more recent than reference 3</li><li><strong>MRI findings of acromioclavicular joint osteoarthritis are the norm after age 40.</strong> <em>Orthop Traumatol Surg Res.</em> 2022</li></ul>"
+  }
+ }
+]
