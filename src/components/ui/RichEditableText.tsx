@@ -374,23 +374,62 @@ export const RichEditableText = forwardRef<RichEditableTextHandle, RichEditableT
   const withinEditable = (node: Node | null) =>
     !!node && !!editableRef.current && editableRef.current.contains(node);
 
-  // Wraps the current selection in a fresh <span class="...">. Nesting
+  // Wraps the current selection in fresh <span class="...">s. Nesting
   // (bold inside a colored span, or the reverse) is allowed rather
   // than merged — simpler and safe. toggleFormat (below) is what
   // handles turning a single attribute back off; this stays the "just
   // apply it" primitive both toggleFormat and the size/color/highlight
   // pickers build on.
+  //
+  // One span per text run, never one span around the whole range: a
+  // selection that crosses list items (or paragraphs) can't be wrapped in
+  // a single inline <span> — range.extractContents() splits the first and
+  // last <li> in two, leaves an empty bullet behind at each end, and drops
+  // the middle <li>s straight inside the span (a <span> directly under a
+  // <ul>), which the browser re-parses into a different shape on save —
+  // the empty bullets, the mis-sized first item and the stray last item a
+  // Sources card ended up with. Wrapping each text node inside its own
+  // block keeps the list structure untouched.
   const wrapSelection = (className: string) => {
     const sel = window.getSelection();
     if (!sel || sel.rangeCount === 0 || sel.isCollapsed) return;
     const range = sel.getRangeAt(0);
     if (!withinEditable(range.commonAncestorContainer)) return;
-    const span = document.createElement("span");
-    span.className = className;
-    span.appendChild(range.extractContents());
-    range.insertNode(span);
+
+    // Collect first, mutate after: splitting a text node moves the
+    // range's own boundary points.
+    const root = range.commonAncestorContainer;
+    const texts: Text[] = [];
+    if (root.nodeType === Node.TEXT_NODE) {
+      texts.push(root as Text);
+    } else {
+      const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+      let n: Node | null;
+      while ((n = walker.nextNode())) if (range.intersectsNode(n)) texts.push(n as Text);
+    }
+    const parts: { node: Text; start: number; end: number }[] = [];
+    for (const node of texts) {
+      const start = node === range.startContainer ? range.startOffset : 0;
+      const end = node === range.endContainer ? range.endOffset : node.length;
+      // Whitespace between <li>s is structure, not content.
+      const structural = node.parentElement?.tagName === "UL" || node.parentElement?.tagName === "OL";
+      if (start < end && !structural) parts.push({ node, start, end });
+    }
+    if (parts.length === 0) return;
+
+    const spans: HTMLSpanElement[] = [];
+    for (const { node, start, end } of parts) {
+      if (end < node.length) node.splitText(end);
+      const target = start > 0 ? node.splitText(start) : node;
+      const span = document.createElement("span");
+      span.className = className;
+      target.parentNode?.insertBefore(span, target);
+      span.appendChild(target);
+      spans.push(span);
+    }
     const newRange = document.createRange();
-    newRange.selectNodeContents(span);
+    newRange.setStartBefore(spans[0]);
+    newRange.setEndAfter(spans[spans.length - 1]);
     sel.removeAllRanges();
     sel.addRange(newRange);
   };
