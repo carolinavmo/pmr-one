@@ -324,6 +324,41 @@ export function sanitizeRichText(html: string): string {
   });
 }
 
+// A browser paste carries its formatting as inline `style`, which the
+// sanitizer above drops (this vocabulary is class-only) — and what is
+// left behind is wrong. Google Docs, ChatGPT and most web pages wrap the
+// whole clip in `<b style="font-weight:normal">`: once the style is gone
+// that is just `<b>`, so the entire pasted text turns bold, and the
+// toolbar's class-based Bold button can't switch it off. Real bold,
+// italic and underline written as style on a span are lost the same way.
+// So, before sanitizing: unwrap the "not actually bold" wrappers and turn
+// style-based emphasis into the matching tags. Client-only (DOMParser).
+export function normalizePastedHtml(html: string): string {
+  const doc = new DOMParser().parseFromString(html, "text/html");
+  doc.body.querySelectorAll("img, meta, style, script").forEach((el) => el.remove());
+  const isBold = (w: string) => w === "bold" || w === "bolder" || Number(w) >= 600;
+  const isNormal = (w: string) => w === "normal" || w === "lighter" || (w !== "" && Number(w) < 600);
+  for (const el of Array.from(doc.body.querySelectorAll<HTMLElement>("b, strong, span"))) {
+    const weight = el.style.fontWeight;
+    if ((el.tagName === "B" || el.tagName === "STRONG") && isNormal(weight)) {
+      el.replaceWith(...Array.from(el.childNodes));
+      continue;
+    }
+    if (el.tagName !== "SPAN") continue;
+    let inner: Node[] = Array.from(el.childNodes);
+    const wrap = (tag: string) => {
+      const wrapper = doc.createElement(tag);
+      wrapper.append(...inner);
+      inner = [wrapper];
+    };
+    if (isBold(weight)) wrap("strong");
+    if (el.style.fontStyle === "italic") wrap("em");
+    if (el.style.textDecorationLine.includes("underline") || el.style.textDecoration.includes("underline")) wrap("u");
+    el.replaceWith(...inner);
+  }
+  return sanitizeRichText(doc.body.innerHTML);
+}
+
 // For a plain-text preview of rich content (a truncated list row, a
 // card's accessible name) — strips every tag rather than rendering
 // it, so a formatted flashcard still reads as a normal line of text

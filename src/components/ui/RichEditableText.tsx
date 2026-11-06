@@ -32,6 +32,7 @@ import type { EditorialBlock, HorizontalAlign } from "@/lib/editorial-blocks";
 import { updateBlockAlignmentAction } from "@/lib/actions/authoring";
 import {
   sanitizeRichText,
+  normalizePastedHtml,
   FONT_SIZE_ORDER,
   FONT_SIZE_LABEL,
   FONT_SIZE_CLASS,
@@ -144,6 +145,17 @@ const PROSE_CONTENT_CLASS =
   " [&_[data-checked='true']]:before:content-['☑'] [&_[data-checked='true']]:before:text-accent [&_[data-checked='true']]:line-through [&_[data-checked='true']]:text-secondary";
 
 const SAFE_URL_PATTERN = /^https?:\/\//i;
+
+// Bold/Italic/Underline/Strikethrough write a class, but text that
+// arrives another way — imported content, a paste — carries the plain
+// tag instead (<strong>, <em>, <u>, <s>). The toolbar has to see both,
+// or a bold that came in as <strong> can't be switched off again.
+const FORMAT_EQUIVALENT_TAGS: Record<string, string[]> = {
+  [BOLD_CLASS]: ["B", "STRONG"],
+  [ITALIC_CLASS]: ["I", "EM"],
+  [UNDERLINE_CLASS]: ["U"],
+  [STRIKETHROUGH_CLASS]: ["S", "STRIKE"],
+};
 
 // rich-text.ts's sanitizer deliberately allows ul/ol/li/blockquote —
 // block-level content — inside these fields (its own comment calls
@@ -515,7 +527,9 @@ export const RichEditableText = forwardRef<RichEditableTextHandle, RichEditableT
     if (!editableRef.current) return [];
     const walker = document.createTreeWalker(editableRef.current, NodeFilter.SHOW_ELEMENT, {
       acceptNode: (node) =>
-        node instanceof HTMLElement && node.classList.contains(className) && range.intersectsNode(node)
+        node instanceof HTMLElement &&
+        (node.classList.contains(className) || FORMAT_EQUIVALENT_TAGS[className]?.includes(node.tagName)) &&
+        range.intersectsNode(node)
           ? NodeFilter.FILTER_ACCEPT
           : NodeFilter.FILTER_SKIP,
     });
@@ -1549,6 +1563,17 @@ export const RichEditableText = forwardRef<RichEditableTextHandle, RichEditableT
         suppressContentEditableWarning: true,
         onBlur: commit,
         onInput: () => onChange?.(editableRef.current?.innerHTML ?? ""),
+        // Rich paste goes through normalizePastedHtml (rich-text.ts) so
+        // what lands in the field is already what will be saved — a
+        // plain-text paste (no text/html on the clipboard) is left to the
+        // browser.
+        onPaste: (e: React.ClipboardEvent) => {
+          const html = e.clipboardData.getData("text/html");
+          if (!html) return;
+          e.preventDefault();
+          const clean = normalizePastedHtml(html);
+          if (clean) document.execCommand("insertHTML", false, clean);
+        },
         // A task item (AtlasToolbar.tsx's Tasks button, `data-checked`
         // divs) toggles on click anywhere in its row rather than needing
         // a real `<input type="checkbox">` — see rich-text.ts's own
