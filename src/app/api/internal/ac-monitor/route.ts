@@ -15,7 +15,7 @@ import content from "./content.json";
 // the default spot (after its last block); {afterPosition:N} overrides it.
 // One transaction; skipped when the figure is already on the page.
 
-const HEADING = "Monitoring load, and what to do in a flare";
+const HEADING = "11) Monitoring load, and what to do in a flare";
 const MARKER = "Figure 1 · What the timing of symptoms tells you";
 
 const STANDFIRST =
