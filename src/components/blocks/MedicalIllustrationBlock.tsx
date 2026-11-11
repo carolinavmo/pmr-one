@@ -103,8 +103,8 @@ export function MedicalIllustrationBlockView({
   const [pickerOpen, setPickerOpen] = useState(false);
   const [widthOpen, setWidthOpen] = useState(false);
   const [imageBorderColor, setImageBorderColor] = useState(block.imageBorderColor);
-  // A 2px outline in the chosen card colour, following the rounded corners.
-  const borderClass = imageBorderColor ? `border-2 ${CARD_COLOR_BORDER_STRONG[imageBorderColor]}` : "";
+  // A 1px outline in the chosen card colour, following the rounded corners.
+  const borderClass = imageBorderColor ? `border ${CARD_COLOR_BORDER_STRONG[imageBorderColor]}` : "";
   const [colorPickerIndex, setColorPickerIndex] = useState<number | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const draggingIndex = useRef<number | null>(null);

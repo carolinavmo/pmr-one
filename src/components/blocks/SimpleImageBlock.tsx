@@ -86,9 +86,9 @@ export function SimpleImageBlockView({
   const [focalPointOpen, setFocalPointOpen] = useState(false);
   const [imageFit, setImageFit] = useState<ImageFit>(block.imageFit ?? "cover");
   const [imageBorderColor, setImageBorderColor] = useState(block.imageBorderColor);
-  // A 2px outline in the chosen card colour; the box is already rounded
+  // A 1px outline in the chosen card colour; the box is already rounded
   // and overflow-hidden, so the border follows the rounded corners.
-  const borderClass = imageBorderColor ? `border-2 ${CARD_COLOR_BORDER_STRONG[imageBorderColor]}` : "";
+  const borderClass = imageBorderColor ? `border ${CARD_COLOR_BORDER_STRONG[imageBorderColor]}` : "";
   const caption = block.caption;
   const captionAlign = block.layout?.textAlign ?? "left";
   const isCover = imageFit === "cover";
