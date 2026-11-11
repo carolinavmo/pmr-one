@@ -1,9 +1,16 @@
 import { NextRequest, NextResponse } from "next/server";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 import { pool } from "@/lib/db";
 import { revalidateShellSurfaces } from "@/lib/revalidation";
-import { revalidateLibraryTree } from "@/lib/library-home";
 import { BLOCKS } from "./content";
+
+// updateTag (what revalidateLibraryTree uses) only works inside a Server
+// Action; a route handler has to use revalidateTag.
+function refreshCaches() {
+  revalidateShellSurfaces();
+  revalidateTag("library-tree", { expire: 0 });
+  revalidatePath("/[locale]/conditions/[slug]", "page");
+}
 
 // TEMPORARY — creates the Distal Clavicular Osteolysis page (draft) under
 // the AC Pathology topic and fills it with the blocks converted from
@@ -16,7 +23,15 @@ const SLUG = "distal-clavicular-osteolysis";
 const ALIASES = ["DCO", "Atraumatic distal clavicular osteolysis", "ADCO"];
 
 export async function POST(req: NextRequest) {
-  const { dryRun } = (await req.json().catch(() => ({}))) as { dryRun?: boolean };
+  const { dryRun, revalidateOnly } = (await req.json().catch(() => ({}))) as { dryRun?: boolean; revalidateOnly?: boolean };
+  if (revalidateOnly) {
+    const { rows } = await pool.query<{ n: string }>(
+      `SELECT count(*) AS n FROM editorial_block WHERE disease_id = (SELECT id FROM disease WHERE slug = $1)`,
+      [SLUG]
+    );
+    refreshCaches();
+    return NextResponse.json({ ok: true, revalidated: true, blocksOnPage: Number(rows[0].n) });
+  }
   const client = await pool.connect();
   try {
     await client.query("BEGIN");
@@ -57,9 +72,7 @@ export async function POST(req: NextRequest) {
     }
 
     await client.query("COMMIT");
-    revalidateShellSurfaces();
-    revalidateLibraryTree();
-    revalidatePath("/[locale]/conditions/[slug]", "page");
+    refreshCaches();
     return NextResponse.json({ ok: true, diseaseId, summary });
   } catch (err) {
     await client.query("ROLLBACK").catch(() => {});
