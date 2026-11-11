@@ -19,7 +19,8 @@ import { RichEditableText } from "@/components/ui/RichEditableText";
 import { ZoomableImage } from "@/components/ui/ZoomableImage";
 import { IllustrationPicker } from "@/components/disease-page/IllustrationPicker";
 import { ColorSwatchPicker } from "@/components/ui/ColorSwatchPicker";
-import { CARD_COLOR_BADGE } from "@/lib/card-colors";
+import { CARD_COLOR_BADGE, CARD_COLOR_BORDER_STRONG } from "@/lib/card-colors";
+import { ImageBorderControl } from "@/components/ui/ImageBorderControl";
 import {
   updateIllustrationAnnotationsAction,
   updateBlockRichTextAction,
@@ -28,6 +29,7 @@ import {
   removeIllustrationImageAction,
   setIllustrationWidthAction,
   setIllustrationLegendPositionAction,
+  setImageBorderColorAction,
 } from "@/lib/actions/authoring";
 import { preserveScrollAcrossSave } from "@/lib/preserve-scroll";
 
@@ -100,6 +102,9 @@ export function MedicalIllustrationBlockView({
   const [annotations, setAnnotations] = useState<Annotation[]>(block.annotations ?? []);
   const [pickerOpen, setPickerOpen] = useState(false);
   const [widthOpen, setWidthOpen] = useState(false);
+  const [imageBorderColor, setImageBorderColor] = useState(block.imageBorderColor);
+  // A 2px outline in the chosen card colour, following the rounded corners.
+  const borderClass = imageBorderColor ? `border-2 ${CARD_COLOR_BORDER_STRONG[imageBorderColor]}` : "";
   const [colorPickerIndex, setColorPickerIndex] = useState<number | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const draggingIndex = useRef<number | null>(null);
@@ -149,7 +154,7 @@ export function MedicalIllustrationBlockView({
     if (!illustration) return null;
 
     const imageElement = (
-      <div className={`relative overflow-hidden rounded-lg ${imageWidthClass[imageWidth]}`}>
+      <div className={`relative overflow-hidden rounded-lg ${borderClass} ${imageWidthClass[imageWidth]}`}>
         <ZoomableImage src={illustration.assetUrl} alt={illustration.altText} enabled={isSignedIn}>
           {/* eslint-disable-next-line @next/next/no-img-element -- asset_url is an arbitrary external URL (schema-v1.0.sql); no fixed remote-pattern domain to configure yet. */}
           <img src={illustration.assetUrl} alt={illustration.altText} className="w-full object-cover" />
@@ -318,6 +323,13 @@ export function MedicalIllustrationBlockView({
               <Icon className="size-3.5" aria-hidden="true" />
             </button>
           ))}
+          <ImageBorderControl
+            value={imageBorderColor}
+            onChange={(next) => {
+              setImageBorderColor(next);
+              preserveScrollAcrossSave(() => setImageBorderColorAction(block.id, next ?? null));
+            }}
+          />
           <button
             type="button"
             onClick={() => setWidthOpen((open) => !open)}
@@ -379,7 +391,7 @@ export function MedicalIllustrationBlockView({
           const { x, y } = percentFromEvent(e);
           commit([...annotations, { label: "", x, y }]);
         }}
-        className={`relative cursor-crosshair overflow-hidden rounded-lg ${imageWidthClass[imageWidth]}`}
+        className={`relative cursor-crosshair overflow-hidden rounded-lg ${borderClass} ${imageWidthClass[imageWidth]}`}
       >
         {/* eslint-disable-next-line @next/next/no-img-element -- asset_url is an arbitrary external URL (schema-v1.0.sql); no fixed remote-pattern domain to configure yet. */}
         <img

@@ -392,6 +392,7 @@ async function resolveBlock(diseaseId: string, row: BlockRow): Promise<Editorial
         imageWidth: cc.imageWidth as MedicalIllustrationBlock["imageWidth"],
         annotations: cc.annotations as { label: string; x: number; y: number }[] | undefined,
         legendPosition: cc.legendPosition as MedicalIllustrationBlock["legendPosition"],
+        imageBorderColor: cc.imageBorderColor as MedicalIllustrationBlock["imageBorderColor"],
       };
     }
 
@@ -787,6 +788,7 @@ async function resolveBlock(diseaseId: string, row: BlockRow): Promise<Editorial
         imageWidth: cc.imageWidth as SimpleImageBlock["imageWidth"],
         imageFocalPoint: cc.imageFocalPoint as SimpleImageBlock["imageFocalPoint"],
         imageFit: cc.imageFit as SimpleImageBlock["imageFit"],
+        imageBorderColor: cc.imageBorderColor as SimpleImageBlock["imageBorderColor"],
       };
 
     case "callout_banner":

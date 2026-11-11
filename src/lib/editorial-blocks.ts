@@ -211,6 +211,8 @@ export interface MedicalIllustrationBlock extends BlockBase {
   // pre-existing behavior) stacks it full-width below the image;
   // "left"/"right" put it in a narrow column beside the image instead.
   legendPosition?: "bottom" | "left" | "right";
+  // A rounded outline around the image in this card colour; unset = no border.
+  imageBorderColor?: CardColor;
 }
 
 export interface ClinicalPearlBlock extends BlockBase {
@@ -800,6 +802,8 @@ export interface SimpleImageBlock extends BlockBase {
   // ratio, for a source image (very tall/wide) where even letterboxing
   // it into 4:3 would leave mostly empty space.
   imageFit?: "cover" | "contain" | "original";
+  // A rounded outline around the image in this card colour; unset = no border.
+  imageBorderColor?: CardColor;
 }
 
 // A small icon + label + bold text card — the founder's own "Key

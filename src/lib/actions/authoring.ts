@@ -12,6 +12,7 @@ import type { BlockLayout, CardColor, ImageRowBlock } from "@/lib/editorial-bloc
 import type { DiseasePageType } from "@/lib/disease-page-type";
 import type { BlockClipboardEntry } from "@/lib/block-clipboard";
 import { BLOCK_REGISTRY } from "@/lib/block-registry";
+import { CARD_COLOR_ORDER } from "@/lib/card-colors";
 
 const MAX_UPLOAD_BYTES = 8 * 1024 * 1024;
 
@@ -1206,6 +1207,23 @@ export async function setSimpleImageFocalPointAction(
     `UPDATE editorial_block SET content_config = jsonb_set(content_config, ARRAY['imageFocalPoint'], to_jsonb($2::text)) WHERE id = $1`,
     [blockId, focalPoint]
   );
+  revalidateDiseaseSurfaces();
+}
+
+// The outline around an image block's picture — a card colour from the
+// shared palette, or null to take the border off. Works on any block whose
+// content_config carries `imageBorderColor` (Image and Medical illustration).
+export async function setImageBorderColorAction(blockId: string, color: string | null) {
+  await requireEditor();
+  if (color === null) {
+    await pool.query(`UPDATE editorial_block SET content_config = content_config - 'imageBorderColor' WHERE id = $1`, [blockId]);
+  } else {
+    if (!CARD_COLOR_ORDER.includes(color as CardColor)) throw new Error("Unknown border colour.");
+    await pool.query(
+      `UPDATE editorial_block SET content_config = jsonb_set(content_config, ARRAY['imageBorderColor'], to_jsonb($2::text)) WHERE id = $1`,
+      [blockId, color]
+    );
+  }
   revalidateDiseaseSurfaces();
 }
 

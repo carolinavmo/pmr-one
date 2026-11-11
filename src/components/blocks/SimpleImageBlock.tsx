@@ -15,8 +15,11 @@ import {
   setSimpleImageWidthAction,
   setSimpleImageFocalPointAction,
   setSimpleImageFitAction,
+  setImageBorderColorAction,
 } from "@/lib/actions/authoring";
 import { preserveScrollAcrossSave } from "@/lib/preserve-scroll";
+import { ImageBorderControl } from "@/components/ui/ImageBorderControl";
+import { CARD_COLOR_BORDER_STRONG } from "@/lib/card-colors";
 
 type ImageWidth = NonNullable<SimpleImageBlock["imageWidth"]>;
 type ImageFit = NonNullable<SimpleImageBlock["imageFit"]>;
@@ -82,6 +85,10 @@ export function SimpleImageBlockView({
   const [imageFocalPoint, setImageFocalPoint] = useState<ImageFocalPoint>(block.imageFocalPoint ?? "center");
   const [focalPointOpen, setFocalPointOpen] = useState(false);
   const [imageFit, setImageFit] = useState<ImageFit>(block.imageFit ?? "cover");
+  const [imageBorderColor, setImageBorderColor] = useState(block.imageBorderColor);
+  // A 2px outline in the chosen card colour; the box is already rounded
+  // and overflow-hidden, so the border follows the rounded corners.
+  const borderClass = imageBorderColor ? `border-2 ${CARD_COLOR_BORDER_STRONG[imageBorderColor]}` : "";
   const caption = block.caption;
   const captionAlign = block.layout?.textAlign ?? "left";
   const isCover = imageFit === "cover";
@@ -129,7 +136,7 @@ export function SimpleImageBlockView({
       // (no stretched height to fill, so h-full resolves to auto).
       <figure className="flex h-full flex-col gap-2">
         <div
-          className={`${boxAspectClass} overflow-hidden rounded-lg bg-surface-raised ${imageWidthClass[imageWidth]}`}
+          className={`${boxAspectClass} overflow-hidden rounded-lg bg-surface-raised ${borderClass} ${imageWidthClass[imageWidth]}`}
         >
           <ZoomableImage src={imageUrl} alt={caption ?? ""} enabled={isSignedIn}>
             {/* eslint-disable-next-line @next/next/no-img-element -- block-owned upload (public/uploads/illustrations), same as OverviewBlock/ImageComparisonBlock; no fixed remote-pattern domain to configure. */}
@@ -233,6 +240,13 @@ export function SimpleImageBlockView({
               )}
             </div>
           )}
+          <ImageBorderControl
+            value={imageBorderColor}
+            onChange={(next) => {
+              setImageBorderColor(next);
+              preserveScrollAcrossSave(() => setImageBorderColorAction(block.id, next ?? null));
+            }}
+          />
           <div className="flex items-center gap-0.5 rounded border border-border p-0.5">
             {FIT_OPTIONS.map(({ value, label, icon: Icon }) => (
               <button
@@ -258,7 +272,7 @@ export function SimpleImageBlockView({
         </div>
       )}
       <div
-        className={`relative ${boxAspectClass} overflow-hidden rounded-lg bg-surface-raised ${imageWidthClass[imageWidth]}`}
+        className={`relative ${boxAspectClass} overflow-hidden rounded-lg bg-surface-raised ${borderClass} ${imageWidthClass[imageWidth]}`}
       >
         {imageUrl ? (
           <>
