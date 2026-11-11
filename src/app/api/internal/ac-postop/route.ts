@@ -23,6 +23,16 @@ const TABLES: { marker: string; columns: string[]; rows: string[][]; hideHeader?
       [b("Excision + rotator cuff repair"), `${b("The cuff repair protocol")}, which is far more restrictive and overrides everything below`],
     ],
   },
+  {
+    marker: "Surfaces no longer contact",
+    columns: ["", "Before surgery", "After surgery"],
+    rows: [
+      [b("The problem"), "Degenerate surfaces compressing", "Surfaces no longer contact"],
+      [b("What provoked pain"), `${b("Compression")} — cross-body adduction, axial loading`, "Compression is largely abolished"],
+      [b("The vulnerability"), "Capsule intact, doing its job", b("The capsule is now the only restraint on anteroposterior translation")],
+      [b("Early caution is about"), "Reducing compressive dose", b("Limiting translation while soft tissue consolidates")],
+    ],
+  },
 ];
 
 interface Row {
