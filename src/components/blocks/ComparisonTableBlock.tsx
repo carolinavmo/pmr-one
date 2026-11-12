@@ -4,7 +4,11 @@ import { useState } from "react";
 import { Plus, X } from "lucide-react";
 import type { ComparisonTableBlock } from "@/lib/editorial-blocks";
 import { useEditMode } from "@/components/disease-page/EditMode";
-import { updateComparisonTableAction, setComparisonTableHeaderHiddenAction } from "@/lib/actions/authoring";
+import {
+  updateComparisonTableAction,
+  setComparisonTableHeaderHiddenAction,
+  setComparisonTableCaptionBelowAction,
+} from "@/lib/actions/authoring";
 import { RichEditableText, LIST_CONTENT_CLASS } from "@/components/ui/RichEditableText";
 import { sanitizeRichText, richTextToPlainText } from "@/lib/rich-text";
 import { TEXT_ALIGN_CLASS } from "@/lib/block-alignment";
@@ -46,6 +50,7 @@ export function ComparisonTableBlockView({
   const [rows, setRows] = useState<string[][]>(block.rows);
   const [caption, setCaption] = useState<string>(block.caption ?? "");
   const [hideHeader, setHideHeader] = useState<boolean>(block.hideHeader ?? false);
+  const [captionBelow, setCaptionBelow] = useState<boolean>(block.captionBelow ?? false);
 
   const commit = (nextColumns: string[], nextRows: string[][]) => {
     setColumns(nextColumns);
@@ -77,20 +82,30 @@ export function ComparisonTableBlockView({
     preserveScrollAcrossSave(() => setComparisonTableHeaderHiddenAction(block.id, hidden));
   };
 
+  const toggleCaptionBelow = (below: boolean) => {
+    setCaptionBelow(below);
+    preserveScrollAcrossSave(() => setComparisonTableCaptionBelowAction(block.id, below));
+  };
+
   const captionAlign = block.layout?.textAlign ?? "left";
+  // Above the table the caption is a normal-size title; below it, it's a
+  // small source / reference line.
+  const captionSize = captionBelow ? "text-xs" : "text-sm";
 
   if (!editing) {
+    // The caption is rich text (the editor saves HTML), so it has to be
+    // rendered as HTML — printing it as text showed stray "<br>" — and an
+    // emptied caption (just a <br>) counts as no caption.
+    const captionEl =
+      block.caption && richTextToPlainText(block.caption).trim() ? (
+        <p
+          className={`font-ui ${captionSize} text-secondary ${TEXT_ALIGN_CLASS[captionAlign]} ${LIST_CONTENT_CLASS}`}
+          dangerouslySetInnerHTML={{ __html: sanitizeRichText(block.caption) }}
+        />
+      ) : null;
     return (
       <div className="flex flex-col gap-2">
-        {/* The caption is rich text (the editor saves HTML), so it has to be
-            rendered as HTML — printing it as text showed stray "<br>" — and an
-            emptied caption (just a <br>) counts as no caption. */}
-        {block.caption && richTextToPlainText(block.caption).trim() && (
-          <p
-            className={`font-ui text-sm text-secondary ${TEXT_ALIGN_CLASS[captionAlign]} ${LIST_CONTENT_CLASS}`}
-            dangerouslySetInnerHTML={{ __html: sanitizeRichText(block.caption) }}
-          />
-        )}
+        {!captionBelow && captionEl}
         <div className="overflow-hidden rounded-lg border border-navy">
           <table className="w-full border-collapse font-reading text-sm">
             {!hideHeader && (
@@ -131,18 +146,23 @@ export function ComparisonTableBlockView({
             </tbody>
           </table>
         </div>
+        {captionBelow && captionEl}
       </div>
     );
   }
 
+  const captionEditor = (
+    <RichEditableText
+      value={caption}
+      onSave={saveCaption}
+      placeholder={captionBelow ? "Source / reference (optional)" : "Table caption (optional)"}
+      className={`font-ui ${captionSize} text-secondary ${TEXT_ALIGN_CLASS[captionAlign]}`}
+    />
+  );
+
   return (
     <div className="flex flex-col gap-2 rounded-lg border border-dashed border-border p-3">
-        <RichEditableText
-          value={caption}
-          onSave={saveCaption}
-          placeholder="Table caption (optional)"
-          className={`font-ui text-sm text-secondary ${TEXT_ALIGN_CLASS[captionAlign]}`}
-        />
+        {!captionBelow && captionEditor}
         <table className="w-full border-collapse font-ui text-sm">
           <thead>
             <tr className="border-b border-border">
@@ -203,6 +223,7 @@ export function ComparisonTableBlockView({
             ))}
           </tbody>
         </table>
+      {captionBelow && captionEditor}
       <div className="flex gap-2">
         <button
           type="button"
@@ -225,15 +246,26 @@ export function ComparisonTableBlockView({
           <Plus className="size-3.5" aria-hidden="true" />
           Add column
         </button>
-        <label className="ml-auto flex items-center gap-1.5 font-ui text-xs text-secondary">
-          <input
-            type="checkbox"
-            checked={!hideHeader}
-            onChange={(e) => toggleHeader(!e.target.checked)}
-            className="size-3.5 accent-accent"
-          />
-          Show header row
-        </label>
+        <div className="ml-auto flex items-center gap-3">
+          <label className="flex items-center gap-1.5 font-ui text-xs text-secondary">
+            <input
+              type="checkbox"
+              checked={captionBelow}
+              onChange={(e) => toggleCaptionBelow(e.target.checked)}
+              className="size-3.5 accent-accent"
+            />
+            Caption below table
+          </label>
+          <label className="flex items-center gap-1.5 font-ui text-xs text-secondary">
+            <input
+              type="checkbox"
+              checked={!hideHeader}
+              onChange={(e) => toggleHeader(!e.target.checked)}
+              className="size-3.5 accent-accent"
+            />
+            Show header row
+          </label>
+        </div>
       </div>
     </div>
   );

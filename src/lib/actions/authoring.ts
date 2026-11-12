@@ -580,6 +580,15 @@ export async function setComparisonTableHeaderHiddenAction(blockId: string, hidd
   revalidateDiseaseSurfaces();
 }
 
+export async function setComparisonTableCaptionBelowAction(blockId: string, below: boolean) {
+  await requireEditor();
+  await pool.query(
+    `UPDATE editorial_block SET content_config = jsonb_set(content_config, ARRAY['captionBelow'], to_jsonb($2::boolean)) WHERE id = $1`,
+    [blockId, below]
+  );
+  revalidateDiseaseSurfaces();
+}
+
 // Same whole-object-replace shape as updateComparisonTableAction —
 // title/columns/rows always change together from this block's own
 // local state, so there's no case where a finer-grained per-cell

@@ -418,6 +418,9 @@ export interface ComparisonTableBlock extends BlockBase {
   // true drops the navy header row in the reader view, for a plain
   // label/value table that has no column titles. Unset shows it.
   hideHeader?: boolean;
+  // true moves the caption from above the table to below it, in small
+  // type — for a source / reference line. Unset keeps it above.
+  captionBelow?: boolean;
   columns: string[];
   rows: string[][];
 }
