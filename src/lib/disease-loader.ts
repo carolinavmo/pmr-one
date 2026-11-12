@@ -257,6 +257,7 @@ async function resolveBlock(diseaseId: string, row: BlockRow): Promise<Editorial
         caption: cc.caption as string | undefined,
         ...(cc.hideHeader === true ? { hideHeader: true } : {}),
         ...(cc.captionBelow === true ? { captionBelow: true } : {}),
+        ...(cc.groupRows === true ? { groupRows: true } : {}),
         columns: (cc.columns as string[]) ?? [],
         rows: (cc.rows as string[][]) ?? [],
       };

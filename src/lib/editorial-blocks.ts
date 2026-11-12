@@ -421,6 +421,10 @@ export interface ComparisonTableBlock extends BlockBase {
   // true moves the caption from above the table to below it, in small
   // type — for a source / reference line. Unset keeps it above.
   captionBelow?: boolean;
+  // true turns a row with text only in its first cell into a full-width
+  // group label band (small bold caps) in the reader view. Off by default,
+  // so a half-filled row stays an ordinary row.
+  groupRows?: boolean;
   columns: string[];
   rows: string[][];
 }

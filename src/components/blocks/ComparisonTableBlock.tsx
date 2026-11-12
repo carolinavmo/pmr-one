@@ -8,18 +8,20 @@ import {
   updateComparisonTableAction,
   setComparisonTableHeaderHiddenAction,
   setComparisonTableCaptionBelowAction,
+  setComparisonTableGroupRowsAction,
 } from "@/lib/actions/authoring";
 import { RichEditableText, LIST_CONTENT_CLASS } from "@/components/ui/RichEditableText";
 import { sanitizeRichText, richTextToPlainText } from "@/lib/rich-text";
 import { TEXT_ALIGN_CLASS } from "@/lib/block-alignment";
 import { preserveScrollAcrossSave } from "@/lib/preserve-scroll";
 
-// A row with text only in its first cell (every other cell empty) is a
-// group separator — a full-width label row that divides a long table
-// into labelled bands (e.g. "Back muscles — superficial group"),
-// rather than a data row with missing values. Reader view only: the
-// edit view still shows it as an ordinary row so it stays editable
-// cell by cell.
+// With "Group label rows" on, a row with text only in its first cell
+// (every other cell empty) is a group separator — a full-width label row
+// that divides a long table into labelled bands (e.g. "Back muscles —
+// superficial group"), rather than a data row with missing values. It is
+// opt-in per table: otherwise any half-filled row (a new row mid-typing)
+// would suddenly render as a band. Reader view only: the edit view still
+// shows it as an ordinary row so it stays editable cell by cell.
 function isSeparatorRow(row: string[]): boolean {
   if (row.length < 2) return false;
   const text = (cell: string) => richTextToPlainText(cell).trim();
@@ -51,6 +53,7 @@ export function ComparisonTableBlockView({
   const [caption, setCaption] = useState<string>(block.caption ?? "");
   const [hideHeader, setHideHeader] = useState<boolean>(block.hideHeader ?? false);
   const [captionBelow, setCaptionBelow] = useState<boolean>(block.captionBelow ?? false);
+  const [groupRows, setGroupRows] = useState<boolean>(block.groupRows ?? false);
 
   const commit = (nextColumns: string[], nextRows: string[][]) => {
     setColumns(nextColumns);
@@ -103,6 +106,11 @@ export function ComparisonTableBlockView({
     preserveScrollAcrossSave(() => setComparisonTableHeaderHiddenAction(block.id, hidden));
   };
 
+  const toggleGroupRows = (on: boolean) => {
+    setGroupRows(on);
+    preserveScrollAcrossSave(() => setComparisonTableGroupRowsAction(block.id, on));
+  };
+
   const toggleCaptionBelow = (below: boolean) => {
     setCaptionBelow(below);
     preserveScrollAcrossSave(() => setComparisonTableCaptionBelowAction(block.id, below));
@@ -144,7 +152,7 @@ export function ComparisonTableBlockView({
             )}
             <tbody>
               {block.rows.map((row, rowIndex) =>
-                isSeparatorRow(row) ? (
+                groupRows && isSeparatorRow(row) ? (
                   <tr key={rowIndex} className="border-b border-navy/25 bg-navy/10 last:border-0">
                     <td
                       colSpan={block.columns.length}
@@ -309,7 +317,19 @@ export function ComparisonTableBlockView({
           <Plus className="size-3.5" aria-hidden="true" />
           Add column
         </button>
-        <div className="ml-auto flex items-center gap-3">
+        <div className="ml-auto flex flex-wrap items-center justify-end gap-x-3 gap-y-1">
+          <label
+            className="flex items-center gap-1.5 font-ui text-xs text-secondary"
+            title="A row with text only in its first cell shows as a full-width band that labels the rows below it"
+          >
+            <input
+              type="checkbox"
+              checked={groupRows}
+              onChange={(e) => toggleGroupRows(e.target.checked)}
+              className="size-3.5 accent-accent"
+            />
+            Group label rows
+          </label>
           <label className="flex items-center gap-1.5 font-ui text-xs text-secondary">
             <input
               type="checkbox"

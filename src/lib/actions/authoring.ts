@@ -580,6 +580,15 @@ export async function setComparisonTableHeaderHiddenAction(blockId: string, hidd
   revalidateDiseaseSurfaces();
 }
 
+export async function setComparisonTableGroupRowsAction(blockId: string, on: boolean) {
+  await requireEditor();
+  await pool.query(
+    `UPDATE editorial_block SET content_config = jsonb_set(content_config, ARRAY['groupRows'], to_jsonb($2::boolean)) WHERE id = $1`,
+    [blockId, on]
+  );
+  revalidateDiseaseSurfaces();
+}
+
 export async function setComparisonTableCaptionBelowAction(blockId: string, below: boolean) {
   await requireEditor();
   await pool.query(
