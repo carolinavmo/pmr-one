@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Plus, X } from "lucide-react";
+import { Plus, X, ChevronUp, ChevronDown, ChevronLeft, ChevronRight } from "lucide-react";
 import type { ComparisonTableBlock } from "@/lib/editorial-blocks";
 import { useEditMode } from "@/components/disease-page/EditMode";
 import {
@@ -56,6 +56,27 @@ export function ComparisonTableBlockView({
     setColumns(nextColumns);
     setRows(nextRows);
     preserveScrollAcrossSave(() => updateComparisonTableAction(block.id, nextColumns, nextRows, caption));
+  };
+
+  // Reordering swaps two neighbours and saves the whole grid, like the
+  // add/delete buttons. Moving a column moves that cell in every row too.
+  const swap = <T,>(arr: T[], i: number, j: number): T[] => {
+    const next = [...arr];
+    [next[i], next[j]] = [next[j], next[i]];
+    return next;
+  };
+  const moveRow = (index: number, delta: -1 | 1) => {
+    const target = index + delta;
+    if (target < 0 || target >= rows.length) return;
+    commit(columns, swap(rows, index, target));
+  };
+  const moveColumn = (index: number, delta: -1 | 1) => {
+    const target = index + delta;
+    if (target < 0 || target >= columns.length) return;
+    commit(
+      swap(columns, index, target),
+      rows.map((row) => swap(row, index, target))
+    );
   };
 
   const saveColumn = async (colIndex: number, html: string) => {
@@ -176,6 +197,28 @@ export function ComparisonTableBlockView({
                       className="min-w-24 flex-1 font-medium text-primary"
                     />
                     {columns.length > 1 && (
+                      <>
+                        <button
+                          type="button"
+                          aria-label="Move column left"
+                          disabled={colIndex === 0}
+                          onClick={() => moveColumn(colIndex, -1)}
+                          className="flex size-5 shrink-0 items-center justify-center rounded text-secondary hover:bg-border/40 hover:text-primary disabled:opacity-30"
+                        >
+                          <ChevronLeft className="size-3" aria-hidden="true" />
+                        </button>
+                        <button
+                          type="button"
+                          aria-label="Move column right"
+                          disabled={colIndex === columns.length - 1}
+                          onClick={() => moveColumn(colIndex, 1)}
+                          className="flex size-5 shrink-0 items-center justify-center rounded text-secondary hover:bg-border/40 hover:text-primary disabled:opacity-30"
+                        >
+                          <ChevronRight className="size-3" aria-hidden="true" />
+                        </button>
+                      </>
+                    )}
+                    {columns.length > 1 && (
                       <button
                         type="button"
                         aria-label="Delete column"
@@ -193,7 +236,7 @@ export function ComparisonTableBlockView({
                   </div>
                 </th>
               ))}
-              <th className="w-8" />
+              <th className="w-[4.5rem]" />
             </tr>
           </thead>
           <tbody>
@@ -209,15 +252,35 @@ export function ComparisonTableBlockView({
                     />
                   </td>
                 ))}
-                <td className="w-8 text-center">
-                  <button
-                    type="button"
-                    aria-label="Delete row"
-                    onClick={() => commit(columns, rows.filter((_, i) => i !== rowIndex))}
-                    className="flex size-6 items-center justify-center rounded text-secondary hover:bg-warning/10 hover:text-warning"
-                  >
-                    <X className="size-3.5" aria-hidden="true" />
-                  </button>
+                <td className="w-[4.5rem]">
+                  <div className="flex items-center justify-end">
+                    <button
+                      type="button"
+                      aria-label="Move row up"
+                      disabled={rowIndex === 0}
+                      onClick={() => moveRow(rowIndex, -1)}
+                      className="flex size-6 items-center justify-center rounded text-secondary hover:bg-border/40 hover:text-primary disabled:opacity-30"
+                    >
+                      <ChevronUp className="size-3.5" aria-hidden="true" />
+                    </button>
+                    <button
+                      type="button"
+                      aria-label="Move row down"
+                      disabled={rowIndex === rows.length - 1}
+                      onClick={() => moveRow(rowIndex, 1)}
+                      className="flex size-6 items-center justify-center rounded text-secondary hover:bg-border/40 hover:text-primary disabled:opacity-30"
+                    >
+                      <ChevronDown className="size-3.5" aria-hidden="true" />
+                    </button>
+                    <button
+                      type="button"
+                      aria-label="Delete row"
+                      onClick={() => commit(columns, rows.filter((_, i) => i !== rowIndex))}
+                      className="flex size-6 items-center justify-center rounded text-secondary hover:bg-warning/10 hover:text-warning"
+                    >
+                      <X className="size-3.5" aria-hidden="true" />
+                    </button>
+                  </div>
                 </td>
               </tr>
             ))}
