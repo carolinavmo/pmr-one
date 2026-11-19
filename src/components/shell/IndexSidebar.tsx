@@ -551,7 +551,18 @@ export function IndexSidebar({ tree, isSignedIn, onNavigate, headerAction }: Ind
       frame = 0;
       if (isProgrammaticScrollRef.current) return;
       const found = currentHeadingFromScroll(flat);
-      if (!found) return; // above the first heading — keep the last known section, never clear to "none"
+      if (!found) {
+        // Above the first heading (the title, summary and "On this page" card):
+        // the first section is the one the reader is about to start. Keeping the
+        // last known section here left the highlight stuck on whatever section
+        // they had scrolled back up from. Not recorded as visited — nothing has
+        // actually been reached yet.
+        if (flat[0]) {
+          setCurrentSectionId(flat[0].sectionId);
+          setCurrentSubsectionId(null);
+        }
+        return;
+      }
       setCurrentSectionId(found.sectionId);
       setCurrentSubsectionId(found.id !== found.sectionId ? found.id : null);
       visitedSectionIdsRef.current.add(found.sectionId);
