@@ -10,29 +10,47 @@ import { revalidateShellSurfaces } from "@/lib/revalidation";
 // position. Skips if already there. Remove once run.
 
 const SLUG = "distal-clavicular-osteolysis";
-const SECOND_HEADER = "Role";
 
 const b = (s: string) => `<strong>${s}</strong>`;
 
-const NEW_TABLE = {
-  columns: ["Structure", SECOND_HEADER],
+const TABLES = [{
+  columns: ["Structure", "Role"],
   rows: [
     ["Superior AC ligament", "Primary restraint to posterior and superior clavicular translation"],
     ["Trapezoid (coracoclavicular) ligament", "Primary restraint, superior"],
     ["Deltotrapezial fascia", "Secondary restraint"],
   ],
-};
+},
+{
+  columns: ["Approach", "Superior restraints"],
+  rows: [
+    [b("Open"), "Capsule and deltotrapezial fascia preserved and closed with figure-of-eight non-absorbable suture — a repair to protect"],
+    [b("Arthroscopic, direct (superior)"), "Traversed"],
+    [b("Arthroscopic, bursal (indirect)"), "Preserved — the reason this approach lowers instability risk"],
+  ],
+},
+{
+  columns: ["Restriction", "Duration", "Rationale"],
+  rows: [
+    [b("No cross-body (horizontal) adduction"), b("8 weeks"), "Compressive direction across the resected joint; loads the superior restraints most"],
+    [b("No internal rotation behind the back"), b("4 weeks"), "Combined extension, adduction and internal rotation stresses the same structures"],
+    [b("No pulleys") + " unless the surgeon specifies", "—", "End-range position hard to control"],
+    [b("Heavy AC-loading lifts"), b("Added last"), "Bench press, dips, flies — see below"],
+  ],
+}];
 
 type Row = { id: string; position: number; block_type: string; content_config: Record<string, unknown> };
 const strip = (s: unknown) => String(s ?? "").replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim();
+let FULL = false;
 const label = (r: Row) => {
   const c = r.content_config;
   if (r.block_type === "comparison_table") return `[table ${(c.columns as string[]).length}x${(c.rows as unknown[]).length}] ${strip((c.columns as string[]).join(" | ")).slice(0, 70)} :: ${strip((c.rows as string[][])[0]?.[0])}`;
-  return strip(c.body ?? c.text ?? c.label).slice(0, 80);
+  return strip(c.body ?? c.text ?? c.label).slice(0, FULL ? 700 : 80);
 };
 
 export async function POST(req: NextRequest) {
-  const { dryRun, afterPosition, show, find } = (await req.json().catch(() => ({}))) as { dryRun?: boolean; afterPosition?: number; show?: [number, number]; find?: string };
+  const { dryRun, afterPosition, show, find, table = 0, full } = (await req.json().catch(() => ({}))) as { table?: number; full?: boolean; dryRun?: boolean; afterPosition?: number; show?: [number, number]; find?: string };
+  FULL = !!full;
   const client = await pool.connect();
   try {
     await client.query("BEGIN");
@@ -44,12 +62,13 @@ export async function POST(req: NextRequest) {
       [diseaseId]
     );
 
+    const NEW_TABLE = TABLES[table];
     const already = blocks.find(
       (x) =>
         x.block_type === "comparison_table" &&
-        strip((x.content_config.columns as string[] | undefined)?.[0]) === "Structure" &&
-        strip((x.content_config.columns as string[] | undefined)?.[1]) === SECOND_HEADER &&
-        strip((x.content_config.rows as string[][] | undefined)?.[0]?.[0]) === "Superior AC ligament"
+        strip((x.content_config.columns as string[] | undefined)?.[0]) === NEW_TABLE.columns[0] &&
+        strip((x.content_config.columns as string[] | undefined)?.[1]) === NEW_TABLE.columns[1] &&
+        strip((x.content_config.rows as string[][] | undefined)?.[0]?.[0]) === strip(NEW_TABLE.rows[0][0])
     );
     if (already) {
       await client.query("ROLLBACK");
