@@ -12,6 +12,7 @@ import {
   Eraser,
   CaseUpper,
   CaseLower,
+  CaseSensitive,
   Link as LinkIcon,
   Unlink,
   List,
@@ -834,7 +835,7 @@ export const RichEditableText = forwardRef<RichEditableTextHandle, RichEditableT
   // pulls a live range's end back to the start of what it replaced, so the
   // selection is put back afterwards — the editor can then flip the case
   // again or keep formatting the same words.
-  const changeCase = (mode: "upper" | "lower") => {
+  const changeCase = (mode: "upper" | "lower" | "first") => {
     const sel = window.getSelection();
     if (!sel || sel.rangeCount === 0 || sel.isCollapsed) return;
     const range = sel.getRangeAt(0);
@@ -850,12 +851,24 @@ export const RichEditableText = forwardRef<RichEditableTextHandle, RichEditableT
         if (range.intersectsNode(n)) nodes.push(n as Text);
       }
     }
+    let firstDone = false;
     for (const node of nodes) {
       const from = node === startContainer ? startOffset : 0;
       const to = node === endContainer ? endOffset : node.data.length;
       if (to <= from) continue;
       const part = node.data.slice(from, to);
-      const next = mode === "upper" ? part.toUpperCase() : part.toLowerCase();
+      let next: string;
+      if (mode === "first") {
+        // Capitalise just the first letter of the selection, whichever node it
+        // is in; the rest of the text, acronyms included, is left alone.
+        if (firstDone) continue;
+        const at = part.search(/\p{L}/u);
+        if (at === -1) continue;
+        firstDone = true;
+        next = part.slice(0, at) + part.charAt(at).toUpperCase() + part.slice(at + 1);
+      } else {
+        next = mode === "upper" ? part.toUpperCase() : part.toLowerCase();
+      }
       if (next !== part) node.replaceData(from, to - from, next);
     }
     try {
@@ -1094,6 +1107,15 @@ export const RichEditableText = forwardRef<RichEditableTextHandle, RichEditableT
                 >
                   <CaseLower className="size-4" aria-hidden="true" />
                 </button>
+                <button
+                  type="button"
+                  aria-label="Capitalise first letter"
+                  title="Capitalise first letter"
+                  onClick={() => changeCase("first")}
+                  className="flex size-7 items-center justify-center rounded text-secondary hover:bg-border/40 hover:text-primary"
+                >
+                  <CaseSensitive className="size-4" aria-hidden="true" />
+                </button>
 
                 <div className="mx-0.5 h-5 w-px shrink-0 bg-border" />
 
@@ -1286,6 +1308,15 @@ export const RichEditableText = forwardRef<RichEditableTextHandle, RichEditableT
             className="flex size-7 items-center justify-center rounded text-secondary hover:bg-border/40 hover:text-primary"
           >
             <CaseLower className="size-4" aria-hidden="true" />
+          </button>
+          <button
+            type="button"
+            aria-label="Capitalise first letter"
+            title="Capitalise first letter"
+            onClick={() => changeCase("first")}
+            className="flex size-7 items-center justify-center rounded text-secondary hover:bg-border/40 hover:text-primary"
+          >
+            <CaseSensitive className="size-4" aria-hidden="true" />
           </button>
 
           <div className="mx-0.5 h-5 w-px shrink-0 bg-border" />
@@ -1526,6 +1557,15 @@ export const RichEditableText = forwardRef<RichEditableTextHandle, RichEditableT
           className="flex size-7 items-center justify-center rounded text-secondary hover:bg-border/40 hover:text-primary"
         >
           <CaseLower className="size-4" aria-hidden="true" />
+        </button>
+        <button
+          type="button"
+          aria-label="Capitalise first letter"
+          title="Capitalise first letter"
+          onClick={() => changeCase("first")}
+          className="flex size-7 items-center justify-center rounded text-secondary hover:bg-border/40 hover:text-primary"
+        >
+          <CaseSensitive className="size-4" aria-hidden="true" />
         </button>
 
         <div className="mx-0.5 h-5 w-px shrink-0 bg-border" />
