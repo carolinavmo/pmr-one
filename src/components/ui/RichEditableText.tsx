@@ -10,6 +10,8 @@ import {
   Palette,
   Highlighter,
   Eraser,
+  CaseUpper,
+  CaseLower,
   Link as LinkIcon,
   Unlink,
   List,
@@ -825,6 +827,48 @@ export const RichEditableText = forwardRef<RichEditableTextHandle, RichEditableT
     sel.addRange(newRange);
   };
 
+  // Turns the selected text into UPPERCASE or lowercase. Rewrites the
+  // characters of each selected text node in place instead of replacing the
+  // selection with one plain text node (what clearFormatting does), so bold,
+  // italics, colours and links inside the selection survive. replaceData
+  // pulls a live range's end back to the start of what it replaced, so the
+  // selection is put back afterwards — the editor can then flip the case
+  // again or keep formatting the same words.
+  const changeCase = (mode: "upper" | "lower") => {
+    const sel = window.getSelection();
+    if (!sel || sel.rangeCount === 0 || sel.isCollapsed) return;
+    const range = sel.getRangeAt(0);
+    if (!withinEditable(range.commonAncestorContainer)) return;
+    const { startContainer, startOffset, endContainer, endOffset } = range;
+    const root = range.commonAncestorContainer;
+    const nodes: Text[] = [];
+    if (root.nodeType === Node.TEXT_NODE) {
+      nodes.push(root as Text);
+    } else {
+      const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+      for (let n = walker.nextNode(); n; n = walker.nextNode()) {
+        if (range.intersectsNode(n)) nodes.push(n as Text);
+      }
+    }
+    for (const node of nodes) {
+      const from = node === startContainer ? startOffset : 0;
+      const to = node === endContainer ? endOffset : node.data.length;
+      if (to <= from) continue;
+      const part = node.data.slice(from, to);
+      const next = mode === "upper" ? part.toUpperCase() : part.toLowerCase();
+      if (next !== part) node.replaceData(from, to - from, next);
+    }
+    try {
+      const restored = document.createRange();
+      restored.setStart(startContainer, startOffset);
+      restored.setEnd(endContainer, endContainer.nodeType === Node.TEXT_NODE ? Math.min(endOffset, (endContainer as Text).data.length) : endOffset);
+      sel.removeAllRanges();
+      sel.addRange(restored);
+    } catch {
+      // Selection could not be restored — the text is already changed, which is what matters.
+    }
+  };
+
   // Every toolbar control needs this — without it, the mousedown that
   // precedes a button's click already moved focus (and blurred the
   // contentEditable), clearing window.getSelection() before the click
@@ -1032,6 +1076,24 @@ export const RichEditableText = forwardRef<RichEditableTextHandle, RichEditableT
                 >
                   <Eraser className="size-3.5" aria-hidden="true" />
                 </button>
+                <button
+                  type="button"
+                  aria-label="UPPERCASE"
+                  title="UPPERCASE"
+                  onClick={() => changeCase("upper")}
+                  className="flex size-7 items-center justify-center rounded text-secondary hover:bg-border/40 hover:text-primary"
+                >
+                  <CaseUpper className="size-4" aria-hidden="true" />
+                </button>
+                <button
+                  type="button"
+                  aria-label="lowercase"
+                  title="lowercase"
+                  onClick={() => changeCase("lower")}
+                  className="flex size-7 items-center justify-center rounded text-secondary hover:bg-border/40 hover:text-primary"
+                >
+                  <CaseLower className="size-4" aria-hidden="true" />
+                </button>
 
                 <div className="mx-0.5 h-5 w-px shrink-0 bg-border" />
 
@@ -1206,6 +1268,24 @@ export const RichEditableText = forwardRef<RichEditableTextHandle, RichEditableT
             className="flex size-7 items-center justify-center rounded text-secondary hover:bg-border/40 hover:text-warning"
           >
             <Eraser className="size-3.5" aria-hidden="true" />
+          </button>
+          <button
+            type="button"
+            aria-label="UPPERCASE"
+            title="UPPERCASE"
+            onClick={() => changeCase("upper")}
+            className="flex size-7 items-center justify-center rounded text-secondary hover:bg-border/40 hover:text-primary"
+          >
+            <CaseUpper className="size-4" aria-hidden="true" />
+          </button>
+          <button
+            type="button"
+            aria-label="lowercase"
+            title="lowercase"
+            onClick={() => changeCase("lower")}
+            className="flex size-7 items-center justify-center rounded text-secondary hover:bg-border/40 hover:text-primary"
+          >
+            <CaseLower className="size-4" aria-hidden="true" />
           </button>
 
           <div className="mx-0.5 h-5 w-px shrink-0 bg-border" />
@@ -1428,6 +1508,24 @@ export const RichEditableText = forwardRef<RichEditableTextHandle, RichEditableT
           className="flex size-7 items-center justify-center rounded text-secondary hover:bg-border/40 hover:text-warning"
         >
           <Eraser className="size-3.5" aria-hidden="true" />
+        </button>
+        <button
+          type="button"
+          aria-label="UPPERCASE"
+          title="UPPERCASE"
+          onClick={() => changeCase("upper")}
+          className="flex size-7 items-center justify-center rounded text-secondary hover:bg-border/40 hover:text-primary"
+        >
+          <CaseUpper className="size-4" aria-hidden="true" />
+        </button>
+        <button
+          type="button"
+          aria-label="lowercase"
+          title="lowercase"
+          onClick={() => changeCase("lower")}
+          className="flex size-7 items-center justify-center rounded text-secondary hover:bg-border/40 hover:text-primary"
+        >
+          <CaseLower className="size-4" aria-hidden="true" />
         </button>
 
         <div className="mx-0.5 h-5 w-px shrink-0 bg-border" />
