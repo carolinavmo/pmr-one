@@ -311,7 +311,10 @@ function emptyContentFor(blockType: OwnsContentBlockType) {
     case "highlight_card":
     case "highlight_card_v2":
     case "highlight_card_v3":
-      return { label: "Key Takeaway", text: "" };
+      // New cards start amber (founder request) — the render fallback
+      // for an unset color is still "accent", so existing cards that
+      // never stored a color keep looking the way they do today.
+      return { label: "Key Takeaway", text: "", color: "amber" };
     case "highlight_table":
       return {
         label: "Key Takeaway",
