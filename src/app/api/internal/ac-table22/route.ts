@@ -50,7 +50,7 @@ export async function POST(req: NextRequest) {
       `SELECT position, block_type FROM editorial_block WHERE disease_id = $1 AND position > $2 ORDER BY position LIMIT 1`,
       [diseaseId, at]
     );
-    const info = { heading: head[0].position, anchorPosition: at, anchorText: anchor[0].body.replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim(), next: next[0] };
+    const info = { heading: head[0].position, anchorPosition: at, anchorHtml: anchor[0].body, next: next[0] };
     if (dryRun) {
       await client.query("ROLLBACK");
       return NextResponse.json({ ok: true, dryRun: true, info });
