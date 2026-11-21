@@ -43,8 +43,8 @@ export async function POST(req: NextRequest) {
         [diseaseId]
       );
       const { rows: near } = await client.query(
-        `SELECT position, block_type, left(COALESCE(content_config->>'text', content_config->>'body', content_config->'columns'->>0, ''), 90) AS t FROM editorial_block WHERE disease_id = $1 AND position BETWEEN $2 AND $3 ORDER BY position`,
-        [diseaseId, (h[0]?.position ?? 0) - 10, (h[0]?.position ?? 0) + 80]
+        `SELECT position, block_type, left(COALESCE(content_config->>'text', content_config->>'body', content_config->'columns'->>0, ''), 500) AS t FROM editorial_block WHERE disease_id = $1 AND position BETWEEN $2 AND $3 ORDER BY position`,
+        [diseaseId, (h[0]?.position ?? 0) - 10, (h[0]?.position ?? 0) + 200]
       );
       throw new Error(`expected one anchor, found ${anchor.length}; heading=${JSON.stringify(h)}; near=${JSON.stringify(near)}`);
     }
