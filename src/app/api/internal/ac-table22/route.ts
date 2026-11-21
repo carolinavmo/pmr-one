@@ -37,7 +37,17 @@ export async function POST(req: NextRequest) {
        WHERE disease_id = $1 AND block_type = 'paragraph' AND content_config->>'body' LIKE '%The split is not absolute%'`,
       [diseaseId]
     );
-    if (anchor.length !== 1) throw new Error(`expected one anchor, found ${anchor.length}`);
+    if (anchor.length !== 1) {
+      const { rows: h } = await client.query<{ position: number }>(
+        `SELECT position FROM editorial_block WHERE disease_id = $1 AND content_config->>'text' = 'The two systems'`,
+        [diseaseId]
+      );
+      const { rows: near } = await client.query(
+        `SELECT position, block_type, left(COALESCE(content_config->>'text', content_config->>'body', content_config->'columns'->>0, ''), 90) AS t FROM editorial_block WHERE disease_id = $1 AND position BETWEEN $2 AND $3 ORDER BY position`,
+        [diseaseId, (h[0]?.position ?? 0) - 10, (h[0]?.position ?? 0) + 80]
+      );
+      throw new Error(`expected one anchor, found ${anchor.length}; heading=${JSON.stringify(h)}; near=${JSON.stringify(near)}`);
+    }
     const at = anchor[0].position;
     const { rows: next } = await client.query<{ block_type: string; text: string }>(
       `SELECT block_type, COALESCE(content_config->>'text', left(content_config->>'body', 60), '') AS text
